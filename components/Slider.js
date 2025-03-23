@@ -103,10 +103,10 @@ const Slider = () => {
       }, [currentIndex]); // Re-run effect when currentIndex changes
 
   return (
-    <div className='w-[800px] h-[auto] shadow flex justify-center'>
+    <div className='w-[800px] h-[280px] shadow flex justify-center'>
       <img src={images[currentIndex]} 
       alt={`Slide ${currentIndex + 1}`}
-      className="w-auto h-[60vh] rounded-lg transition-opacity duration-500"
+      className="w-auto h-[full] rounded-lg transition-opacity duration-500"
       />
     </div>
    
