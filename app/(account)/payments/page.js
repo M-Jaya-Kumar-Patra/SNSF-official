@@ -40,7 +40,7 @@ const Account = () => {
                             <ul className="text-gray-600 font-sans">
                                 <li>
                                     <Link href="/orders">
-                                        <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2  active:bg-slate-100">
+                                        <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
                                         <Package size={18} />My Orders
                                         </div>
                                     </Link>
@@ -52,7 +52,7 @@ const Account = () => {
                                 </li>
                                 <li>
                                     <Link href="/profile">
-                                        <div className="h-[40px] flex items-center pl-12 font-semibold cursor-pointer active:bg-slate-100 ">
+                                        <div className="h-[40px] flex items-center pl-12 font-semibold cursor-pointer  active:bg-slate-100">
                                             Profile Information
                                         </div>
                                     </Link>
@@ -66,14 +66,14 @@ const Account = () => {
                                 </li>
                                 <li>
                                     <Link href="/payments">
-                                        <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
+                                        <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 text-[#131e30] bg-slate-100  active:bg-slate-100">
                                             <CreditCard size={18}/>Payments
                                         </div>
                                     </Link>
                                 </li>
                                 <li>
                                     <Link href="/notifications">
-                                        <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 text-[#131e30] bg-slate-100 active:bg-slate-100">
+                                        <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
                                             <Bell size={18}/>Notifications
                                         </div>
                                     </Link>

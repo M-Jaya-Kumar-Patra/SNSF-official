@@ -1,11 +1,13 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { Righteous } from "next/font/google";
+import { Righteous, Poppins } from "next/font/google";
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
+const poppins = Poppins({subsets: ["latin"], weight: '300' })
 
 const Page = () => {
     const { data: session } = useSession();
@@ -15,7 +17,7 @@ const Page = () => {
     useEffect(() => {
         setIsClient(true);
         if (session) {
-            router.push("/profile"); // Redirect to the account page if logged in
+            router.push("/profile"); // Redirect to profile page if logged in
         }
     }, [session]);
 
@@ -39,33 +41,39 @@ const Page = () => {
                 </div>
 
                 {/* Email Field */}
-                <div className="flex items-center gap-1 my-2">
-                    <img className="w-[22px] h-[23px]" src="/images/email.png" alt="Email" />
-                    <input type="email" placeholder="Enter your Email" className="w-[230px] px-2 py-1 border-b border-gray-400 outline-none text-gray-700 placeholder-gray-400" />
+                <div className="flex items-center gap-1 my-2 mb-3">
+                    <Image className="w-[22px] h-[23px]" src="/images/email.png" alt="Email" width={22} height={23} />
+                    <input type="email" placeholder="Enter your Email" className=" text-[15px] w-[230px] px-2 py-1 border-b border-gray-400 outline-none text-gray-700 placeholder-gray-400" />
                 </div>
 
                 {/* Password Field */}
-                <div className="flex items-center gap-1">
-                    <img className="w-[25px] h-[23px]" src="/images/padlock.png" alt="Password" />
-                    <input type="password" placeholder="Enter your Password" className="w-[230px] px-2 py-1 border-b border-gray-400 outline-none text-gray-700 placeholder-gray-400" />
+                <div className="flex items-center gap-1 mb-1">
+                    <Image className="w-[25px] h-[23px] " src="/images/padlock.png" alt="Password" width={25} height={23} />
+                    <input type="password" placeholder="Enter your Password" className="text-[15px] w-[230px] px-2 py-1 border-b border-gray-400 outline-none text-gray-700 placeholder-gray-400" />
                 </div>
 
                 {/* Forgot Password */}
-                <div className="w-full text-right m-2 mb-0">
+                <div className="w-full text-right m-2 mb-4">
                     <h3 className="text-[#131e30] text-[12px] cursor-pointer hover:underline">Forgot Password?</h3>
                 </div>
 
                 {/* Sign In Button */}
-                <button className="bg-gradient-to-l from-[#798ca8] via-[#334257] to-[#131e30] text-white px-4 py-2 rounded-md mt-2 hover:opacity-90">
+                <button className="bg-gradient-to-l from-[#798ca8] via-[#334257] to-[#131e30] text-white px-4 py-1 rounded-md mt-2 hover:opacity-90 text-[15px]">
                     Sign In
                 </button>
 
-                <div className="text-[12px] text-gray-500 font-sans mt-2">or</div>
+                <div className="text-[12px] text-gray-500 font-sans my-2">or</div>
 
-                {/* Google Sign In Button */}
-                <button onClick={() => signIn()} className="text-black bg-gray-200 px-4 py-2 rounded-md text-[15px] font-sans border border-gray-600 mt-1 hover:bg-gray-300">
-                    Continue with Google
-                </button>
+                {/* Google Sign-In Button */}
+                <div className="provider">
+                    <button
+                        onClick={() => signIn("google")}
+                        className="flex items-center gap-2 px-4 py-1 border border-gray-300 rounded-md shadow-sm bg-white hover:bg-gray-100 transition h-[35px] w-[230px] text-[15px] justify-center"
+                    >
+                    <Image loading="eager" height={20} width={20} src="https://authjs.dev/img/providers/google.svg" alt="Google Logo"  />
+                        <span className="text-gray-700 text-base font-sans">Sign in with Google</span>
+                    </button>
+                </div>
             </div>
         </div>
     );

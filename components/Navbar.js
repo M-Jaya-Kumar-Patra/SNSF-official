@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
-import { Righteous } from "next/font/google";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation"; // ✅ Correct import
+import { Righteous } from "next/font/google";
 
-const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
+const righteous = Righteous({ subsets: ["latin"], weight: "400" }); // ✅ Correct import
+
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -25,9 +26,10 @@ const Navbar = () => {
             height={64}
             priority={true}
           />
-          <div className={`text-3xl font-bold ${righteous.className} bg-gradient-to-b from-[#adc6d7] via-[#597794] to-[#a3bfd2] bg-clip-text text-transparent drop-shadow-xs w-40`}>
+          <div className={`text-3xl font-bold bg-gradient-to-b from-[#adc6d7] via-[#597794] to-[#a3bfd2] bg-clip-text text-transparent drop-shadow-xs w-40 ${righteous.className}`}>
             <h1>S N Steel Fabrication</h1>
           </div>
+
         </div>
 
         {/* Search Box */}
@@ -58,14 +60,15 @@ const Navbar = () => {
           />
 
           <Image
-            className="w-8 h-8 invert cursor-pointer rounded-full"
+            className={`w-8 h-8 cursor-pointer rounded-full ${session?.user?.image ? "" : "invert"
+              }`}
             src={session?.user?.image || "/images/account.png"}
             alt="User Account"
             width={32}
             height={32}
             onClick={() => router.push(session ? "/profile" : "/login")}
-
           />
+
 
           <Image
             className="w-8 h-8"
