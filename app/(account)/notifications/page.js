@@ -23,7 +23,6 @@ const Account = () => {
 
     return (
         <>
-            <Navbar />
             <div className="flex w-full min-h-screen justify-center bg-slate-100">
                 <div className="w-[1020px] my-3 mx-auto flex justify-between">
                     <div className="left h-full">

@@ -1,25 +1,33 @@
-import Image from "next/image";
 import Slider from "@/components/Slider";
 import New from "@/components/New";
+import Shopbycat from "@/components/Shopbycat"
+import Bestsellers from "@/components/Bestsellers";
 import Link from "next/link";
-import Navbar from "@/components/Navbar"
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
     <div>
-      <Navbar />
       <section className="flex justify-center">
         <Slider />
       </section>
+
+      <section className="flex justify-center">
+        <Shopbycat />
+      </section>
+
+      <section className="flex justify-center">
+        <Bestsellers />
+      </section>
+
+
       <section className="flex justify-center">
         <New />
       </section>
 
-      {/* Corrected navigation to Account Profile */}
       <Link href="/account/profile">
-  <button>Go to Profile</button>
-</Link>
-
+        <button>Go to Profile</button>
+      </Link>
 
     </div>
   );

@@ -1,12 +1,14 @@
-import { Inter, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 import SessionWrapper from "./components/SessionWrapper";
 
+import { Inter, Geist, Geist_Mono, Righteous } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "700"] });
 const geistSans = Geist({ subsets: ["latin"] });
 const geistMono = Geist_Mono({ subsets: ["latin"] });
+const righteous = Righteous({ subsets: ["latin"], weight: "400" });
 
 export const metadata = {
   title: "SNSF",
@@ -15,26 +17,21 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <>
-      {/* Ensure proper HTML structure */}
-      <html lang="en">
-        <head>
-          <meta charSet="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        </head>
+    <html lang="en">
+      <head>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </head>
+      <body className={`${righteous.className} ${inter.className} ${geistSans.className} ${geistMono.className}  antialiased`}>
         <SessionWrapper>
-          <body className={`${inter.className} ${geistSans.className} ${geistMono.className} antialiased`}>
-
-
-            {/* Main Content */}
-            <main className="min-h-screen flex flex-col">
-              <section>{children}</section>
-            </main>
-
-            <Footer />
-          </body>
-        </SessionWrapper>  
-      </html>
-    </>
+          <Navbar />
+          <main className=" font-sans min-h-screen flex flex-col">
+            <section>{children}</section>
+          </main>
+          <Footer />
+        </SessionWrapper>
+      </body>
+    </html>
   );
 }
+  

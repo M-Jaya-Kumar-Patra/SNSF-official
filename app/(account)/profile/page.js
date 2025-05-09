@@ -2,17 +2,24 @@
 
 import { useSession, signOut } from "next-auth/react";
 import Navbar from "@/components/Navbar";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { User, Package, CreditCard, Bell, Heart, LogOut } from "lucide-react";
+import { v4 as uuidv4 } from 'uuid';
+
+
+
 
 const Account = () => {
     const { data: session } = useSession();
     const router = useRouter();
 
     const handleLogout = async () => {
-        await signOut({ callbackUrl: '/' });
+        let c = confirm("Are you sure?")
+        if (c) {
+            await signOut({ callbackUrl: '/' });
+        }
     };
 
     const fullName = session?.user?.name || "";
@@ -21,17 +28,38 @@ const Account = () => {
     const initialEmail = session?.user?.email || "";
     const initialPhone = "+91 ";
 
-    // Load from localStorage if available
-    const storedFirstName = typeof window !== "undefined" ? localStorage.getItem("firstName") : null;
-    const storedLastName = typeof window !== "undefined" ? localStorage.getItem("lastName") : null;
-    const storedEmail = typeof window !== "undefined" ? localStorage.getItem("email") : null;
-    const storedPhone = typeof window !== "Undefined" ? localStorage.getItem("phone") :null;
+    // // Load from localStorage if available
+    // const storedFirstName = typeof window !== "undefined" ? localStorage.getItem("firstName") : null;
+    // const storedLastName = typeof window !== "undefined" ? localStorage.getItem("lastName") : null;
+    // const storedEmail = typeof window !== "undefined" ? localStorage.getItem("email") : null;
+    // const storedPhone = typeof window !== "Undefined" ? localStorage.getItem("phone") :null;
 
+    // // States for input fields
+    // const [firstName, setFirstName] = useState(initialFirstName);
+    // const [lastName, setLastName] = useState(initialLastName);
+    // const [email, setEmail] = useState(initialEmail);
+    // const [phone, setPhone] = useState(initialPhone);
     // States for input fields
-    const [firstName, setFirstName] = useState(storedFirstName || initialFirstName);
-    const [lastName, setLastName] = useState(storedLastName || initialLastName);
-    const [email, setEmail] = useState(storedEmail || initialEmail);
-    const [phone, setPhone] = useState(storedPhone || initialPhone);
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+
+
+
+    useEffect(() => {
+        const storedFirstName = localStorage.getItem("firstName") || initialFirstName;
+        const storedLastName = localStorage.getItem("lastName") || initialLastName;
+        const storedEmail = localStorage.getItem("email") || initialEmail;
+        const storedPhone = localStorage.getItem("phone") || initialPhone;
+
+        setFirstName(storedFirstName);
+        setLastName(storedLastName);
+        setEmail(storedEmail);
+        setPhone(storedPhone);
+    }, [session]); // Runs when session data changes
+
+
 
     // Edit mode states
     const [editName, setEditName] = useState(false);
@@ -43,6 +71,11 @@ const Account = () => {
     const [newLastName, setNewLastName] = useState(lastName);
     const [newEmail, setNewEmail] = useState(email);
     const [newPhone, setNewPhone] = useState(phone);
+
+    // localStorage.setItem("firstName", firstName);
+    // localStorage.setItem("lastName", lastName);
+    // localStorage.setItem("email", email);
+    // localStorage.setItem("phone", phone);
 
     // Save name updates
     const handleUpdateName = () => {
@@ -59,17 +92,17 @@ const Account = () => {
         localStorage.setItem("email", newEmail);
         setEditEmail(false);
     };
-    
+
     const handleUpdatePhone = () => {
         setPhone(newPhone);
         localStorage.setItem("phone", newPhone);
         setEditPhone(false);
     }
+
     
 
     return (
         <>
-            <Navbar />
             <div className="flex w-full min-h-screen justify-center bg-slate-100">
                 <div className="w-[1020px] my-3 mx-auto flex justify-between">
 
@@ -78,7 +111,7 @@ const Account = () => {
                         <div className="leftupper h-16 bg-white shadow-lg p-2 flex gap-3 items-center">
                             <img
                                 className="h-full rounded-full"
-                                src={session?.user?.image || "/images/logo.png"}
+                                src={session?.user?.image || "/images/account.png"}
                                 alt="User Profile"
                             />
                             <h1 className="text-black font-sans font-semibold">{firstName} {lastName}</h1>

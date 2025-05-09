@@ -23,7 +23,6 @@ const Account = () => {
 
     return (
         <>
-            <Navbar />
             <div className="flex w-full min-h-screen justify-center bg-slate-100">
                 <div className="w-[1020px] my-3 mx-auto flex justify-between">
                     <div className="left h-full">
@@ -72,7 +71,7 @@ const Account = () => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link href="/notifications">
+                                    <Link href="/noitfications">
                                         <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
                                             <Bell size={18}/>Notifications
                                         </div>
@@ -95,7 +94,40 @@ const Account = () => {
                             </ul>
                         </div>
                     </div>
-                    <div className="right h-full w-[750px] bg-white shadow-lg"></div>
+
+
+
+
+
+                    <div className="right h-full w-[750px] bg-white shadow-lg p-5">
+                        <div className="mb-6">
+                            <span className="texx`t-black font-semibold font-sans text-[20px]">My Orders</span>
+                        </div>
+
+                        {/* orderedProductSection */}
+
+                        <div className="w-full border border-slate-400 p-4 flex gap-4 ">
+                            <div className="h-[90px] w-[90px] bg-gray-800">
+                                <img src="images/chair/Slide5.PNG" alt="" />
+                            </div>
+                            <div className="text-black font-sans w-[270px] border">
+                                texsgknmfg
+                            </div>
+                            <div className="text-black w-[90px] border">
+                                $100000
+                            </div>
+                            <div className="text-black w-[180px] border">
+                                $100000
+                            </div>
+
+
+                        </div>
+
+                        
+
+
+
+                    </div>
                 </div>
             </div>
         </>
