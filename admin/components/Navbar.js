@@ -25,7 +25,7 @@ const Navbar = () => {
     setState({ ...state, [anchor]: open });
   };
 
-  const navItems = ['Dashboard', 'Products', 'Categories', 'Customers'];
+  const navItems = ['Dashboard', 'Products', 'Categories', 'Users', 'Customers'];
   const Router = useRouter();
 
   const list = () => (
@@ -58,6 +58,7 @@ const Navbar = () => {
                 {index === 0 ? <DashboardIcon /> :
                   index === 1 ? <BsBoxSeamFill size={20} /> :
                     index === 2 ? <CategoryIcon /> :
+                    index === 3 ? <BsFillPeopleFill size={20} />:
                       <BsFillPeopleFill size={20} />}
               </ListItemIcon>
               <ListItemText primary={text} />

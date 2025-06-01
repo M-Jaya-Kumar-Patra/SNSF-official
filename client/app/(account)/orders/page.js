@@ -8,18 +8,30 @@ import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";import { User, Package, CreditCard, MapPin, Heart, RefreshCcw, Bell, LifeBuoy, LogOut } from "lucide-react";
+import LogoutBTN from "@/components/LogoutBTN";
+import { useAuth } from "@/app/context/AuthContext";
+
+
 
 const Account = () => {
     const { data: session } = useSession();
     const router = useRouter();
 
-    // Function to handle logout properly
-    const handleLogout = async () => {
-        await signOut({ callbackUrl: '/' }); // Ensures redirection to homepage after logout
-    };
-    if (!session) {
-        return <p className="text-center text-gray-500">Loading...</p>;
-    }
+     const { isLoading } = useAuth();
+      const isNextAuth = session?.user;
+      const isJWT = jwtUser?.email;
+    
+    
+      const avatar = isNextAuth
+        ? session.user.avatar || "/images/account.png"
+        : jwtUser?.avatar || "/images/account.png";
+
+        const fullName = isNextAuth
+    ? session?.user?.name || session?.user?.user?.name || ""
+    : jwtUser?.name || "";
+
+      if (!isLoading) return <CircularProgress/>;
+    
 
     return (
         <>
@@ -29,10 +41,11 @@ const Account = () => {
                         <div className="leftupper h-16 bg-white shadow-lg p-2 flex gap-3 items-center">
                             <img 
                                 className="h-full rounded-full" 
-                                src={session.user.image || "/images/logo.png"} 
+                                             src={avatar}
+
                                 alt="User Profile" 
                             />
-                            <h1 className="text-black font-sans font-semibold">{session.user.name}</h1>
+                            <h1 className="text-black font-sans font-semibold">{fullName}</h1>
                         </div>
 
                         <div className="leftlower mt-3 w-[256px] bg-white shadow-lg">
@@ -85,10 +98,8 @@ const Account = () => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <div 
-                                        onClick={handleLogout} 
-                                        className="h-[50px] flex items-center pl-5 font-semibold text-red-600 cursor-pointer active:bg-slate-100 gap-2">
-                                        <LogOut size={18}/> Logout
+                                    <div>
+                                        <LogoutBTN/>
                                     </div>
                                 </li>
                             </ul>

@@ -8,17 +8,30 @@ import Link from "next/link";
 import { User, Package, CreditCard, Bell, Heart, LogOut } from "lucide-react";
 import { useRef } from "react";
 import { v4 as uuidv4 } from 'uuid';
+import LogoutBTN from "@/components/LogoutBTN";
+import { useAuth } from "@/app/context/AuthContext";
+
 
 
 const Account = () => {
     const { data: session } = useSession();
     const router = useRouter();
+     const { jwtUser, setJwtUser } = useAuth();
+      const isNextAuth = session?.user;
+      const isJWT = jwtUser?.email;
+    
+    
+      const avatar = isNextAuth
+        ? session.user.avatar || "/images/account.png"
+        : jwtUser?.avatar || "/images/account.png";
+        const fullName = isNextAuth
+    ? session?.user?.name || session?.user?.user?.name || ""
+    : jwtUser?.name || "";
 
     const handleLogout = async () => {
         await signOut({ callbackUrl: '/' });
     };
 
-    const fullName = session?.user?.name || "";
     const initialFirstName = fullName.split(" ")[0] || "";
     const initialLastName = fullName.split(" ")[1] || "";
 
@@ -105,6 +118,7 @@ const Account = () => {
                 setShowAddressForm(false)
             }
         }
+
     }, []);
 
 
@@ -136,7 +150,7 @@ const Account = () => {
     const saveAddress = () => {
         if (
             !address.cName || !address.phone || !address.pincode || !address.locality ||
-            !address.address || !address.city 
+            !address.address || !address.city
         ) {
             alert("Please fill in all required fields.");
             return;
@@ -174,7 +188,7 @@ const Account = () => {
 
 
     const handleEditChange = (e) => {
-        
+
         setEditAddress({ ...editAddress, [e.target.name]: e.target.value });
     };
 
@@ -190,10 +204,11 @@ const Account = () => {
                         <div className="leftupper h-16 bg-white shadow-lg p-2 flex gap-3 items-center">
                             <img
                                 className="h-full rounded-full"
-                                src={session?.user?.image || "/images/account.png"}
+              src={avatar}
+                                
                                 alt="User Profile"
                             />
-                            <h1 className="text-black font-sans font-semibold">{firstName} {lastName}</h1>
+                            <h1 className="text-black font-sans font-semibold">{fullName}</h1>
                         </div>
 
                         <div className="leftlower mt-3 w-[256px] bg-white shadow-lg">
@@ -246,10 +261,8 @@ const Account = () => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <div
-                                        onClick={handleLogout}
-                                        className="h-[50px] flex items-center pl-5 font-semibold text-red-600 cursor-pointer active:bg-slate-100 gap-2">
-                                        <LogOut size={18} /> Logout
+                                    <div>
+                                        <LogoutBTN />
                                     </div>
                                 </li>
                             </ul>
@@ -285,10 +298,10 @@ const Account = () => {
 
 
                                 <div className="flex justify-between w-full gap-3 mb-3">
-                                <input value={editIndex !== null ? editAddress.pincode : address.pincode} onChange={editIndex !== null ? handleEditChange : handleChange} type="number" placeholder='Pincode' className="outline-none rounded-sm border border-slate-300 w-[50%] placeholder-slate-500 px-4 py-2 " name="pincode" id="pincode" />
+                                    <input value={editIndex !== null ? editAddress.pincode : address.pincode} onChange={editIndex !== null ? handleEditChange : handleChange} type="number" placeholder='Pincode' className="outline-none rounded-sm border border-slate-300 w-[50%] placeholder-slate-500 px-4 py-2 " name="pincode" id="pincode" />
 
 
-                                <input value={editIndex !== null ? editAddress.locality : address.locality} onChange={editIndex !== null ? handleEditChange : handleChange} type="text" placeholder='Locality' className="outline-none rounded-sm border border-slate-300 w-[50%] placeholder-slate-500 px-4 py-2 " name="locality" id="locality" />
+                                    <input value={editIndex !== null ? editAddress.locality : address.locality} onChange={editIndex !== null ? handleEditChange : handleChange} type="text" placeholder='Locality' className="outline-none rounded-sm border border-slate-300 w-[50%] placeholder-slate-500 px-4 py-2 " name="locality" id="locality" />
                                 </div>
 
                                 <textarea value={editIndex !== null ? editAddress.address : address.address} onChange={editIndex !== null ? handleEditChange : handleChange} type="text" placeholder='Address' className="mb-3 text-wrap  outline-none rounded-sm border border-slate-300 w-full placeholder-slate-500 px-4 py-2 " name="address" id="address" />
@@ -305,11 +318,11 @@ const Account = () => {
 
 
                                 <div className="flex  justify-center items-center w-full">
-                                <button onClick={saveAddress} className=' flex justify-center items-center gap-2 py-1  bg-[#131e30] text-white w-fit rounded-full hover:bg-[#445570]  mt-10 mx-auto px-3 font-medium py-auto align centeer border border-gray-700'>
-                                    Save Address</button>
-                                <button onClick={()=>setShowAddressForm(false)} className=' flex justify-center items-center gap-2 py-1   text-[#131e30] w-fit rounded-full hover:bg-red-500 hover:text-white mt-10 mx-auto px-5 font-medium py-auto align centeer border border-gray-700'>Cancel</button>
+                                    <button onClick={saveAddress} className=' flex justify-center items-center gap-2 py-1  bg-[#131e30] text-white w-fit rounded-full hover:bg-[#445570]  mt-10 mx-auto px-3 font-medium py-auto align centeer border border-gray-700'>
+                                        Save Address</button>
+                                    <button onClick={() => setShowAddressForm(false)} className=' flex justify-center items-center gap-2 py-1   text-[#131e30] w-fit rounded-full hover:bg-red-500 hover:text-white mt-10 mx-auto px-5 font-medium py-auto align centeer border border-gray-700'>Cancel</button>
                                 </div>
-                            </div>)}    
+                            </div>)}
 
 
                         <div className="address">

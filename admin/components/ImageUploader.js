@@ -28,7 +28,7 @@ const ImageUploader = () => {
 
   const handleUpload = async () => {
     if (!selectedImages.length) {
-      setError('Please select at least one image.');
+      setError('Please select atleast one image.');
       return;
     }
 

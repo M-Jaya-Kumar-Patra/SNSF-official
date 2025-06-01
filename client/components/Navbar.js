@@ -2,27 +2,15 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
 import { Righteous } from "next/font/google";
-
-
-
-
-import CallIcon from '@mui/icons-material/Call';
-
-
 import Badge from '@mui/material/Badge';
-
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-
-
 import { IoCartOutline } from "react-icons/io5";
-
+import { MdCall  } from "react-icons/md";
+import { useAuth } from "@/app/context/AuthContext";
 
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -37,8 +25,11 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 const righteous = Righteous({ subsets: ["latin"], weight: "400" });
 
   const Navbar = ({ fontClass, cartItems = [] }) => {
-  const { data: session } = useSession();
-  const router = useRouter(); // 
+    
+    const router = useRouter(); 
+      const { userData, setUserData, isLogin } = useAuth();
+
+
 
   return (
     <nav>
@@ -55,7 +46,7 @@ const righteous = Righteous({ subsets: ["latin"], weight: "400" });
           />
           <img src="images/snsf-text.png" alt="" className="h-[64px] ml-0" />
 
-          {/* <h1 className={`${righteous.className} text-4xl text-white`}>
+          {/* <h1 className={`${righteous.className} text-4xl text-white text-[64px]`}>
       This should be in Righteous
     </h1> */}
 
@@ -64,7 +55,7 @@ const righteous = Righteous({ subsets: ["latin"], weight: "400" });
         {/* Search Box */}
         <div className="Search w-[30vw] border border-gray-500 h-[35px] px-1 flex items-center active:backdrop-blur-3xl rounded-full">
           <Image
-            className="w-6 h-5 mr-1 invert"
+            className=" mr-1 invert"
             src="/images/search.png"
             alt="Search Icon"
             width={20}
@@ -80,22 +71,22 @@ const righteous = Righteous({ subsets: ["latin"], weight: "400" });
 
         {/* Contact, Account, and Cart */}
         <div className="contact-account-cart w-[15%] flex justify-between items-center gap-3">
-          <CallIcon  className="text-4xl"/>
+          <MdCall   className="text-3xl  text-white shrink-0"/>
 
           <Image
-            className={`w-8 h-8 cursor-pointer rounded-full ${session?.user?.image ? "" : "invert"
+            className={`shrink-0 w-8 h-8 cursor-pointer rounded-full ${(isLogin) ? "" : "invert"
               }`}
-            src={session?.user?.image || "/images/account.png"}
+            src={userData?.avatar || "/images/account.png"}
             alt="User Account"
             width={32}
             height={32}
-            onClick={() => router.push(session ? "/profile" : "/login")}
-          />
+            onClick={() => router.push((isLogin) ? "/profile" : "/login")}
+          /> 
 
 
-         <IconButton aria-label="cart" onClick={() => router.push("/cart")}>
+         <IconButton aria-label="cart"  onClick={() => router.push(isLogin ? "/cart" : "/login")}>
   <StyledBadge badgeContent={cartItems.length} showZero color="secondary">
-    <IoCartOutline className="text-4xl" />
+    <IoCartOutline className="text-3xl text-white shrink-0" />
   </StyledBadge>
 </IconButton>
         </div>
@@ -126,7 +117,7 @@ const righteous = Righteous({ subsets: ["latin"], weight: "400" });
 
 
       </div>
-      <div className="bg-white border border-b-gray-300 mb-1 h-[30px] w-full font-semibold text-[#131e30] font-sans p-0 flex items-center justify-evenly">
+      <div className="bg-white border border-b-gray-300 mb-0 z-30 h-[30px] w-full font-semibold text-[#131e30] font-sans p-0 flex items-center justify-evenly">
         {/* <div className="  hover:border-red-600 hover:border-b-2 h-full p-1">
           Living Room
         </div>
