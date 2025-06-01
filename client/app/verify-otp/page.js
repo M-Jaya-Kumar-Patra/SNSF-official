@@ -1,0 +1,134 @@
+"use client";
+
+import { useState, useEffect, useRef, useContext } from "react";
+import { useRouter } from "next/navigation";
+import { postData } from "@/utils/api";
+import { useAlert } from "../context/AlertContext";
+
+const Page = () => {
+    const [otp, setOtp] = useState(new Array(6).fill(""));
+    const inputRefs = useRef([]);
+    const router = useRouter();
+    const alert = useAlert();
+
+    const handleChange = (element, index) => {
+        const value = element.value.replace(/\D/, "");
+        if (value) {
+            const newOtp = [...otp];
+            newOtp[index] = value;
+            setOtp(newOtp);
+            if (index < 5) {
+                inputRefs.current[index + 1].focus();
+            }
+        }
+    };
+
+    const handleKeyDown = (e, index) => {
+        if (e.key === "Backspace") {
+            const newOtp = [...otp];
+            if (otp[index]) {
+                newOtp[index] = "";
+                setOtp(newOtp);
+            } else if (index > 0) {
+                inputRefs.current[index - 1].focus();
+            }
+        }
+    };
+
+    const verifyOTP = (e) => {
+        e.preventDefault();
+        const fullOtp = otp.join("");
+
+        if (fullOtp.length !== 6) {
+            alert.alertBox({type:"error", msg:"Please enter all 6 digits."});
+            return;
+        }
+
+        const actionType = localStorage.getItem("actionType")
+
+        if(actionType === "forgot-password"){
+            localStorage.removeItem("actionType")   
+            postData("/api/user/verify-forgot-password-otp", {
+            email: localStorage.getItem("userEmail"),
+            otp: fullOtp,
+        }, false).then((response) => {
+            if (response?.error === false) {
+                router.push("/forgot-password");
+            } else {
+                alert.alertBox({type:"error", msg:"Invalid OTP"||response?.message});
+            }
+        });
+
+
+            
+        }else{
+             postData("/api/user/verifyEmail", {
+            email: localStorage.getItem("userEmail"),
+            otp: fullOtp,
+        }, false).then((response) => {
+            if (response?.error === false) {    
+                localStorage.removeItem("userEmail");
+                sessionStorage.setItem("alert", JSON.stringify({
+                    type: "success",
+                    msg: response?.message
+                }));
+                router.push("/login");
+            } else {
+                alert.alertBox({type:"error", msg:"Invalid OTP"||response?.message});
+            }
+        });
+        }
+        
+
+        
+    };
+
+    return (
+        <div className="flex justify-center items-center w-full h-screen bg-gray-100">
+            <div className="w-[300px] border border-gray-200 rounded-md shadow bg-white py-4 px-10 flex flex-col items-center">
+                <div className="w-full gap-3 text-center">
+                    <h1 className="text-[#131e30] my-2 font-bold text-lg">Verify OTP</h1>
+                    <h1 className="text-gray-500 text-[13px] mb-4">
+                        OTP sent to {localStorage.getItem("userEmail")}
+                    </h1>
+                </div>
+
+                <form onSubmit={verifyOTP} className="w-full flex flex-col items-center gap-2">
+                    <div className="flex justify-center gap-2 mb-2">
+                        {otp.map((digit, index) => (
+                            <input
+                                key={index}
+                                type="text"
+                                inputMode="numeric"
+                                maxLength="1"
+                                value={digit}
+                                onChange={(e) => handleChange(e.target, index)}
+                                onKeyDown={(e) => handleKeyDown(e, index)}
+                                ref={(el) => (inputRefs.current[index] = el)}
+                                className="text-black border border-gray-400 w-10 h-10 text-center text-lg rounded-md focus:outline-none focus:ring-2 focus:ring-[#334257]"
+                            />
+                        ))}
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="bg-gradient-to-l from-[#798ca8] via-[#334257] to-[#131e30] text-white px-4 py-1 rounded-md mt-1 hover:opacity-90 text-[15px]"
+                    >
+                        Verify OTP
+                    </button>
+
+                    <div className="w-full text-center mt-3">
+                        <h3
+                            className="text-[#131e30] text-[14px] cursor-pointer hover:text-[#363fa6]"
+                            onClick={() => alert.alertBox("info", "Resending OTP...")}
+                        >
+                            Resend OTP
+                        </h3>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+export default Page;
