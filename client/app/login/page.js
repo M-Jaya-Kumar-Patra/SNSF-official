@@ -33,6 +33,7 @@ export default function Login() {
   const { isLogin, login, setIsLogin, setLoading, loading, userData } = useAuth();
 
   // Redirect if already logged in
+  // Redirect if already logged in
   useEffect(() => {
     if (isLogin) {
       router.push("/profile");
@@ -41,7 +42,6 @@ export default function Login() {
     }
   }, [isLogin, router]);
 
-  
   // Show alert after redirect (like from signup)
   useEffect(() => {
     const alertData = sessionStorage.getItem("alert");
@@ -53,6 +53,7 @@ export default function Login() {
     console.log("login4")
   }, [alert]);
   console.log("login5")
+  
   if (checkingAuth) {
     // Optional: return a spinner or just null
     return null;

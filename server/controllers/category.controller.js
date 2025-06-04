@@ -11,7 +11,7 @@ cloudinary.config({
 });
 let imagesArr = [];
 
-// Upload Images for Category
+
 export async function uploadImages(request, response) {
     try {
         const images = request.files || [];
@@ -51,7 +51,6 @@ export async function uploadImages(request, response) {
     }
 }
 
-// Create Category (uses imagesArr from previous upload)
 export async function createCategory(request, response) {
     try {
         const category = new CategoryModel({
@@ -180,6 +179,7 @@ export async function getCategory(request, response) {
 
 export async function removeImageFromCloudinary(request, response) {
     try {
+
         const imgUrl = request.query.img;
 
         if (!imgUrl) {
@@ -206,14 +206,14 @@ export async function removeImageFromCloudinary(request, response) {
 
         if (destroyResult.result !== "ok") {
             return response.status(400).json({
-                message: "Failed to delete image from Cloudinary",
+                message: "Failed to delete image ",
                 error: true,
                 success: false
             });
         }
 
         return response.status(200).json({
-            message: "Image deleted from Cloudinary",
+            message: "Image deleted Successfully",
             error: false,
             success: true
         });
@@ -230,6 +230,7 @@ export async function removeImageFromCloudinary(request, response) {
 export async function deleteCategory(request, response) {
     try {
         const category = await CategoryModel.findById(request.params.id);
+        console.log(category)
         if (!category) {
             return response.status(404).json({
                 message: "Category not found",
@@ -279,6 +280,8 @@ export async function deleteCategory(request, response) {
 
 export async function updatedCategory(request, response) {
     try {
+            console.log("GONEEEE")
+
         const image = request.files || [];
         const uploadedImages = [];
 
@@ -296,13 +299,13 @@ export async function updatedCategory(request, response) {
 
         const updateData = {
             name: request.body.name,
-            parentId: request.body.parentId,
-            parentCatName: request.body.parentCatName
+            parentId: request.body.parentId || null,
+            parentCatName: request.body.parentCatName || null
         };
 
-        if (uploadedImages.length > 0) {
-            updateData.images = uploadedImages;
-        }
+        updateData.images = request.body.images && request.body.images.length > 0
+    ? request.body.images
+    : uploadedImages;
 
         const category = await CategoryModel.findByIdAndUpdate(
             request.params.id,

@@ -10,6 +10,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 import { error } from "console";
 import { hash } from "crypto";
+import AddressModel from "../models/address.model.js";
 
 cloudinary.config({
     cloud_name: process.env.cloudinary_Config_Cloud_Name,
@@ -535,7 +536,7 @@ export async function removeImageFromCloudinary(request, response) {
 }
 
 export async function updateUserDetails(request, response) {
-        console.log("0")
+    console.log("0")
 
     try {
 
@@ -785,6 +786,84 @@ export async function resetPassword(request, response) {
 
 }
 
+export async function changePassword(request, response) {
+    try {
+        const { email, oldPassword, newPassword, confirmPassword } = request.body
+
+        if (!email || !oldPassword || !newPassword || !confirmPassword) {
+            return response.status(400).json({
+                message: "Provide All the required fields",
+
+            })
+        }
+
+        const user = await UserModel.findOne({ email });
+        if (!user) {
+            return response.status(400).json({
+                message: "Email is not registered",
+                error: true,
+                success: false
+            })
+        }
+
+        const salt = await bcryptjs.genSalt(10);
+        const hashOldPassword = await bcryptjs.hash(oldPassword, salt);
+
+        console.log(user.password)
+        console.log(oldPassword)
+        console.log(hashOldPassword)
+        const isPasswordCorrect = await bcryptjs.compare(oldPassword, user.password);
+
+        console.log(isPasswordCorrect)
+
+        if (!isPasswordCorrect) {
+            return response.status(400).json({
+                message: "Please check your old password",
+                error: true,
+                success: false
+            })
+        }
+
+        if (newPassword === oldPassword) {
+            return response.status(400).json({
+                message: "Your new password is same as you old password. Try different.",
+                error: true,
+                success: false
+            })
+        }
+
+        if (newPassword !== confirmPassword) {
+            return response.status(400).json({
+                message: "New password and Confirm password must be same",
+                error: true,
+                success: false
+            })
+        }
+
+
+        const hashPassword = await bcryptjs.hash(newPassword, salt);
+
+        user.password = hashPassword;
+        await user.save();
+
+        return response.status(200).json({
+            message: "Password updated successfully",
+            error: false,
+            success: true
+        })
+
+
+
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false
+        })
+    }
+
+}
+
 export async function refreshToken(request, response) {
     try {
         const refreshToken = request.cookies.refeshToken || request?.headers?.authorization?.split(".")[1]
@@ -863,6 +942,261 @@ export async function userDetails(request, response) {
             message: "Something is wrong",
             error: true,
             success: false,
+        });
+    }
+}
+
+export async function addAddress(request, response) {
+    try {
+        const {
+            name,
+            phone,
+            pin,
+            address,
+            landmark,
+            city,
+            state,
+            altPhone,
+            locality,
+            addressType,
+            userId
+        } = request.body;
+
+        console.log("addAddressController triggered");
+
+        console.log(name, pin, userId)
+
+        if (!name || !pin || !userId) {
+            return response.status(400).json({
+                message: "Name, Pin, and User ID are required.",
+                error: true,
+                success: false
+            });
+        }
+
+        const newAddress = new AddressModel({
+            name,
+            phone,
+            pin,
+            address,
+            landmark,
+            city,
+            state,
+            altPhone,
+            locality,
+            addressType,
+            userId
+        });
+
+        const savedAddress = await newAddress.save();
+
+        await UserModel.findByIdAndUpdate(
+            userId,
+            { $push: { address_details: savedAddress._id } },
+            { new: true }
+        );
+
+        return response.status(201).json({
+            message: "Address added successfully.",
+            error: false,
+            success: true,
+            address: savedAddress
+        });
+
+    } catch (error) {
+        console.error("Error in addAddressController:", error);
+        return response.status(500).json({
+            message: error.message || "Internal Server Error",
+            error: true,
+            success: false
+        });
+    }
+}
+
+export async function getUserAddress(request, response) {
+    try {
+        const userId = request.params.id; // ✅ Corrected
+        if (!userId) {
+            return response.status(400).json({ error: true, message: "User ID is required." });
+        }
+
+        const user = await UserModel.findById(userId).populate("address_details"); // ✅ Populates address data
+
+        if (!user) {    
+            return response.status(404).json({ error: true, message: "User not found." });
+        }
+
+    //    
+
+        return response.status(200).json({
+            error: false,
+            message: "User addresses fetched successfully.",
+            address_details: user.address_details, // ✅ Match frontend usage
+        });
+    } catch (error) {
+        console.error("Error fetching user address:", error);
+        return response.status(500).json({
+            error: true,
+            message: "Internal server error.",
+            details: error.message,
+        });
+    }
+}
+
+export async function deleteAddress(request, response){
+    console.log(request.params)
+    const { id, addressId } = request.params; // ✅ Corrected
+    console.log(id, addressId)
+    try {
+
+        if (!id) {
+            return response.status(400).json({ error: true, message: "User ID is required." });
+        }
+
+         const address = await AddressModel.findByIdAndDelete(addressId);
+         
+         
+         if (!address) {
+        console.log(id, "addressId")
+      return response.status(404).json({ message: 'Address not found' });
+    }
+
+     await UserModel.findByIdAndUpdate(id, {
+      $pull: { address_details: addressId }
+    });
+        return response.status(200).json({
+            error: false,
+            message: "User address deleted successfully.",
+        });
+        
+    }
+    catch (error) {
+        return response.status(500).json({
+            error: true,
+            message: "Internal server error.",
+            details: error.message,
+        });
+    }
+}
+
+export async function updateUserAddress(request, response) {
+    try {
+        const { id: userId, addressId } = request.params;
+        const {
+            name,
+            phone,
+            pin,
+            address,
+            landmark,
+            city,
+            state,
+            altPhone,
+            locality,
+            addressType
+        } = request.body;
+
+        // Check if user exists
+        const userExist = await UserModel.findById(userId);
+        if (!userExist) {
+            return response.status(404).json({
+                message: "User not found",
+                error: true,
+                success: false
+            });
+        }
+
+        // Update address by ID
+        const updatedAddress = await AddressModel.findByIdAndUpdate(
+            addressId,
+            {
+                name,
+                phone,
+                pin,
+                address,
+                landmark,
+                city,
+                state,
+                altPhone,
+                locality,
+                addressType
+            },
+            { new: true }
+        );
+
+        if (!updatedAddress) {
+            return response.status(404).json({
+                message: "Address not found or failed to update",
+                error: true,
+                success: false
+            });
+        }
+
+        return response.status(200).json({
+            message: "Address updated successfully",
+            error: false,
+            success: true,
+            updatedAddress
+        });
+
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || "Server Error",
+            error: true,
+            success: false
+        });
+    }
+}
+
+
+export async function resendOTP(request, response){
+    try {
+        const { email, name, userId} = request.body;
+        console.log("registerUserController triggered")
+
+        if ( !email || !name ) {
+            return response.status(400).json({
+                message: "Provide email, name",
+                error: true,
+                success: false
+            });
+        }
+
+        
+
+
+        const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+      
+
+        const updateUser = await UserModel.findByIdAndUpdate(
+            userId,
+            {
+                otp: verifyCode,
+                otpExpires: verifyCode !== "" ? Date.now() + 600000 : null,
+            },
+            { new: true }
+        );
+
+        // Send verification email
+        await sendEmailFun(
+            name,
+            email,
+            "Verify email from Ecommerce App",
+            "",
+            verificationEmail(name, verifyCode)
+        );
+
+        return response.status(200).json({
+            message: `OTP sent to ${email}`,
+            error: false,
+            success: true,
+        });
+
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || "Server Error",
+            error: true,
+            success: false
         });
     }
 }

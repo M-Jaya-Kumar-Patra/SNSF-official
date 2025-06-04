@@ -10,125 +10,147 @@ import { useRef } from "react";
 import { v4 as uuidv4 } from 'uuid';
 import LogoutBTN from "@/components/LogoutBTN";
 import { useAuth } from "@/app/context/AuthContext";
+import { useAlert } from "@/app/context/AlertContext";
+import { IoMdAdd } from "react-icons/io";
+import { IoIosArrowBack } from "react-icons/io";
+import { RxCross2 } from "react-icons/rx";
+import InputAdornment from '@mui/material/InputAdornment';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+import { deleteUserAddress, getUserAddress, postData, updateUserAddress } from "@/utils/api";
+import { CircularProgress } from "@mui/material";
+import { FaEdit } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 
+import Alert from '@mui/material/Alert';
+import CheckIcon from '@mui/icons-material/Check';
+import FilledAlerts from '/components/FilledAlerts.js'
+
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
+
+
+
+
+
+
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
+
+const indianStates = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+    "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+    "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya",
+    "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim",
+    "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand",
+    "West Bengal", "Andaman and Nicobar Islands", "Chandigarh",
+    "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir",
+    "Ladakh", "Lakshadweep", "Puducherry"
+];
 
 
 const Account = () => {
-    const { data: session } = useSession();
     const router = useRouter();
-     const { jwtUser, setJwtUser } = useAuth();
-      const isNextAuth = session?.user;
-      const isJWT = jwtUser?.email;
-    
-    
-      const avatar = isNextAuth
-        ? session.user.avatar || "/images/account.png"
-        : jwtUser?.avatar || "/images/account.png";
-        const fullName = isNextAuth
-    ? session?.user?.name || session?.user?.user?.name || ""
-    : jwtUser?.name || "";
+    const alert = useAlert();
+    const { isLogin, userData, setUserData, isLoading } = useAuth()
 
-    const handleLogout = async () => {
-        await signOut({ callbackUrl: '/' });
-    };
-
-    const initialFirstName = fullName.split(" ")[0] || "";
-    const initialLastName = fullName.split(" ")[1] || "";
-
-    // Load from localStorage if available
-    // const storedFirstName = typeof window !== "undefined" ? localStorage.getItem("firstName") : null;
-    // const storedLastName = typeof window !== "undefined" ? localStorage.getItem("lastName") : null;
-
-    const [storedFirstName, setStoredFirstName] = useState(null);
-    const [storedLastName, setStoredLastName] = useState(null);
-    const [showAddressForm, setShowAddressForm] = useState(false);
+    const [showAddAddressForm, setShowAddAddressForm] = useState(false);
 
 
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            setStoredFirstName(localStorage.getItem("firstName") || "");
-            setStoredLastName(localStorage.getItem("lastName") || "");
+
+
+    const [address, setAddress] = useState({
+        name: "",
+        phone: "",
+        pin: "",
+        address: "",
+        locality: "",
+        landmark: "",
+        city: "",
+        state: "",
+        altPhone: "", // default country if you're only shipping within India
+        addressType: "Home", // default value: Home / Work / Other
+    });
+    const [addressArray, setaddressArray] = useState([
+        {
+            name: userData?.address_details?.name,
+            phone: "",
+            pin: "",
+            address: "",
+            locality: "",
+            landmark: "",
+            city: "",
+            state: "",
+            altPhone: "", // default country if you're only shipping within India
+            addressType: "Home", // default value: Home / Work / Other
         }
-    }, []);
+    ])
 
 
+    if (isLoading) return <CircularProgress />
 
-    // // States for input fields
-    // const [firstName, setFirstName] = useState(storedFirstName || initialFirstName);
-    // const [lastName, setLastName] = useState(storedLastName || initialLastName);
-
-    const [firstName, setFirstName] = useState(() => storedFirstName || initialFirstName);
-    const [lastName, setLastName] = useState(() => storedLastName || initialLastName);
-
-
-    // Edit mode states
-
-    // Temporary states for new values
-    const [newFirstName, setNewFirstName] = useState(firstName);
-    const [newLastName, setNewLastName] = useState(lastName);
-
-
-    const [addAddress, setAddAddress] = useState(false);
-
-    const [editIndex, setEditIndex] = useState(null);
-    const [editAddress, setEditAddress] = useState({});
-
-
-    // Save name updates
-    // Save email updates
-
-
-    const addressRef = useRef()
-    const [address, setAddress] = useState({ cName: "", phone: "", pincode: "", locality: "", area: "", city: "", state: "" })
-    const [addressArray, setaddressArray] = useState([])
-
-
-    const [showEditDelAddr, setShowEditDelAddr] = useState(Array(addressArray.length).fill(false));
-
-
+    const fetchAddresses = async () => {
+        try {
+            const id = localStorage.getItem("userId")
+            const response = await getUserAddress(`/api/user/getAddress/${id}`,);
+            console.log(response);
+            console.log(response.address_details);
+            setaddressArray(response.address_details);
+        } catch (error) {
+            console.error("Failed to fetch addresses:", error);
+        }
+    };
     // useEffect(() => {
-    //     let addresses = localStorage.getItem("addresses");
-    //     if (addresses) {
-    //         setaddressArray(JSON.parse(addresses))
-    //     }
-    // }, [])
 
-    const menuRef = useRef(null);
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (menuRef.current && !menuRef.current.contains(event.target)) {
-                setShowEditDelAddr(Array(addressArray.length).fill(false));
-            }
-        };
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [addressArray]);
-
-
+    //     fetchAddresses(); // Call the async function
+    // }, []); // Add dependencies if needed
 
 
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            const addresses = localStorage.getItem("addresses");
-            if (addresses) {
-                setaddressArray(JSON.parse(addresses));
-                setShowAddressForm(false)
-            }
+        const id = localStorage.getItem("userId");
+        if (id && id !== "undefined" && id !== "null") {
+            fetchAddresses();
+        } else {
+            console.warn("Invalid or missing userId in localStorage");
         }
-
     }, []);
 
 
-    const deleteAddress = (id) => {
-        if (window.confirm("Are you sure you want to delete this address?")) {
-            const updatedAddresses = addressArray.filter(item => item.id !== id);
-            setaddressArray(updatedAddresses);
-            localStorage.setItem("addresses", JSON.stringify(updatedAddresses));
-        }
+
+
+    const [state, setState] = useState('');
+
+    const handleChangeSelectInput = (event) => {
+        setState(event.target.value);
     };
+
+
+    const [showEditModal, setShowEditModal] = useState(false)
+
+
 
 
     const toggleEditDel = (index) => {
@@ -138,33 +160,55 @@ const Account = () => {
     };
 
 
-    // const saveAddress = () => {
-    //     const updatedAddressArray = [...addressArray, { ...address, id: uuidv4() }]
 
-    //     setaddressArray(updatedAddressArray);
 
-    //     localStorage.setItem("addresses", JSON.stringify(updatedAddressArray));
-    //     console.log("saved addresses: ", updatedAddressArray);
-    // }
-
-    const saveAddress = () => {
+    const saveNewAddress = async (e) => {
+        e.preventDefault();
         if (
-            !address.cName || !address.phone || !address.pincode || !address.locality ||
-            !address.address || !address.city
+            !address.name
         ) {
-            alert("Please fill in all required fields.");
+            alert.alertBox("Please fill in all required fields.");
             return;
         }
 
-        const newAddress = { ...address, id: uuidv4() };
-        if (newAddress !== null) {
-            const updatedAddressArray = [...addressArray, newAddress];
+        const userId = userData._id; // or however you get the logged-in user ID
 
-            setaddressArray(updatedAddressArray);
-            localStorage.setItem("addresses", JSON.stringify(updatedAddressArray));
-            setShowAddressForm(false)
+
+
+        const response = await postData("/api/user/addAddress", {
+            ...address,
+            userId,
+        });
+        if (!response.error) {
+            alert.alertBox({ type: "success", msg: "Address saved" })
+            setShowAddAddressForm(false)
+            setAddress({
+                name: "",
+                phone: "",
+                pin: "",
+                address: "",
+                locality: "",
+                landmark: "",
+                city: "",
+                state: "",
+                altPhone: "", // default country if you're only shipping within India
+                addressType: "Home", // default value: Home / Work / Other
+            })
+            fetchAddresses();
+
+        } else {
+            alert.alertBox({ type: "error", msg: "Failed to save address.Please retry or reload the page" })
         }
-    };
+
+        // const newAddress = { ...address, id: uuidv4() };
+        // if (newAddress !== null) {
+        //     const updatedAddressArray = [...addressArray, newAddress];
+
+        //     setaddressArray(updatedAddressArray);
+        //     localStorage.setItem("addresses", JSON.stringify(updatedAddressArray));
+        //     setShowAddressForm(false)
+    }
+
 
 
 
@@ -176,13 +220,10 @@ const Account = () => {
         setEditIndex(null);
     };
 
-    const handleEdit = (index) => {
-        setEditIndex(index);
-        setEditAddress(addressArray[index]);
-    };
 
 
-    const handleChange = (e) => {
+
+    const handleAddressChange = (e) => {
         setAddress({ ...address, [e.target.name]: e.target.value })
     }
 
@@ -191,6 +232,93 @@ const Account = () => {
 
         setEditAddress({ ...editAddress, [e.target.name]: e.target.value });
     };
+
+    const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+
+    const [open, setOpen] = React.useState(false);
+    const [selectedAddressId, setSelectedAddressId] = useState(null);
+
+    const handleClickOpenDeleteAlert = (e, addressId) => {
+        e.preventDefault();
+        setSelectedAddressId(addressId);
+        setOpen(true);
+    };
+
+
+    const handleCloseDeleteAlert = () => {
+        setOpen(false);
+        setSelectedAddressId(null);
+    };
+
+
+
+    const deleteAddress = async (e, addressId) => {
+        e.preventDefault();
+        const id = userData._id;
+
+
+
+
+
+
+        // Optimistically remove from UI
+        setaddressArray(prev => prev.filter(addr => addr._id !== addressId));
+
+        try {
+            const response = await deleteUserAddress(`/api/user/${id}/address/${addressId}`);
+
+            if (!response.error) {
+                alert.alertBox({ type: "success", msg: "Deleted Successfully" });
+                // Optional: re-fetch if needed for consistency
+
+                // fetchAddresses();
+            } else {
+                alert.alertBox({ type: "error", msg: "Failed to delete on server" });
+                // Rollback if deletion failed
+                fetchAddresses();
+            }
+        } catch (err) {
+            alert.alertBox({ type: "error", msg: "Server error during delete" });
+            fetchAddresses(); // Fallback to ensure consistency
+        }
+    };
+
+    const [editAddressObj, setEditAddressObj] = useState(null);
+
+    const toggleEditAddress = (e, addressObj) => {
+        e.preventDefault();
+        setEditAddressObj(addressObj);  // ✅ load all fields to edit
+        setShowEditModal(true);         // ✅ open the modal
+    };
+
+    const handleSaveEditedAddress = async (e) => {
+
+        e.preventDefault();
+        try {
+            const id = userData._id;
+            const addressId = editAddressObj._id;
+            const response = await updateUserAddress(`/api/user/${id}/address/${addressId}`, editAddressObj);
+
+            if (!response.error) {
+                alert.alertBox({ type: "success", msg: "Address updated" });
+                setShowEditModal(false);
+                fetchAddresses();
+            } else {
+                alert.alertBox({ type: "error", msg: "Failed to update address" });
+            }
+        } catch (err) {
+            alert.alertBox({ type: "error", msg: "Server error during update" });
+        }
+    };
+
+
+    const handleUpdateAddressChange = (e) => {
+        setEditAddressObj((prev) => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }));
+    };
+
 
 
 
@@ -201,14 +329,15 @@ const Account = () => {
 
                     {/* Left Sidebar */}
                     <div className="left h-full">
-                        <div className="leftupper h-16 bg-white shadow-lg p-2 flex gap-3 items-center">
+                        <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5   gap-3 flex flex-col justify-center items-center ">
                             <img
-                                className="h-full rounded-full"
-              src={avatar}
-                                
+                                className="h-[140px] w-[140px] rounded-full object-cover"
+                                src={userData?.avatar || "/images/account.png"}
                                 alt="User Profile"
                             />
-                            <h1 className="text-black font-sans font-semibold">{fullName}</h1>
+                            <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide">
+                                {userData?.name}
+                            </h1>
                         </div>
 
                         <div className="leftlower mt-3 w-[256px] bg-white shadow-lg">
@@ -234,7 +363,7 @@ const Account = () => {
                                 </li>
                                 <li>
                                     <Link href="/address">
-                                        <div className="h-[40px] flex items-center pl-12 font-semibold cursor-pointer  text-[#131e30] bg-slate-100 active:bg-slate-100">
+                                        <div className="h-[40px] flex items-center pl-10 font-semibold  border  border-l-8 border-y-0 border-r-0 border-slate-700  cursor-pointer  text-[#131e30] bg-slate-100 active:bg-slate-100">
                                             Manage Address
                                         </div>
                                     </Link>
@@ -272,60 +401,354 @@ const Account = () => {
                     {/* Right Profile Section */}
                     <div className="right h-full w-[750px] bg-white shadow-lg p-5">
                         <div className="mb-6">
-                            <span className="text-black font-semibold font-sans text-[20px]">Manage addresses</span>
+                            <span className="text-black font-semibold font-sans text-[25px]">Manage addresses</span>
                         </div>
 
-                        {!showAddressForm && (
+
+                        {!showAddAddressForm && (
                             <button
-                                onClick={() => setShowAddressForm(true)}
+                                onClick={() => setShowAddAddressForm(true)}
                                 className=" border border-[#131e30] h-10 bg-[#131e30] flex items-center font-sans p-5 text-lg font-normal gap-2 rounded-md">
-                                <b>+</b>Add a new address
+                                <IoMdAdd size={30} />Add a new address
                             </button>
                         )}
-                        {showAddressForm && (
-                            <div className='w-full bg-slate-100 h-auto text-black font-sans p-5 border border-slate-300'>
-                                <h1 className="font-medium">Add a new address</h1>
-                                <br />
-                                {/* cName: " ", phone: " ", pincode: " ", locality:" ", area:" ", city:" ", state:"  */}
-                                {/* Name filed */}
+                        {addressArray && addressArray.length > 0 && addressArray.reverse().map((address, index) => (
+                            <div key={index} className="border p-5 my-4 rounded-xl shadow-md bg-white flex justify-between hover:shadow-lg transition duration-300">
+                                <div>
+                                    <h3 className="text-lg font-bold text-black mb-1">{address?.name}</h3>
+                                    <p className="text-gray-800 mb-1">{address.address}</p>
+                                    <p className="text-gray-700 mb-1">
+                                        {address.locality && `${address.locality}, `}
+                                        {address.city && `${address.city}, `}
+                                        {address.state && `${address.state}`} - {address.pin}
+                                    </p>
+                                    <p className="text-gray-600 mb-1">
+                                        Phone: {address.phone} {address.altPhone && `| Alt: ${address.altPhone}`}
+                                    </p>
+                                    {address.landmark && <p className="text-gray-500 italic mb-1">{address.landmark}</p>}
+                                    <p className="text-sm text-gray-500">{address.addressType}</p>
+                                </div>
+                                <div className="flex gap-4 pr-2 pt-1">
+                                    <button onClick={(e) => toggleEditAddress(e, address)} className="hover:scale-110 transition">
+                                        <FaEdit size={22} className="text-gray-700" />
+                                    </button>
+                                    <button onClick={(e) => handleClickOpenDeleteAlert(e, address._id)} className="hover:scale-110 transition">
+                                        <MdDelete size={22} className="text-red-600" />
+                                    </button>
+                                </div>
+                            </div>
+
+                        ))}
+
+                        {showAddAddressForm && (
+
+                            <div className='fixed inset-0 z-50 flex justify-center items-start bg-black bg-opacity-50 overflow-y-auto'>
+                                <div className="modal-form w-[850px] relative max-h-[90vh] my-9 p-5 rounded-md bg-white overflow-y-auto">
+
+                                    <div className="text-black  flex justify-between pb-2 border-b-2 border-slate-400 text-[23px] font-semibold">Add address<RxCross2 color="red" size={30} onClick={() => setShowAddAddressForm(false)} className="cursor-pointer" /></div>
+
+                                    <form className="w-full mt-4 " onSubmit={saveNewAddress}>
+                                        {/* Two-column grid on md and above, single column on small screens */}
+                                        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-1">
+                                            <div className="flex flex-col">
+                                                <TextField label="Name" required variant="outlined" sx={{ m: 1, my: 1.5, width: "auto" }} onChange={handleAddressChange} value={address.name} name="name" />
+                                                <TextField label="Pincode" required variant="outlined" sx={{ m: 1, my: 1.5, width: "auto" }} onChange={handleAddressChange} value={address.pin} name="pin" />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <TextField label="Phone Number" required variant="outlined" sx={{ m: 1, my: 1.5, width: "auto" }} onChange={handleAddressChange} value={address.phone} name="phone" />
+                                                <TextField label="Locality" variant="outlined" sx={{ m: 1, my: 1.5, width: "auto" }} onChange={handleAddressChange} value={address.locality} name="locality" />
+                                            </div>
+                                        </div>
+
+                                        <div className="w-full grid grid-cols-1">
+                                            <TextField
+                                                required
+                                                id="outlined-multiline-flexible"
+                                                label="Address"
+                                                multiline
+                                                maxRows={4}
+                                                sx={{ m: 1, my: 1.5, width: "auto" }}
+                                                onChange={handleAddressChange} value={address.address} name="address"
+                                            />
+                                        </div>
+
+                                        {/* Additional sections (if needed) */}
+                                        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-1">
+                                            <div className="flex flex-col">
+                                                <TextField label="City/District" variant="outlined" sx={{ m: 1, my: 1.5, width: "auto" }} onChange={handleAddressChange} value={address.city} name="city" />
+                                                <TextField label="Landmark(Optional)" variant="outlined" sx={{ m: 1, my: 1.5, width: "auto" }} onChange={handleAddressChange} value={address.landmark} name="landmark" />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <FormControl sx={{ m: 1, my: 1.5, width: "auto", color: "red" }} >
+                                                    <InputLabel id="state-select-label">State</InputLabel>
+                                                    <Select
+                                                        labelId="state-select-label"
+                                                        id="state"
+                                                        value={address.state || ''}
+                                                        name="state"
+                                                        onChange={handleAddressChange}
+
+                                                        input={<OutlinedInput label="State" />}
+                                                        MenuProps={MenuProps}
+                                                    >
+                                                        {indianStates.map((state) => (
+                                                            <MenuItem key={state} value={state}>
+                                                                {state}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                </FormControl>
+
+                                                <TextField label="Alternate Phone (Optional)" variant="outlined" sx={{ m: 1, my: 1.5, width: "auto" }} onChange={handleAddressChange} value={address.altPhone} name="altPhone" />
+                                            </div>
+                                        </div>
+                                        <div className="mx-2">
+                                            <FormControl className="text-black">
+                                                <FormLabel id="demo-row-radio-buttons-group-label">Address type</FormLabel>
+                                                <RadioGroup
+                                                    row
+                                                    aria-labelledby="demo-row-radio-buttons-group-label"
+                                                    name="addressType"
+                                                    onChange={handleAddressChange}
+
+                                                >
+                                                    <FormControlLabel value="Home" control={<Radio />} label="Home" onChange={handleAddressChange} name="addressType" />
+                                                    <FormControlLabel value="work" control={<Radio />} label="Work" onChange={handleAddressChange} name="addressType" />
+                                                </RadioGroup>
+                                            </FormControl>
+
+                                        </div>
 
 
-                                <div className="flex justify-between w-full gap-3 mb-3">
-                                    <input value={editIndex !== null ? editAddress.cName : address.cName} onChange={editIndex !== null ? handleEditChange : handleChange} type="text" placeholder='Name' name="cName" className="outline-none rounded-sm border placeholder-slate-500 border-slate-300 w-[50%] px-4 py-2" />
+                                        {/* Submit button */}
+                                        <div className="flex justify-end mt-6 mr-2 gap-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowAddAddressForm(false)}
+                                                className="px-5 py-2 rounded-xl border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 hover:shadow-md active:shadow-inner active:translate-y-[1px] transition-all duration-200 font-medium"
+                                            >
+                                                Cancel
+                                            </button>
 
-                                    <input value={editIndex !== null ? editAddress.phone : address.phone} onChange={editIndex !== null ? handleEditChange : handleChange} type="number" placeholder='Phone number' className="outline-none rounded-sm border border-slate-300 w-[50%] placeholder-slate-500 px-4 py-2 " name="phone" id="phone" />
+                                            <button
+                                                type="submit"
+                                                className="px-5 py-2 rounded-xl bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md active:shadow-inner active:translate-y-[1px] transition-all duration-200 font-medium"
+                                            >
+                                                Save
+                                            </button>
+                                        </div>
+                                    </form>
+
+
+
+
                                 </div>
 
 
-                                <div className="flex justify-between w-full gap-3 mb-3">
-                                    <input value={editIndex !== null ? editAddress.pincode : address.pincode} onChange={editIndex !== null ? handleEditChange : handleChange} type="number" placeholder='Pincode' className="outline-none rounded-sm border border-slate-300 w-[50%] placeholder-slate-500 px-4 py-2 " name="pincode" id="pincode" />
+                            </div>
+                        )}
+
+                        <Dialog
+                            open={open}
+                            onClose={handleCloseDeleteAlert}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <DialogTitle id="alert-dialog-title">
+                                {"Confirm Delete"}
+                            </DialogTitle>
+                            <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                    Are you sure you want to delete this address?
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleCloseDeleteAlert} variant="outlined" color="inherit">Cancel</Button>
+                                <Button variant="contained" color="error"
+                                    onClick={(e) => {
+                                        deleteAddress(e, selectedAddressId);
+                                        setOpen(false);
+                                    }}
+                                    autoFocus
+                                >
+                                    Delete
+                                </Button>
+
+                            </DialogActions>
+                        </Dialog>
+
+                        {showEditModal && (
+
+                            <div className='fixed inset-0 z-50 flex justify-center items-start bg-black bg-opacity-50 overflow-y-auto'>
+                                <div className="modal-form w-[850px] relative max-h-[90vh] my-9 p-5 rounded-md bg-white overflow-y-auto">
+                                    <div className="text-black  flex justify-between pb-2 border-b-2 border-slate-400 text-[23px] font-semibold">Edit address<RxCross2 color="red" size={30} onClick={() => setShowEditModal(false)} className="cursor-pointer" /></div>
+
+                                    <form className="w-full mt-4 " onSubmit={handleSaveEditedAddress}>
+                                        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-1">
+                                            <div className="flex flex-col">
+                                                <TextField
+                                                    label="Name"
+                                                    required
+                                                    variant="outlined"
+                                                    sx={{ m: 1, my: 1.5, width: "auto" }}
+                                                    onChange={handleUpdateAddressChange}
+                                                    value={editAddressObj?.name || ""}
+                                                    name="name"
+                                                />
+                                                <TextField
+                                                    label="Pincode"
+                                                    required
+                                                    variant="outlined"
+                                                    sx={{ m: 1, my: 1.5, width: "auto" }}
+                                                    onChange={handleUpdateAddressChange}
+                                                    value={editAddressObj?.pin || ""}
+                                                    name="pin"
+                                                />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <TextField
+                                                    label="Phone Number"
+                                                    required
+                                                    variant="outlined"
+                                                    sx={{ m: 1, my: 1.5, width: "auto" }}
+                                                    onChange={handleUpdateAddressChange}
+                                                    value={editAddressObj?.phone || ""}
+                                                    name="phone"
+                                                />
+                                                <TextField
+                                                    label="Locality"
+                                                    variant="outlined"
+                                                    sx={{ m: 1, my: 1.5, width: "auto" }}
+                                                    onChange={handleUpdateAddressChange}
+                                                    value={editAddressObj?.locality || ""}
+                                                    name="locality"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="w-full grid grid-cols-1">
+                                            <TextField
+                                                required
+                                                id="outlined-multiline-flexible"
+                                                label="Address"
+                                                multiline
+                                                maxRows={4}
+                                                sx={{ m: 1, my: 1.5, width: "auto" }}
+                                                onChange={handleUpdateAddressChange}
+                                                value={editAddressObj?.address || ""}
+                                                name="address"
+                                            />
+                                        </div>
+
+                                        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-1">
+                                            <div className="flex flex-col">
+                                                <TextField
+                                                    label="City/District"
+                                                    variant="outlined"
+                                                    sx={{ m: 1, my: 1.5, width: "auto" }}
+                                                    onChange={handleUpdateAddressChange}
+                                                    value={editAddressObj?.city || ""}
+                                                    name="city"
+                                                />
+                                                <TextField
+                                                    label="Landmark(Optional)"
+                                                    variant="outlined"
+                                                    sx={{ m: 1, my: 1.5, width: "auto" }}
+                                                    onChange={handleUpdateAddressChange}
+                                                    value={editAddressObj?.landmark || ""}
+                                                    name="landmark"
+                                                />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <FormControl sx={{ m: 1, my: 1.5, width: "auto" }}>
+                                                    <InputLabel id="state-select-label">State</InputLabel>
+                                                    <Select
+                                                        labelId="state-select-label"
+                                                        id="state"
+                                                        value={editAddressObj?.state || ''}
+                                                        name="state"
+                                                        onChange={handleUpdateAddressChange}
+                                                        input={<OutlinedInput label="State" />}
+                                                        MenuProps={MenuProps}
+                                                    >
+                                                        {indianStates.map((state) => (
+                                                            <MenuItem key={state} value={state}>
+                                                                {state}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                </FormControl>
+
+                                                <TextField
+                                                    label="Alternate Phone (Optional)"
+                                                    variant="outlined"
+                                                    sx={{ m: 1, my: 1.5, width: "auto" }}
+                                                    onChange={handleUpdateAddressChange}
+                                                    value={editAddressObj?.altPhone || ""}
+                                                    name="altPhone"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="mx-2">
+                                            <FormControl className="text-black">
+                                                <FormLabel>Address type</FormLabel>
+                                                <RadioGroup
+                                                    row
+                                                    name="addressType"
+                                                    value={editAddressObj?.addressType || "Home"}
+                                                    onChange={handleUpdateAddressChange}
+                                                >
+                                                    <FormControlLabel value="Home" control={<Radio />} label="Home" />
+                                                    <FormControlLabel value="Work" control={<Radio />} label="Work" />
+                                                </RadioGroup>
+                                            </FormControl>
+                                        </div>
+                                        <div className="flex justify-end mt-6 mr-2 gap-4">
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowEditModal(false)}
+                                                className="px-5 py-2 rounded-xl border border-gray-300 bg-white text-gray-700 shadow-sm hover:bg-gray-100 hover:shadow-md active:shadow-inner active:translate-y-[1px] transition-all duration-200 font-medium"
+                                            >
+                                                Cancel
+                                            </button>
+
+                                            <button
+                                                type="submit"
+                                                className="px-5 py-2 rounded-xl bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md active:shadow-inner active:translate-y-[1px] transition-all duration-200 font-medium"
+                                            >
+                                                Save
+                                            </button>
+
+                                        </div>
+                                    </form>
 
 
-                                    <input value={editIndex !== null ? editAddress.locality : address.locality} onChange={editIndex !== null ? handleEditChange : handleChange} type="text" placeholder='Locality' className="outline-none rounded-sm border border-slate-300 w-[50%] placeholder-slate-500 px-4 py-2 " name="locality" id="locality" />
+
+
+
                                 </div>
 
-                                <textarea value={editIndex !== null ? editAddress.address : address.address} onChange={editIndex !== null ? handleEditChange : handleChange} type="text" placeholder='Address' className="mb-3 text-wrap  outline-none rounded-sm border border-slate-300 w-full placeholder-slate-500 px-4 py-2 " name="address" id="address" />
 
-                                <div className="flex justify-between w-full gap-3 mb-3">
+                            </div>
+                        )}
 
-                                    <input value={editIndex !== null ? editAddress.area : address.area} onChange={editIndex !== null ? handleEditChange : handleChange} type="text" placeholder='Area' className="outline-none rounded-sm border border-slate-300 w-[50%] placeholder-slate-500 px-4 py-2 " name="area" id="area" />
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+};
 
-                                    <input value={editIndex !== null ? editAddress.city : address.city} onChange={editIndex !== null ? handleEditChange : handleChange} type="text" placeholder='City' className="outline-none rounded-sm border border-slate-300 w-[50%] placeholder-slate-500 px-4 py-2    " name="city" id="city" />
-
-
-                                </div>
-
-
-
-                                <div className="flex  justify-center items-center w-full">
-                                    <button onClick={saveAddress} className=' flex justify-center items-center gap-2 py-1  bg-[#131e30] text-white w-fit rounded-full hover:bg-[#445570]  mt-10 mx-auto px-3 font-medium py-auto align centeer border border-gray-700'>
-                                        Save Address</button>
-                                    <button onClick={() => setShowAddressForm(false)} className=' flex justify-center items-center gap-2 py-1   text-[#131e30] w-fit rounded-full hover:bg-red-500 hover:text-white mt-10 mx-auto px-5 font-medium py-auto align centeer border border-gray-700'>Cancel</button>
-                                </div>
-                            </div>)}
+export default Account;
 
 
-                        <div className="address">
+
+
+
+
+
+                        {/* <div className="address">
                             {addressArray.length === 0 ? (
                                 <div>
                                     <h1>No address to show</h1>
@@ -384,15 +807,4 @@ const Account = () => {
                                     </div>
                                 ))
                             )}
-                        </div>
-
-
-
-                    </div>
-                </div>
-            </div>
-        </>
-    );
-};
-
-export default Account;
+                        </div> */}

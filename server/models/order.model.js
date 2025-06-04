@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const orderSchema = mongoose.Schema({
+const orderSchema = new mongoose.Schema({
     customerId: {
         type: mongoose.Schema.ObjectId,
         ref: "Customer"
@@ -12,43 +12,47 @@ const orderSchema = mongoose.Schema({
     },
     productId: {
         type: mongoose.Schema.ObjectId,
-        ref: "product"
+        ref: "Product"
     },
     product_details: {
         type: String,
-        image: Array,
+        image: [String] // Assuming URLs or base64 strings
     },
-   paymentId: {
+    productThumbnails: {
+        type: [String], // Array of thumbnail image URLs
+        default: []
+    },
+    paymentId: {
         type: String,
         default: ""
-},
+    },
     payment_status: {
         type: String,
         default: ""
-},
+    },
     delivery_address: {
         type: mongoose.Schema.ObjectId,
         ref: 'address'
     },
-    subTotalAmt: {
-        type: Number,
-        default: 0
-
-    },
     totalAmt: {
         type: Number,
         default: 0
-
     },
-    invoice_receipt :{
+    invoice_receipt: {
         type: String,
-        default: "",
+        default: ""
+    },
+    orderDate: {
+        type: Date,
+        default: Date.now
+    },
+    orderStatus: {
+        type: String,
+        enum: ["Pending", "Shipped", "Delivered", "Cancelled"],
+        default: "Pending"
     }
-},
-
-    {timestamps: true }
-)
+}, { timestamps: true });
 
 const OrderModel = mongoose.model("Order", orderSchema);
 
-export default OrderModel
+export default OrderModel;

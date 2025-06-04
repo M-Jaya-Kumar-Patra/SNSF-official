@@ -11,34 +11,43 @@ const addressSchema = mongoose.Schema({
     },
     pin: {
         type: Number,
-        default:null,
-        required: true
-    },
-    locality: {
-        type:  String,
+        default: null,
         required: true
     },
     address: {
         type: String,
         default: ""
     },
-    area : {
+    landmark : {
         type: String,
-        default: false
+        default: ""
     },  
     city : {
         type: String,
-        default: "Active"
+        default: null
     },
-    userId : [{
+    state: {
+        type: String,
+        default: null
+    },
+    altPhone: {
+        type: Number,
+        default: null
+    },
+    locality: {
+        type: String,
+        default: null
+    },
+    addressType: {
+        type: String,
+        default: null
+    },
+    userId: [{
         type: mongoose.Schema.ObjectId,
-        def: ""
+        default: null,
+        ref: "User"
     }]
+}, { timestamps: true });
 
-},
-    {timestamps: true}
-)
-
-const AddressModel = mongoose.model("Address", addressSchema);
-
-export default AddressModel
+const AddressModel = mongoose.model("address", addressSchema);
+export default AddressModel;

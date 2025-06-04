@@ -11,12 +11,14 @@ import { useRouter } from "next/navigation";
 import LogoutBTN from "@/components/LogoutBTN";
 
 const Account = () => {
-  const { user, logout, isLogin } = useAuth();
   const router = useRouter();
    const { jwtUser, setJwtUser } = useAuth();
         const { data: session } = useSession();
     const isNextAuth = session?.user;
     const isJWT = jwtUser?.email;
+
+    
+        const { isLogin,  logout, } = useAuth()
   
   
     const avatar = isNextAuth
@@ -48,16 +50,13 @@ const Account = () => {
         {/* Sidebar */}
         <div className="left w-[250px] min-h-screen border-r-[1px] shadow-xl border-gray-300">
           <div className="p-3 pt-0 flex items-center gap-3 mt-4">
-            <Image
-              className="w-12 h-12 rounded-full"
-                            src={avatar}
-
-              alt="SNSF Logo"
-              width={64}
-              height={64}
-            />
+             <img
+                                className="h-[140px] w-[140px] rounded-full object-cover"
+                                src={userData?.avatar || "/images/account.png"}
+                                alt="User Profile"
+                            />
             <div className="flex flex-col items-start font-sans text-sm break-words">
-              <h2 className="text-gray-700 text-base font-semibold">{session?.user?.name || user?.email}</h2>
+              <h2 className="text-gray-700 text-base font-semibold">{userData?.name}</h2>
             </div>
           </div>
 

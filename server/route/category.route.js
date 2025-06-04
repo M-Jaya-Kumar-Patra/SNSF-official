@@ -5,6 +5,7 @@ import {
   createCategory,
   getCategories,
   uploadImages,
+
   getCategoriesCount,
   removeImageFromCloudinary,
   getSubCategoriesCount,
@@ -17,7 +18,8 @@ const categoryRouter = Router();
 
 categoryRouter.post('/create', auth, upload.array('images'), createCategory);
 categoryRouter.post('/uploadImage', auth, upload.array('images'), uploadImages);
-categoryRouter.get('/', getCategories);
+
+categoryRouter.get('/getCategories', getCategories);
 categoryRouter.get('/get/count', getCategoriesCount);
 categoryRouter.get('/get/count/subCat', getSubCategoriesCount);
 categoryRouter.get('/:id', getCategory);

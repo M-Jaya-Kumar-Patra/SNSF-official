@@ -15,8 +15,8 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CloseIcon from '@mui/icons-material/Close';
 
-const Users = () => {
-  const [users, setUsers] = useState([
+const Admins = () => {
+  const [admins, setAdmins] = useState([
     {
       id: "U001",
       name: "Ravi Kumar",
@@ -54,10 +54,10 @@ const Users = () => {
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newUser, setNewUser] = useState({ name: '', email: '', phone: '', password: '' });
+  const [newAdmin, setNewAdmin] = useState({ name: '', email: '', phone: '', password: '' });
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -68,18 +68,18 @@ const Users = () => {
     setPage(0);
   };
 
-  const handleAddUser = () => {
-    const id = `U00${users.length + 1}`;
-    setUsers([...users, { ...newUser, id, avatar: "https://via.placeholder.com/40", verify_email: false, last_login_date: "", status: "Active" }]);
-    setNewUser({ name: '', email: '', phone: '', password: '' });
+  const handleAddAdmin = () => {
+    const id = `U00${admins.length + 1}`;
+    setAdmins([...admins, { ...newAdmin, id, avatar: "https://via.placeholder.com/40", verify_email: false, last_login_date: "", status: "Active" }]);
+    setNewAdmin({ name: '', email: '', phone: '', password: '' });
     setShowAddModal(false);
   };
 
   return (
     <div className="w-full p-6">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-blue-900 font-sans text-xl font-semibold">Manage Users</h1>
-        <button className="p-2 bg-green-700 text-white rounded-md" onClick={() => setShowAddModal(true)}>Add New User</button>
+        <h1 className="text-blue-900 font-sans text-xl font-semibold">Manage Admins</h1>
+        <button className="p-2 bg-green-700 text-white rounded-md" onClick={() => setShowAddModal(true)}>Add New Admin</button>
       </div>
 
       <div className="flex gap-3 mb-4">
@@ -109,29 +109,29 @@ const Users = () => {
             </tr>
           </thead>
           <tbody>
-            {users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => (
-              <tr key={user.id} className="border-b border-slate-200">
+            {admins.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((admin) => (
+              <tr key={admin.id} className="border-b border-slate-200">
                 <td><Checkbox /></td>
                 <td>
-                  <img src={user.avatar} alt="avatar" className="w-10 h-10 rounded-full mx-auto" />
+                  <img src={admin.avatar} alt="avatar" className="w-10 h-10 rounded-full mx-auto" />
                 </td>
-                <td className="text-black">{user.name}</td>
-                <td className="text-black">{user.email}</td>
-                <td className="text-black">{user.phone}</td>
-                <td className="text-black">{showPassword ? user.password : '********'}</td>
-                <td className="text-black">{user.verify_email ? 'Yes' : 'No'}</td>
-                <td className="text-black">{user.last_login_date}</td>
+                <td className="text-black">{admin.name}</td>
+                <td className="text-black">{admin.email}</td>
+                <td className="text-black">{admin.phone}</td>
+                <td className="text-black">{showPassword ? admin.password : '********'}</td>
+                <td className="text-black">{admin.verify_email ? 'Yes' : 'No'}</td>
+                <td className="text-black">{admin.last_login_date}</td>
                 <td className="text-black">
                   <span className={`px-2 py-1 text-xs rounded-full ${
-                    user.status === 'Active' ? 'bg-green-100 text-green-700' :
-                    user.status === 'Inactive' ? 'bg-yellow-100 text-yellow-700' :
+                    admin.status === 'Active' ? 'bg-green-100 text-green-700' :
+                    admin.status === 'Inactive' ? 'bg-yellow-100 text-yellow-700' :
                     'bg-red-100 text-red-700'
                   }`}>
-                    {user.status}
+                    {admin.status}
                   </span>
                 </td>
                 <td>
-                  <ModeEditOutlineIcon className="text-blue-600 cursor-pointer mr-2" onClick={() => setSelectedUser(user)} />
+                  <ModeEditOutlineIcon className="text-blue-600 cursor-pointer mr-2" onClick={() => setSelectedAdmin(admin)} />
                   <DeleteOutlineIcon className="text-red-600 cursor-pointer" />
                 </td>
               </tr>
@@ -143,28 +143,28 @@ const Users = () => {
       <TablePagination
         rowsPerPageOptions={[5, 10, 15]}
         component="div"
-        count={users.length}
+        count={admins.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
 
-      <Modal open={!!selectedUser} onClose={() => setSelectedUser(null)}>
+      <Modal open={!!selectedAdmin} onClose={() => setSelectedAdmin(null)}>
         <Box className="absolute top-1/2 left-1/2 bg-white p-6 rounded-md shadow-lg w-[400px] -translate-x-1/2 -translate-y-1/2">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-blue-700">Edit User</h2>
-            <IconButton onClick={() => setSelectedUser(null)}><CloseIcon /></IconButton>
+            <h2 className="text-xl font-semibold text-blue-700">Edit Admin</h2>
+            <IconButton onClick={() => setSelectedAdmin(null)}><CloseIcon /></IconButton>
           </div>
-          {selectedUser && (
+          {selectedAdmin && (
             <form className="flex flex-col gap-3">
-              <TextField label="Name" defaultValue={selectedUser.name} fullWidth />
-              <TextField label="Email" defaultValue={selectedUser.email} fullWidth />
-              <TextField label="Phone" defaultValue={selectedUser.phone} fullWidth />
+              <TextField label="Name" defaultValue={selectedAdmin.name} fullWidth />
+              <TextField label="Email" defaultValue={selectedAdmin.email} fullWidth />
+              <TextField label="Phone" defaultValue={selectedAdmin.phone} fullWidth />
               <TextField 
                 label="Password"
                 type={showPassword ? "text" : "password"}
-                defaultValue={selectedUser.password}
+                defaultValue={selectedAdmin.password}
                 fullWidth
                 InputProps={{
                   endAdornment: (
@@ -183,18 +183,18 @@ const Users = () => {
       <Modal open={showAddModal} onClose={() => setShowAddModal(false)}>
         <Box className="absolute top-1/2 left-1/2 bg-white p-6 rounded-md shadow-lg w-[400px] -translate-x-1/2 -translate-y-1/2">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-green-700">Add New User</h2>
+            <h2 className="text-xl font-semibold text-green-700">Add New Admin</h2>
             <IconButton onClick={() => setShowAddModal(false)}><CloseIcon /></IconButton>
           </div>
           <form className="flex flex-col gap-3">
-            <TextField label="Name" value={newUser.name} onChange={(e) => setNewUser({ ...newUser, name: e.target.value })} fullWidth />
-            <TextField label="Email" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} fullWidth />
-            <TextField label="Phone" value={newUser.phone} onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })} fullWidth />
+            <TextField label="Name" value={newAdmin.name} onChange={(e) => setNewAdmin({ ...newAdmin, name: e.target.value })} fullWidth />
+            <TextField label="Email" value={newAdmin.email} onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })} fullWidth />
+            <TextField label="Phone" value={newAdmin.phone} onChange={(e) => setNewAdmin({ ...newAdmin, phone: e.target.value })} fullWidth />
             <TextField 
               label="Password"
               type={showPassword ? "text" : "password"}
-              value={newUser.password}
-              onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+              value={newAdmin.password}
+              onChange={(e) => setNewAdmin({ ...newAdmin, password: e.target.value })}
               fullWidth
               InputProps={{
                 endAdornment: (
@@ -204,7 +204,7 @@ const Users = () => {
                 )
               }}
             />
-            <button type="button" className="mt-2 bg-green-700 text-white py-2 rounded-md hover:bg-green-600" onClick={handleAddUser}>Add User</button>
+            <button type="button" className="mt-2 bg-green-700 text-white py-2 rounded-md hover:bg-green-600" onClick={handleAddAdmin}>Add Admin</button>
           </form>
         </Box>
       </Modal>
@@ -212,4 +212,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Admins;

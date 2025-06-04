@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -15,9 +15,11 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import Navbar from '@/components/Navbar';
 
+import { useAuth } from './context/AuthContext';
 
 
 import TablePagination from '@mui/material/TablePagination';
+import { useRouter } from 'next/navigation';
 
 
 
@@ -26,15 +28,25 @@ import TablePagination from '@mui/material/TablePagination';
 
 
 const Home = () => {
+
+  const {isLogin} =useAuth();
    const [state, setState] = useState({ right: false });
     const [selectedText, setSelectedText] = useState("Dashboard");
     const anchor = 'right';
+
+    const router = useRouter()
   
     const toggleDrawer = (anchor, open) => (event) => {
       if (event?.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) return;
       setState({ ...state, [anchor]: open });
     };
 
+
+    useEffect(()=>{
+      if(!isLogin){
+        router.push("/login")
+      }
+    })
 
 
 
@@ -64,7 +76,8 @@ const Home = () => {
 
 
   return (
-    <div>
+    <>
+    {isLogin && <div>
       <div className="w-full flex justify-center">
         <div className='w-[1150px] px-6'>
           <h1 className='text-blue-900 font-sans text-xl font-semibold p-4 pl-0 py-1 rounded-md my-3   '>
@@ -109,7 +122,8 @@ const Home = () => {
       
 
 
-    </div>
+    </div>}
+    </>
   );
 }
 

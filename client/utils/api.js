@@ -1,23 +1,7 @@
 "use client";
 
-// import { getTokenExpiration } from "@/lib/jwtUtils";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-// // Helper: Get valid token or null
-// function getValidToken() {
-//   const token = localStorage.getItem("accessToken");
-//   if (!token) return null;
-
-//   const expiration = getTokenExpiration(token);
-//   if (!expiration || Date.now() > expiration) {
-//     localStorage.removeItem("accessToken");
-//     window.location.href = "/login"; // Optional
-//     return null;
-//   }
-
-//   return token;
-// }
 
 
 // POST request
@@ -52,7 +36,7 @@ export const postData = async (url, formData, authRequired = true) => {
 export const fetchDataFromApi = async (url, authRequired = true) => {
   try {
     const headers = {
-      "Content-Type": "application/json",
+      "Content-Type": "application/json", 
     };
 
     if (authRequired) {
@@ -129,6 +113,86 @@ export const editData = async (url, updatedData, authRequired = true) => {
     return data;
   } catch (error) {
     console.error("PUT (editData) error:", error);
+    return { error: true, message: error.message };
+  }
+};
+
+export const getUserAddress = async (url, userId, authRequired = true) => {
+  try {
+    const headers = {
+      "Content-Type": "application/json", 
+    };
+
+    if (authRequired) {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return { error: true, message: "Access token is missing or expired" };
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(apiUrl + url, {
+      method: "GET",
+      headers,
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("GET request error:", error);
+    return { error: true, message: error.message };
+  }
+};
+
+
+
+export const deleteUserAddress = async (url, authRequired = true) => {
+  try {
+    const headers = {
+      "Content-Type": "application/json", 
+    };
+
+    if (authRequired) {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return { error: true, message: "Access token is missing or expired" };
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(apiUrl + url, {
+      method: "DELETE",
+      headers,
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("GET request error:", error);
+    return { error: true, message: error.message };
+  }
+};
+
+
+
+export const updateUserAddress = async (url, editAddressObj, authRequired = true) => {
+  try {
+    const headers = {
+      "Content-Type": "application/json", 
+    };
+
+    if (authRequired) {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return { error: true, message: "Access token is missing or expired" };
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(apiUrl + url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(editAddressObj)
+    }); 
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("GET request error:", error);
     return { error: true, message: error.message };
   }
 };

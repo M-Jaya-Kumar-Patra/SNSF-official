@@ -44,6 +44,8 @@ const auth = async (req, res, next) => {
     }
 
     req.userId = userId;
+req.adminId = userId; // ✅ Add this line for admin support
+
     next();
   } catch (error) {
     console.error("❌ Auth Middleware Error:", error.message);

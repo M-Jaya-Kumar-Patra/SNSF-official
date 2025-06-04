@@ -10,12 +10,13 @@ import userRouter from './route/user.route.js';
 import categoryRouter from './route/category.route.js';
 import productRouter from './route/product.route.js';
 import cartRouter from './route/cart.route.js';
+import adminRouter from './route/admin.route.js'
 
 const app = express();
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true, // ✅ Needed to allow cookies and auth headers
 }));
@@ -36,6 +37,9 @@ app.use("/api/user", userRouter);
 app.use('/api/category', categoryRouter);
 app.use('/api/product', productRouter);
 app.use('/api/cart', cartRouter);
+app.use('/api/admin', adminRouter);
+
+
 
 
 // Connect DB and start server  

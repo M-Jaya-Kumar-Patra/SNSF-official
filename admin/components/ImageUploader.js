@@ -31,7 +31,7 @@ const ImageUploader = () => {
       setError('Please select atleast one image.');
       return;
     }
-
+    
     const formData = new FormData();
     selectedImages.forEach((file) => formData.append('images', file));
 

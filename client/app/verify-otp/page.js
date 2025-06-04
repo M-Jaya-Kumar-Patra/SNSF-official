@@ -83,6 +83,24 @@ const Page = () => {
         
     };
 
+    const resendOTP = async () =>{
+        localStorage.setItem("actionType", "resend-otp")
+        const email = localStorage.getItem("userEmail")
+        const name = localStorage.getItem("userName")
+        const userId = localStorage.getItem("userId")
+
+
+
+        const response = await postData("/api/user/resendOTP",{ email, name, userId }, false);
+    if (!response.error) {
+      alert.alertBox({ type: "success", msg: response.message });
+      router.push("/verify-otp");
+    } else {
+      alert.alertBox({ type: "error", msg: response?.message || "Failed to send OTP" });
+    }
+
+    }
+
     return (
         <div className="flex justify-center items-center w-full h-screen bg-gray-100">
             <div className="w-[300px] border border-gray-200 rounded-md shadow bg-white py-4 px-10 flex flex-col items-center">
@@ -120,7 +138,7 @@ const Page = () => {
                     <div className="w-full text-center mt-3">
                         <h3
                             className="text-[#131e30] text-[14px] cursor-pointer hover:text-[#363fa6]"
-                            onClick={() => alert.alertBox("info", "Resending OTP...")}
+                            onClick={resendOTP}
                         >
                             Resend OTP
                         </h3>

@@ -10,8 +10,6 @@ const categorySchema = mongoose.Schema({
     images: [{
         type: String,
     }],
-
-
     parentCatName: {
         type: String
     },

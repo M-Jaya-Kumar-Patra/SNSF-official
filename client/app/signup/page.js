@@ -16,6 +16,7 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { postData } from "@/utils/api";
 import { useAlert } from "../context/AlertContext";
+import { useAuth } from "../context/AuthContext";
 
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -29,6 +30,7 @@ const Page = () => {
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   const alert = useAlert();
   const [formFields, setFormFields] = useState({
@@ -37,12 +39,21 @@ const Page = () => {
     password: "",
   });
 
+  const { isLogin, login, setIsLogin, setLoading, loading, adminData } = useAuth();
+
+  // Redirect if already logged in
   useEffect(() => {
-    setIsClient(true);
-    if (session) {
+    if (isLogin) {
       router.push("/profile");
+    } else {
+      setCheckingAuth(false); // allow rendering login form
     }
-  }, [session, router]);
+  }, [isLogin, router]);
+
+  if (checkingAuth) {
+    // Optional: return a spinner or just null
+    return null;
+  }
 
   // Handle Google sign-in backend auth after session update
   // useEffect(() => {
@@ -69,7 +80,6 @@ const Page = () => {
   //   }
   // }, [session, router, alert]);
 
-  if (!isClient) return null;
 
   const onChangeInput = (e) => {
     const { name, value } = e.target;
@@ -108,6 +118,8 @@ const Page = () => {
     postData("/api/user/register", formFields, false).then((response) => {
       if (!response.error) {
         localStorage.setItem("userEmail", formFields.email);
+        localStorage.setItem("userName", formFields.name);
+
         setIsLoading(false);
         setFormFields({
           name: "",

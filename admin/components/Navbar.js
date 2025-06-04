@@ -14,18 +14,26 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/context/AuthContext';
+import { FcShop } from "react-icons/fc";
+
+
+
+
 
 const Navbar = () => {
   const [state, setState] = useState({ right: false });
   const [selectedText, setSelectedText] = useState("Dashboard");
   const anchor = 'right';
 
+  const {isLogin, adminData, isLoading} = useAuth();
+
   const toggleDrawer = (anchor, open) => (event) => {
     if (event?.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) return;
     setState({ ...state, [anchor]: open });
   };
 
-  const navItems = ['Dashboard', 'Products', 'Categories', 'Users', 'Customers'];
+  const navItems = ['Dashboard', 'Products', 'Categories', 'Admins', 'Customers'];
   const Router = useRouter();
 
   const list = () => (
@@ -75,13 +83,21 @@ const Navbar = () => {
       {/* Top Navbar */}
       <div className="py-2 w-full border border-slate-100 shadow-md bg-white font-bold flex items-center justify-between px-7">
         <div className='w-16 h-16'>
-          <img src="images/logo.png" alt="Logo" className='rounded-full' />
+          <img src="/images/logo.png" alt="Logo" className='rounded-full' />
         </div>
         {/* ✅ Fixed the menu click issue */}
-        <MenuIcon
+        <div className='flex items-center gap-5'>
+          <div className='w-10 h-10 rounded-full' onClick={()=>Router.push("/profile")}>
+            <img src={adminData?.avatar || "/images/account.png"} alt="" className='rounded-full w-10 h-10 ' />
+          </div>
+          <div  className='w-10 h-10 text-black cursor-pointer'>
+            <FcShop onClick={()=>Router.push("/")} size={40}/>
+          </div>
+          <MenuIcon
           onClick={(e) => toggleDrawer(anchor, true)(e)}
           className="text-black cursor-pointer"
         />
+        </div>
         <SwipeableDrawer
           anchor={anchor}
           open={state[anchor]}
