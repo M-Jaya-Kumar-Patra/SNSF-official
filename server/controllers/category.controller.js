@@ -50,18 +50,28 @@ export async function uploadImages(request, response) {
         });
     }
 }
-
 export async function createCategory(request, response) {
     try {
+        const { name, parentId, parentCatName } = request.body;
+
         const category = new CategoryModel({
-            name: request.body.name,
+            name,
             images: imagesArr,
-            parentId: request.body.parentId || null,
-            parentCatName: request.body.parentCatName || ""
+            parentId: parentId || null,
+            parentCatName: parentCatName || ""
         });
 
         const savedCategory = await category.save();
         imagesArr = []; // Clear after use
+
+        // ✅ If it has a parent, push this into the parent's children
+        if (parentId) {
+            await CategoryModel.findByIdAndUpdate(
+                parentId,
+                { $push: { children: savedCategory } }, // embedded object
+                { new: true }
+            );
+        }
 
         return response.status(200).json({
             message: "Category created successfully",

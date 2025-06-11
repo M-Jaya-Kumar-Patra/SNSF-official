@@ -33,6 +33,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { useCat } from '../context/CategoryContext';
+import { CiEdit } from "react-icons/ci";
+import { MdDeleteOutline } from "react-icons/md";
 
 
 const Categories = () => {
@@ -46,21 +49,9 @@ const Categories = () => {
             parentId: ""
         }
     ]);
-    const [catData, setCatData] = useState([]);
-    const getCategories = () => {
-        fetchDataFromApi("/api/category/getCategories").then((response) => {
-            setCatData(response?.data);
-        });
-    }
-    
-    useEffect(() => {
-        const id = localStorage.getItem("adminId");
-        if (id && id !== "undefined" && id !== "null") {
-            getCategories();
-        } else {
-            console.warn("Invalid or missing adminId in localStorage");
-        }
-    }, []);
+
+
+    const { catData, setCatData, getCategories } = useCat();
 
 
     //for alert(mui)
@@ -88,12 +79,14 @@ const Categories = () => {
     const [editCatObj, setEditCatObj] = useState(null)
     const [editCateg, setEditCategs] = useState(null);
     const [showCategEditModal, setShowCategEditModal] = useState(false);
+
+
     const handleCategEditClick = (id, product) => {
         console.log("catId: ", id)
         setEditCategs(product);
         setEditCatObj(product);
         setPreviews(product.images || []); // <-- This line ensures previews are pre-filled
-        setShowCategEditModal(true);
+        
     }
     const [age, setAge] = React.useState('');
     const handleChange = (event) => {
@@ -107,7 +100,7 @@ const Categories = () => {
     const [uploading, setUploading] = useState(false);
     // for page change
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(3);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -244,10 +237,10 @@ const Categories = () => {
         console.log(catId)
         e.preventDefault();
         try {
-            const response =await deleteCategory(`/api/category/${catId}`, catId)
+            const response = await deleteCategory(`/api/category/${catId}`, catId)
             if (!response.error) {
-                // alert.alertBox({ type: "sucess", msg: "Category deleted" })
-                alert.alertBox({ type: "success", msg: "Category Created" });
+                alert.alertBox({ type: "success", msg: "Category deleted" })
+                // alert.alertBox({ type: "success", msg: "Category Created" });
                 getCategories()
 
             } else {
@@ -284,54 +277,57 @@ const Categories = () => {
                     <table className='w-full text-center border-collapse border border-slate-200 rounded-md shadow-lg mt-4'>
                         <thead className='h-12 bg-blue-100 border-b border-slate-300'>
                             <tr>
-                                <th className='w-[55px]'><Checkbox /></th>
-                                <th className='text-black w-[150px] '>Category Image</th>
-                                <th className='text-black w-[30%] '>Category</th>
-                                <th className='text-black w-[30%] '>Parent</th>
-                                <th className='text-black w-[10%]'>Actions</th>
+                                <th className='w-[55px]'><Checkbox/></th>
+                                <th className='text-black w-[40%] '>Category Image</th>
+                                <th className='text-black w-[40%] '>Category</th>
+                                <th className='text-black w-[20%]'>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {Array.isArray(catData) && catData.length > 0 &&
                                 catData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((item, index) => (
-                                        <tr key={index} className="border-b border-slate-300">
+                                        <tr key={index} className="border-b border-slate-300 h-auto">
                                             <td className="w-[55px]">
                                                 <Checkbox />
                                             </td>
-                                            <td className="text-black flex items-center justify-center gap-2">
+                                            <td className="text-black flex items-center justify-center gap-2 min h-[100px]">
                                                 {Array.isArray(item.images) && item.images.length > 0 ? (
                                                     item.images.map((imgUrl, idx) => (
                                                         <Image
                                                             key={idx}
                                                             src={imgUrl}
                                                             alt={`${item.name || "Category image"} ${idx + 1}`}
-                                                            width={48}
-                                                            height={48}
-                                                            className="rounded-md"
+                                                            width={100}
+                                                            height={100}
+                                                            className="my-2"
                                                         />
                                                     ))
                                                 ) : (
-                                                    <div className="w-[96px] h-[96px] bg-gray-200 text-xs flex items-center justify-center text-gray-600">
+                                                    <div className="w-[100px] h-[100px] bg-gray-200 text-xs flex items-center justify-center text-gray-600">
                                                         No Image
                                                     </div>
                                                 )}
                                             </td>
                                             <td className="text-black">{item.name}</td>
-                                            <td className="text-black">{item.parentCatName}</td>
-                                            <td className="text-black flex gap-7 items-start">
-                                                <ModeEditOutlineIcon
-                                                    onClick={() => handleCategEditClick(item._id, item)}
-                                                    className="text-blue-600 cursor-pointer hover:bg-blue-200 rounded-full"
-                                                />
-                                                <DeleteOutlineIcon onClick={(e) => {handleClickOpenDeleteAlert(e, item._id)}} className="text-red-600 cursor-pointer hover:bg-red-200 rounded-full" />
+                                            <td className="text-black px-2">
+
+                                                <div className='  flex items-center justify-center ml-auto gap-1'>
+                                                    <Button className=' !rounded-full  !text-blue-600 '>
+                                                        <ModeEditOutlineIcon className='!w-[30px] !h-[30px] ' onClick={() => handleCategEditClick(item._id, item)} />
+                                                    </Button>
+                                                    <Button className='!rounded-full  !text-red-600'>
+                                                        <MdDeleteOutline className='!w-[30px] !h-[30px] ' onClick={(e) => handleClickOpenDeleteAlert(e, item._id)} />
+                                                    </Button>
+
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
                         </tbody>
                     </table>
                     <TablePagination
-                        rowsPerPageOptions={[3, 5, 10]}
+                        rowsPerPageOptions={[10, 20, 30]}
                         component="div"
                         count={catData?.length}
                         rowsPerPage={rowsPerPage}
@@ -357,11 +353,11 @@ const Categories = () => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDeleteAlert}>Cancel</Button>
+                    <Button onClick={handleCloseDeleteAlert} color='inherit'>Cancel</Button>
                     <Button onClick={(e) => {
                         handleDeleteCategory(e, selectedCategoryId),
-                        setOpen(false);
-                    }} autoFocus>
+                            setOpen(false);
+                    }} autoFocus color='error'>
                         Delete
                     </Button>
                 </DialogActions>
@@ -369,7 +365,7 @@ const Categories = () => {
             {showCategEditModal && (
                 <div className='flex w-full h-full justify-center items-center bg-black bg-opacity-50 fixed top-0 left-0 z-50'>
                     <form onSubmit={handleSubmitEditForm}>
-                        <div className='w-[700px] h-[450px] bg-white rounded-md text-black p-3 overflow-auto scrollbar-hide'>
+                        <div className='w-[700px] h-[90%] bg-white rounded-md text-black p-3 overflow-auto scrollbar-hide'>
                             <div className="text-blue-800 m-3 text-xl border-b-2 border-slate-300 py-2 font-sans font-semibold flex gap-2 items-center">
                                 <ArrowBackIcon
                                     onClick={() => setShowCategEditModal(false)}
@@ -423,7 +419,7 @@ const Categories = () => {
                                         value={editCatObj?.name || ""}
                                         name='name'
                                     />
-                                    <TextField
+                                    <TextField  
                                         label="Parent Category"
                                         onChange={handleChangeEditInput}
                                         value={editCatObj?.parentCatName || ""}
@@ -439,7 +435,7 @@ const Categories = () => {
                             </Box>
                             <div className="relative w-full flex gap-2 right-0 justify-end pr-5">
                                 <button
-                                    className='bg-white border border-black py-1 w-[90px] text-lg rounded-full hover:bg-red-500 hover:border-none hover:text-white font-medium'
+                                   className=' bg-white border border-black py-1  w-[90px] text-lg rounded-full  hover:border-red-600 hover:bg-slate-50 hover:text-red-600 font-medium'
                                     onClick={() => setShowCategEditModal(false)}
                                     type='button'
                                 >
@@ -459,7 +455,7 @@ const Categories = () => {
             {showCategAddModal && (
                 <div className='flex w-full h-full justify-center items-center bg-black bg-opacity-50 fixed top-0 left-0 z-50'>
                     <form onSubmit={handleSubmitAddForm}>
-                        <div className='w-[700px] h-[450px] bg-white rounded-md text-black p-3 overflow-auto scrollbar-hide'>
+                        <div className='w-[700px] h-[90%] bg-white rounded-md text-black p-3 overflow-auto scrollbar-hide'>
                             <div className="text-green-800 m-3 text-xl  border-b-2 border-slate-300 py-2 font-sans font-semibold flex gap-2 items-center"><ArrowBackIcon onClick={() => setShowCategAddModal(false)} className='cursor-pointer text-black' />Add Category</div>
 
                             <div className="text-black m-3 font-sans font-semibold">Upload category images</div>
@@ -508,25 +504,25 @@ const Categories = () => {
                                         required
                                         label="Category Name"
                                         onChange={handleChangeAddInput}
-                                        value={categs.name}
+                                        value={categs.name || ""}
                                         name='name'
                                     />
                                     <TextField
                                         label="Parent Category"
                                         onChange={handleChangeAddInput}
-                                        value={categs.parentCatName}
+                                        value={categs.parentCatName || ""}
                                         name='parentCatName'
                                     />
                                     <TextField
                                         label="Parent ID"
                                         onChange={handleChangeAddInput}
-                                        value={categs.parentId}
+                                        value={categs.parentId || ""}
                                         name='parentId'
                                     />
                                 </div>
                             </Box>
                             <div className="relative w-full flex gap-2 right-0  justify-end pr-5">
-                                <button className=' bg-white border border-black py-1  w-[90px] text-lg rounded-full hover:bg-red-500 hover:border-none hover:text-white font-medium' onClick={() => setShowCategAddModal(false)}
+                                <button className=' bg-white border border-black py-1  w-[90px] text-lg rounded-full hover:border-none hover:text-red font-medium' onClick={() => setShowCategAddModal(false)}
                                     type='button'
 
                                 >Cancel</button>

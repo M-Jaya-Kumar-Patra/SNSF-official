@@ -10,9 +10,9 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
-  Box,
-  LinearProgress,
-} from "@mui/material";
+    Box,
+    LinearProgress,
+  } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Righteous, Poppins } from "next/font/google";
 import { postData } from "@/utils/api";
@@ -107,6 +107,8 @@ export default function Login() {
         router.push("/profile");
       } else {
         alert.alertBox({ type: "error", msg: response?.message || "Login failed" });
+        setFormFields({ email: "", password: "" });
+
       }
     } catch (error) {
       console.error("Login error:", error);

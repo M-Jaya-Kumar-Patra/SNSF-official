@@ -8,14 +8,11 @@ import { AlertProvider } from "./context/AlertContext";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast";
 import SessionGuard from "@/components/SessionGuard";
-
-// Fonts
-import { Inter, Geist, Geist_Mono, Righteous } from "next/font/google";
+import { CatProvider } from "./context/CategoryContext";
+import { Inter } from "next/font/google";
+import { PrdProvider } from "./context/ProductContext";
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "700"] });
-const geistSans = Geist({ subsets: ["latin"] });
-const geistMono = Geist_Mono({ subsets: ["latin"] });
-const righteous = Righteous({ subsets: ["latin"], weight: "400" });
 
 export const metadata = {
   title: "SNSF",
@@ -30,18 +27,23 @@ export default function RootLayout({ children }) {
       </head>
       <body className={inter.className}>
         <SessionWrapper>
-          {/* <SessionGuard> */}
+          <SessionGuard>
             <AuthProvider>
-            <AlertProvider>
-              <CartProvider>
-                <Navbar />
-                <main className="min-h-screen flex flex-col">
-                  {children}
-                </main>
-              </CartProvider>
-            </AlertProvider>
-          </AuthProvider>
-          {/* </SessionGuard> */}
+              <PrdProvider>
+                <CatProvider>
+                <AlertProvider>
+                  <CartProvider>
+                    <Navbar />
+                    <main className="min-h-screen flex flex-col">
+                      <Toaster position="top-right" reverseOrder={false} />
+                      {children}
+                    </main>
+                  </CartProvider>
+                </AlertProvider>
+              </CatProvider>
+              </PrdProvider>
+            </AuthProvider>
+          </SessionGuard>
         </SessionWrapper>
       </body>
     </html>

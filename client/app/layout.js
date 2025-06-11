@@ -12,6 +12,8 @@ import { useContext } from "react";
 import { AuthContext, AuthProvider } from "./context/AuthContext.js"; // Adjust path if needed
 // import { UserProvider } from "./context/UserContext";
 import SessionSync from "./session-store";
+import { CatProvider } from "./context/CategoryContext";
+import { PrdProvider } from "./context/ProductContext";
 
 
 // import { LoginProvider } from "./context/LoginContext"; // 👈 Add this
@@ -39,6 +41,8 @@ export default function RootLayout({ children }) {
             {/* <SessionSync /> */}
           {/* <UserProvider> */}
             <AuthProvider>
+            <CatProvider>
+            <PrdProvider>
               <AlertProvider>
                 <CartProvider>
                   <Navbar />
@@ -49,6 +53,8 @@ export default function RootLayout({ children }) {
                   <Toaster position="top-right" />
                 </CartProvider>
               </AlertProvider>
+            </PrdProvider>
+            </CatProvider>
             </AuthProvider>
           {/* </UserProvider> */}
         </SessionWrapper>

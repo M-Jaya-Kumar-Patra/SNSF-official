@@ -16,7 +16,7 @@ import Divider from '@mui/material/Divider';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import { FcShop } from "react-icons/fc";
-
+import { TfiLayoutSliderAlt } from "react-icons/tfi";
 
 
 
@@ -33,7 +33,7 @@ const Navbar = () => {
     setState({ ...state, [anchor]: open });
   };
 
-  const navItems = ['Dashboard', 'Products', 'Categories', 'Admins', 'Customers'];
+  const navItems = ['Dashboard', 'Products', 'Categories', 'Subcategories' , 'Admins', 'Customers', 'HomeSlider'];
   const Router = useRouter();
 
   const list = () => (
@@ -66,8 +66,10 @@ const Navbar = () => {
                 {index === 0 ? <DashboardIcon /> :
                   index === 1 ? <BsBoxSeamFill size={20} /> :
                     index === 2 ? <CategoryIcon /> :
-                    index === 3 ? <BsFillPeopleFill size={20} />:
-                      <BsFillPeopleFill size={20} />}
+                    index === 3 ? " " :
+                    index === 4 ? <BsFillPeopleFill size={20} />:
+                    index === 5 ? <BsFillPeopleFill size={20} />:
+                        <TfiLayoutSliderAlt size={20} />}
               </ListItemIcon>
               <ListItemText primary={text} />
             </ListItemButton>

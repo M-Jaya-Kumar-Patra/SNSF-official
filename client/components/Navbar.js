@@ -1,6 +1,6 @@
 
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,8 +9,13 @@ import Badge from '@mui/material/Badge';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import { IoCartOutline } from "react-icons/io5";
-import { MdCall  } from "react-icons/md";
+import { MdCall } from "react-icons/md";
 import { useAuth } from "@/app/context/AuthContext";
+import { IoMdHome } from "react-icons/io";
+import { fetchDataFromApi } from "@/utils/api";
+import { Button } from "@mui/material";
+import {useCat} from "@/app/context/CategoryContext";
+
 
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -24,16 +29,23 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const righteous = Righteous({ subsets: ["latin"], weight: "400" });
 
-  const Navbar = ({ fontClass, cartItems = [] }) => {
-    
-    const router = useRouter(); 
-      const { userData, setUserData, isLogin } = useAuth();
+
+
+
+
+const Navbar = ({ fontClass, cartItems = [] }) => {
+
+  const {catData, setCatData} = useCat()
+
+
+  const router = useRouter();
+  const { userData, setUserData, isLogin } = useAuth();
 
 
 
   return (
-    <nav>
-      <div className="px-8 py-2 flex items-center justify-between bg-gradient-to-l from-[#798ca8] via-[#334257] to-[#131e30]">
+    <nav >
+      <div className="px-8 py-3 flex items-center justify-between bg-gradient-to-l from-[#798ca8] via-[#334257] to-[#131e30]">
         {/* Logo Section */}
         <div className="flex gap-0 items-center">
           <Image
@@ -70,8 +82,9 @@ const righteous = Righteous({ subsets: ["latin"], weight: "400" });
         </div>
 
         {/* Contact, Account, and Cart */}
-        <div className="contact-account-cart w-[15%] flex justify-between items-center gap-3">
-          <MdCall   className="text-3xl  text-white shrink-0"/>
+        <div className="contact-account-cart w-[17%] flex justify-between items-center gap-3">
+          <IoMdHome className="text-3xl  text-white shrink-0 hover:bg-gray-100 hover:bg-opacity-20  rounded-full" onClick={() => router.push('/')} />
+          <MdCall className="text-3xl  text-white shrink-0 hover:bg-gray-100 hover:bg-opacity-20  rounded-full" />
 
           <Image
             className={`shrink-0 w-8 h-8 cursor-pointer rounded-full ${(isLogin) ? "" : "invert"
@@ -81,121 +94,65 @@ const righteous = Righteous({ subsets: ["latin"], weight: "400" });
             width={32}
             height={32}
             onClick={() => router.push((isLogin) ? "/profile" : "/login")}
-          /> 
+          />
 
 
-         <IconButton aria-label="cart"  onClick={() => router.push(isLogin ? "/cart" : "/login")}>
-  <StyledBadge badgeContent={cartItems.length} showZero color="secondary">
-    <IoCartOutline className="text-3xl text-white shrink-0" />
-  </StyledBadge>
-</IconButton>
+          <IconButton aria-label="cart" onClick={() => router.push(isLogin ? "/cart" : "/login")}>
+            <StyledBadge badgeContent={cartItems.length} showZero color="secondary">
+              <IoCartOutline className="text-3xl  text-white shrink-0 hover:bg-gray-100 hover:bg-opacity-20  rounded-full" />
+            </StyledBadge>
+          </IconButton>
         </div>
-
-        {/* <ul clnassName="flex items-center gap-3  w-full">
-          <li><CallIcon /></li>
-          <li>
-            <Image
-              className={`w-8 h-8 cursor-pointer rounded-full ${session?.user?.image ? "" : "invert"
-                }`}
-              src={session?.user?.image || "/images/account.png"}
-              alt="User Account"
-              width={32}
-              height={32}
-              onClick={() => router.push(session ? "/profile" : "/login")}
-            />
-          </li>
-          <li className="">
-            <IconButton aria-label="cart"  onClick={() => router.push("/cart")}>
-              <StyledBadge badgeContent={2} color="secondary"  >
-                <IoCartOutline  className="text-3xl"/>
-              </StyledBadge>
-            </IconButton>
-
-          </li>
-        </ul> */}
-
-
 
       </div>
-      <div className="bg-white border border-b-gray-300 mb-0 z-30 h-[30px] w-full font-semibold text-[#131e30] font-sans p-0 flex items-center justify-evenly">
-        {/* <div className="  hover:border-red-600 hover:border-b-2 h-full p-1">
-          Living Room
-        </div>
-        <div className="  hover:border-red-600 hover:border-b-2 h-full p-1">
-          Bedroom
-        </div>
-        <div className="  hover:border-red-600 hover:border-b-2 h-full p-1">
-          Dining Room
-        </div>
-        <div className="  hover:border-red-600 hover:border-b-2 h-full p-1">
-          Office Furniture
-        </div> */}
 
-        <div className="group relative hover:border-0 hover:border-b-2 hover:border-[#131e30] h-full p-1 pt-0">
-          <span className="cursor-pointer ">Living Room</span>
-          <div className="absolute w-auto h-auto bg-white border border-gray-200  hidden group-hover:block text-gray-600 mt-[5px] top-fulll left-0 ">
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-          </div>
-        </div>
 
-        <div className="group relative hover:border-0 hover:border-b-2 hover:border-[#131e30] h-full p-1 pt-0">
-          <span className="cursor-pointer ">Bedroom</span>
-          <div className="absolute w-auto h-auto bg-white border border-gray-200  hidden group-hover:block text-gray-600 mt-[5px] top-fulll left-0 ">
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-          </div>
-        </div>
+      <ul className="flex justify-around p-1 border  border-b-slate-200 mb-0  ">
+        {catData?.map((cat, index) => (
+          <li key={index} className="relative group">
+            <Link href={`/category/${cat.slug}`} className="text-[17px] font-semibold font-sans text-gray-700 hover:text-[#131e30] hover:border-b-2 hover:border-[#131e30] active:border-[#131e30] pb-1 transform-origin-left  ">
+              {cat.name}
+            </Link>
 
-        <div className="group relative hover:border-0 hover:border-b-2 hover:border-[#131e30] h-full p-1 pt-0">
-          <span className="cursor-pointer ">Dining Room</span>
-          <div className="absolute w-auto h-auto bg-white border border-gray-200  hidden group-hover:block text-gray-600 mt-[5px] top-fulll left-0 ">
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-          </div>
-        </div>
+            {cat.children?.length > 0 && (
+              <div
+                className={`absolute top-full mt-4 ${index > catData.length - 3 ? 'right-0' : 'left-0'
+                  } bg-white shadow-xl px-6 py-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-auto scrollbar-hide`}
+                style={{
+                  maxWidth: '100vw', // Prevent overflow
+                  whiteSpace: 'nowrap', // Ensure columns line up horizontally
+                }}
+              >
+                <div
+                  className={`flex gap-2 `}
+                  style={{
+                    width: `${cat.children.length * 200}px`, // 200px per column, adjust if needed
+                  }}
+                >
+                  {cat.children.map((subCat, subIndex) => (
+                    <div key={subIndex} className="min-w-[200px]">
+                      <h4 className="text-[16px] font-semibold font-sans mb-2 text-gray-800">{subCat.name}</h4>
+                      <ul className="space-y-1">
+                        {subCat.children?.map((thirdCat, thirdIndex) => (
+                          <li key={thirdIndex}>
+                            <Link
+                              href={`/category/${thirdCat.slug}`}
+                              className="text-[16px] font-sans text-gray-600 hover:text-[#131e30] transition"
+                            >
+                              {thirdCat.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-        <div className="group relative hover:border-0 hover:border-b-2 hover:border-[#131e30] h-full p-1 pt-0">
-          <span className="cursor-pointer ">Office furniture</span>
-          <div className="absolute w-auto h-auto bg-white border border-gray-200  hidden group-hover:block text-gray-600 mt-[5px] top-fulll left-0 ">
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-          </div>
-        </div>
-
-        <div className="group relative hover:border-0 hover:border-b-2 hover:border-[#131e30] h-full p-1 pt-0">
-          <span className="cursor-pointer ">Storage</span>
-          <div className="absolute w-auto h-auto bg-white border border-gray-200  hidden group-hover:block text-gray-600 mt-[5px] top-fulll left-0 ">
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-            <Link href="#" className="block px-4 py-2 hover:text-black">Sofas</Link>
-          </div>
-        </div>
-      </div>
+          </li>
+        ))}
+      </ul>
     </nav>
   );
 };

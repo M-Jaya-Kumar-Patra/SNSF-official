@@ -29,32 +29,6 @@ export default function Home() {
       <section className="flex justify-center"><Bestsellers /></section>
       <section className="flex justify-center"><New /></section>
 
-      {isLogin && userData ? (
-        <div className="text-center my-4">
-          <p>Welcome, {userData.name || "User"}</p>
-          <p>Email: {userData.email}</p>
-          <button onClick={logout} className="bg-red-500 text-white px-4 py-2 rounded mt-2">
-            Logout
-          </button>
-        </div>
-      ) : (
-        <div className="text-center my-4">
-          <p>You are not signed in.</p>
-          <Link href="/login">
-            <button className="bg-blue-500 text-white px-4 py-2 rounded mt-2">
-              Login
-            </button>
-          </Link>
-        </div>
-      )}
-
-      <div className="text-center my-4">
-        <Link href="/account/profile">
-          <button className="bg-gray-800 text-white px-4 py-2 rounded">
-            Go to Profile
-          </button>
-        </Link>
-      </div>
     </>
   );
 }

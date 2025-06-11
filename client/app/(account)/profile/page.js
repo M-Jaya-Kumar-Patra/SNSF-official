@@ -247,8 +247,6 @@ useEffect(() => {
     }
   }
 
-  console.log(isLogin, isLoading,  )
-
   if (!isLogin) return <div className="text-center mt-10">Loading...</div>;
 
   
@@ -447,8 +445,8 @@ useEffect(() => {
             margin="dense"
             value={changePasswordForm.oldPassword}
             fullWidth
-            onCha nge={onChangePassword}
-          />
+            onChange={onChangePassword}
+          />  
           <TextField
             label="New password"
             variant="outlined"

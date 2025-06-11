@@ -108,6 +108,8 @@ export default function Login() {
         router.push("/profile");
       } else {
         alert.alertBox({ type: "error", msg: response?.message || "Login failed" });
+        setFormFields({ email: "", password: "" });
+
       }
     } catch (error) {
       console.error("Login error:", error);

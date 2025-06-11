@@ -48,13 +48,12 @@
           const timeLeft = (decoded.exp - currentTime) * 1000;
           setTimeout(() => logout(), timeLeft);
           fetchUserDetails();
-      console.log("ac1last")
         }
       } catch (err) {
         console.error("Invalid token", err);
         logout();
       }
-    }, [userData]);
+    }, []);
 
     const fetchUserDetails = async () => {
       try {

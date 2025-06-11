@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import jwt_decode from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 
 const SessionGuard = ({ children }) => {
   const router = useRouter();
@@ -11,7 +11,7 @@ const SessionGuard = ({ children }) => {
 
     if (token) {
       try {
-        const decoded = jwt_decode(token);
+        const decoded = jwtDecode(token);
         const now = Date.now() / 1000;
 
         if (decoded.exp < now) {

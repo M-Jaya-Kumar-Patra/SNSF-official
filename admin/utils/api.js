@@ -42,22 +42,24 @@ export const fetchDataFromApi = async (url, authRequired = true) => {
       "Content-Type": "application/json", 
       'Cache-Control': 'no-cache',
     };
-
+    
+    
     if (authRequired) {
       const token = localStorage.getItem("accessToken")
-
+      
       if (!token) {
         return { error: true, message: "Access token is missing or expired" };
       }
       headers["Authorization"] = `Bearer ${token}`;
     }
-
+    
     const response = await fetch(apiUrl + url, {
       method: "GET",
       headers,
     });
-
+    
     const data = await response.json();
+    console.log("hii")    
     return data;
   } catch (error) {
     console.error("GET request error:", error);
@@ -101,8 +103,8 @@ export const uploadImages = async (url, formData, authRequired = true) => {
     if (authRequired) {
       const token = localStorage.getItem("accessToken");
       
+      console.log("errorrrr")
       if (!token) {
-        console.log("errorrrr")
         return { error: true, message: "Access token is missing or expired" };
       }
       
@@ -169,7 +171,7 @@ export const deleteImages = async (url, imageUrl) => {
       },
       params: {
         img: imageUrl, // ✅ Will be appended as ?img=...
-      },
+      },  
     });
 
     return response.data;
@@ -195,12 +197,96 @@ export const deleteCategory = async (url, id)=>{
     })
 
     return response.data
-
-    console.log(response.data)
-
-    console.log(response.data)
   }catch(error){
     console.error("deleteCategory error:",  error);
+    throw error;
+  }
+}
+
+export const deleteProduct = async (url, id)=>{
+  try{
+    const token = localStorage.getItem("accessToken")
+    
+    const response = await axios.delete(apiUrl+url,{
+      headers:{
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      id:{id}
+      
+    })
+    console.log("id", id)
+    console.log("iuughfiduf")
+
+    return response.data
+  }catch(error){
+    console.error("deleteCategory error:",  error);
+    throw error;
+  }
+}
+
+// export const deleteMultipleData = async (url, data) => {
+//   try {
+//     const token = localStorage.getItem("accessToken");
+
+//     const response = await axios.delete(apiUrl + url, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//         "Content-Type": "application/json",
+//       },
+//       data // ✅ Use 'data' for the request body in DELETE
+//     });
+
+//     return response.data;
+//   } catch (error) {
+//     console.error("deleteMultipleData error:", error.response?.data || error.message);
+//     throw error;
+//   }
+// }
+export const deleteMultipleData = async (url, data) => {
+  try {
+    const token = localStorage.getItem("accessToken");
+
+    const response = await fetch(apiUrl + url, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data), // ✅ must be stringified
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.message);
+    }
+
+    return await response.json();
+
+  } catch (error) {
+    console.error("❌ deleteMultipleData FULL ERROR:", error);
+    throw error;
+  }
+};
+
+
+export const deleteSlide = async (url, id)=>{
+  try{
+
+    const token = localStorage.getItem("accessToken")
+    
+    const response = await axios.delete(apiUrl+url,{
+      headers:{
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      id:{id}
+      
+    })
+
+    return response.data
+  }catch(error){
+    console.error("deleteSlide error:",  error);
     throw error;
   }
 }

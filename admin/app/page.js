@@ -20,7 +20,9 @@ import { useAuth } from './context/AuthContext';
 
 import TablePagination from '@mui/material/TablePagination';
 import { useRouter } from 'next/navigation';
-
+import { BsPCircle } from "react-icons/bs";
+import { AiFillProduct } from "react-icons/ai";
+import { usePrd } from './context/ProductContext';
 
 
 
@@ -30,6 +32,7 @@ import { useRouter } from 'next/navigation';
 const Home = () => {
 
   const {isLogin} =useAuth();
+  const {prdData} = usePrd();
    const [state, setState] = useState({ right: false });
     const [selectedText, setSelectedText] = useState("Dashboard");
     const anchor = 'right';
@@ -86,10 +89,65 @@ const Home = () => {
 
           {/* Colored Boxes */}
           <ul className='text-black rounded-sm my-3 text-[18px] flex h-[100px] gap-3 justify-between'>
-            <li className='w-1/4 h-full bg-red-600 rounded-md'></li>
-            <li className='w-1/4 h-full bg-yellow-500 rounded-md'></li>
-            <li className='w-1/4 h-full bg-green-700 rounded-md'></li>
-            <li className='w-1/4 h-full bg-blue-400 rounded-md'></li>
+            <li className='w-1/4 h-full bg-red-600 rounded-md  text-white flex justify-center items-center gap-1 p-3 '>
+            <div className='w-[20%]  flex justify-center items-center'>
+                <BsPCircle className="w-8 h-8 font-extrabold " />
+              </div>
+               <div className='w-[60%] '> 
+                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">Total Products</div>
+                <div className='font-bold font-sans text-2xl' >{prdData?.length}</div>
+
+              </div>
+               <div className='w-[20%]  flex justify-center items-center'>
+                <AiFillProduct  className="w-8 h-8 font-extrabold " />
+
+              </div></li>
+
+
+            <li className='w-1/4 h-full bg-yellow-500 rounded-md  text-white flex justify-center items-center gap-1 p-3 '>
+            <div className='w-[20%]  flex justify-center items-center'>
+                <BsPCircle className="w-8 h-8 font-extrabold " />
+              </div>
+               <div className='w-[60%] '> 
+                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">Total Products</div>
+                <div className='font-bold font-sans text-2xl' >{prdData?.length}</div>
+
+              </div>
+               <div className='w-[20%]  flex justify-center items-center'>
+                <AiFillProduct  className="w-8 h-8 font-extrabold " />
+
+              </div></li>
+
+
+            <li className='w-1/4 h-full bg-green-700 rounded-md  text-white flex justify-center items-center gap-1 p-3 '>
+            <div className='w-[20%]  flex justify-center items-center'>
+                <BsPCircle className="w-8 h-8 font-extrabold " />
+              </div>
+               <div className='w-[60%] '> 
+                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">Total Products</div>
+                <div className='font-bold font-sans text-2xl' >{prdData?.length}</div>
+
+              </div>
+               <div className='w-[20%]  flex justify-center items-center'>
+                <AiFillProduct  className="w-8 h-8 font-extrabold " />
+
+              </div></li>
+
+
+            <li className='w-1/4 h-full bg-violet-600 rounded-md text-white flex justify-center items-center gap-1 p-3   '>
+              <div className='w-[20%]  flex justify-center items-center'>
+                <BsPCircle className="w-8 h-8 font-extrabold " />
+              </div>
+               <div className='w-[60%] '> 
+                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">Total Products</div>
+                <div className='font-bold font-sans text-2xl' >{prdData?.length}</div>
+
+              </div>
+               <div className='w-[20%]  flex justify-center items-center'>
+                <AiFillProduct  className="w-8 h-8 font-extrabold " />
+
+              </div>
+            </li>
           </ul>
 
           {/* Orders Table */}

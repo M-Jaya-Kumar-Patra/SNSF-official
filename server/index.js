@@ -11,6 +11,7 @@ import categoryRouter from './route/category.route.js';
 import productRouter from './route/product.route.js';
 import cartRouter from './route/cart.route.js';
 import adminRouter from './route/admin.route.js'
+import sliderRouter from './route/homeSlider.route.js';
 
 const app = express();
 
@@ -38,6 +39,8 @@ app.use('/api/category', categoryRouter);
 app.use('/api/product', productRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api/homeSlider', sliderRouter);
+
 
 
 
