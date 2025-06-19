@@ -3,9 +3,6 @@ const nextConfig = {
   images: {
     domains: ['res.cloudinary.com'],
   },
-  devIndicators: {
-    buildActivity: false,
-  },
   env: {
     GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
   },
