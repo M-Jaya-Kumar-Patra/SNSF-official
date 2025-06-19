@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { postData } from "@/utils/api";
 import { useAlert } from "../context/AlertContext";
@@ -10,6 +10,19 @@ const Page = () => {
     const inputRefs = useRef([]);
     const router = useRouter();
     const alert = useAlert();
+
+    // State to store values from localStorage
+    const [email, setEmail] = useState("");
+    const [name, setName] = useState("");
+    const [userId, setUserId] = useState("");
+    const [actionType, setActionType] = useState("");
+
+    useEffect(() => {
+        setEmail(localStorage.getItem("userEmail") || "");
+        setName(localStorage.getItem("userName") || "");
+        setUserId(localStorage.getItem("userId") || "");
+        setActionType(localStorage.getItem("actionType") || "");
+    }, []);
 
     const handleChange = (element, index) => {
         const value = element.value.replace(/\D/, "");
@@ -35,38 +48,35 @@ const Page = () => {
         }
     };
 
-    const verifyOTP = (e) => {
+    const verifyOTP = async (e) => {
         e.preventDefault();
         const fullOtp = otp.join("");
 
         if (fullOtp.length !== 6) {
-            alert.alertBox({type:"error", msg:"Please enter all 6 digits."});
+            alert.alertBox({ type: "error", msg: "Please enter all 6 digits." });
             return;
         }
 
-        const actionType = localStorage.getItem("actionType")
+        if (actionType === "forgot-password") {
+            localStorage.removeItem("actionType");
+            const response = await postData("/api/user/verify-forgot-password-otp", {
+                email,
+                otp: fullOtp,
+            }, false);
 
-        if(actionType === "forgot-password"){
-            localStorage.removeItem("actionType")   
-            postData("/api/user/verify-forgot-password-otp", {
-            email: localStorage.getItem("userEmail"),
-            otp: fullOtp,
-        }, false).then((response) => {
-            if (response?.error === false) {
+            if (!response.error) {
                 router.push("/forgot-password");
             } else {
-                alert.alertBox({type:"error", msg:"Invalid OTP"||response?.message});
+                alert.alertBox({ type: "error", msg: response?.message || "Invalid OTP" });
             }
-        });
 
+        } else {
+            const response = await postData("/api/user/verifyEmail", {
+                email,
+                otp: fullOtp,
+            }, false);
 
-            
-        }else{
-             postData("/api/user/verifyEmail", {
-            email: localStorage.getItem("userEmail"),
-            otp: fullOtp,
-        }, false).then((response) => {
-            if (response?.error === false) {    
+            if (!response.error) {
                 localStorage.removeItem("userEmail");
                 sessionStorage.setItem("alert", JSON.stringify({
                     type: "success",
@@ -74,32 +84,23 @@ const Page = () => {
                 }));
                 router.push("/login");
             } else {
-                alert.alertBox({type:"error", msg:"Invalid OTP"||response?.message});
+                alert.alertBox({ type: "error", msg: response?.message || "Invalid OTP" });
             }
-        });
         }
-        
-
-        
     };
 
-    const resendOTP = async () =>{
-        localStorage.setItem("actionType", "resend-otp")
-        const email = localStorage.getItem("userEmail")
-        const name = localStorage.getItem("userName")
-        const userId = localStorage.getItem("userId")
+    const resendOTP = async () => {
+        localStorage.setItem("actionType", "resend-otp");
 
+        const response = await postData("/api/user/resendOTP", { email, name, userId }, false);
 
-
-        const response = await postData("/api/user/resendOTP",{ email, name, userId }, false);
-    if (!response.error) {
-      alert.alertBox({ type: "success", msg: response.message });
-      router.push("/verify-otp");
-    } else {
-      alert.alertBox({ type: "error", msg: response?.message || "Failed to send OTP" });
-    }
-
-    }
+        if (!response.error) {
+            alert.alertBox({ type: "success", msg: response.message });
+            router.push("/verify-otp");
+        } else {
+            alert.alertBox({ type: "error", msg: response?.message || "Failed to send OTP" });
+        }
+    };
 
     return (
         <div className="flex justify-center items-center w-full h-screen bg-gray-100">
