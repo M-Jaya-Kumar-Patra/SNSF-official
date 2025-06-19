@@ -29,29 +29,19 @@ const poppins = Poppins({ subsets: ["latin"], weight: '300' })
 
 
 const Page = () => {
-    const { data: session } = useSession();
-    const [isClient, setIsClient] = useState(false);
-    const router = useRouter();
-    const [type, setType] = useState("password");
-      const [formFields, setFormFields] = useState({
-        email:"",
-        newPassword: "", 
-        confirmPassword: ""
-       });
+  const { data: session } = useSession();
+  const [isClient, setIsClient] = useState(false);
+  const router = useRouter();
+  const [type, setType] = useState("password");
+  const [formFields, setFormFields] = useState({
+    email: "",
+    newPassword: "",
+    confirmPassword: ""
+  });
 
-        useEffect(() => {
-    // Run only in browser
-    const storedEmail = localStorage.getItem("userEmail");
-    setFormFields((prev) => ({ ...prev, email: storedEmail || "" }));
 
-    if (session) {
-      router.push("/profile");
-    }
-  }, [session]);
-    
-
-      const alert = useAlert();
-    const [showPassword, setShowPassword] = React.useState(false);
+  const alert = useAlert();
+  const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -63,84 +53,97 @@ const Page = () => {
     event.preventDefault();
   };
 
-const handleChangePassword = async() =>{
-  const {newPassword, confirmPassword} = formFields
+  const handleChangePassword = async () => {
+    const { newPassword, confirmPassword } = formFields
 
-  if (!newPassword) {
+    if (!newPassword) {
       alert.alertBox({ type: "error", msg: "Please enter new password" });
       // setIsLoading(false);
       return;
     }
 
-  if (!confirmPassword) {
+    if (!confirmPassword) {
       alert.alertBox({ type: "error", msg: "Confirm your password" });
       // setIsLoading(false);
       return;
     }
 
     try {
-          const response = await postData("/api/user/reset-password", formFields, false);
-    
-          if (!response.error) {
-            alert.alertBox({ type: "success", msg: "Password changed successfully" });
-    
-    
-    
-            setFormFields({ newPassword: "", confirmPassword: "" });
-            router.push("/login");
-            localStorage.removeItem("actionType")
-          } else {
-            alert.alertBox({ type: "error", msg: response?.message });
-          }
-        } catch (err) {
-          alert.alertBox({ type: "error", msg: err?.message });
-        } 
-}
+      const response = await postData("/api/user/reset-password", formFields, false);
+
+      if (!response.error) {
+        alert.alertBox({ type: "success", msg: "Password changed successfully" });
 
 
-const onChangeInput = (e) => {
+
+        setFormFields({ newPassword: "", confirmPassword: "" });
+        router.push("/login");
+        localStorage.removeItem("actionType")
+      } else {
+        alert.alertBox({ type: "error", msg: response?.message });
+      }
+    } catch (err) {
+      alert.alertBox({ type: "error", msg: err?.message });
+    }
+  }
+
+
+  const onChangeInput = (e) => {
     const { name, value } = e.target;
     setFormFields((prev) => ({ ...prev, [name]: value }));
   };
 
-
-   
-
-    if (!isClient) return null;
-
-    const togglePasswordVisibility = () => {
-        if (type === "password") {
-            setType("text");
-            setShowPassword("Hide");
-        } else {
-            setType("password");
-            setShowPassword("Show");
-        }
-    };
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
 
-    return (
-        <div className="flex justify-center items-center w-full h-screen bg-gray-100">
-            <div className="w-[300px] h-[auto] border border-gray-200 rounded-md shadow bg-white py-4 px-5 flex flex-col items-center">
-                
-                <div className="w-full  gap-3 text-center">
-                    <h1 className="text-[#131e30] my-2 font-bold text-lg">Reset Your Password</h1>
+  useEffect(() => {
+    if (!isClient) return;
+    // Run only in browser
+    const storedEmail = localStorage.getItem("userEmail");
+    setFormFields((prev) => ({ ...prev, email: storedEmail || "" }));
 
-                    
-                </div>
+    if (session) {
+      router.push("/profile");
+    }
+  }, [session]);
 
-               <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-      <div>
-        
-    
-        <FormControl size="small" fullWidth margin="dense" variant="outlined">
+  if (!isClient) return null;
+
+  const togglePasswordVisibility = () => {
+    if (type === "password") {
+      setType("text");
+      setShowPassword("Hide");
+    } else {
+      setType("password");
+      setShowPassword("Show");
+    }
+  };
+
+
+  return (
+    <div className="flex justify-center items-center w-full h-screen bg-gray-100">
+      <div className="w-[300px] h-[auto] border border-gray-200 rounded-md shadow bg-white py-4 px-5 flex flex-col items-center">
+
+        <div className="w-full  gap-3 text-center">
+          <h1 className="text-[#131e30] my-2 font-bold text-lg">Reset Your Password</h1>
+
+
+        </div>
+
+        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+          <div>
+
+
+            <FormControl size="small" fullWidth margin="dense" variant="outlined">
               <InputLabel>New Password</InputLabel>
               <OutlinedInput
                 name="newPassword"
                 value={formFields.newPassword}
                 type={showPassword ? "text" : "password"}
                 onChange={onChangeInput}
-                
+
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
@@ -176,22 +179,22 @@ const onChangeInput = (e) => {
                 label="Password"
               />
             </FormControl>
-        
-      </div>
-    </Box>
-                <button className="bg-gradient-to-l from-[#798ca8] via-[#334257] to-[#131e30] text-white px-4 py-1 rounded-md mt-3 hover:opacity-90 text-[15px]"  onClick={handleChangePassword}>
-                   Change Password
-                </button>
-                {/* Already have an account? Login */}
-                <div className="w-full text-center mt-3 ">
-                    <h3 className="text-[#131e30] text-[14px] cursor-pointer hover:text-[#363fa6]" onClick={() => router.push("/login")}>Remembered your password? Back to Login</h3>
-                </div>
 
-                
-
-            </div>
+          </div>
+        </Box>
+        <button className="bg-gradient-to-l from-[#798ca8] via-[#334257] to-[#131e30] text-white px-4 py-1 rounded-md mt-3 hover:opacity-90 text-[15px]" onClick={handleChangePassword}>
+          Change Password
+        </button>
+        {/* Already have an account? Login */}
+        <div className="w-full text-center mt-3 ">
+          <h3 className="text-[#131e30] text-[14px] cursor-pointer hover:text-[#363fa6]" onClick={() => router.push("/login")}>Remembered your password? Back to Login</h3>
         </div>
-    );
+
+
+
+      </div>
+    </div>
+  );
 };
 
 export default Page;

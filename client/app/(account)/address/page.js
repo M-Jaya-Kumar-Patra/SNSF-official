@@ -212,13 +212,7 @@ const Account = () => {
 
 
 
-    const saveEditedAddress = () => {
-        const updatedAddresses = [...addressArray];
-        updatedAddresses[editIndex] = editAddress;
-        setaddressArray(updatedAddresses);
-        localStorage.setItem("addresses", JSON.stringify(updatedAddresses));
-        setEditIndex(null);
-    };
+  
 
 
 
@@ -227,11 +221,6 @@ const Account = () => {
         setAddress({ ...address, [e.target.name]: e.target.value })
     }
 
-
-    const handleEditChange = (e) => {
-
-        setEditAddress({ ...editAddress, [e.target.name]: e.target.value });
-    };
 
     const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 
