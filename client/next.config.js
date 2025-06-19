@@ -8,6 +8,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig; // ✅ Use 'export default' in ESM
-
-
+module.exports = nextConfig;
