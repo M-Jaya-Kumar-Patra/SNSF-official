@@ -34,10 +34,20 @@ const Page = () => {
     const router = useRouter();
     const [type, setType] = useState("password");
       const [formFields, setFormFields] = useState({
-        email: localStorage.getItem("userEmail"),
+        email:"",
         newPassword: "", 
         confirmPassword: ""
        });
+
+        useEffect(() => {
+    // Run only in browser
+    const storedEmail = localStorage.getItem("userEmail");
+    setFormFields((prev) => ({ ...prev, email: storedEmail || "" }));
+
+    if (session) {
+      router.push("/profile");
+    }
+  }, [session]);
     
 
       const alert = useAlert();
@@ -94,12 +104,7 @@ const onChangeInput = (e) => {
   };
 
 
-    useEffect(() => {
-        setIsClient(true);
-        if (session) {
-            router.push("/profile"); // Redirect to profile page if logged in
-        }
-    }, [session]);
+   
 
     if (!isClient) return null;
 
