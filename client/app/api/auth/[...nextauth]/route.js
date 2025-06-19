@@ -143,7 +143,6 @@ const handler = NextAuth({
     //   return token;
     // },
 
-
     async jwt({ token, user, account }) {
   if (account) {
     token.accessToken = account.access_token;
