@@ -18,10 +18,12 @@ const Page = () => {
     const [actionType, setActionType] = useState("");
 
     useEffect(() => {
-        setEmail(localStorage.getItem("userEmail") || "");
-        setName(localStorage.getItem("userName") || "");
-        setUserId(localStorage.getItem("userId") || "");
-        setActionType(localStorage.getItem("actionType") || "");
+        if (typeof window !== "undefined") {
+            setEmail(localStorage.getItem("userEmail") || "");
+            setName(localStorage.getItem("userName") || "");
+            setUserId(localStorage.getItem("userId") || "");
+            setActionType(localStorage.getItem("actionType") || "");
+        }
     }, []);
 
     const handleChange = (element, index) => {
@@ -90,8 +92,9 @@ const Page = () => {
     };
 
     const resendOTP = async () => {
-        localStorage.setItem("actionType", "resend-otp");
-
+        if (typeof window !== "undefined") {
+            localStorage.setItem("actionType", "resend-otp");
+        }
         const response = await postData("/api/user/resendOTP", { email, name, userId }, false);
 
         if (!response.error) {
