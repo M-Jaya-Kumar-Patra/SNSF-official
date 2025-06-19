@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
-import User from "../../../../models/user.model.js";
-import connectDB from "../../../../lib/database.js";
+import User from "@/models/user.model.js";
+import connectDB from "@/lib/database.js";
 import generatedAccessToken from "@server/utils/generatedAccessToken.js";
 import generatedRefreshToken from "@server/utils/generatedRefreshToken.js";
 
