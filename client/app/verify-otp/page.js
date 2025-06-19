@@ -11,19 +11,23 @@ const Page = () => {
     const router = useRouter();
     const alert = useAlert();
 
-    // State to store values from localStorage
+    // LocalStorage-backed state
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
     const [userId, setUserId] = useState("");
     const [actionType, setActionType] = useState("");
 
+    // Fetch localStorage data on mount
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            setEmail(localStorage.getItem("userEmail") || "");
-            setName(localStorage.getItem("userName") || "");
-            setUserId(localStorage.getItem("userId") || "");
-            setActionType(localStorage.getItem("actionType") || "");
-        }
+        const storedEmail = localStorage.getItem("userEmail") || "";
+        const storedName = localStorage.getItem("userName") || "";
+        const storedUserId = localStorage.getItem("userId") || "";
+        const storedAction = localStorage.getItem("actionType") || "";
+
+        setEmail(storedEmail);
+        setName(storedName);
+        setUserId(storedUserId);
+        setActionType(storedAction);
     }, []);
 
     const handleChange = (element, index) => {
@@ -32,7 +36,7 @@ const Page = () => {
             const newOtp = [...otp];
             newOtp[index] = value;
             setOtp(newOtp);
-            if (index < 5) {
+            if (index < 5 && inputRefs.current[index + 1]) {
                 inputRefs.current[index + 1].focus();
             }
         }
@@ -44,7 +48,7 @@ const Page = () => {
             if (otp[index]) {
                 newOtp[index] = "";
                 setOtp(newOtp);
-            } else if (index > 0) {
+            } else if (index > 0 && inputRefs.current[index - 1]) {
                 inputRefs.current[index - 1].focus();
             }
         }
@@ -61,6 +65,7 @@ const Page = () => {
 
         if (actionType === "forgot-password") {
             localStorage.removeItem("actionType");
+
             const response = await postData("/api/user/verify-forgot-password-otp", {
                 email,
                 otp: fullOtp,
@@ -92,9 +97,8 @@ const Page = () => {
     };
 
     const resendOTP = async () => {
-        if (typeof window !== "undefined") {
-            localStorage.setItem("actionType", "resend-otp");
-        }
+        localStorage.setItem("actionType", "resend-otp");
+
         const response = await postData("/api/user/resendOTP", { email, name, userId }, false);
 
         if (!response.error) {
