@@ -11,24 +11,25 @@ const Page = () => {
     const router = useRouter();
     const alert = useAlert();
 
-    // LocalStorage-backed state
-    const [email, setEmail] = useState("");
-    const [name, setName] = useState("");
-    const [userId, setUserId] = useState("");
-    const [actionType, setActionType] = useState("");
+    const [email, setEmail] = useState(null);
+    const [name, setName] = useState(null);
+    const [userId, setUserId] = useState(null);
+    const [actionType, setActionType] = useState(null);
+    const [isClient, setIsClient] = useState(false); // 🛡️ Safe check for localStorage
 
-    // Fetch localStorage data on mount
     useEffect(() => {
-        const storedEmail = localStorage.getItem("userEmail") || "";
-        const storedName = localStorage.getItem("userName") || "";
-        const storedUserId = localStorage.getItem("userId") || "";
-        const storedAction = localStorage.getItem("actionType") || "";
-
-        setEmail(storedEmail);
-        setName(storedName);
-        setUserId(storedUserId);
-        setActionType(storedAction);
+        if (typeof window !== "undefined") {
+            setEmail(localStorage.getItem("userEmail"));
+            setName(localStorage.getItem("userName"));
+            setUserId(localStorage.getItem("userId"));
+            setActionType(localStorage.getItem("actionType"));
+            setIsClient(true); // Set once loaded
+        }
     }, []);
+
+    if (!isClient) {
+        return null; // Or a loading spinner
+    }
 
     const handleChange = (element, index) => {
         const value = element.value.replace(/\D/, "");
@@ -65,7 +66,6 @@ const Page = () => {
 
         if (actionType === "forgot-password") {
             localStorage.removeItem("actionType");
-
             const response = await postData("/api/user/verify-forgot-password-otp", {
                 email,
                 otp: fullOtp,
@@ -76,7 +76,6 @@ const Page = () => {
             } else {
                 alert.alertBox({ type: "error", msg: response?.message || "Invalid OTP" });
             }
-
         } else {
             const response = await postData("/api/user/verifyEmail", {
                 email,
@@ -98,7 +97,6 @@ const Page = () => {
 
     const resendOTP = async () => {
         localStorage.setItem("actionType", "resend-otp");
-
         const response = await postData("/api/user/resendOTP", { email, name, userId }, false);
 
         if (!response.error) {
@@ -108,7 +106,6 @@ const Page = () => {
             alert.alertBox({ type: "error", msg: response?.message || "Failed to send OTP" });
         }
     };
-
     return (
         <div className="flex justify-center items-center w-full h-screen bg-gray-100">
             <div className="w-[300px] border border-gray-200 rounded-md shadow bg-white py-4 px-10 flex flex-col items-center">
