@@ -2,10 +2,12 @@
 
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
+import axios from 'axios';
 
 // POST request
 export const postData = async (url, formData, authRequired = true) => {
+
+  console.log(formData)
   try {
     const headers = {
       "Content-Type": "application/json",
@@ -36,7 +38,8 @@ export const postData = async (url, formData, authRequired = true) => {
 export const fetchDataFromApi = async (url, authRequired = true) => {
   try {
     const headers = {
-      "Content-Type": "application/json", 
+      "Content-Type": "application/json",
+      'Cache-Control': 'no-cache',
     };
 
     if (authRequired) {
@@ -196,3 +199,62 @@ export const updateUserAddress = async (url, editAddressObj, authRequired = true
     return { error: true, message: error.message };
   }
 };
+
+export const deleteItem = async (url, body) => {
+  try {
+    const token = localStorage.getItem("accessToken");
+
+    const response = await axios.delete(apiUrl + url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      data: body, // ✅ this is how axios sends a body with DELETE
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("deleteItem error:", error);
+    throw error;
+  }
+};
+
+export const deleteData = async (url) => {
+  try {
+    const token = localStorage.getItem("accessToken");
+
+    const response = await axios.delete(apiUrl + url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }, // ✅ this is how axios sends a body with DELETE
+    });
+
+    return response;
+  } catch (error) {
+    console.error("deleteItem error:", error);
+    throw error;
+  }
+};
+
+
+export const updateQty = async (url, body) => {
+  try {
+    const token = localStorage.getItem("accessToken");
+
+    const response = await axios.post(apiUrl + url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      data: body, // ✅ this is how axios sends a body with DELETE
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("deleteItem error:", error);
+    throw error;
+  }
+};
+
+

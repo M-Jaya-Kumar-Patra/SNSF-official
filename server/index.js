@@ -12,12 +12,14 @@ import productRouter from './route/product.route.js';
 import cartRouter from './route/cart.route.js';
 import adminRouter from './route/admin.route.js'
 import sliderRouter from './route/homeSlider.route.js';
+import wishRouter from './route/wishlist.route.js'
+import orderRouter from './route/order.route.js'
 
 const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://192.168.137.1:3000/'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true, // ✅ Needed to allow cookies and auth headers
 }));
@@ -40,6 +42,10 @@ app.use('/api/product', productRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/homeSlider', sliderRouter);
+app.use('/api/wishlist', wishRouter);
+app.use('/api/order', orderRouter);
+
+
 
 
 

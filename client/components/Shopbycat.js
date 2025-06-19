@@ -3,6 +3,7 @@
 import React from 'react'
 import { Josefin_Sans } from 'next/font/google'
 import { useCat } from '@/app/context/CategoryContext'
+import { useRouter } from 'next/navigation'
 
 
 const joSan = Josefin_Sans({ subsets: ['latin'], weight: '400' })
@@ -10,6 +11,9 @@ const joSan = Josefin_Sans({ subsets: ['latin'], weight: '400' })
 const Shopbycat = () => {
 
   const { catData } = useCat()
+
+  const router = useRouter()
+
 
   let catLength = catData?.length
 
@@ -28,7 +32,9 @@ const Shopbycat = () => {
             return (
               <a className={`w-[100px] h-[100px] bg-white  rounded-full p-2  shadow-gray-400 shadow-md  flex justify-center items-center 
               
-               transition-transform hover:scale-110  hover:shadow-lg  hover:shadow-gray-500`} key={index}>
+               transition-transform hover:scale-110  hover:shadow-lg  hover:shadow-gray-500`} key={index}
+               href={`/ProductListing?catId=${cat._id}`}
+               >
                 <img src={catData[index]?.images} className='rounded-full ' alt="" />
               </a>
             )
@@ -42,7 +48,10 @@ const Shopbycat = () => {
             return (
               <a className='w-[100px] h-[100px] bg-white  rounded-full p-2  shadow-gray-400 shadow-md  flex justify-center items-center 
               
-               transition-transform hover:scale-110 hover:shadow-lg  hover:shadow-gray-500' key={index}>
+               transition-transform hover:scale-110 hover:shadow-lg  hover:shadow-gray-500' key={index}
+               href={`/ProductListing?catId=${cat._id}`}
+               
+               >
                 <img src={catData[index+4]?.images} className='rounded-full ' alt="" />
               </a>
             )

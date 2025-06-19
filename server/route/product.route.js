@@ -3,7 +3,7 @@ import auth from "../middlewares/auth.js";
 import upload from "../middlewares/multer.js";
 import { createProduct, getAllProducts, uploadImages, getAllProductsByCatId, getAllProductsByCatName, getAllProductsBySubCatId, getAllProductsBySubCatName, getAllProductsByThirdCatId, getAllProductsByThirdCatName, getAllProductsByPrice, getAllProductsByRating, getProductsCount, getAllFeaturedProducts, deleteProduct,
 getProduct, removeImageFromCloudinary, updateProduct,
-deleteMultipleProducts
+deleteMultipleProducts, filters, sortBy
 
 } from "../controllers/product.controller.js";
 
@@ -27,6 +27,12 @@ productRouter.delete('/deleteMultiple', auth, deleteMultipleProducts)
 productRouter.delete('/:id', deleteProduct)
 productRouter.get('/:id', getProduct)
 productRouter.post("/updateProduct/:id", auth, updateProduct);
+
+productRouter.post("/filters", filters);
+productRouter.post("/sortBy", sortBy);
+
+
+
 
 
 

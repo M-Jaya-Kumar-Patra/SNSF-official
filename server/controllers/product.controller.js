@@ -2,7 +2,7 @@ import ProductModel from "../models/product.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import { error } from "console";
 import fs from "fs";
-
+import CategoryModel from "../models/category.model.js";
 
 // Cloudinary Config
 cloudinary.config({
@@ -110,33 +110,12 @@ export async function createProduct(request, response) {
     }
 }
 
+// /api/product/getProducts.js
+
 export async function getAllProducts(request, response) {
     try {
-        console.log("Request Query:", request.query);
-        const page = parseInt(request.query.page) || 1;
-        const perPage = parseInt(request.query.perPage) || 10;
+        const products = await ProductModel.find();
 
-        const totalPosts = await ProductModel.countDocuments();
-        const totalPages = Math.ceil(totalPosts / perPage);
-
-        if (page > totalPages) {
-            return response.status(404).json({
-                message: "Page not found",
-                success: false,
-                error: true
-            });
-        }
-
-        const products = await ProductModel.find().skip((page - 1) * perPage)
-            .limit(perPage).exec();
-        if (!products) {
-            response.status(500).json({
-                error: true,
-                success: false
-            })
-
-
-        }
         return response.status(200).json({
             error: false,
             success: true,
@@ -150,6 +129,7 @@ export async function getAllProducts(request, response) {
         });
     }
 }
+
 
 export async function getAllProductsByCatId(request, response) {
     try {
@@ -170,7 +150,7 @@ export async function getAllProductsByCatId(request, response) {
         const products = await ProductModel.find({ catId: request.params.Id })
             .populate("category").skip((page - 1) * perPage)
             .limit(perPage).exec();
-        if (!products) {
+        if (!products) {    
             response.status(500).json({
                 error: true,
                 success: false
@@ -801,3 +781,126 @@ export async function updateProduct(request, response) {
         });
     }
 }
+export async function filters(request, response) {
+  const {
+    catId = [],
+    subCatId = [],
+    thirdSubCatId = [],
+    minPrice = 0,
+    maxPrice = Infinity,
+    rating,
+    page = 1,
+    limit = 10 // default limit
+  } = request.body;
+
+  try {
+    const filters = [];
+
+    // Only push filters if the arrays are not empty
+    if (catId.length > 0) filters.push({ catId: { $in: catId } });
+    if (subCatId.length > 0) filters.push({ subCatId: { $in: subCatId } });
+    if (thirdSubCatId.length > 0) filters.push({ thirdSubCatId: { $in: thirdSubCatId } });
+
+    // Build the query object
+    const query = {};
+
+    // Only apply OR condition if we have category filters
+    if (filters.length > 0) {
+      query.$or = filters;
+    }
+
+    // Always apply price range
+    query.price = {
+      $gte: parseFloat(minPrice) || 0,
+      $lte: parseFloat(maxPrice) || Infinity
+    };
+
+    // Optional rating filter
+    if (rating !== undefined && rating !== null) {
+      query.rating = { $gte: parseFloat(rating) };
+    }
+
+    // Log the final query for debugging
+    console.log("Query filters:", query);
+
+    // Pagination logic
+    const parsedLimit = parseInt(limit) || 10;
+    const skip = (parseInt(page) - 1) * parsedLimit;
+
+    const products = await ProductModel.find(query)
+      .populate("category")
+      .skip(skip)
+      .limit(parsedLimit);
+
+    const total = await ProductModel.countDocuments(query);
+
+    console.log("Total matched documents:", total);
+console.log("Returned products:", products.length);
+
+    return response.status(200).json({
+      error: false,
+      success: true,
+      products,
+      total,
+      page: parseInt(page),
+      totalPages: Math.ceil(total / parsedLimit)
+    });
+
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false
+    });
+  }
+}
+
+
+
+
+
+// Sort function
+const sortItems = (products, sortBy, order) => {
+  return products.sort((a, b) => {
+    if (sortBy === 'name') {
+      return order === 'asc'
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name);
+    }
+
+    if (sortBy === 'price') {
+      return order === 'asc'
+        ? a.price - b.price
+        : b.price - a.price;
+    }
+
+    return 0; // Default: no sorting applied
+  });
+};
+
+
+export async function sortBy(request, response) {
+  try {
+    const { products, sortBy, order } = request.body;
+
+    const sortedItems = sortItems([...products], sortBy, order);
+
+    return response.status(200).json({
+      error: false, 
+      success: true,
+      products: sortedItems,
+      totalPages: 0,
+      page: 0,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
+
+
+
+

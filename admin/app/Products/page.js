@@ -114,9 +114,7 @@ const Products = () => {
 
     const [value, setValue] = useState(2);
 
-
-    // for page change
-
+    //////////
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -128,6 +126,12 @@ const Products = () => {
         setRowsPerPage(+event.target.value);
         setPage(0); // Reset to first page
     };
+
+
+
+
+
+
 
 
     //for alert(mui)
@@ -374,7 +378,9 @@ const Products = () => {
         console.log(selectedIds);
     };
     const [searchQuery, setSearchQuery] = useState('');
-    
+
+
+
 
 
 
@@ -503,12 +509,13 @@ const Products = () => {
                     <TablePagination
                         rowsPerPageOptions={[10, 20, 30]}
                         component="div"
-                        count={formFields?.length}
+                        count={prdData?.length || 0}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />
+
 
                 </div>
             </div>
@@ -559,7 +566,8 @@ const Products = () => {
                                 <div className="grid grid-cols-4 gap-4">
                                     {Array.isArray(previews) && previews.length > 0 &&
                                         previews.map((image, index) => (
-                                            <div className="uploadBoxWrappper relative" key={`${image}-${index}`}>
+                                            <div className="uploadBoxWrappper relative" key={`${image}-${index}`}
+                                            >
                                                 <span
                                                     className="absolute w-[20px] h-[20px] rounded-full overflow-hidden bg-red-700 -top-[5px] -right-[5px] flex items-center justify-center z-50 cursor-pointer"
                                                     onClick={() => removeImage(image, index)}
@@ -626,10 +634,10 @@ const Products = () => {
                                                             const selectedName = e.target.value;
                                                             const selectedItem = catData.find((item) => item.name === selectedName);
                                                             if (selectedItem) {
-                                                                setFormFields(prev => ({
+                                                                setEditPrdObj(prev => ({
                                                                     ...prev,
                                                                     catName: selectedItem.name,
-                                                                    catId: selectedItem._id
+                                                                    catId: selectedItem._id,
                                                                 }));
                                                             }
                                                         }}
@@ -656,17 +664,13 @@ const Products = () => {
                                                         value={editPrdObj?.subCat || ''}
                                                         onChange={(e) => {
                                                             const selectedName = e.target.value;
-                                                            let selectedItem;
-                                                            catData.forEach(parent => {
-                                                                parent?.children?.forEach(child => {
-                                                                    if (child.name === selectedName) selectedItem = child;
-                                                                });
-                                                            });
+                                                            const selectedItem = catData.flatMap(p => p.children || []).find(child => child.name === selectedName);
+
                                                             if (selectedItem) {
-                                                                setFormFields(prev => ({
+                                                                setEditPrdObj(prev => ({
                                                                     ...prev,
-                                                                    subCat: selectedItem.name,
-                                                                    subCatId: selectedItem._id
+                                                                    catName: selectedItem.name,
+                                                                    catId: selectedItem._id,
                                                                 }));
                                                             }
                                                         }}
@@ -696,20 +700,14 @@ const Products = () => {
                                                         value={editPrdObj?.thirdSubCat || ''}
                                                         onChange={(e) => {
                                                             const selectedName = e.target.value;
-                                                            let selectedItem;
-                                                            catData.forEach(parent => {
-                                                                parent?.children?.forEach(child => {
-                                                                    child?.children?.forEach(grandChild => {
-                                                                        if (grandChild.name === selectedName) selectedItem = grandChild;
-                                                                    });
-                                                                });
-                                                            });
-
+                                                            const selectedItem = catData.flatMap(p => p.children || [])
+                                                                .flatMap(c => c.children || [])
+                                                                .find(g => g.name === selectedName);
                                                             if (selectedItem) {
-                                                                setFormFields(prev => ({
+                                                                setEditPrdObj(prev => ({
                                                                     ...prev,
-                                                                    thirdSubCat: selectedItem.name,
-                                                                    thirdSubCatId: selectedItem._id
+                                                                    catName: selectedItem.name,
+                                                                    catId: selectedItem._id,
                                                                 }));
                                                             }
                                                         }}
@@ -787,14 +785,15 @@ const Products = () => {
                                                 label="Product size"
                                                 value={(editPrdObj.size && Array.isArray(editPrdObj.size)) ? editPrdObj.size.join(", ") : ""}
                                                 onChange={(e) =>
-                                                    setFormFields(prev => ({
+                                                    setEditPrdObj(prev => ({
                                                         ...prev,
                                                         size: e.target.value
                                                             .split(",")
                                                             .map(s => s.trim())
-                                                            .filter(s => s.length > 0) // remove empty entries
+                                                            .filter(s => s.length > 0)
                                                     }))
                                                 }
+
                                                 size="small"
                                                 name="size"
                                             />
@@ -805,8 +804,9 @@ const Products = () => {
                                                     name="rating"
                                                     value={editPrdObj?.rating || 0}
                                                     onChange={(event, newValue) => {
-                                                        setFormFields({ ...formFields, rating: newValue });
+                                                        setEditPrdObj(prev => ({ ...prev, rating: newValue }));
                                                     }}
+
                                                 />
                                             </Box>
                                         </div>
@@ -816,7 +816,10 @@ const Products = () => {
                                 </Box>
 
                                 <div className="relative w-full flex gap-2 right-0  justify-end ">
-                                    <button className=' bg-white border border-black py-1  w-[90px] text-lg rounded-full hover:bg-red-500 hover:border-none hover:text-white font-medium' onClick={() => setShowEditModal(false)}>Cancel</button>
+                                    <button className=' bg-white border border-black py-1  w-[90px] text-lg rounded-full hover:bg-red-500 hover:border-none hover:text-white font-medium' onClick={() => {
+                                        setShowEditModal(false)
+                                        setPreviews([])
+                                    }}>Cancel</button>
                                     <button className=' bg-blue-700  py-1  w-[90px] text-lg rounded-full hover:bg-blue-500 hover:border-none text-white  font-medium' type='submit'>Save</button>
                                 </div>
                             </div>
@@ -912,7 +915,7 @@ const Products = () => {
                                                     }
                                                 }}
                                             >
-                                                {catData.map((item) => (
+                                                {catData?.map((item) => (
                                                     <MenuItem key={item._id} value={item.name}>
                                                         {item.name}
                                                     </MenuItem>
@@ -952,7 +955,7 @@ const Products = () => {
                                                 {catData.flatMap((parent) =>
                                                     parent.children?.map((child) => (
                                                         <MenuItem key={child._id} value={child.name}>
-                                                            {child.name}
+                                                            {parent.name} / {child.name}
                                                         </MenuItem>
                                                     ))
                                                 )}
@@ -996,7 +999,7 @@ const Products = () => {
                                                     parent.children?.flatMap(child =>
                                                         child.children?.map(grandChild => (
                                                             <MenuItem key={grandChild._id} value={grandChild.name}>
-                                                                {grandChild.name}
+                                                                {parent.name} / {child.name} / {grandChild.name}
                                                             </MenuItem>
                                                         ))
                                                     )
@@ -1093,7 +1096,11 @@ const Products = () => {
 
 
                             <div className="relative w-full flex gap-2 right-0  justify-end mt-4">
-                                <button className=' bg-white border  py-1  w-[90px] text-lg rounded-full text-red-600 border-red-600 hover:shadow-md inset font-medium' onClick={() => setShowAddModal(false)}>Cancel</button>
+                                <button className=' bg-white border  py-1  w-[90px] text-lg rounded-full text-red-600 border-red-600 hover:shadow-md inset font-medium' onClick={() => {
+                                    setShowAddModal(false)
+                                    setPreviews([])
+                                }
+                                }>Cancel</button>
                                 <button className=' bg-green-700  py-1  w-[90px] text-lg rounded-full hover:bg-green-600 hover:shadow-md hover:border-none text-white  font-medium' type='submit'>Save</button>
                             </div>
                         </form>

@@ -98,6 +98,17 @@
       type: Date,
       default: Date.now,
     },
+
+
+
+    category: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Category"
+}
+
+
+
+
   });
 
 

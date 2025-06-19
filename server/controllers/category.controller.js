@@ -290,9 +290,10 @@ export async function deleteCategory(request, response) {
 
 export async function updatedCategory(request, response) {
     try {
-            console.log("GONEEEE")
+        const imageFiles = Array.isArray(request.files?.images)
+            ? request.files.images
+            : request.files?.images ? [request.files.images] : [];
 
-        const image = request.files || [];
         const uploadedImages = [];
 
         const options = {
@@ -301,21 +302,28 @@ export async function updatedCategory(request, response) {
             overwrite: false,
         };
 
-        for (let i = 0; i < image.length; i++) {
-            const result = await cloudinary.uploader.upload(image[i].path, options);
+        for (let i = 0; i < imageFiles.length; i++) {
+            const result = await cloudinary.uploader.upload(imageFiles[i].path, options);
             uploadedImages.push(result.secure_url);
-            fs.unlinkSync(image[i].path);
+            fs.unlinkSync(imageFiles[i].path);
+        }
+
+        if (typeof request.body.images === 'string') {
+            try {
+                request.body.images = JSON.parse(request.body.images);
+            } catch {
+                request.body.images = [];
+            }
         }
 
         const updateData = {
             name: request.body.name,
             parentId: request.body.parentId || null,
-            parentCatName: request.body.parentCatName || null
+            parentCatName: request.body.parentCatName || null,
+            images: Array.isArray(request.body.images) && request.body.images.length > 0
+                ? request.body.images
+                : uploadedImages
         };
-
-        updateData.images = request.body.images && request.body.images.length > 0
-    ? request.body.images
-    : uploadedImages;
 
         const category = await CategoryModel.findByIdAndUpdate(
             request.params.id,

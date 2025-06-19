@@ -14,7 +14,6 @@ import { Toaster } from "react-hot-toast";
 export default function Home() {
   const { userData, isLogin, logout, loading } = useAuth();
   const [hydrated, setHydrated] = useState(false);
-
   useEffect(() => {
     setHydrated(true);
   }, []);

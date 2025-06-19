@@ -16,23 +16,6 @@ import { useAuth } from "@/app/context/AuthContext";
 const Account = () => {
     const { data: session } = useSession();
     const router = useRouter();
-     const { jwtUser, setJwtUser } = useAuth();
-      const isNextAuth = session?.user;
-      const isJWT = jwtUser?.email;
-    
-    
-      const avatar = isNextAuth
-        ? session.user.avatar || "/images/account.png"
-        : jwtUser?.avatar || "/images/account.png";
-
-        const fullName = isNextAuth
-    ? session?.user?.name || session?.user?.user?.name || ""
-    : jwtUser?.name || "";
-    
-    if (!session) {
-        return <p className="text-center text-gray-500">Loading...</p>;
-    }
-
     return (
         <>
             <div className="flex w-full min-h-screen justify-center bg-slate-100">

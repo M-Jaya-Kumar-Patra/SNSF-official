@@ -100,7 +100,7 @@ const Categories = () => {
     const [uploading, setUploading] = useState(false);
     // for page change
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [rowsPerPage, setRowsPerPage] = useState(3);
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };

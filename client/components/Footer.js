@@ -34,7 +34,7 @@ const Footer = () => {
           <li>
             
             <a href="https://youtube.com/@snsteelfabrication6716?si=v4pPQmEDtKmacpmN "  target="_blank">
-            <img src="images/youtube.png" className='w-10' alt=""/></a>
+            <img src="/images/youtube.png" className='w-10' alt=""/></a>
           </li>
         </ul>
 

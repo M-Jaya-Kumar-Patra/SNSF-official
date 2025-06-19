@@ -1,6 +1,8 @@
 import { Router } from "express";
   
-import { registerUserController, verifyEmailController, authWithGoogle, loginController, logoutController, userAvatarController, removeImageFromCloudinary, updateUserDetails, forgotPasswordController, verifyForgotPasswordOtp, resetPassword, refreshToken, userDetails, changePassword, addAddress , getUserAddress, deleteAddress, updateUserAddress, resendOTP} from "../controllers/user.controller.js";
+import { registerUserController, verifyEmailController, authWithGoogle, loginController, logoutController, userAvatarController, removeImageFromCloudinary, updateUserDetails, forgotPasswordController, verifyForgotPasswordOtp, resetPassword, refreshToken, userDetails, changePassword, addAddress , getUserAddress, deleteAddress, updateUserAddress, resendOTP, 
+    addReview, getReviews, getRelatedProductsByCategory, getAllUsers     
+} from "../controllers/user.controller.js";
 
 import auth from "../middlewares/auth.js"; // Adjust the path as necessary
 import upload from "../middlewares/multer.js";
@@ -26,6 +28,15 @@ userRouter.get("/getAddress/:id", auth, getUserAddress)
 userRouter.delete("/:id/address/:addressId", auth, deleteAddress)
 userRouter.post("/:id/address/:addressId", auth, updateUserAddress)
 userRouter.post("/resendOTP", resendOTP)
+userRouter.post("/addReview", auth, addReview)
+userRouter.get("/getReviews", getReviews)   
+
+userRouter.get("/getCategoriesByProductId", getRelatedProductsByCategory);
+
+
+userRouter.get("/getAllUsers", getAllUsers);
+
+
 
 
 

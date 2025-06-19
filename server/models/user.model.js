@@ -35,15 +35,26 @@ const userSchema = new mongoose.Schema({
       return this.provider === "google" ? true : false;
     }, // Automatically true if provider is Google
   },
-  shopping_cart: {
-    type: String,
+  shopping_cart: [{
+    type: mongoose.Schema.Types.ObjectId,
     default: "",
-  },
-
-  access_token: { type: String, default: "" },
-  refresh_token: { type: String, default: "" },
-
-
+  }],
+  wishlist: [{
+    type: mongoose.Schema.Types.ObjectId,
+    default: "",
+  }],
+  orders: [{
+    type: mongoose.Schema.Types.ObjectId,
+    default: "",
+  }],
+  access_token: {
+     type: String, 
+     default: ""
+     },
+  refresh_token: {
+     type: String, 
+     default: ""
+    },
   last_login_date: {
     type: Date,
     default: () => new Date(Date.now() + IST_OFFSET),

@@ -442,8 +442,8 @@ const Account = () => {
 
                         {showAddAddressForm && (
 
-                            <div className='fixed inset-0 z-50 flex justify-center items-start bg-black bg-opacity-50 overflow-y-auto'>
-                                <div className="modal-form w-[850px] relative max-h-[90vh] my-9 p-5 rounded-md bg-white overflow-y-auto">
+                            <div className='fixed inset-0 z-[300] flex justify-center items-start bg-black bg-opacity-50 overflow-y-auto'>
+                                <div className="modal-form w-[850px] relative max-h-[90vh] my-9 p-5 rounded-md bg-white overflow-y-auto scrollbar-hide">
 
                                     <div className="text-black  flex justify-between pb-2 border-b-2 border-slate-400 text-[23px] font-semibold">Add address<RxCross2 color="red" size={30} onClick={() => setShowAddAddressForm(false)} className="cursor-pointer" /></div>
 
@@ -579,8 +579,8 @@ const Account = () => {
 
                         {showEditModal && (
 
-                            <div className='fixed inset-0 z-50 flex justify-center items-start bg-black bg-opacity-50 overflow-y-auto'>
-                                <div className="modal-form w-[850px] relative max-h-[90vh] my-9 p-5 rounded-md bg-white overflow-y-auto">
+                            <div className='fixed inset-0 z-[300] flex justify-center items-start bg-black bg-opacity-50 overflow-y-auto'>
+                                <div className="modal-form w-[850px] relative max-h-[90vh] my-9 p-5 rounded-md bg-white overflow-y-auto scrollbar-hide">
                                     <div className="text-black  flex justify-between pb-2 border-b-2 border-slate-400 text-[23px] font-semibold">Edit address<RxCross2 color="red" size={30} onClick={() => setShowEditModal(false)} className="cursor-pointer" /></div>
 
                                     <form className="w-full mt-4 " onSubmit={handleSaveEditedAddress}>

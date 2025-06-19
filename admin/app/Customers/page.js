@@ -1,332 +1,253 @@
 "use client"
-import React, { use } from 'react'
-import { useState } from 'react';
-import AddIcon from '@mui/icons-material/Add';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
+
+import React, { useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
-import Checkbox from '@mui/material/Checkbox';
-import Pagination from '@mui/material/Pagination';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import Image from 'next/image';
-import ImageUploader from '@/components/ImageUploader';
+import Checkbox from '@mui/material/Checkbox';
+import TablePagination from '@mui/material/TablePagination';
+import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormHelperText from '@mui/material/FormHelperText';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import TablePagination from '@mui/material/TablePagination';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import CloseIcon from '@mui/icons-material/Close';
+import { fetchDataFromApi } from '@/utils/api';
+import { IoMdClose } from "react-icons/io";
 
 
 
 
-
-
-const Customers = () => {
-  const [customers, setCustomers] = useState([
-    {
-      id: "C001",
-      name: "Alice Johnson",
-      email: "alice.johnson@example.com",
-      phone: "+91-9876543210",
-      orders: 5,
-      ttlSpend: "₹12,500",
-      joinOn: "2023-04-12",
-    },
-    {
-      id: "C002",
-      name: "Rahul Verma",
-      email: "rahul.verma@example.com",
-      phone: "+91-9123456789",
-      orders: 8,
-      ttlSpend: "₹22,000",
-      joinOn: "2022-11-23",
-    },
-    {
-      id: "C003",
-      name: "Fatima Shaikh",
-      email: "fatima.shaikh@example.com",
-      phone: "+91-9988776655",
-      orders: 2,
-      ttlSpend: "₹3,200",
-      joinOn: "2024-01-18",
-    },
-    {
-      id: "C004",
-      name: "John Doe",
-      email: "john.doe@example.com",
-      phone: "+91-9876701234",
-      orders: 11,
-      ttlSpend: "₹30,700",
-      joinOn: "2023-07-05",
-    },
-    {
-      id: "C005",
-      name: "Meena Iyer",
-      email: "meena.iyer@example.com",
-      phone: "+91-9856231478",
-      orders: 1,
-      ttlSpend: "₹1,200",
-      joinOn: "2024-05-01",
-    },
-  ]);
-
-  const [editCustomers, setEditCustomers] = useState(null);
-  const [showCustmEditModal, setShowCustmEditModal] = useState(false);
-  const handleCustmEditClick = (product) => {
-    setEditCustomers(product);
-    setShowCustmEditModal(true);
-  }
-
-
-  const [age, setAge] = React.useState('');
-
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
-
-  const [addCustomers, setAddCustomers] = useState(null);
-  const [showCustmAddModal, setShowCustmAddModal] = useState(false);
-  const handleCustmAddClick = () => {
-    setShowCustmAddModal(true);
-  }
-
-
-
-
-
-  // for page change
-
+const Admins = () => {
+  const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(3);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [selectedUser, setSelectedUser] = useState(null)
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+  useEffect(() => {
+    fetchDataFromApi(`/api/user/getAllUsers`).then((res) => {
+      if (!res.error) {
+        setUsers(res?.users.filter((keyUser) => keyUser?.orders?.length > 0));
+      } else {
+        alert("No users found");
+      }
+    });
+  }, []);
+
+  const handleChangePage = (_, newPage) => setPage(newPage);
+  const handleChangeRowsPerPage = (e) => {
+    setRowsPerPage(+e.target.value);
+    setPage(0);
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0); // Reset to first page
-  };
+  const handleSelectUser = (user)=>{
+    setSelectedUser(user)
+  }
 
 
   return (
-    <>
-
-      <div className="w-full flex justify-center">
-        <div className='w-full   px-6'>
-          <div className='flex justify-between items-center   '>
-            <h1 className='text-blue-900 font-sans text-xl font-semibold p-4 pl-0 py-1 rounded-md my-3   '>
-              Manage Customers
-            </h1>
-            <button className='w-auto h-auto p-2 py-1 pr-3 rounded-md  bg-green-800 flex items-center gap-1 ' onClick={() => handleCustmAddClick()}><AddIcon />Add New Customer</button>
-          </div>
-
-          <div className='flex gap-3'>
-            <div className="relative w-full text-black flex  h-10  px-2 gap-2  border border-slate-300 rounded-md items-center">
-              <SearchIcon className='text-gray-600' />
-              <input
-                type="text"
-                placeholder="Search..."
-                className=" outline-none text-black"
-              />
-
-
-            </div>
-            <div className='h-10 w-10 border border-slate-300 rounded-md text-black flex items-center justify-center cursor-pointer'>
-              <FilterAltIcon />
-            </div>
-          </div>
-
-          {/* Table */}
-
-          <table className='w-full text-center border-collapse border border-slate-200 rounded-md shadow-lg mt-4'>
-            <thead className='h-12 bg-blue-100 border-b border-slate-300'>
-              <tr>
-                <th className='w-[55px]'><Checkbox /></th>
-                <th className='text-black w-[20%] '>Name</th>
-                <th className='text-black w-[13%] '>Email</th>
-                <th className='text-black w-[13%]'>Phone</th>
-                <th className='text-black w-[12%]'>Orders</th>
-                <th className='text-black w-[10%] '>Total Spend</th>
-                <th className='text-black w-[10%] '>Joined On</th>
-                <th className='text-black w-[10%]'>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {customers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((cst) => {
-                return (
-                  <tr
-                    key={cst.id}
-                    className='border-b border-slate-300'>
-
-                    <td className='w-[55px]'><Checkbox /></td>
-
-
-                    <td className='text-black '>{cst.name}</td>
-                    <td className='text-black '>{cst.email}</td>
-                    <td className='text-black '>{cst.phone}</td>
-                    <td className='text-black '>{cst.orders}</td>
-                    <td className='text-black '>{cst.ttlSpend}</td>
-                    <td className='text-black '>{cst.joinOn}</td>
-                    <td className='text-black  '>
-                      <ModeEditOutlineIcon onClick={() => handleCustmEditClick(cst)} className='text-blue-600 cursor-pointer mr-4 active:bg-gray-200 rounded-full ' />
-                      <DeleteOutlineIcon className='text-red-600 cursor-pointer active:bg-gray-200 rounded-full' />
-                    </td>
-                  </tr>
-                )
-
-              })}
-
-
-
-            </tbody>
-          </table>
-          <TablePagination
-            rowsPerPageOptions={[3, 5, 10]}
-            component="div"
-            count={customers.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-
-        </div>
+    <div className="p-6 max-w-screen overflow-x-auto bg-gradient-to-tr from-white via-blue-50 to-cyan-50 min-h-screen font-sans">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-blue-800 tracking-wide">Manage Customers</h1>
+        
       </div>
 
-      {showCustmEditModal && editCustomers && (
-        <div className='flex w-full h-full justify-center items-center bg-black bg-opacity-50 fixed top-0 left-0 z-50'>
-          <div className='w-[700px] h-[450px] bg-white rounded-md text-black p-3 overflow-auto scrollbar-hide'>
-            <div className="text-blue-800 m-3 text-xl  border-b-2 border-slate-300 py-2 font-sans font-semibold flex gap-2 items-center"><ArrowBackIcon onClick={() => setShowCustmEditModal(false)} className='cursor-pointer text-black' />Edit Customer</div>
-
-
-
-            <Box
-              component="form"
-              sx={{ '& .MuiTextField-root': { m: 1, width: '25ch' } }}
-              noValidate
-              autoComplete="off"
-            >
-              <div>
-                <TextField
-                  required
-                  id="cName-edit"
-                  label="Customer name"
-                  defaultValue={editCustomers.name}
-                />
-                <TextField
-                  required
-                  id="email-edit"
-                  label="Email ID"
-                  type='email'
-                  defaultValue={editCustomers.email}
-                />
-                <TextField
-                  required
-                  id="email-edit"
-                  label="Phone number"
-                  type='number'
-                  defaultValue={editCustomers.phone}
-                />
-                <TextField
-                  required
-                  id="orders-edit"
-                  label="Orders"
-                  defaultValue={editCustomers.orders}
-
-                />
-                <TextField
-                  id="ttlSpend-edit"
-                  label="Total Spend"
-                  type="number"
-                  defaultValue={editCustomers.ttlSpend}
-
-                />
-
-              </div>
-
-            </Box>
-
-            <div className="relative w-full flex gap-2 right-0  justify-end pr-5">
-              <button className=' bg-white border border-black py-1  w-[90px] text-lg rounded-full hover:bg-red-500 hover:border-none hover:text-white font-medium' onClick={() => setShowCustmEditModal(false)}>Cancel</button>
-              <button className=' bg-blue-700  py-1  w-[90px] text-lg rounded-full hover:bg-blue-500 hover:border-none text-white  font-medium'>Save</button>
-            </div>
-
-
-
-
-
-          </div>
+      {/* Search & Filter */}
+      <div className="flex gap-3 mb-5">
+        <div className="relative flex items-center border border-slate-300 bg-white rounded-md px-3 w-full max-w-md shadow-sm">
+          <SearchIcon className="text-gray-500" />
+          <input
+            type="text"
+            placeholder="Search..."
+            className="ml-2 w-full h-10 bg-transparent focus:outline-none text-black"
+          />
         </div>
-
-      )}
-      {showCustmAddModal && (
-        <div className='flex w-full h-full justify-center items-center bg-black bg-opacity-50 fixed top-0 left-0 z-50'>
-          <div className='w-[700px] h-[450px] bg-white rounded-md text-black p-3 overflow-auto scrollbar-hide'>
-            <div className="text-green-800 m-3 text-xl  border-b-2 border-slate-300 py-2 font-sans font-semibold flex gap-2 items-center"><ArrowBackIcon onClick={() => setShowCustmAddModal(false)} className='cursor-pointer text-black' />Add Customer</div>
-
-            <Box
-              component="form"
-              sx={{ '& .MuiTextField-root': { m: 1, width: '25ch' } }}
-              noValidate
-              autoComplete="off"
-            >
-              <div>
-                <TextField
-                  required
-                  id="cName-edit"
-                  label="Customer name"
-                />
-                <TextField
-                  required
-                  id="email-edit"
-                  label="Email ID"
-                  type='email'
-                />
-                <TextField
-                  required
-                  id="email-edit"
-                  label="Phone number"
-                  type='number'
-                />
-                <TextField
-                  required
-                  id="orders-edit"
-                  label="Orders"
-
-                />
-                <TextField
-                  id="ttlSpend-edit"
-                  label="Total Spend"
-                  type="number"
-
-                />
-
-              </div>
-
-            </Box>
-
-            <div className="relative w-full flex gap-2 right-0  justify-end pr-5">
-              <button className=' bg-white border border-black py-1  w-[90px] text-lg rounded-full hover:bg-red-500 hover:border-none hover:text-white font-medium' onClick={() => setShowCustmAddModal(false)}>Cancel</button>
-              <button className=' bg-green-700  py-1  w-[90px] text-lg rounded-full hover:bg-green-500 hover:border-none text-white  font-medium'>Save</button>
-            </div>
-
-
-
-
-
-          </div>
+        <div className="w-10 h-10 flex items-center justify-center border border-slate-300 bg-white rounded-md shadow-sm cursor-pointer">
+          <FilterAltIcon />
         </div>
+      </div>
+{
+    console.log("uuuuuuuuuuuuuuuuuu",selectedUser)
 
-      )}
-
-    </>
-  )
 }
+      {/* User Table */}
+      <div className="rounded-xl bg-white shadow-lg overflow-x-auto">
+        <table className="w-full min-w-[1200px] border-separate border-spacing-y-2 text-sm">
+          <thead className="bg-blue-100 text-slate-700 font-semibold uppercase text-xs sticky top-0 shadow-sm z-10">
+            <tr>
+              <th className="px-3 py-2 text-left"><Checkbox /></th>
+              <th className="px-3 py-2 text-left">Avatar</th>
+              <th className="px-3 py-2 text-left">Name</th>
+              <th className="px-3 py-2 text-left">Email</th>
+              <th className="px-3 py-2 text-left">Phone</th>
+              <th className="px-3 py-2 text-left">Last Login</th>
+              <th className="px-3 py-2 text-center">Orders</th>
+              <th className="px-3 py-2 text-center">Cart</th>
+              <th className="px-3 py-2 text-center">Wishlist</th>
+              <th className="px-3 py-2 text-left">Address</th>
+              <th className="px-3 py-2 text-left">Status</th>
+              <th className="px-3 py-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => (
+              <tr key={user._id} className="bg-slate-50 hover:bg-slate-100 rounded-lg shadow-sm transition"
+              
+                      onClick={()=>handleSelectUser(user)}
+              >
+                <td className="px-3 py-3"><Checkbox /></td>
+                <td className="px-3 py-3">
+                  <img src={user.avatar} alt="avatar" className="w-10 h-10 rounded-full object-cover border" />
+                </td>
+                <td className="px-3 py-3 font-medium text-slate-800">{user.name}</td>
+                <td className="px-3 py-3 text-slate-600">{user.email}</td>
+                <td className="px-3 py-3 text-slate-600">{user.phone}</td>
+                <td className="px-3 py-3 text-slate-600 whitespace-nowrap">
+                  {user.last_login_date && (
+                    <>
+                      {new Date(user.last_login_date).toLocaleDateString("en-IN", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}{" "}
+                      {new Date(user.last_login_date).toLocaleTimeString("en-IN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </>
+                  )}
+                </td>
+                <td className="px-3 py-3 text-center text-xl text-blue-700 font-semibold">{user.orders.length}</td>
+                <td className="px-3 py-3 text-center text-xl text-blue-700 font-semibold">{user.shopping_cart.length}</td>
+                <td className="px-3 py-3 text-center text-xl text-blue-700 font-semibold">{user.wishlist.length}</td>
+                <td className="px-3 py-3 text-slate-600 whitespace-nowrap">
+                  {user?.address_details?.[0]?.address}, {user?.address_details?.[0]?.city}
+                </td>
+                <td className="px-3 py-3">
+                  <span className={`px-3 py-1 text-xs font-semibold rounded-full 
+                    ${user.status === 'Active' ? 'bg-green-100 text-green-800' :
+                      user.status === 'Inactive' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'}`}>
+                    {user.status}
+                  </span>
+                </td>
+                <td className="px-3 py-3 flex gap-2 items-center">
+                  <ModeEditOutlineIcon
+                    className="text-sky-600 hover:text-sky-800 cursor-pointer"
+                  />
+                  <DeleteOutlineIcon className="text-rose-600 hover:text-rose-800 cursor-pointer" />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-export default Customers
+      {/* Pagination */}
+      <TablePagination
+        rowsPerPageOptions={[10, 20, 30]}
+        component="div"
+        count={users.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        className="mt-4"
+      />
+
+
+            {selectedUser && (
+              <div className='flex w-full h-full justify-center items-center bg-black bg-opacity-50 fixed top-0 left-0 z-50'
+              >
+                    <div className='w-[90%] h-[90%] bg-white rounded-md text-black py-3 px-6 overflow-auto scrollbar-hide'>
+
+                      <div className='borderf  flex justify-between items-center'>
+
+                        <h1 className='text-black text-lg '>_id: <span className='text-indigo-900 text-lg
+                         font-semibold'>{selectedUser._id}</span></h1>
+                         <IoMdClose className='hover:bg-slate-100 rounded-full text-red-600 text-4xl p-1' onClick={()=>setSelectedUser(null)}/>
+                         
+
+                      </div>
+
+                     <div className='flex justify-between h-auto my-3'>
+                      <div> <p className='py-1 text-black font-semibold font-sans text-xl'>User name: <span className='text-blue-900'>{selectedUser.name}</span></p>
+                      <p className='py-1 text-black font-semibold font-sans text-xl'>Phone: <span className='py-1 text-blue-900'>{selectedUser.phone}</span></p><p className='py-1 text-black font-semibold font-sans text-xl'>User email: <span className='py-1 text-blue-900'>{selectedUser.email}</span></p> </div>
+
+
+                      <div className='w-[100px] h-auto] border-2 border-slate-40-'>
+                        <img src={selectedUser?.avatar} alt="" className='w-full h-auto'/>
+                      </div>
+                     </div>
+                     <div className="grid grid-cols-2 gap-3">
+                      <h1 className="text-black font-semibold">Address</h1>
+                      <p></p>
+                      {selectedUser?.address_details.length>0 && selectedUser?.address_details?.map((address, index)=>{
+                        return(
+                          <div key={index} className="border border-gray-400  rounded-md p-3">
+                              <p><b>_id: </b>{address?._id}</p>
+                              <p><b>{address?.name}</b></p>
+                              <p>{address?.phone}, {address?.altPhone}</p> 
+                              <p>{address?.address}, {address?.city}</p> 
+                              <p>{address?.locality}</p> 
+                              <p>{address?.landmark}</p> 
+                              <p>{address?.state}-{address?.pin}</p> 
+                              <p>createdAt: {address?.createdAt}</p> 
+                              <p>updatedAt: {address?.updatedAt}</p> 
+
+
+
+
+
+
+                      </div>
+                        )
+                      })}
+                     </div>
+                     <div  className="border border-gray-400  rounded-md p-3 mt-3">
+                              <p><b>User since: </b> {selectedUser?.createdAt}</p>
+                              <p><b>Last Log in: </b>{selectedUser?.last_login_date}</p>
+                              <p><b>OTP: </b>{selectedUser?.otp}</p>  
+                              <p><b>OTP expires: </b>{selectedUser?.otpExpires}</p>  
+                              <p><b>Email verified: </b>{selectedUser?.verify_email}</p>  
+                              <p><b>Updated at: </b>{selectedUser?.updatedAt}</p> 
+                              <div>
+                                <b>Orders: </b><br /> 
+                                {
+                                  selectedUser?.orders.map((order, index)=>{
+                                    return(
+                                      <div key={index} className='text-black'>
+                                      <b>Order ID: {order}</b>
+                                    </div>
+                                    )
+                                  })
+                                }
+                                </div>  
+                              <p><b>Cart: </b>{selectedUser?.shopping_cart.length}</p>  
+                              <p><b>Wishlist: </b>{selectedUser?.wishlist.length}</p>  
+
+
+
+
+
+
+
+
+
+                      </div>
+
+                      </div>
+
+              </div>
+            )}
+
+      
+    </div>
+  );
+};
+
+export default Admins;

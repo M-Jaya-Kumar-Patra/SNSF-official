@@ -11,6 +11,7 @@ import SessionGuard from "@/components/SessionGuard";
 import { CatProvider } from "./context/CategoryContext";
 import { Inter } from "next/font/google";
 import { PrdProvider } from "./context/ProductContext";
+import { OrdersProvider } from "./context/OrdersContext";
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "700"] });
 
@@ -31,7 +32,8 @@ export default function RootLayout({ children }) {
             <AuthProvider>
               <PrdProvider>
                 <CatProvider>
-                <AlertProvider>
+                  <OrdersProvider>
+                    <AlertProvider>
                   <CartProvider>
                     <Navbar />
                     <main className="min-h-screen flex flex-col">
@@ -40,6 +42,7 @@ export default function RootLayout({ children }) {
                     </main>
                   </CartProvider>
                 </AlertProvider>
+                  </OrdersProvider>
               </CatProvider>
               </PrdProvider>
             </AuthProvider>

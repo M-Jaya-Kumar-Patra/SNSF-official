@@ -14,6 +14,9 @@ import { AuthContext, AuthProvider } from "./context/AuthContext.js"; // Adjust 
 import SessionSync from "./session-store";
 import { CatProvider } from "./context/CategoryContext";
 import { PrdProvider } from "./context/ProductContext";
+import { ItemProvider } from "./context/ItemContext";
+import { WishlistProvider } from "./context/WishlistContext";
+import { OrdersProvider } from "./context/OrdersContext";
 
 
 // import { LoginProvider } from "./context/LoginContext"; // 👈 Add this
@@ -36,29 +39,34 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="icon" href="/favicon-32x32.png" type="image/png" />
       </head>
-      <body className={inter.className}>
-        <SessionWrapper>
-            {/* <SessionSync /> */}
-          {/* <UserProvider> */}
-            <AuthProvider>
-            <CatProvider>
-            <PrdProvider>
-              <AlertProvider>
-                <CartProvider>
-                  <Navbar />
-                  <main className="min-h-screen flex flex-col">
-                    {children}
-                  </main>
-                  <Footer />
-                  <Toaster position="top-right" />
-                </CartProvider>
-              </AlertProvider>
-            </PrdProvider>
-            </CatProvider>
-            </AuthProvider>
-          {/* </UserProvider> */}
-        </SessionWrapper>
-      </body>
+        <body className={inter.className}>
+          <AlertProvider>
+            <SessionWrapper>
+              <AuthProvider>
+                <OrdersProvider>
+                  <ItemProvider>
+                    <CatProvider>
+                      <WishlistProvider>
+                        <PrdProvider>
+                          <CartProvider>
+                            <Navbar />
+
+                            <main className="min-h-screen flex flex-col">
+                              {children}
+                            </main>
+
+                            <Footer />
+                            <Toaster position="top-right" />
+                          </CartProvider>
+                        </PrdProvider>
+                      </WishlistProvider>
+                    </CatProvider>
+                  </ItemProvider>
+                </OrdersProvider>
+              </AuthProvider>
+            </SessionWrapper>
+          </AlertProvider>
+        </body>
     </html>
   );
 }

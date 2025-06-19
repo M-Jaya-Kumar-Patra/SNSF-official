@@ -11,6 +11,7 @@ import fs from 'fs';
 import { error } from "console";
 import { hash } from "crypto";
 import AddressModel from "../models/address.model.js";
+import ReviewModel from "../models/reviews.model.js";
 
 cloudinary.config({
     cloud_name: process.env.cloudinary_Config_Cloud_Name,
@@ -1200,3 +1201,150 @@ export async function resendOTP(request, response){
         });
     }
 }
+
+
+
+//review controller
+
+export async function addReview(request, response) {
+    try {
+
+        const { userName, review, rating,  productId, orderId } = request.body
+
+        const userReview = new ReviewModel({
+            // image: image,
+            userName: userName,
+            review: review,
+            rating: rating,
+            // userId: userId,
+            productId: productId,
+            orderId : orderId
+            
+        })
+
+        await userReview.save();
+
+
+        return response.status(200).json({
+            message: "Review add successfully",
+            error: false,
+            success: true
+        })
+        
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || "Server Error",
+            error: true,
+            success: false
+        });
+    }
+}
+
+export async function getReviews(request, response) {
+    try {
+
+        const productId = request.query.productId;
+        
+        const reviews = await ReviewModel.find({productId: productId})
+        
+        console.log(reviews, "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp")
+        if(!reviews){
+            return response.status(400).json({
+                error: true,
+                success: false,
+                message: "No reviews found"
+            })
+        }
+
+        return response.status(200).json({
+            error: false,
+            success: true,
+            reviews: reviews
+        })
+        
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || "Server Error",
+            error: true,
+            success: false
+        });
+    }
+}
+
+
+import ProductModel from "../models/product.model.js";
+import CategoryModel from "../models/category.model.js";
+
+export async function getRelatedProductsByCategory(req, res) {
+  try {
+    const { productId } = req.query;
+
+    if (!productId) {
+      return res.status(400).json({
+        success: false,
+        error: true,
+        message: "Product ID is required"
+      });
+    }
+
+    const product = await ProductModel.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: true,
+        message: "Product not found"
+      });
+    }
+
+    const { catId, subCatId, thirdSubCatId } = product;
+
+    const relatedProducts = await ProductModel.find({
+      $or: [
+        { catId: catId },
+        { subCatId: catId },
+        { thirdSubCatId: catId },
+        { catId: subCatId },
+        { subCatId: subCatId },
+        { thirdSubCatId: subCatId },
+        { catId: thirdSubCatId },
+        { subCatId: thirdSubCatId },
+        { thirdSubCatId: thirdSubCatId },
+      ]
+    });
+
+    return res.status(200).json({
+      success: true,
+      error: false,
+      products: relatedProducts
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: true,
+      message: error.message || "Server Error"
+    });
+  }
+}
+
+
+
+export async function getAllUsers(req, res) {
+  try {
+    const users = await UserModel.find().select("-password").populate("address_details").populate("orders"); // exclude password
+
+    return res.status(200).json({
+      success: true,
+      error: false,
+      users,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: true,
+      message: error.message || "Server Error",
+    });
+  }
+}
+

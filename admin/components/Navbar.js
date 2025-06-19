@@ -33,7 +33,7 @@ const Navbar = () => {
     setState({ ...state, [anchor]: open });
   };
 
-  const navItems = ['Dashboard', 'Products', 'Categories', 'Subcategories' , 'Admins', 'Customers', 'HomeSlider'];
+  const navItems = ['Dashboard', 'Products', 'Categories', 'Subcategories' , 'Users', 'Customers', 'HomeSlider'];
   const Router = useRouter();
 
   const list = () => (

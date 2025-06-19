@@ -11,29 +11,22 @@
     const router = useRouter()
     const [userData, setUserData] = useState(null);
     const [isLogin, setIsLogin] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);///////////////////
 
     useEffect(() => {
-      console.log("ac1")
       const token = localStorage.getItem("accessToken")
-      console.log("ac2")
       const email = localStorage.getItem("email")
-      console.log("ac3")
       if (userData?._id || userData?.id) {
     localStorage.setItem("userId", userData._id || userData.id);
   }
 
+
       if (!token) { 
-      console.log("ac4")
       
         setIsLogin(false);
-      console.log("ac5")
 
         setUserData(null);
-      console.log("ac6")
-
       setLoading(false);
-      console.log("ac7")
         return;
       }
 
@@ -59,8 +52,12 @@
       try {
         const response = await fetchDataFromApi("/api/user/user-details");
         if (!response.error) {
+          console.log("hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii", response)
           setUserData(response.data);
+          //////////////////////spot-2
           setIsLogin(true);
+// router.push("/profile");
+
         } else {
           console.error("API error:", response.message);
           if (response.message === "Something is wrong") {
@@ -93,7 +90,7 @@
     };
 
     return (
-      <AuthContext.Provider value={{ userData, isLogin, setIsLogin, setUserData, loading, setLoading, login, logout}}>
+      <AuthContext.Provider value={{ userData, isLogin, setIsLogin, setUserData, loading, setLoading, login, logout, fetchUserDetails}}>
         {children}
       </AuthContext.Provider>
     );

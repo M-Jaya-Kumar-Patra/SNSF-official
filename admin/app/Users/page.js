@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
@@ -14,125 +14,130 @@ import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CloseIcon from '@mui/icons-material/Close';
+import { fetchDataFromApi } from '@/utils/api';
+import { IoMdClose } from "react-icons/io";
+
+
+
 
 const Admins = () => {
-  const [admins, setAdmins] = useState([
-    {
-      id: "U001",
-      name: "Ravi Kumar",
-      email: "ravi.kumar@example.com",
-      phone: 9876543210,
-      password: "mypassword123",
-      avatar: "https://via.placeholder.com/40",
-      verify_email: true,
-      last_login_date: "2024-12-01",
-      status: "Active",
-    },
-    {
-      id: "U002",
-      name: "Anjali Mehta",
-      email: "anjali.mehta@example.com",
-      phone: 9988776655,
-      password: "securepass456",
-      avatar: "https://via.placeholder.com/40",
-      verify_email: false,
-      last_login_date: "2024-11-15",
-      status: "Suspended",
-    },
-    {
-      id: "U003",
-      name: "Shubham Roy",
-      email: "shubham.roy@example.com",
-      phone: 9123456789,
-      password: "testpass789",
-      avatar: "https://via.placeholder.com/40",
-      verify_email: true,
-      last_login_date: "2025-01-10",
-      status: "Inactive",
-    },
-  ]);
-
+  const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [selectedAdmin, setSelectedAdmin] = useState(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newAdmin, setNewAdmin] = useState({ name: '', email: '', phone: '', password: '' });
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [selectedUser, setSelectedUser] = useState(null)
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+  useEffect(() => {
+    fetchDataFromApi(`/api/user/getAllUsers`).then((res) => {
+      if (!res.error) {
+        setUsers(res.users);
+      } else {
+        alert("No users found");
+      }
+    });
+  }, []);
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
+  const handleChangePage = (_, newPage) => setPage(newPage);
+  const handleChangeRowsPerPage = (e) => {
+    setRowsPerPage(+e.target.value);
     setPage(0);
   };
 
-  const handleAddAdmin = () => {
-    const id = `U00${admins.length + 1}`;
-    setAdmins([...admins, { ...newAdmin, id, avatar: "https://via.placeholder.com/40", verify_email: false, last_login_date: "", status: "Active" }]);
-    setNewAdmin({ name: '', email: '', phone: '', password: '' });
-    setShowAddModal(false);
-  };
+  const handleSelectUser = (user)=>{
+    setSelectedUser(user)
+  }
+
 
   return (
-    <div className="w-full p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-blue-900 font-sans text-xl font-semibold">Manage Admins</h1>
-        <button className="p-2 bg-green-700 text-white rounded-md" onClick={() => setShowAddModal(true)}>Add New Admin</button>
+    <div className="p-6 max-w-screen overflow-x-auto bg-gradient-to-tr from-white via-blue-50 to-cyan-50 min-h-screen font-sans">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-blue-800 tracking-wide">Manage Users</h1>
+        
       </div>
 
-      <div className="flex gap-3 mb-4">
-        <div className="relative w-full h-10 px-2 gap-2 border border-slate-300 rounded-md flex items-center">
-          <SearchIcon className="text-gray-600" />
-          <input type="text" placeholder="Search..." className="outline-none w-full text-black" />
+      {/* Search & Filter */}
+      <div className="flex gap-3 mb-5">
+        <div className="relative flex items-center border border-slate-300 bg-white rounded-md px-3 w-full max-w-md shadow-sm">
+          <SearchIcon className="text-gray-500" />
+          <input
+            type="text"
+            placeholder="Search..."
+            className="ml-2 w-full h-10 bg-transparent focus:outline-none text-black"
+          />
         </div>
-        <div className="h-10 w-10 border border-slate-300 rounded-md flex items-center justify-center cursor-pointer">
+        <div className="w-10 h-10 flex items-center justify-center border border-slate-300 bg-white rounded-md shadow-sm cursor-pointer">
           <FilterAltIcon />
         </div>
       </div>
+{
+    console.log("uuuuuuuuuuuuuuuuuu",selectedUser)
 
-      <div className="overflow-y-auto max-h-[400px]">
-        <table className="w-full text-center border-collapse border border-slate-200 shadow-sm">
-          <thead className="h-12 bg-blue-100 border-b border-slate-300">
+}
+      {/* User Table */}
+      <div className="rounded-xl bg-white shadow-lg overflow-x-auto">
+        <table className="w-full min-w-[1200px] border-separate border-spacing-y-2 text-sm">
+          <thead className="bg-blue-100 text-slate-700 font-semibold uppercase text-xs sticky top-0 shadow-sm z-10">
             <tr>
-              <th className="w-[50px]"><Checkbox /></th>
-              <th className="text-black">Avatar</th>
-              <th className="text-black">Name</th>
-              <th className="text-black">Email</th>
-              <th className="text-black">Phone</th>
-              <th className="text-black">Password</th>
-              <th className="text-black">Verified Email</th>
-              <th className="text-black">Last Login</th>
-              <th className="text-black">Status</th>
-              <th className="text-black">Actions</th>
+              <th className="px-3 py-2 text-left"><Checkbox /></th>
+              <th className="px-3 py-2 text-left">Avatar</th>
+              <th className="px-3 py-2 text-left">Name</th>
+              <th className="px-3 py-2 text-left">Email</th>
+              <th className="px-3 py-2 text-left">Phone</th>
+              <th className="px-3 py-2 text-left">Last Login</th>
+              <th className="px-3 py-2 text-center">Cart</th>
+              <th className="px-3 py-2 text-center">Wishlist</th>
+              <th className="px-3 py-2 text-left">Address</th>
+              <th className="px-3 py-2 text-left">Status</th>
+              <th className="px-3 py-2 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {admins.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((admin) => (
-              <tr key={admin.id} className="border-b border-slate-200">
-                <td><Checkbox /></td>
-                <td>
-                  <img src={admin.avatar} alt="avatar" className="w-10 h-10 rounded-full mx-auto" />
+            {users?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => (
+              <tr key={user._id} className="bg-slate-50 hover:bg-slate-100 rounded-lg shadow-sm transition"
+              
+                      onClick={()=>handleSelectUser(user)}
+              >
+                <td className="px-3 py-3"><Checkbox /></td>
+                <td className="px-3 py-3">
+                  <img src={user.avatar} alt="avatar" className="w-10 h-10 rounded-full object-cover border" />
                 </td>
-                <td className="text-black">{admin.name}</td>
-                <td className="text-black">{admin.email}</td>
-                <td className="text-black">{admin.phone}</td>
-                <td className="text-black">{showPassword ? admin.password : '********'}</td>
-                <td className="text-black">{admin.verify_email ? 'Yes' : 'No'}</td>
-                <td className="text-black">{admin.last_login_date}</td>
-                <td className="text-black">
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    admin.status === 'Active' ? 'bg-green-100 text-green-700' :
-                    admin.status === 'Inactive' ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-red-100 text-red-700'
-                  }`}>
-                    {admin.status}
+                <td className="px-3 py-3 font-medium text-slate-800">{user.name}</td>
+                <td className="px-3 py-3 text-slate-600">{user.email}</td>
+                <td className="px-3 py-3 text-slate-600">{user.phone}</td>
+                <td className="px-3 py-3 text-slate-600 whitespace-nowrap">
+                  {user.last_login_date && (
+                    <>
+                      {new Date(user.last_login_date).toLocaleDateString("en-IN", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}{" "}
+                      {new Date(user.last_login_date).toLocaleTimeString("en-IN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </>
+                  )}
+                </td>
+                <td className="px-3 py-3 text-center text-blue-700 font-semibold">{user.shopping_cart.length}</td>
+                <td className="px-3 py-3 text-center text-blue-700 font-semibold">{user.wishlist.length}</td>
+                <td className="px-3 py-3 text-slate-600 whitespace-nowrap">
+                  {user?.address_details?.[0]?.address}, {user?.address_details?.[0]?.city}
+                </td>
+                <td className="px-3 py-3">
+                  <span className={`px-3 py-1 text-xs font-semibold rounded-full 
+                    ${user.status === 'Active' ? 'bg-green-100 text-green-800' :
+                      user.status === 'Inactive' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'}`}>
+                    {user.status}
                   </span>
                 </td>
-                <td>
-                  <ModeEditOutlineIcon className="text-blue-600 cursor-pointer mr-2" onClick={() => setSelectedAdmin(admin)} />
-                  <DeleteOutlineIcon className="text-red-600 cursor-pointer" />
+                <td className="px-3 py-3 flex gap-2 items-center">
+                  <ModeEditOutlineIcon
+                    className="text-sky-600 hover:text-sky-800 cursor-pointer"
+                  />
+                  <DeleteOutlineIcon className="text-rose-600 hover:text-rose-800 cursor-pointer" />
                 </td>
               </tr>
             ))}
@@ -140,74 +145,94 @@ const Admins = () => {
         </table>
       </div>
 
+      {/* Pagination */}
       <TablePagination
-        rowsPerPageOptions={[5, 10, 15]}
+        rowsPerPageOptions={[10, 20, 30]}
         component="div"
-        count={admins.length}
+        count={users.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
+        className="mt-4"
       />
 
-      <Modal open={!!selectedAdmin} onClose={() => setSelectedAdmin(null)}>
-        <Box className="absolute top-1/2 left-1/2 bg-white p-6 rounded-md shadow-lg w-[400px] -translate-x-1/2 -translate-y-1/2">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-blue-700">Edit Admin</h2>
-            <IconButton onClick={() => setSelectedAdmin(null)}><CloseIcon /></IconButton>
-          </div>
-          {selectedAdmin && (
-            <form className="flex flex-col gap-3">
-              <TextField label="Name" defaultValue={selectedAdmin.name} fullWidth />
-              <TextField label="Email" defaultValue={selectedAdmin.email} fullWidth />
-              <TextField label="Phone" defaultValue={selectedAdmin.phone} fullWidth />
-              <TextField 
-                label="Password"
-                type={showPassword ? "text" : "password"}
-                defaultValue={selectedAdmin.password}
-                fullWidth
-                InputProps={{
-                  endAdornment: (
-                    <IconButton onClick={() => setShowPassword(!showPassword)}>
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  )
-                }}
-              />
-              <button type="button" className="mt-2 bg-blue-700 text-white py-2 rounded-md hover:bg-blue-600">Save Changes</button>
-            </form>
-          )}
-        </Box>
-      </Modal>
 
-      <Modal open={showAddModal} onClose={() => setShowAddModal(false)}>
-        <Box className="absolute top-1/2 left-1/2 bg-white p-6 rounded-md shadow-lg w-[400px] -translate-x-1/2 -translate-y-1/2">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-green-700">Add New Admin</h2>
-            <IconButton onClick={() => setShowAddModal(false)}><CloseIcon /></IconButton>
-          </div>
-          <form className="flex flex-col gap-3">
-            <TextField label="Name" value={newAdmin.name} onChange={(e) => setNewAdmin({ ...newAdmin, name: e.target.value })} fullWidth />
-            <TextField label="Email" value={newAdmin.email} onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })} fullWidth />
-            <TextField label="Phone" value={newAdmin.phone} onChange={(e) => setNewAdmin({ ...newAdmin, phone: e.target.value })} fullWidth />
-            <TextField 
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              value={newAdmin.password}
-              onChange={(e) => setNewAdmin({ ...newAdmin, password: e.target.value })}
-              fullWidth
-              InputProps={{
-                endAdornment: (
-                  <IconButton onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                )
-              }}
-            />
-            <button type="button" className="mt-2 bg-green-700 text-white py-2 rounded-md hover:bg-green-600" onClick={handleAddAdmin}>Add Admin</button>
-          </form>
-        </Box>
-      </Modal>
+            {selectedUser && (
+              <div className='flex w-full h-full justify-center items-center bg-black bg-opacity-50 fixed top-0 left-0 z-50'
+              >
+                    <div className='w-[90%] h-[90%] bg-white rounded-md text-black py-3 px-6 overflow-auto scrollbar-hide'>
+
+                      <div className='borderf  flex justify-between items-center'>
+
+                        <h1 className='text-black text-lg '>_id: <span className='text-indigo-900 text-lg
+                         font-semibold'>{selectedUser._id}</span></h1>
+                         <IoMdClose className='hover:bg-slate-100 rounded-full text-red-600 text-4xl p-1' onClick={()=>setSelectedUser(null)}/>
+                         
+
+                      </div>
+
+                     <div className='flex justify-between h-auto my-3'>
+                      <div> <p className='py-1 text-black font-semibold font-sans text-xl'>User name: <span className='text-blue-900'>{selectedUser.name}</span></p>
+                      <p className='py-1 text-black font-semibold font-sans text-xl'>Phone: <span className='py-1 text-blue-900'>{selectedUser.phone}</span></p><p className='py-1 text-black font-semibold font-sans text-xl'>User email: <span className='py-1 text-blue-900'>{selectedUser.email}</span></p> </div>
+
+
+                      <div className='w-[100px] h-auto] border-2 border-slate-40-'>
+                        <img src={selectedUser?.avatar} alt="" className='w-full h-auto'/>
+                      </div>
+                     </div>
+                     <div className="grid grid-cols-2 gap-3">
+                      <h1 className="text-black font-semibold">Address</h1>
+                      <p></p>
+                      {selectedUser?.address_details.length>0 && selectedUser?.address_details?.map((address, index)=>{
+                        return(
+                          <div key={index} className="border border-gray-400  rounded-md p-3">
+                              <p><b>_id: </b>{address?._id}</p>
+                              <p><b>{address?.name}</b></p>
+                              <p>{address?.phone}, {address?.altPhone}</p> 
+                              <p>{address?.address}, {address?.city}</p> 
+                              <p>{address?.locality}</p> 
+                              <p>{address?.landmark}</p> 
+                              <p>{address?.state}-{address?.pin}</p> 
+                              <p>createdAt: {address?.createdAt}</p> 
+                              <p>updatedAt: {address?.updatedAt}</p> 
+
+
+
+
+
+
+                      </div>
+                        )
+                      })}
+                     </div>
+                     <div  className="border border-gray-400  rounded-md p-3 mt-3">
+                              <p><b>User since: </b> {selectedUser?.createdAt}</p>
+                              <p><b>Last Log in: </b>{selectedUser?.last_login_date}</p>
+                              <p><b>OTP: </b>{selectedUser?.otp}</p>  
+                              <p><b>OTP expires: </b>{selectedUser?.otpExpires}</p>  
+                              <p><b>Email verified: </b>{selectedUser?.verify_email}</p>  
+                              <p><b>Updated at: </b>{selectedUser?.updatedAt}</p> 
+                              <p><b>Order: </b>{selectedUser?.orders.length}</p>  
+                              <p><b>Cart: </b>{selectedUser?.shopping_cart.length}</p>  
+                              <p><b>Wishlist: </b>{selectedUser?.wishlist.length}</p>  
+
+
+
+
+
+
+
+
+
+                      </div>
+
+                      </div>
+
+              </div>
+            )}
+
+      
     </div>
   );
 };

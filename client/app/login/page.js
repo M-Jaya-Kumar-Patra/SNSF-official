@@ -30,7 +30,7 @@ export default function Login() {
   const router = useRouter();
   const alert = useAlert();
 
-  const { isLogin, login, setIsLogin, setLoading, loading, userData } = useAuth();
+  const { isLogin, login, setIsLogin, setLoading, loading, userData, setUserData, fetchUserDetails } = useAuth();
 
   // Redirect if already logged in
   // Redirect if already logged in
@@ -40,7 +40,7 @@ export default function Login() {
     } else {
       setCheckingAuth(false); // allow rendering login form
     }
-  }, [isLogin, router]);
+  }, [isLogin, router, userData]);
 
   // Show alert after redirect (like from signup)
   useEffect(() => {
@@ -91,21 +91,29 @@ export default function Login() {
 
       if (!response.error && response.data?.accessToken) {
         alert.alertBox({ type: "success", msg: "Logged in successfully" });
-
+        
         // Save tokens and login
         const token = response.data.accessToken;
         console.log(response?.data, token)
         login(response.data, token);
-
+          
         localStorage.setItem("accessToken", token);
         localStorage.setItem("refreshToken", response.data.refreshToken);
         setFormFields({ email: "", password: "" });
         console.log("form fields set")
-
-
+        
+        
         localStorage.setItem("email",(response.data.email))
         setIsLogin(true);
+
+
+          login(response.data, token); // Already sets userData
+
         router.push("/profile");
+/////////////////////////////////////////---------------spot 1
+        console.log("userData?.Idccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", response.data)
+
+        console.log("userData?.Idccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", userData)
       } else {
         alert.alertBox({ type: "error", msg: response?.message || "Login failed" });
         setFormFields({ email: "", password: "" });

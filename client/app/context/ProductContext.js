@@ -7,18 +7,24 @@ const PrdContext = createContext();
 
 const PrdProvider = ({ children }) => {
   const [prdData, setPrdData] = useState();
+  
+   
+   const [productsData, setProductsData] = useState([]);
 
-   useEffect(() => {
-      fetchDataFromApi("/api/product/gaps", false).then((response) => {
+   const getProductsData = () =>{
+    fetchDataFromApi("/api/product/gaps", false).then((response) => {
         if (!response.error) {
           setPrdData(response?.data)
         }
       })
+   }
+   useEffect(() => {
+      getProductsData()
     }, [])
   
 
   return (
-    <PrdContext.Provider value={{ prdData, setPrdData }}>
+    <PrdContext.Provider value={{ prdData, setPrdData, productsData, setProductsData, getProductsData }}>
       {children}
     </PrdContext.Provider>
   );

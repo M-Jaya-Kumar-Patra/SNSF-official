@@ -23,6 +23,8 @@ import { useRouter } from 'next/navigation';
 import { BsPCircle } from "react-icons/bs";
 import { AiFillProduct } from "react-icons/ai";
 import { usePrd } from './context/ProductContext';
+import Orders from './Orders/page';
+import { useOrders } from './context/OrdersContext';
 
 
 
@@ -36,6 +38,7 @@ const Home = () => {
    const [state, setState] = useState({ right: false });
     const [selectedText, setSelectedText] = useState("Dashboard");
     const anchor = 'right';
+    const {OrdersData} = useOrders()
 
     const router = useRouter()
   
@@ -45,11 +48,7 @@ const Home = () => {
     };
 
 
-    useEffect(()=>{
-      if(!isLogin){
-        router.push("/login")
-      }
-    })
+    
 
 
 
@@ -74,7 +73,9 @@ const Home = () => {
       };
 
 
-
+      const countPendingOrders = () => {
+  return OrdersData?.filter(order => order?.order_Status === "Pending").length || 0;
+};
 
 
 
@@ -82,7 +83,7 @@ const Home = () => {
     <>
     {isLogin && <div>
       <div className="w-full flex justify-center">
-        <div className='w-[1150px] px-6'>
+        <div className='w-[full] px-6'>
           <h1 className='text-blue-900 font-sans text-xl font-semibold p-4 pl-0 py-1 rounded-md my-3   '>
             Dashboard
           </h1>
@@ -109,8 +110,8 @@ const Home = () => {
                 <BsPCircle className="w-8 h-8 font-extrabold " />
               </div>
                <div className='w-[60%] '> 
-                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">Total Products</div>
-                <div className='font-bold font-sans text-2xl' >{prdData?.length}</div>
+                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">Pending Orders</div>
+                <div className='font-bold font-sans text-2xl' >{countPendingOrders()}</div>
 
               </div>
                <div className='w-[20%]  flex justify-center items-center'>
@@ -124,8 +125,8 @@ const Home = () => {
                 <BsPCircle className="w-8 h-8 font-extrabold " />
               </div>
                <div className='w-[60%] '> 
-                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">Total Products</div>
-                <div className='font-bold font-sans text-2xl' >{prdData?.length}</div>
+                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">Total Orders</div>
+                <div className='font-bold font-sans text-2xl' >{OrdersData?.length}</div>
 
               </div>
                <div className='w-[20%]  flex justify-center items-center'>
@@ -151,30 +152,9 @@ const Home = () => {
           </ul>
 
           {/* Orders Table */}
-          <table className="w-full text-center border-collapse border border-slate-200 rounded-md shadow-lg">
-            <thead className="h-12 bg-green-200">
-              <tr>
-                <th className="text-black w-1/7 px-4 py-2">Order ID</th>
-                <th className="text-black w-1/7 px-4 py-2">Payment Method</th>
-                <th className="text-black w-1/7 px-4 py-2">Order Date</th>
-                <th className="text-black w-1/7 px-4 py-2">Delivery Date</th>
-                <th className="text-black w-1/7 px-4 py-2">Status</th>
-                <th className="text-black w-1/7 px-4 py-2">Total</th>
-                <th className="text-black w-1/7 px-4 py-2">Action</th>
-              </tr>
-            </thead>
-            <tbody className="bg-slate-50">
-              <tr className="h-auto border-b border-slate-300">
-                <td className="text-black px-4 py-2 align-top">457444854</td>
-                <td className="text-black px-4 py-2 align-top">Cash</td>
-                <td className="text-black px-4 py-2 align-top">7 May 2025</td>
-                <td className="text-black px-4 py-2 align-top">14 May 2025</td>
-                <td className="text-black px-4 py-2 align-top">Pending</td>
-                <td className="text-black px-4 py-2 align-top">4999/-</td>
-                <td className="text-black px-4 py-2 align-top">Edit</td>    
-              </tr>
-            </tbody>
-          </table>
+
+          <Orders/>
+          
         </div>
       </div>
       
