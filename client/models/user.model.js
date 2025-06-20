@@ -1,98 +1,98 @@
-import mongoose from "mongoose";
+  import mongoose from "mongoose";
 
-const IST_OFFSET = 5.5 * 60 * 60 * 1000; // +5:30 in milliseconds
+  const IST_OFFSET = 5.5 * 60 * 60 * 1000; // +5:30 in milliseconds
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "Provide Name"],
-  },
-  email: {
-    type: String,
-    required: [true, "Provide email"],
-    unique: true,
-    lowercase: true,
-    trim: true,
-  },
-  phone: {
-    type: Number,
-    default: "",
-  },
-  password: {
-    type: String,
-    required: function () {
-      return !this.provider || this.provider === "credentials";
+  const userSchema = new mongoose.Schema({
+    name: {
+      type: String,
+      required: [true, "Provide Name"],
     },
-  },
-  provider: { type: String, required: true, default: "credentials" },
-  avatar: {
-    type: String,
-    default: "",
-  },
-  verify_email: {
-    type: Boolean,
-    default: function () {
-      return this.provider === "google" ? true : false;
-    }, // Automatically true if provider is Google
-  },
-  shopping_cart: [{
-    type: mongoose.Schema.Types.ObjectId,
-    default: "",
-  }],
-  wishlist: [{
-    type: mongoose.Schema.Types.ObjectId,
-    default: "",
-  }],
-  orders: [{
-    type: mongoose.Schema.Types.ObjectId,
-    default: "",
-  }],
-  access_token: {
-     type: String, 
-     default: ""
-     },
-  refresh_token: {
-     type: String, 
-     default: ""
+    email: {
+      type: String,
+      required: [true, "Provide email"],
+      unique: true,
+      lowercase: true,
+      trim: true,
     },
-  last_login_date: {
-    type: Date,
-    default: () => new Date(Date.now() + IST_OFFSET),
-  },
-  status: {
-    type: String,
-    enum: ["Active", "Inactive", "Suspended"],
-    default: "Active",
-  },
-  address_details: [
-    {
+    phone: {
+      type: Number,
+      default: "",
+    },
+    password: {
+      type: String,
+      required: function () {
+        return !this.provider || this.provider === "credentials";
+      },
+    },
+    provider: { type: String, required: true, default: "credentials" },
+    avatar: {
+      type: String,
+      default: "",
+    },
+    verify_email: {
+      type: Boolean,
+      default: function () {
+        return this.provider === "google" ? true : false;
+      }, // Automatically true if provider is Google
+    },
+    shopping_cart: [{
       type: mongoose.Schema.Types.ObjectId,
-      ref: "address",
+      default: "",
+    }],
+    wishlist: [{
+      type: mongoose.Schema.Types.ObjectId,
+      default: "",
+    }],
+    orders: [{
+      type: mongoose.Schema.Types.ObjectId,
+      default: "",
+    }],
+    access_token: {
+      type: String, 
+      default: ""
+      },
+    refresh_token: {
+      type: String, 
+      default: ""
+      },
+    last_login_date: {
+      type: Date,
+      default: () => new Date(Date.now() + IST_OFFSET),
     },
-  ],
-  otp: {
-    type: String,
-  },
-  otpExpires: {
-    type: Date,
-  },
-  signUpWithGoogle: {
-    type: Boolean,
-    default: function () {
-      return this.provider === "google";
+    status: {
+      type: String,
+      enum: ["Active", "Inactive", "Suspended"],
+      default: "Active",
     },
-  },
-  googleId: { type: String, unique: true, sparse: true },
-}, { timestamps: true });
+    address_details: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "address",
+      },
+    ],
+    otp: {
+      type: String,
+    },
+    otpExpires: {
+      type: Date,
+    },
+    signUpWithGoogle: {
+      type: Boolean,
+      default: function () {
+        return this.provider === "google";
+      },
+    },
+    googleId: { type: String, unique: true, sparse: true },
+  }, { timestamps: true });
 
-// Pre-save hook to update last_login_date to IST if modified or new
-userSchema.pre("save", function (next) {
-  if (this.isModified("last_login_date") || !this.last_login_date) {
-    this.last_login_date = new Date(Date.now() + IST_OFFSET);
-  }
-  next();
-});
+  // Pre-save hook to update last_login_date to IST if modified or new
+  userSchema.pre("save", function (next) {
+    if (this.isModified("last_login_date") || !this.last_login_date) {
+      this.last_login_date = new Date(Date.now() + IST_OFFSET);
+    }
+    next();
+  });
 
-const UserModel = mongoose.models.User || mongoose.model("User", userSchema);
+  const UserModel = mongoose.models.User || mongoose.model("User", userSchema);
 
-export default UserModel; 
+  export default UserModel; 

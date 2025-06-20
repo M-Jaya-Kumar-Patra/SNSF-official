@@ -76,10 +76,16 @@ const Account = () => {
     const router = useRouter();
     const alert = useAlert();
     const { isLogin, userData, setUserData, isLoading } = useAuth()
-
+    
     const [showAddAddressForm, setShowAddAddressForm] = useState(false);
-
-
+    
+    
+        const [state, setState] = useState('');
+        
+            const [open, setOpen] = React.useState(false);
+            const [selectedAddressId, setSelectedAddressId] = useState(null);
+    
+    
 
 
     const [address, setAddress] = useState({
@@ -94,6 +100,14 @@ const Account = () => {
         altPhone: "", // default country if you're only shipping within India
         addressType: "Home", // default value: Home / Work / Other
     });
+    useEffect(() => {
+        const id = localStorage.getItem("userId");
+        if (id && id !== "undefined" && id !== "null") {
+            fetchAddresses();
+        } else {
+            console.warn("Invalid or missing userId in localStorage");
+        }
+    }, []);
     const [addressArray, setaddressArray] = useState([
         {
             name: userData?.address_details?.name,
@@ -109,7 +123,9 @@ const Account = () => {
         }
     ])
 
+    const [editAddressObj, setEditAddressObj] = useState(null);
 
+    const [showEditModal, setShowEditModal] = useState(false)                               
     if (isLoading) return <CircularProgress />
 
     const fetchAddresses = async () => {
@@ -129,26 +145,14 @@ const Account = () => {
     // }, []); // Add dependencies if needed
 
 
-    useEffect(() => {
-        const id = localStorage.getItem("userId");
-        if (id && id !== "undefined" && id !== "null") {
-            fetchAddresses();
-        } else {
-            console.warn("Invalid or missing userId in localStorage");
-        }
-    }, []);
 
 
-
-
-    const [state, setState] = useState('');
 
     const handleChangeSelectInput = (event) => {
         setState(event.target.value);
     };
 
 
-    const [showEditModal, setShowEditModal] = useState(false)
 
 
 
@@ -212,20 +216,13 @@ const Account = () => {
 
 
 
-  
-
-
 
 
     const handleAddressChange = (e) => {
         setAddress({ ...address, [e.target.name]: e.target.value })
     }
 
-
     const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
-
-    const [open, setOpen] = React.useState(false);
-    const [selectedAddressId, setSelectedAddressId] = useState(null);
 
     const handleClickOpenDeleteAlert = (e, addressId) => {
         e.preventDefault();
@@ -272,7 +269,6 @@ const Account = () => {
         }
     };
 
-    const [editAddressObj, setEditAddressObj] = useState(null);
 
     const toggleEditAddress = (e, addressObj) => {
         e.preventDefault();

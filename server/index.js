@@ -19,7 +19,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://192.168.137.1:3000/'],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'https://snsf.vercel.app/'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true, // ✅ Needed to allow cookies and auth headers
 }));

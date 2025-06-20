@@ -62,7 +62,7 @@
 },
 payment_method:{
     type: String,
-    
+        
 }
         
 
