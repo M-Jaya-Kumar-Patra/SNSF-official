@@ -28,6 +28,8 @@ const Account = () => {
             className="h-[140px] w-[140px] rounded-full object-cover"
             src={userData?.avatar || "/images/account.png"}
             alt="User Profile"
+            width={100}
+            height={100}
           />
           <div className="flex flex-col items-start font-sans text-sm break-words">
             <h2 className="text-gray-700 text-base font-semibold">{userData?.name}</h2>

@@ -60,6 +60,8 @@ const ImageUploader = () => {
             src={url}
             alt={`Preview ${idx}`}
             className="w-28 h-28 rounded border"
+            width={100}
+            height={100}
           />
         ))}
       </div>
