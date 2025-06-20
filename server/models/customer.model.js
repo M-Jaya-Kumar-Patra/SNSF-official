@@ -31,7 +31,7 @@ const customerSchema = mongoose.Schema({
     },
     shopping_cart: [{
         type: mongoose.Schema.ObjectId,
-        ref: "cartProduct"
+        ref: "cartproduct"
     }],
     orderHistory:[{
         type: mongoose.Schema.ObjectId,

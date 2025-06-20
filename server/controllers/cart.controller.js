@@ -1,5 +1,5 @@
 import { request } from "express";
-import CartProductModel from "../models/cartProduct.model.js";
+import cartproductModel from "../models/cartproduct.model.js";
 import UserModel from "../models/user.model.js";
 import AddressModel from "../models/address.model.js";
 import mongoose from "mongoose";
@@ -17,7 +17,7 @@ export const addToCartItemController = async (request, response) => {
       });
     }
 
-    const checkItemCart = await CartProductModel.findOne({ userId, productId });
+    const checkItemCart = await cartproductModel.findOne({ userId, productId });
 
     if (checkItemCart) {
       return response.status(400).json({
@@ -27,7 +27,7 @@ export const addToCartItemController = async (request, response) => {
       });
     }
 
-    const cartItem = await CartProductModel.create({
+    const cartItem = await cartproductModel.create({
       productTitle: productTitle,
       image: image,
       rating: rating,
@@ -78,7 +78,7 @@ export const getCartItemController = async (req, res) => {
       });
     }
 
-    const cartItem = await CartProductModel.find({ userId: userId });
+    const cartItem = await cartproductModel.find({ userId: userId });
 
 
     return res.status(200).json({
@@ -110,7 +110,7 @@ export const updateCartItemQtyController = async (request, response) => {
       })
     }
 
-    const updateCartItem = await CartProductModel.updateOne({
+    const updateCartItem = await cartproductModel.updateOne({
       _id: _id,
       userId: userId
     }, {
@@ -149,7 +149,7 @@ export const deleteCartItemQtyContoller = async (request, response) => {
       });
     }
 
-    const deleteCartItem = await CartProductModel.deleteOne({
+    const deleteCartItem = await cartproductModel.deleteOne({
       _id: _id,
       userId: userId
     });
@@ -214,7 +214,7 @@ export const emptyCartController = async (req, res) => {
     }
 
     // 1. Delete all cart products
-    const result = await CartProductModel.deleteMany({ userId });
+    const result = await cartproductModel.deleteMany({ userId });
 
     // 2. Also clear embedded shopping_cart in user model
     await UserModel.findByIdAndUpdate(userId, {

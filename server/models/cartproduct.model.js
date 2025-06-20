@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const cartProductSchema = mongoose.Schema({
+const cartproductSchema = mongoose.Schema({
     productId: {
         type: String,
         required: true,
@@ -46,6 +46,6 @@ const cartProductSchema = mongoose.Schema({
     { timestamps: true }
 )
 
-const CartProductModel = mongoose.model("CartProduct", cartProductSchema);
+const cartproductModel = mongoose.model("cartproduct", cartproductSchema);
 
-export default CartProductModel
+export default cartproductModel

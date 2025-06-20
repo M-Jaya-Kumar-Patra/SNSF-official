@@ -1,5 +1,5 @@
 import { request } from "express";
-import CartProductModel from "../models/cartProduct.model.js";
+import cartproductModel from "../models/cartproduct.model.js";
 import UserModel from "../models/user.model.js";
 import AddressModel from "../models/address.model.js";
 import mongoose from "mongoose";
