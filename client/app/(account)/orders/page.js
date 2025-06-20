@@ -6,7 +6,6 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
 
 import Navbar from "@/components/Navbar";
 import LogoutBTN from "@/components/LogoutBTN";
@@ -14,7 +13,6 @@ import LogoutBTN from "@/components/LogoutBTN";
 import { useAuth } from "@/app/context/AuthContext";
 import { useOrders } from "@/app/context/OrdersContext";
 import { useWishlist } from "@/app/context/WishlistContext";
-
 import {
     User,
     Package,
@@ -40,7 +38,7 @@ const Account = () => {
 
     useEffect(() => {
         getOrdersItems()
-    }, [])
+    },)
 
 
     return (
@@ -50,10 +48,11 @@ const Account = () => {
                     {/* Left Sidebar */}
                     <div className="left h-fit sticky top-8">
                         <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5   gap-3 flex flex-col justify-center items-center ">
-                            <img
+                            <Image
                                 className="h-[140px] w-[140px] rounded-full object-cover"
                                 src={userData?.avatar || "/images/account.png"}
                                 alt="User Profile"
+                                width={100} height={100}
                             />
                             <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide">
                                 {userData?.name}
@@ -209,10 +208,12 @@ const Account = () => {
                                                         className="w-[120px] h-[100px] flex items-center justify-center bg-white rounded-xl shadow cursor-pointer"
                                                         onClick={() => router.push(`/product/${product?.productId}`)}
                                                     >
-                                                        <img
+                                                        <Image
                                                             src={product?.image || product?.images?.[0]}
                                                             alt={product?.productTitle || "Product"}
                                                             className="max-w-full max-h-full object-contain"
+                                width={100} height={100}
+
                                                         />
                                                     </div>
 

@@ -6,6 +6,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { fetchDataFromApi, postData } from '@/utils/api'
 import { Button, Rating } from '@mui/material'
 import { useAlert } from '@/app/context/AlertContext'
+import Image from 'next/image'
 
 const OrdersPage = () => {
   const router = useRouter()
@@ -21,46 +22,49 @@ const OrdersPage = () => {
 
   const params = useParams()
   const orderId = params.order
-
+  
+  
   useEffect(() => {
-    if (isLogin) {
-      getOrdersItems()
-    }
-  }, [isLogin])
+    if (!isLogin) return;
+    getOrdersItems();
+  });
+  
 
+
+  
   useEffect(() => {
     if (!orderId) return
-
+    
     fetchDataFromApi(`/api/order/${orderId}`)
-      .then((res) => {
-        if (res.success) {
-          setOpenedOrder(res.data)
-          console.log("openedOrder",res.data)
-        } else {
-          console.warn("Order fetch failed:", res.message)
-        }
-      })
-      .catch((err) => {
-        console.error("Fetch error:", err)
-      })
+    .then((res) => {
+      if (res.success) {
+        setOpenedOrder(res.data)
+        console.log("openedOrder",res.data)
+      } else {
+        console.warn("Order fetch failed:", res.message)
+      }
+    })
+    .catch((err) => {
+      console.error("Fetch error:", err)
+    })
   }, [orderId])
 
   const handleRateReviewModal = (product) => {
     setSelectedProduct(product)
     setShowRateReview(true)
   }
-
+  
   const handleSubmitReview = (productId) => {
     if (!rating || review.length < 5) {
       alert("Please provide a valid rating and review.")
       return
     }
-
+    
     console.log("ProooooooooooooooooooooooooooooooooductId", productId)
-
+    
     console.log("Submitting review for product:", selectedProduct)
     console.log({ rating, review })
-
+    
     // TODO: Send POST request to /api/review or similar endpoint
     const formData = {
       userName: userData?.name,
@@ -68,7 +72,7 @@ const OrdersPage = () => {
       rating: rating,
       productId: productId
     }
-
+    
     postData(`/api/user/addReview`, formData).then((res) => {
       if (!res.error) {
         alert.alertBox({ type: "success", msg: "Review submitted successfully!" })
@@ -83,7 +87,7 @@ const OrdersPage = () => {
     setReview("")
     setSelectedProduct(null)
   }
-
+  
   return (
     <div className='w-full bg-slate-100 flex justify-center items-center'>
       <div className='w-[1020px] bg-white min-h-screen my-3 p-4'>
@@ -216,10 +220,12 @@ const OrdersPage = () => {
                 <div className="flex gap-4 items-center cursor-pointer w-[60%]"
                   onClick={() => router.push(`/product/${prd?.productId}`)}>
 
-                  <img
+                  <Image
                     src={prd?.image || prd?.images?.[0] || '/images/placeholder.png'}
                     alt={prd?.productTitle}
                     className="w-24 h-24 object-contain rounded shadow"
+                                width={100} height={100}
+
                   />
                   <div className='w-full'
                     onClick={() => router.push(`/product/${prd?.productId}`)}>

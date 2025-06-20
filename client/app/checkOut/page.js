@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 // Auth & Session
-import { useSession, signOut } from "next-auth/react";
 import { useAuth } from "@/app/context/AuthContext";
 import { useAlert } from "@/app/context/AlertContext";
 
@@ -65,7 +64,6 @@ import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
 // UUID
-import { v4 as uuidv4 } from "uuid";
 import { FaLocationDot } from "react-icons/fa6";
 import { useCart } from "../context/CartContext";
 import ButtonGroup from '@mui/material/ButtonGroup';
@@ -73,6 +71,11 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { useOrders } from "../context/OrdersContext";
 import { Description } from "@mui/icons-material";
+import Image from "next/image";
+
+
+
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -124,18 +127,20 @@ const Page = () => {
     if (!itemsToCheckout) {
       router.push("/cart")
     }
-  }, [])
+  }, [itemsToCheckout, router])
 
 
   useEffect(() => {
-    if (!Array.isArray(buyNowItem)) {
-      setFromCart(false)
-    }
-    const normalizedItems = Array.isArray(buyNowItem) ? buyNowItem : [buyNowItem];
-    setItemsToCheckout(normalizedItems);
+  if (!Array.isArray(buyNowItem)) {
+    setFromCart(false);
+  }
 
-    console.log("Normalized items:", normalizedItems); // correct value
-  }, []);
+  const normalizedItems = Array.isArray(buyNowItem) ? buyNowItem : [buyNowItem];
+  setItemsToCheckout(normalizedItems);
+
+  console.log("Normalized items:", normalizedItems);
+}, [buyNowItem, setFromCart, setItemsToCheckout]);
+
 
   useEffect(() => {
     console.log("Updated itemsToCheckout:", itemsToCheckout); // updates after setState
@@ -381,13 +386,13 @@ const Page = () => {
   };
 
 
-  const removeItemFromOrders = (e, productIdToRemove) => {
-    e.preventDefault();
+  const removeItemFromOrders = useCallback((e, productIdToRemove) => {
+  e.preventDefault();
 
-    setItemsToCheckout((prevItems) =>
-      prevItems.filter((item) => item.productId !== productIdToRemove)
-    );
-  };
+  setItemsToCheckout((prevItems) =>
+    prevItems.filter((item) => item.productId !== productIdToRemove)
+  );
+}, []);
 
   useEffect(() => {
 
@@ -705,10 +710,12 @@ const Page = () => {
                       className="flex gap-4 border border-slate-300 bg-slate-50 rounded-md p-4 mb-4 hover:shadow-md transition-all"
                     >
                       <div className="w-[130px] h-[120px] flex-shrink-0 rounded overflow-hidden border">
-                        <img
+                        <Image
                           src={item?.image || item?.images?.[0]}
                           alt={item?.name || item?.productTitle}
                           className="w-auto h-auto object-cover"
+                                width={100} height={100}
+
                         />
                       </div>
 

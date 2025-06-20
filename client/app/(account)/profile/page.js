@@ -19,6 +19,8 @@ import { MdModeEdit } from "react-icons/md";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";
 import { postData } from "@/utils/api";
+import Image from "next/image";
+
 
 
 const Account = () => {
@@ -61,25 +63,24 @@ const [showTopForm, setShowTopForm] = useState(false);
 
 
 
-  useEffect(() => {
-    console.log("profile page")
-    if (!isLogin) {
-      console.log("p1")
-      router.replace("/login");
-      console.log("p2")
-    }
-    
-    else {
-      console.log(userData)
-      console.log("p3")
-      setFormFields({
-        name: userData?.name || "",
-        email: userData?.email || "",
-        phone: userData?.phone || ""
-      });
-      console.log("p4")
-    }
-  }, [isLogin, userData]);
+useEffect(() => {
+  console.log("profile page");
+  if (!isLogin) {
+    console.log("p1");
+    router.replace("/login");
+    console.log("p2");
+  } else {
+    console.log(userData);
+    console.log("p3");
+    setFormFields({
+      name: userData?.name || "",
+      email: userData?.email || "",
+      phone: userData?.phone || "",
+    });
+    console.log("p4");
+  }
+}, [isLogin, userData, router, setFormFields]);
+
 
 
 useEffect(() => {
@@ -260,9 +261,11 @@ useEffect(() => {
           <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5 gap-3 flex flex-col justify-center items-center ">
             <div className="mt-2 mr-2 w-[140px] h-[140px] relative group overflow-hidden border   rounded-full border-gray-300 shadow">
             {!uploading && (
-              <img
+              <Image
                 src={userData?.avatar || "/images/account.png"}
                 alt="avatar"
+                width={50}
+                height={50}
                 className="w-full h-full object-cover"
               />
             )}

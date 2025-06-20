@@ -11,6 +11,8 @@ import { useItem } from '@/app/context/ItemContext';
 import { useCart } from '@/app/context/CartContext';
 import { useAuth } from '@/app/context/AuthContext';
 import Link from 'next/link';
+import Image from "next/image";
+
 
 
 const joSan = Josefin_Sans({ subsets: ['latin'], weight: '400' })
@@ -68,10 +70,12 @@ const Bestsellers = () => {
                                     className="w-full flex flex-col items-center cursor-pointer"
                                     onClick={() => router.push(`/product/${prd?._id}`)}
                                 >
-                                    <img
-                                        src={prd?.images}
+                                    <Image
+                                        src={prd?.images[0]}
                                         alt={prd?.name}
                                         className="h-[250px] w-full object-cover"
+                                        width={100}
+                                        height={100}
                                     />
 
                                     <h1 className="text-black text-[19px] mt-3 font-medium font-sans text-center">

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Righteous, Poppins } from "next/font/google";
-import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 
@@ -29,7 +28,6 @@ const poppins = Poppins({ subsets: ["latin"], weight: '300' })
 
 
 const Page = () => {
-  const { data: session } = useSession();
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
   const [type, setType] = useState("password");
@@ -98,16 +96,12 @@ const Page = () => {
   }, []);
 
 
-  useEffect(() => {
-    if (!isClient) return;
-    // Run only in browser
+useEffect(() => {
+  if (typeof window !== "undefined") {
     const storedEmail = localStorage.getItem("userEmail");
     setFormFields((prev) => ({ ...prev, email: storedEmail || "" }));
-
-    if (session) {
-      router.push("/profile");
-    }
-  }, [session]);
+  }
+}, []);
 
   if (!isClient) return null;
 

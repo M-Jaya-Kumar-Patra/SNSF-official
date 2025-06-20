@@ -10,6 +10,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { blue } from '@mui/material/colors';
 
+import Image from "next/image";
 
 
 import Button from '@mui/material/Button';
@@ -32,13 +33,14 @@ const Cart = () => {
   const { setUserData, userData, isLogin } = useAuth(); // make sure to bring this in
   
   
-  useEffect(()=>{
-    if(!isLogin){
-      router.push("/login")
-    }
+useEffect(() => {
+  if (!isLogin) {
+    router.push("/login");
+  } else {
     getCartItems();
-  },[])
-  
+  }
+}, [isLogin, getCartItems, router]);
+
   
   const handleQuantityChange = async (e, _id, qty) => {
     if (qty < 1){
@@ -90,7 +92,8 @@ const Cart = () => {
 
 
                 <div className='w-[250px] h-[200px] flex items-center' onClick={() => router.push(`/product/${item?.productId}`)}>
-                  <img src={item.image} className='w-auto h-auto' alt={item.title} />
+                  <Image src={item.image} className='w-auto h-auto' alt={item.title||"no img"}
+                  width={100} height={100} />
                 </div>
               
                 <div className='w-full  p-2'>

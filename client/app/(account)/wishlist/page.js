@@ -2,7 +2,6 @@
 
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
 import Navbar from "@/components/Navbar";
 import React from "react";
 import Image from "next/image";
@@ -17,6 +16,7 @@ import { MdDelete } from "react-icons/md";
 
 
 
+
 const Account = () => {
     const router = useRouter();
     const { userData, isLogin } = useAuth()
@@ -27,7 +27,7 @@ const Account = () => {
             router.push("/login");
         }
 
-    }, [isLogin]);
+    }, [isLogin, router]);
 
 
     return (
@@ -37,10 +37,12 @@ const Account = () => {
                     {/* Left Sidebar */}
                     <div className="left h-full">
                         <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5   gap-3 flex flex-col justify-center items-center ">
-                            <img
+                            <Image
                                 className="h-[140px] w-[140px] rounded-full object-cover"
                                 src={userData?.avatar || "/images/account.png"}
                                 alt="User Profile"
+                                width={100}
+                                height={100}
                             />
                             <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide">
                                 {userData?.name}
@@ -127,7 +129,9 @@ const Account = () => {
                                                 className="w-[150px] h-[120px] flex items-center justify-center cursor-pointer bg-gray-50 rounded"
                                                 onClick={() => router.push(`/product/${item?.productId}`)}
                                             >
-                                                <img
+                                                <Image
+                                                width={100}
+                                                height={100}
                                                     src={item.image}
                                                     alt={item.title || "Product"}
                                                     className="max-w-full max-h-full object-contain"

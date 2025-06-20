@@ -3,6 +3,8 @@
 import React from 'react'
 import MapView from './MapView' // or '../components/MapView' based on location
 import { useRouter } from 'next/navigation'
+import Image from "next/image";
+
 
 
 
@@ -34,7 +36,7 @@ const Footer = () => {
           <li>
             
             <a href="https://youtube.com/@snsteelfabrication6716?si=v4pPQmEDtKmacpmN "  target="_blank">
-            <img src="/images/youtube.png" className='w-10' alt=""/></a>
+            <Image src="/images/youtube.png" className='' width={10} height={10} alt=""/></a>
           </li>
         </ul>
 

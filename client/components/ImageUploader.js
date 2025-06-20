@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { FaImage } from 'react-icons/fa';
+import Image from "next/image";
+
 
 const ImageUploader = () => {
   const [selectedImages, setSelectedImages] = useState([]);
@@ -26,28 +28,6 @@ const ImageUploader = () => {
     setPreviewUrls(validFiles.map(file => URL.createObjectURL(file)));
   };
 
-  const handleUpload = async () => {
-    if (!selectedImages.length) {
-      setError('Please select at least one image.');
-      return;
-    }
-
-    const formData = new FormData();
-    selectedImages.forEach((file) => formData.append('images', file));
-
-    try {
-      const res = await fetch('http://localhost:5000/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await res.json();
-      alert(`Uploaded successfully: ${data.files.join(', ')}`);
-    } catch (err) {
-      console.error(err);
-      setError('Upload failed. Try again.');
-    }
-  };
 
   return (
     <div className="p-6 py-3 pt-1  mx-auto bg-white rounded-xl  space-x-4 flex">
@@ -75,7 +55,7 @@ const ImageUploader = () => {
 
       <div className="flex gap-2 overflow-auto scrollbar-hide">
         {previewUrls.map((url, idx) => (
-          <img
+          <Image
             key={idx}
             src={url}
             alt={`Preview ${idx}`}

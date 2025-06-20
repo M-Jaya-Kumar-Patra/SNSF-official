@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Righteous, Poppins } from "next/font/google";
-import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
   TextField,
@@ -26,7 +25,6 @@ const poppins = Poppins({ subsets: ["latin"], weight: "300" });
 
 const Page = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { data: session } = useSession();
   const [isClient, setIsClient] = useState(false);
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -228,25 +226,7 @@ const Page = () => {
               </h3>
             </div>
 
-            {/* <div className="text-[12px] text-gray-500 font-sans my-2">or</div>
-
-            <div className="provider">
-              <button
-                type="button"
-                onClick={() => signIn("google")}
-                disabled={isLoading}
-                className="flex items-center gap-2 px-4 py-1 border border-gray-300 rounded-md shadow-sm bg-white hover:bg-gray-100 transition h-[35px] w-[230px] text-[15px] justify-center"
-              >
-                <Image
-                  loading="eager"
-                  height={20}
-                  width={20}
-                  src="https://authjs.dev/img/providers/google.svg"
-                  alt="Google Logo"
-                />
-                <span className="text-gray-700 text-base font-sans">Continue with Google</span>
-              </button>
-            </div> */}
+            
           </div>
         </div>
       </div>

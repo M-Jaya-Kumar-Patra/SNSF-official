@@ -8,6 +8,10 @@ import { Button } from "@mui/material";
 import { LiaRupeeSignSolid } from "react-icons/lia";
 import { fetchDataFromApi } from "@/utils/api";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+
+
+
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
@@ -31,10 +35,13 @@ const New = (props) => {
 
 
   useEffect(() => {
-    fetchDataFromApi(`/api/user/getCategoriesByProductId?productId=${props.prdId}`).then((res) => {
-      setSimilarProducts(res?.products)
-    })
-  }, [])
+  if (!props.prdId) return;
+
+  fetchDataFromApi(`/api/user/getCategoriesByProductId?productId=${props.prdId}`)
+    .then((res) => {
+      setSimilarProducts(res?.products);
+    });
+}, [props.prdId]);
 
   return (
     <div className="flex flex-col items-center mt-3 pb-10 bg-slate-100 w-full">
@@ -70,10 +77,12 @@ const New = (props) => {
                 >
                   {/* Product Image */}
                   <div className="w-full h-[220px] overflow-hidden rounded-md">
-                    <img
+                    <Image
                       src={prd?.images[0]||prd?.images}
                       alt={prd?.name}
                       className="w-full h-full object-cover transition-transform duration-300 "
+                                width={100} height={100}
+
                     />
                   </div>
 

@@ -17,6 +17,8 @@ import { useRouter } from 'next/navigation';
 import { useWishlist } from '../context/WishlistContext';
 import { MdFavorite } from "react-icons/md";
 import { MdFavoriteBorder } from "react-icons/md";
+import Image from "next/image";
+
 
 
 
@@ -45,24 +47,24 @@ const ProductListing = () => {
 
 
 
-    const [selectedSortVal, setSelectedSortVal] = useState("Name, A to Z")
+        const [selectedSortVal, setSelectedSortVal] = useState("Name, A to Z")
 
 
-    const handleSortBy = (name, order, products, value) => {
-        setSelectedSortVal(value);
-        postData(`/api/product/sortBy`, {
-            products: products,
-            sortBy: name,
-            order: order
-        }, false).then((res) => {
-            setProductsData(res?.products);
-            setAnchorEl(null)
-        })
-    }
+        const handleSortBy = (name, order, products, value) => {
+            setSelectedSortVal(value);
+            postData(`/api/product/sortBy`, {
+                products: products,
+                sortBy: name,
+                order: order
+            }, false).then((res) => {
+                setProductsData(res?.products);
+                setAnchorEl(null)
+            })
+        }
 
-    useEffect(() => {
-        getProductsData()
-    }, [isLogin, userData])
+        useEffect(() => {
+            getProductsData()
+        }, [isLogin, userData, getProductsData])
 
 
     //cart
@@ -178,9 +180,11 @@ const ProductListing = () => {
                                                     className="w-full min-h-[260px] shadow-md   flex flex-col items-center justify-between p-3 bg-white hover:shadow-[rgba(0,0,0,0.3)] hover:shadow-xl transition duration-300"
                                                 >
                                                     <div className="w-full flex flex-col items-center">
-                                                        <img
+                                                        <Image
                                                             src={prd?.images[0]}
                                                             alt={prd?.name}
+                                                            width={100}
+                                                            height={100}
                                                             className="h-[250px] w-auto object-cover"
                                                             onClick={() => router.push(`/product/${prd?._id}`)}
 

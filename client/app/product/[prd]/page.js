@@ -12,6 +12,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { MdFavorite } from "react-icons/md";
 import { MdFavoriteBorder } from "react-icons/md";
+import Image from "next/image";
 import { useWishlist } from '@/app/context/WishlistContext';
 
 
@@ -87,10 +88,12 @@ const Page = () => {
                   className={`border rounded cursor-pointer ${selectedImage === src ? "ring-2 ring-blue-500" : ""}`}
                   onClick={() => setSelectedImage(src)}
                 >
-                  <img
+                  <Image
                     src={src}
                     alt={`Thumbnail ${idx + 1}`}
                     className="w-[128px] h-[64px] object-contain"
+                                width={100} height={100}
+
                   />
                 </li>
               ))}
@@ -99,10 +102,12 @@ const Page = () => {
 
           <div>
             <div className="w-[319px] bg-gray-100 h-[300px] flex justify-center items-center">
-              <img
+              <Image
                 className="h-[300px] w-full object-contain border"
-                src={selectedImage}
+                src={selectedImage||"/"}
                 alt="Selected Product"
+                                width={100} height={100}
+
               />
               <div
                 className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-4 right-3 cursor-pointer"

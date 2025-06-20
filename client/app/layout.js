@@ -2,7 +2,7 @@
 import "./globals.css";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import SessionWrapper from "./components/SessionWrapper";
+import AuthWrapper from "@/components/AuthWrapper";
 import { CartProvider } from "./context/CartContext";
 import { AlertProvider } from "./context/AlertContext";
 
@@ -11,7 +11,6 @@ import { Inter, Geist, Geist_Mono, Righteous } from "next/font/google";
 import { useContext } from "react";
 import { AuthContext, AuthProvider } from "./context/AuthContext.js"; // Adjust path if needed
 // import { UserProvider } from "./context/UserContext";
-import SessionSync from "./session-store";
 import { CatProvider } from "./context/CategoryContext";
 import { PrdProvider } from "./context/ProductContext";
 import { ItemProvider } from "./context/ItemContext";
@@ -41,7 +40,7 @@ export default function RootLayout({ children }) {
       </head>
         <body className={inter.className}>
           <AlertProvider>
-            <SessionWrapper>
+            <AuthWrapper>
               <AuthProvider>
                 <OrdersProvider>
                   <ItemProvider>
@@ -64,7 +63,7 @@ export default function RootLayout({ children }) {
                   </ItemProvider>
                 </OrdersProvider>
               </AuthProvider>
-            </SessionWrapper>
+            </AuthWrapper>
           </AlertProvider>
         </body>
     </html>

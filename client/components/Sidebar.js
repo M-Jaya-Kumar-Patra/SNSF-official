@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useCat } from '@/app/context/CategoryContext';
 import Box from '@mui/material/Box';
 import Rating from '@mui/material/Rating';
 import Button from '@mui/material/Button';
-import RangeSlider from 'react-range-slider-input';
+import actualSlider from 'react-range-slider-input';
+const RangeSlider = actualSlider.default || actualSlider;
 import 'react-range-slider-input/dist/style.css';
 import { FormControlLabel, Checkbox } from '@mui/material';
 import { useSearchParams } from 'next/navigation';
@@ -48,7 +49,7 @@ const Sidebar = (props) => {
     });
   };
 
-  const filtersData = async (customFilters) => {
+const filtersData = useCallback(async (customFilters) => {
   const activeFilters = customFilters || filters;
   props.setIsLoading(true);
   const res = await postData(`/api/product/filters`, activeFilters, false);
@@ -56,33 +57,36 @@ const Sidebar = (props) => {
   props.setIsLoading(false);
   props.setTotalPages(res?.totalPages);
   window.scrollTo(0, 0);
-};
+}, [filters, props]);
+useEffect(() => {
+  const catId = searchParams.get("catId");
+  const subCatId = searchParams.get("subCatId");
+  const thirdSubCatId = searchParams.get("thirdSubCatId");
 
+  const newFilters = {
+    catId: [],
+    subCatId: [],
+    thirdSubCatId: [],
+    rating: 1,
+    minPrice: 0,
+    maxPrice: 80000,
+    page: 1,
+    limit: 50,
+  };
 
+  if (catId) newFilters.catId = [catId];
+  if (subCatId) newFilters.subCatId = [subCatId];
+  if (thirdSubCatId) newFilters.thirdSubCatId = [thirdSubCatId];
 
-  useEffect(() => {
-    const catId = searchParams.get("catId");
-    const subCatId = searchParams.get("subCatId");
-    const thirdSubCatId = searchParams.get("thirdSubCatId");
+  setFilters(newFilters);
 
-    const newFilters = {
-      catId: [],
-      subCatId: [],
-      thirdSubCatId: [],
-      rating: 1,
-      minPrice: 0,
-      maxPrice: 80000,
-      page: 1,
-      limit: 50
-    };
+  // ✅ Trigger the filter API after state is updated
+  const timer = setTimeout(() => {
+    filtersData(newFilters);
+  }, 200);
 
-    if (catId) newFilters.catId = [catId];  
-    if (subCatId) newFilters.subCatId = [subCatId];
-    if (thirdSubCatId) newFilters.thirdSubCatId = [thirdSubCatId];
-
-    setFilters(newFilters);
-    setTimeout(() => filtersData(newFilters), 200);
-  }, [searchParams, catData]);
+  return () => clearTimeout(timer); // Cleanup on unmount
+}, [searchParams]); // ✅ keep a stable dependency list
 
 
 

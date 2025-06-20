@@ -4,6 +4,7 @@ import React from 'react'
 import { Josefin_Sans } from 'next/font/google'
 import { useCat } from '@/app/context/CategoryContext'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 
 const joSan = Josefin_Sans({ subsets: ['latin'], weight: '400' })
@@ -13,6 +14,8 @@ const Shopbycat = () => {
   const { catData } = useCat()
 
   const router = useRouter()
+
+  
 
 
   let catLength = catData?.length
@@ -25,7 +28,9 @@ const Shopbycat = () => {
       {/* Scrollable Image Container */}
       <div className='flex flex-col items-center justify-center w-full '>
         <div className="grid  grid-cols-4  gap-5  justify-center items-center place-items-center
+
 " >
+{console.log("catData", catData)}
         {
           
           catData?.length !== 0 && catData?.slice(0,((catLength/2)+1)).map((cat, index) => {
@@ -35,7 +40,15 @@ const Shopbycat = () => {
                transition-transform hover:scale-110  hover:shadow-lg  hover:shadow-gray-500`} key={index}
                href={`/ProductListing?catId=${cat._id}`}
                >
-                <img src={catData[index]?.images} className='rounded-full ' alt="" />
+                  {catData?.[index]?.images && (
+  <Image
+    src={catData[index].images[0]}
+    width={100}
+    height={100}
+    className="rounded-full"
+    alt="Category"
+  />
+)}
               </a>
             )
           }) 
@@ -52,7 +65,16 @@ const Shopbycat = () => {
                href={`/ProductListing?catId=${cat._id}`}
                
                >
-                <img src={catData[index+4]?.images} className='rounded-full ' alt="" />
+                {catData?.[index]?.images && (
+  <Image
+    src={catData[index+4].images[0]}
+    width={100}
+    height={100}
+    className="rounded-full"
+    alt="Category"
+  />
+)}
+
               </a>
             )
           })

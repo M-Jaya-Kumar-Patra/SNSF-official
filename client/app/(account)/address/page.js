@@ -1,13 +1,11 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
 import Navbar from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { User, Package, CreditCard, Bell, Heart, LogOut } from "lucide-react";
 import { useRef } from "react";
-import { v4 as uuidv4 } from 'uuid';
 import LogoutBTN from "@/components/LogoutBTN";
 import { useAuth } from "@/app/context/AuthContext";
 import { useAlert } from "@/app/context/AlertContext";
@@ -34,7 +32,7 @@ import { MdDelete } from "react-icons/md";
 import Alert from '@mui/material/Alert';
 import CheckIcon from '@mui/icons-material/Check';
 import FilledAlerts from '/components/FilledAlerts.js'
-
+import Image from "next/image";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -255,7 +253,7 @@ const Account = () => {
 
             if (!response.error) {
                 alert.alertBox({ type: "success", msg: "Deleted Successfully" });
-                // Optional: re-fetch if needed for consistency
+                // Optional: re- if needed for consistency
 
                 // fetchAddresses();
             } else {
@@ -315,10 +313,12 @@ const Account = () => {
                     {/* Left Sidebar */}
                     <div className="left h-full">
                         <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5   gap-3 flex flex-col justify-center items-center ">
-                            <img
+                            <Image
                                 className="h-[140px] w-[140px] rounded-full object-cover"
                                 src={userData?.avatar || "/images/account.png"}
                                 alt="User Profile"
+                                width={100}
+                                height={100}
                             />
                             <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide">
                                 {userData?.name}
@@ -765,7 +765,7 @@ export default Account;
 
                                         {!showEditDelAddr[index] ? (
                                             <div className="p-3">
-                                                <img
+                                                <Image
                                                     onClick={() => toggleEditDel(index)}
                                                     className="w-[30px]  cursor-pointer"
                                                     src="/images/menu.png"

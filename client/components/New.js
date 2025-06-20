@@ -8,6 +8,7 @@ import { Button } from "@mui/material";
 import { LiaRupeeSignSolid } from "react-icons/lia";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/app/context/CartContext";
+import Image from "next/image";
 
 
 
@@ -68,9 +69,11 @@ const New = () => {
 
                     onClick={() => router.push(`/product/${prd?._id}`)}
                   >
-                    <img
-                      src={prd?.images}
+                    <Image
+                      src={prd?.images[0]}
                       alt={prd?.name}
+                      width={100}
+                      height={100}
                       className="w-full h-full object-cover transition-transform duration-300 "
                     />
                   </div>

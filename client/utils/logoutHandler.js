@@ -1,4 +1,3 @@
-import { signOut } from "next-auth/react";
 import { fetchDataFromApi } from "./api";
 
 export const handleLogout = async ({ logout, router }) => {
@@ -13,7 +12,6 @@ export const handleLogout = async ({ logout, router }) => {
   }
 
   localStorage.clear();
-  logout();
-  await signOut({ redirect: false });
-  router.push("/");
+  logout(); // your context's logout function
+  router.push("/"); // redirect to home or login
 };

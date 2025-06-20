@@ -95,7 +95,7 @@ import { FaCartPlus } from "react-icons/fa6";
               height={64}
               priority={true}
             />
-            <img src="/images/snsf-text.png" alt="" className="h-[64px] ml-0" />
+            <Image src="/images/snsf-text.png" alt="" width={120} height={64} className=" ml-0" />
 
             {/* <h1 className={`${righteous.className} text-4xl text-white text-[64px]`}>
         This should be in Righteous

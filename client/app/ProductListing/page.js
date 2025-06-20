@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import Sidebar from '../Sidebar/page'
+import Sidebar from '@/components/Sidebar';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation';
 import { MdFavorite } from "react-icons/md";
 import { MdFavoriteBorder } from "react-icons/md";
 import { useWishlist } from '@/app/context/WishlistContext';
+import Image from 'next/image';
 
 
 
@@ -61,11 +62,10 @@ const ProductListing = () => {
         })
     }
 
-    useEffect(() => {
-        getProductsData()
-        getCartItems()
-        console.log(userData, "dddddddddddddddddddddddvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
-    }, [isLogin, userData])
+useEffect(() => {
+  getCartItems();
+  getProductsData();
+}, [getCartItems, getProductsData]); // ✅ ESLint happy
 
 
     //useWishlist
@@ -193,9 +193,10 @@ const ProductListing = () => {
                                                 className="w-full min-h-[260px] shadow-md   flex flex-col items-center justify-between p-3 bg-white hover:shadow-[rgba(0,0,0,0.3)] hover:shadow-xl transition duration-300 "
                                             >
                                                 <div className="w-full flex flex-col items-center" >
-                                                    <img
+                                                    <Image
                                                         src={prd?.images[0] || prd?.images}
                                                         alt={prd?.name}
+                                                        width={250} height={100}
                                                         className="h-[250px] w-auto object-cover"
                                                         onClick={() => router.push(`/product/${prd?._id}`)}
                                                     />

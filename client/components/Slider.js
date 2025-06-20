@@ -1,31 +1,29 @@
 "use client";
+
 import React, { useState, useEffect } from 'react';
 import { fetchDataFromApi } from '@/utils/api';
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-
-
-
+import Image from "next/image";
 
 const Slider = () => {
   const [slides, setSlides] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const getSlides = async () => {
-    try {
-      const response = await fetchDataFromApi(`/api/homeSlider/getAllSlides`, false);
-      setSlides(response?.data || []);
-      console.log("slides", slides)
-      return
-    } catch (error) {
-      console.error("Error fetching slides:", error);
-    }
-  };
-
+  // Fetch slides once on mount
   useEffect(() => {
+    const getSlides = async () => {
+      try {
+        const response = await fetchDataFromApi(`/api/homeSlider/getAllSlides`, false);
+        setSlides(response?.data || []);
+      } catch (error) {
+        console.error("Error fetching slides:", error);
+      }
+    };
+
     getSlides();
   }, []);
 
+  // Auto slide every 3 seconds
   useEffect(() => {
     if (!slides || slides.length === 0) return;
 
@@ -36,6 +34,17 @@ const Slider = () => {
     return () => clearTimeout(timer);
   }, [currentIndex, slides]);
 
+  // Optional: Manual navigation (left/right buttons)
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % slides.length);
+  };
+
+
+  
   return (
     <>
       <div className="flex justify-center mt-0">
@@ -53,14 +62,20 @@ const Slider = () => {
           <ChevronLeft />
         </button>
 
-          {/* Slide Image */}
-          {slides?.length > 0 && (
-            <img
-              src={slides[currentIndex]?.images}
-              alt={`Slide ${currentIndex + 1}`}
-              className="w-auto h-full transition-opacity duration-500 object-contain"
-            />
-          )}
+        {console.log("slides", slides)}
+
+       {/* Slide Image */}
+{slides?.[currentIndex]?.images && (
+  <Image
+    src={slides[currentIndex].images[0]} // ✅ No need for fallback here
+    alt={`Slide ${currentIndex + 1}`}
+    className="transition-opacity duration-500 object-contain"
+    width={500}
+    height={500}
+  />
+)}
+
+
 
           {/* Right Arrow */}
           
