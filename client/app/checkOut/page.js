@@ -12,6 +12,7 @@ import { useAlert } from "@/app/context/AlertContext";
 import Navbar from "@/components/Navbar";
 import LogoutBTN from "@/components/LogoutBTN";
 import FilledAlerts from "@/components/FilledAlerts";
+import PaymentProcessing from "../(ack)/PaymentProcessing";
 
 // API Functions
 import {
@@ -104,7 +105,7 @@ const indianStates = [
 const Page = () => {
   const alert = useAlert()
   const router = useRouter()
-  const { userData, setUserData } = useAuth();
+  const { userData, setUserData, isLogin } = useAuth();
 
 
 
@@ -122,6 +123,7 @@ const Page = () => {
 
 
   const [fromCart, setFromCart] = useState(true)
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   useEffect(() => {
     if (!itemsToCheckout) {
@@ -204,6 +206,13 @@ const Page = () => {
       console.error("Failed to fetch addresses:", error);
     }
   };
+  useEffect(() => {
+    if (!isLogin) {
+      router.push("/login");
+    } else {
+      getCartItems();
+    }
+  }, [isLogin, getCartItems, router]);
 
 
 
@@ -509,25 +518,38 @@ const Page = () => {
           })
         };
 
-        console.log("payload", payload)
-       if(normalizedProducts?.length>0){
-      postData(`/api/order/create`, payload).then((res) => {
-      if (res?.error === false && fromCart) {
-        deleteData(`/api/cart/emptyCart/${payload.userId}`).then(() => {
-          getCartItems(); // refresh cart
-          router.replace("/orders"); // redirect only after cleanup
-        }).catch((err) => {
-          console.error("Failed to empty cart:", err);
-          router.replace("/"); // still redirect
-        });
-      } else {
-        router.replace("/");
-      }
-    });
+        console.log("payload", payload);
 
-    }else{
-      alert.alertBox({type:"error", msg: "Please select atleast one item"})
+  if (normalizedProducts?.length > 0) {
+  setIsPlacingOrder(true); // Start loading UI
+
+  postData(`/api/order/create`, payload).then((res) => {
+    console.log("Order response:", res);
+
+    if (res?.error === false) {
+      if (fromCart) {
+        deleteData(`/api/cart/emptyCart/${payload.userId}`)
+          .then(() => {
+            getCartItems(); // Refresh cart
+            router.replace("/orderSuccess");
+          })
+          .catch((err) => {
+            console.error("Failed to empty cart:", err);
+            router.replace("/orderSuccess"); // Still redirect
+          });
+      } else {
+        router.replace("/orderSuccess");
+      }
+    } else {
+      console.error("Order creation failed:", res);
+      router.replace("/order-failed");
     }
+  });
+} else {
+  alert.alertBox({ type: "error", msg: "Please select at least one item" });
+  router.replace("/order-failed");
+}
+
 
 
 
@@ -582,7 +604,7 @@ const Page = () => {
       userId: userData?._id,
       products: normalizedProducts,
       paymentId: "COD",
-      payment_status: "Completed",
+      payment_status: "Pending",
       payment_method: paymentMethod,
       delivery_address: selectedAddressId,
       totalAmt: totalAmount,
@@ -594,22 +616,34 @@ const Page = () => {
     };
 
     if(normalizedProducts?.length>0){
-      postData(`/api/order/create`, payload).then((res) => {
-      if (res?.error === false && fromCart) {
-        deleteData(`/api/cart/emptyCart/${payload.userId}`).then(() => {
-          getCartItems(); // refresh cart
-          router.replace("/orders"); // redirect only after cleanup
-        }).catch((err) => {
+
+postData(`/api/order/create`, payload).then((res) => {
+  console.log("Order response:", res);
+
+  if (res?.error === false) {
+    if (fromCart) {
+      deleteData(`/api/cart/emptyCart/${payload.userId}`)
+        .then(() => {
+          getCartItems();
+          router.replace("/orderSuccess");
+        })
+        .catch((err) => {
           console.error("Failed to empty cart:", err);
-          router.replace("/"); // still redirect
+          router.replace("/orderSuccess"); // still go to orders
         });
-      } else {
-        router.replace("/");
-      }
-    });
+    } else {
+      router.replace("/orderSuccess");
+    }
+  } else {
+    console.error("Order creation failed:", res);
+    router.replace("/order-failed");
+  }
+});
 
     }else{
       alert.alertBox({type:"error", msg: "Please select atleast one item"})
+    router.replace("/order-failed");
+
     }
 
 
@@ -623,6 +657,14 @@ const Page = () => {
   };
 
   return (
+<>
+
+{isPlacingOrder ? (
+  <div className="min-h-screen flex items-center justify-center text-lg">
+    <PaymentProcessing/>
+  </div>
+) : (
+  // Render checkout form here
     <div className="flex w-full min-h-screen justify-center bg-slate-100">
       <div className="w-[1020px] flex flex-col gap-2 my-3 mx-auto ">
         {/* Shipping Information */}
@@ -1148,6 +1190,12 @@ const Page = () => {
         </div>
       )}
     </div>
+)}
+    
+
+
+</>
+    
   );
 };
 

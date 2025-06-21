@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Custom Google Map</title>
+    <style>
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script>
+      function initMap() {
+        const center = { lat: 21.500000, lng: 83.866000 };
+
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 20,
+          center: center,
+          mapTypeId: "roadmap",
+          tilt: 45,
+        });
+
+        const buildingCoords = [
+          { lat: 21.500100, lng: 83.865900 },
+          { lat: 21.500100, lng: 83.866100 },
+          { lat: 21.499900, lng: 83.866100 },
+          { lat: 21.499900, lng: 83.865900 },
+        ];
+
+        const buildingShape = new google.maps.Polygon({
+          paths: buildingCoords,
+          strokeColor: "#FF0000",
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: "#FF0000",
+          fillOpacity: 0.35,
+        });
+
+        buildingShape.setMap(map);
+      }
+    </script>
+
+    <!-- Replace YOUR_API_KEY with your real API key -->
+    <script async
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_CR0Npoxqk8EcuhswG0i8RJihXeXxoJQ&callback=initMap">
+    </script>
+  </body>
+</html>

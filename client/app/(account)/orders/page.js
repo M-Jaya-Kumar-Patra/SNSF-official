@@ -24,7 +24,7 @@ import {
     LifeBuoy,
     LogOut,
 } from "lucide-react";
-
+import Empty from "@/app/(ack)/Empty";
 import { MdDelete } from "react-icons/md";
 
 
@@ -38,7 +38,7 @@ const Account = () => {
 
     useEffect(() => {
         getOrdersItems()
-    },)
+    },[])
 
 
     return (
@@ -248,7 +248,30 @@ const Account = () => {
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-center text-gray-500 text-lg mt-20">🚫 No orders found.</div>
+                            <div className="flex flex-col items-center justify-center mt-20 text-center">
+  {/* Icon or Animation */}
+  <div className="w-[200px] sm:w-[260px] mb-4">
+    <Empty />
+    {/* Or replace with Lottie animation if desired */}
+  </div>
+
+  {/* Message */}
+  <h2 className="text-xl sm:text-2xl font-semibold text-gray-700">
+    No Orders Yet
+  </h2>
+  <p className="text-gray-500 mt-2 text-sm sm:text-base max-w-sm">
+    You haven’t placed any orders yet. Start shopping now to fill this space with your amazing purchases!
+  </p>
+
+  {/* Button */}
+  <Link
+    href="/"
+    className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full text-sm sm:text-base transition"
+  >
+    Start Shopping
+  </Link>
+</div>
+
                         )}
                     </div>
 

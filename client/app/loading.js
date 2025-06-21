@@ -2,8 +2,10 @@
 import * as React from 'react';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
-export default function PersistentLoader() {
+
+export default function Loading() {
   return (
     <Backdrop
       sx={(theme) => ({
@@ -13,7 +15,16 @@ export default function PersistentLoader() {
       })}
       open={true} // always visible
     >
-      <CircularProgress color="inherit" />
+      <div className='w-40 h-20 flex justify-center items-center'>
+              <DotLottieReact
+            src="https://lottie.host/f0d67ccf-00d6-4753-81f0-45de6e6de551/xon0h7LmyW.lottie"
+            loop
+            autoplay
+            width={10}
+            height={10}
+          />
+      
+          </div>
     </Backdrop>
   );
 }

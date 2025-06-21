@@ -38,7 +38,7 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="icon" href="/favicon-32x32.png" type="image/png" />
       </head>
-        <body className={inter.className}>
+        <body className={`${inter.className} w-full`}>
           <AlertProvider>
             <AuthWrapper>
               <AuthProvider>
@@ -50,7 +50,7 @@ export default function RootLayout({ children }) {
                           <CartProvider>
                             <Navbar />
 
-                            <main className="min-h-screen flex flex-col">
+                            <main className="min-h-screen  flex flex-col">
                               {children}
                             </main>
 

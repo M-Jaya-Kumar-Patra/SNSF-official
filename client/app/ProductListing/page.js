@@ -97,26 +97,23 @@ useEffect(() => {
 
 
     return (
-        <div className='w-full'>
-
-            {/* Breadcrumb */}
-            <div className="w-full bg-slate-100 flex justify-center pt-3">
-                <div role="presentation" className='bg-slate-100 w-[1020px] text-center'>
+        <div className='w-full relative'>
+            {/* Breadcrumb */}  
+                <div role="presentation" className='sticky top-[33px] z-[90] bg-slate-100 py-2 w-full text-center'>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link underline="hover" color="" href="/">Home</Link>
                         <Link underline="hover" color="inherit" href="/ProductListing">Products</Link>
                         <Link underline="hover" color="inherit" href="/Sofas">Sofas</Link>
                     </Breadcrumbs>
                 </div>
-            </div>
 
             {/* Main Container */}
-            <div className='flex w-full min-h-screen justify-center bg-slate-100'>
-                <div className="container w-[90%] my-3 mx-auto flex gap-4 justify-between">
+            <div className='flex  min-h-screen justify-center bg-slate-100'>
+                <div className="container w-[90%]  mx-auto flex gap-4 justify-between">
 
                     {/* Sidebar */}
-                    <div className='w-[260px] shrink-0 bg-white p-5 shadow-lg text-black '>
-                        {console.log("vvvvvvvvvv", productsData)}
+                    <div className='w-[240px]  shrink-0 bg-white p-5 shadow-lg text-black '>
+               
                         <Sidebar
                             productsData={productsData}
                             setProductsData={setProductsData}
@@ -183,7 +180,7 @@ useEffect(() => {
                         {/* Product Grid */}
                         <div className="flex justify-center items-center mt-5">
                             <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
-                                {console.log("productsData", productsData)}
+                              
                                 {
                                     productsData?.length !== 0 && productsData?.map((prd, index) => (
                                         <div key={prd?._id || index} className="relative group w-full">
@@ -283,7 +280,7 @@ useEffect(() => {
 
 
                                                 <div className="bg-white  shadow-lg p-2 flex gap-2 justify-center">
-                                                    {console.log("UserData", userData?.id)}
+                                   
                                                     <Button
                                                         variant="outlined"
                                                         className="text-white bg-gray-600 rounded-md px-1 py-1 text-xs w-1/2 text-nowrap"

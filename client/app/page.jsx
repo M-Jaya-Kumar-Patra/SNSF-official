@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import  {useAuth}  from "./context/AuthContext";; // Assuming you moved your Zustand logic here
-import PersistentLoader from "./loading";
+import Loading from "./loading";
 import Slider from "@/components/Slider";
 import Shopbycat from "@/components/Shopbycat";
 import Bestsellers from "@/components/Bestsellers";
@@ -18,7 +18,7 @@ export default function Home() {
     setHydrated(true);
   }, []);
 
-  if (!hydrated || loading) return <PersistentLoader/>//persistent loader
+  if (!hydrated || loading) return <Loading/>//persistent loader
 
   return (
     <>
