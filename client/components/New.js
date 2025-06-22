@@ -1,27 +1,34 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { Josefin_Sans } from "next/font/google";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { usePrd } from "@/app/context/ProductContext";
 import { Button } from "@mui/material";
-import { LiaRupeeSignSolid } from "react-icons/lia";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/app/context/CartContext";
+import { useAuth } from "@/app/context/AuthContext"; // ✅ Import useAuth for loader
 import Image from "next/image";
-
-
-
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
 const New = () => {
   const { prdData } = usePrd();
+  const { setLoading } = useAuth(); // ✅ get setLoading
   const scrollRef = useRef(null);
-  const router = useRouter()
-  const { addToCart, buyNowItem, setBuyNowItem } = useCart()
+  const router = useRouter();
+  const { setBuyNowItem } = useCart();
 
+  const [hydrated, setHydrated] = useState(false);
 
+  useEffect(() => {
+    setHydrated(true);
+    if (!prdData || prdData.length === 0) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [prdData, setLoading]);
 
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -53,51 +60,56 @@ const New = () => {
         {/* Scrollable Product List */}
         <div
           ref={scrollRef}
-          className="overflow-x-auto whitespace-nowrap scroll-smooth scrollbar-hide py-5 "
+          className="overflow-x-auto whitespace-nowrap scroll-smooth scrollbar-hide py-5"
         >
           <div className="inline-flex gap-4">
             {prdData?.length !== 0 &&
-              prdData?.slice(0, 10).reverse().map((prd, index) => (
-                <div
-                  key={index}
-                  className="min-w-[256px] min-h-[320px] p-3 bg-white rounded-md shadow-md 
-                  flex flex-col items-center justify-start gap-3 
-                   transition-transform duration-300 group"
-                >
-                  {/* Product Image */}
-                  <div className="w-full h-[220px] overflow-hidden rounded-md cursor-pointer"
-
-                    onClick={() => router.push(`/product/${prd?._id}`)}
+              prdData
+                ?.slice(0, 10)
+                .reverse()
+                .map((prd, index) => (
+                  <div
+                    key={index}
+                    className="min-w-[256px] min-h-[320px] p-3 bg-white rounded-md shadow-md flex flex-col items-center justify-start gap-3 transition-transform duration-300 group"
                   >
-                    <Image
-                      src={prd?.images[0]}
-                      alt={prd?.name}
-                      width={100}
-                      height={100}
-                      className="w-full h-full object-cover transition-transform duration-300 "
-                    />
+                    {/* Product Image */}
+                    <div
+                      className="w-full h-[220px] overflow-hidden rounded-md cursor-pointer"
+                      onClick={() => router.push(`/product/${prd?._id}`)}
+                    >
+                      <Image
+                        src={prd?.images[0]}
+                        alt={prd?.name}
+                        width={100}
+                        height={100}
+                        className="w-full h-full object-cover transition-transform duration-300"
+                      />
+                    </div>
+
+                    {/* Product Details */}
+                    <div
+                      className="flex flex-col items-center text-center gap-1 px-2 cursor-pointer"
+                      onClick={() => router.push(`/product/${prd?._id}`)}
+                    >
+                      <h2 className="text-sm font-semibold text-gray-800 truncate w-full">
+                        {prd?.name}
+                      </h2>
+                    </div>
+
+                    {/* Shop Now Button */}
+                    <Button
+                      size="small"
+                      variant="contained"
+                      className="!bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-1 text-xs mt-auto"
+                      onClick={() => {
+                        setBuyNowItem({ ...prd, quantity: 1 });
+                        router.push("/checkOut");
+                      }}
+                    >
+                      Shop Now
+                    </Button>
                   </div>
-
-                  {/* Product Details */}
-                  <div className="flex flex-col items-center text-center gap-1 px-2 cursor-pointer  " onClick={() => router.push(`/product/${prd?._id}`)}>
-                    <h2 className="text-sm font-semibold text-gray-800 truncate w-full">{prd?.name}</h2>
-
-                  </div>
-
-                  {/* Shop Now Button */}
-                  <Button
-                    size="small"
-                    variant="contained"
-                    className="!bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-1 text-xs mt-auto"
-                    onClick={() => {
-                      setBuyNowItem({ ...prd, quantity: 1 });
-                      router.push("/checkOut");
-                    }}
-                  >
-                    Shop Now
-                  </Button>
-                </div>
-              ))}
+                ))}
           </div>
         </div>
 
@@ -109,8 +121,6 @@ const New = () => {
           <ChevronRight />
         </button>
       </div>
-
-
     </div>
   );
 };

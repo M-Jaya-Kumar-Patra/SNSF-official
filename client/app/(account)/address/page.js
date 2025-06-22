@@ -39,6 +39,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 
 
@@ -74,16 +75,16 @@ const Account = () => {
     const router = useRouter();
     const alert = useAlert();
     const { isLogin, userData, setUserData, isLoading } = useAuth()
-    
+
     const [showAddAddressForm, setShowAddAddressForm] = useState(false);
-    
-    
-        const [state, setState] = useState('');
-        
-            const [open, setOpen] = React.useState(false);
-            const [selectedAddressId, setSelectedAddressId] = useState(null);
-    
-    
+
+
+    const [state, setState] = useState('');
+
+    const [open, setOpen] = React.useState(false);
+    const [selectedAddressId, setSelectedAddressId] = useState(null);
+
+
 
 
     const [address, setAddress] = useState({
@@ -123,7 +124,7 @@ const Account = () => {
 
     const [editAddressObj, setEditAddressObj] = useState(null);
 
-    const [showEditModal, setShowEditModal] = useState(false)                               
+    const [showEditModal, setShowEditModal] = useState(false)
     if (isLoading) return <CircularProgress />
 
     const fetchAddresses = async () => {
@@ -348,7 +349,7 @@ const Account = () => {
                                 </li>
                                 <li>
                                     <Link href="/address">
-                                        <div className="h-[40px] flex items-center pl-10 font-semibold  border  border-l-8 border-y-0 border-r-0 border-slate-700  cursor-pointer  text-[#131e30] bg-slate-100 active:bg-slate-100">
+                                        <div className="h-[40px] flex items-center pl-10 font-semibold  border  border-l-8 border-y-0 border-r-0 border-indigo-950 cursor-pointer  text-indigo-950 bg-slate-100 active:bg-slate-100">
                                             Manage Address
                                         </div>
                                     </Link>
@@ -393,37 +394,65 @@ const Account = () => {
                         {!showAddAddressForm && (
                             <button
                                 onClick={() => setShowAddAddressForm(true)}
-                                className=" border border-[#131e30] h-10 bg-[#131e30] flex items-center font-sans p-5 text-lg font-normal gap-2 rounded-md">
+                                className=" border border-[#131e30] h-10 bg-indigo-950 flex items-center font-sans p-5 text-lg font-normal gap-2 rounded-md">
                                 <IoMdAdd size={30} />Add a new address
                             </button>
                         )}
-                        {addressArray && addressArray.length > 0 && addressArray.reverse().map((address, index) => (
-                            <div key={index} className="border p-5 my-4 rounded-xl shadow-md bg-white flex justify-between hover:shadow-lg transition duration-300">
-                                <div>
-                                    <h3 className="text-lg font-bold text-black mb-1">{address?.name}</h3>
-                                    <p className="text-gray-800 mb-1">{address.address}</p>
-                                    <p className="text-gray-700 mb-1">
-                                        {address.locality && `${address.locality}, `}
-                                        {address.city && `${address.city}, `}
-                                        {address.state && `${address.state}`} - {address.pin}
-                                    </p>
-                                    <p className="text-gray-600 mb-1">
-                                        Phone: {address.phone} {address.altPhone && `| Alt: ${address.altPhone}`}
-                                    </p>
-                                    {address.landmark && <p className="text-gray-500 italic mb-1">{address.landmark}</p>}
-                                    <p className="text-sm text-gray-500">{address.addressType}</p>
+                        {addressArray && addressArray.length > 0 ? (
+                            addressArray.reverse().map((address, index) => (
+                                <div key={index} className="border p-5 my-4 rounded-xl shadow-md bg-white flex justify-between hover:shadow-lg transition duration-300">
+                                    <div>
+                                        <h3 className="text-lg font-bold text-black mb-1">{address?.name}</h3>
+                                        <p className="text-gray-800 mb-1">{address.address}</p>
+                                        <p className="text-gray-700 mb-1">
+                                            {address.locality && `${address.locality}, `}
+                                            {address.city && `${address.city}, `}
+                                            {address.state && `${address.state}`} - {address.pin}
+                                        </p>
+                                        <p className="text-gray-600 mb-1">
+                                            Phone: {address.phone} {address.altPhone && `| Alt: ${address.altPhone}`}
+                                        </p>
+                                        {address.landmark && <p className="text-gray-500 italic mb-1">{address.landmark}</p>}
+                                        <p className="text-sm text-gray-500">{address.addressType}</p>
+                                    </div>
+                                    <div className="flex gap-4 pr-2 pt-1">
+                                        <button onClick={(e) => toggleEditAddress(e, address)} className="hover:scale-110 transition">
+                                            <FaEdit size={22} className="text-gray-700" />
+                                        </button>
+                                        <button onClick={(e) => handleClickOpenDeleteAlert(e, address._id)} className="hover:scale-110 transition">
+                                            <MdDelete size={22} className="text-red-600" />
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="flex gap-4 pr-2 pt-1">
-                                    <button onClick={(e) => toggleEditAddress(e, address)} className="hover:scale-110 transition">
-                                        <FaEdit size={22} className="text-gray-700" />
-                                    </button>
-                                    <button onClick={(e) => handleClickOpenDeleteAlert(e, address._id)} className="hover:scale-110 transition">
-                                        <MdDelete size={22} className="text-red-600" />
-                                    </button>
-                                </div>
-                            </div>
 
-                        ))}
+                            )))
+
+                            : (
+                                <div className="flex flex-col items-center justify-center mt-20 text-center">
+                                    {/* Lottie Animation */}
+                                    <div className="w-[200px] sm:w-[260px] mb-4">
+                                        <DotLottieReact
+                                            src="https://lottie.host/809b66b0-6413-4599-8b83-250f2a2d4a5f/ck8wkMMQRM.lottie"
+                                            loop
+                                            autoplay
+                                        />
+                                    </div>
+
+                                    {/* Heading */}
+                                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-700">
+                                        No Addresses Added
+                                    </h2>
+
+                                    {/* Subtext */}
+                                    <p className="text-gray-500 mt-2 text-sm sm:text-base max-w-sm">
+                                        You haven’t added any addresses yet. Add a delivery address to make your future orders faster and easier!
+                                    </p>
+
+                                </div>
+                            )
+
+
+                        }
 
                         {showAddAddressForm && (
 
@@ -733,7 +762,7 @@ export default Account;
 
 
 
-                        {/* <div className="address">
+{/* <div className="address">
                             {addressArray.length === 0 ? (
                                 <div>
                                     <h1>No address to show</h1>

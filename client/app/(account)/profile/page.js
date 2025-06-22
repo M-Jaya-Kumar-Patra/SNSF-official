@@ -310,7 +310,7 @@ useEffect(() => {
                                 </li>
                                 <li>
                                     <Link href="/profile">
-                                        <div className="h-[40px] flex items-center pl-10 font-semibold  border  border-l-8 border-y-0 border-r-0 border-slate-700  cursor-pointer  text-[#131e30] bg-slate-100 active:bg-slate-100">
+                                        <div className="h-[40px] flex items-center pl-10 font-semibold  border  border-l-8 border-y-0 border-r-0 border-indigo-950  cursor-pointer  text-indigo-950 bg-slate-100 active:bg-slate-100">
                                             Profile Information
                                         </div>
                                     </Link>

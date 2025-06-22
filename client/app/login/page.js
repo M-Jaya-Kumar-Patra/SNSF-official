@@ -18,6 +18,7 @@ import { Righteous, Poppins } from "next/font/google";
 import { postData } from "@/utils/api";
 import { useAlert } from "../context/AlertContext";
 import { useAuth } from "../context/AuthContext";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
 const poppins = Poppins({ subsets: ["latin"], weight: "300" });
@@ -30,7 +31,12 @@ export default function Login() {
   const router = useRouter();
   const alert = useAlert();
 
-  const { isLogin, login, setIsLogin, setLoading, loading, userData, setUserData, fetchUserDetails } = useAuth();
+  const { isLogin, login, setIsLogin,  userData, setUserData, fetchUserDetails } = useAuth();
+
+
+  const [loading, setLoading] = useState(false)
+
+  const [btnLoading, setBtnLoading] = useState(false)
 
   // Redirect if already logged in
   // Redirect if already logged in
@@ -96,6 +102,7 @@ export default function Login() {
         const token = response.data.accessToken;
         console.log(response?.data, token)
         login(response.data, token);
+        setBtnLoading(false)
           
         localStorage.setItem("accessToken", token);
         localStorage.setItem("refreshToken", response.data.refreshToken);
@@ -147,6 +154,10 @@ export default function Login() {
     }
   };
 
+
+  const handleBtnLoader = () =>{
+    setBtnLoading(prev=> !prev)
+  }
   return (
     <div className="flex justify-center items-center w-full h-screen bg-gray-100">
       <div className="w-[300px] border rounded-md shadow overflow-hidden bg-white">
@@ -214,13 +225,16 @@ export default function Login() {
           </button>
 
           <button
-            type="submit"
-            onClick={handleLogin}
-            className="hover:opacity-90 bg-gradient-to-l from-[#798ca8] via-[rgb(51,66,87)] to-[#131e30] text-white px-4 py-1 rounded-md mt-4 text-[15px]"
-            disabled={loading}
-          >
-            Log In
-          </button>
+  type="submit"
+  onClick={(e) => {
+    handleLogin(e);
+    handleBtnLoader(e);
+  }}
+  className="w-[120px] h-[36px] flex justify-center items-center hover:opacity-90 bg-gradient-to-l from-[#798ca8] via-[rgb(51,66,87)] to-[#131e30] text-white rounded-md mt-4 text-[15px]"
+  disabled={loading}
+>
+  {btnLoading ? <CircularProgress size={20} color="inherit" /> : "Log In"}
+</button>
 
           <div className="w-full text-center mt-3">
             <h3

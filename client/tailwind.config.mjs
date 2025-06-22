@@ -14,7 +14,10 @@ export default {
       },
       screens: {
         'iphone12': '390px',
-      }
+      },
+      backgroundImage: {
+        'primary-gradient': 'linear-gradient(to left, #2563eb, #3730a3)', // blue-600 → indigo-800
+      },
     },
   },
   plugins: [

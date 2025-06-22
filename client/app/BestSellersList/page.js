@@ -39,7 +39,6 @@ const ProductListing = () => {
     };
 
 
-    const [isLoading, setIsLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
@@ -63,6 +62,8 @@ const ProductListing = () => {
         }
 
         useEffect(() => {
+            console.log("dddddddddddddddddddddddddddddddddd")
+            setLoading(false)
             getProductsData()
         }, [isLogin, userData, getProductsData])
 

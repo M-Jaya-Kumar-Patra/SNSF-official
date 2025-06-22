@@ -140,6 +140,8 @@ const Page = () => {
                         Verify OTP
                     </button>
 
+                     <h3 className="text-[#131e30] text-[14px] cursor-pointer hover:text-[#363fa6] text-center mt-2" onClick={() => router.push("/login")}>Remembered your password? Back to Login</h3>
+
                     <div className="w-full text-center mt-3">
                         <h3
                             className="text-[#131e30] text-[14px] cursor-pointer hover:text-[#363fa6]"

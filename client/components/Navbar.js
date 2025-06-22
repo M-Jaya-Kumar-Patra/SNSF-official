@@ -1,4 +1,5 @@
 
+
 "use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
@@ -13,11 +14,13 @@ import { MdCall } from "react-icons/md";
 import { useAuth } from "@/app/context/AuthContext";
 import { IoMdHome } from "react-icons/io";
 import { fetchDataFromApi } from "@/utils/api";
-import { Button } from "@mui/material";
 import { useCat } from "@/app/context/CategoryContext";
 import { usePrd } from "@/app/context/ProductContext";
 import { useCart } from "@/app/context/CartContext";
 import { FaCartPlus } from "react-icons/fa6";
+import { MdAccountCircle } from "react-icons/md";
+
+
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -30,180 +33,160 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const righteous = Righteous({ subsets: ["latin"], weight: "400" });
 
-
-
-
-
 const Navbar = ({ fontClass, cartItems = [] }) => {
-
-  const { catData, setCatData } = useCat()
-  const { productsData, setProductsData } = usePrd()
-
+  const { catData, setCatData } = useCat();
+  const { productsData, setProductsData } = usePrd();
+  const { setLoading } = useAuth(); // ✅ Added for loader
   const router = useRouter();
-  const { userData, setUserData, isLogin } = useAuth();
-  const { cartData } = useCart()
-
-
+  const { userData, isLogin } = useAuth();
+  const { cartData } = useCart();
 
   const getCat = (e, catId) => {
-    fetchDataFromApi(`/api/product/gapsByCatId?Id=${catId}`).then((res) => {
-      console.log("''''''''''''''''''''''object''''''''''''''''''''''", catId)
-      if (!res.error) {
-        setProductsData(res?.data)
-      }
-      else {
-        throw error
-      }
-    })
-  }
+    setLoading(true); // ✅ start loading
+    fetchDataFromApi(`/api/product/gapsByCatId?Id=${catId}`)
+      .then((res) => {
+        if (!res.error) {
+          setProductsData(res?.data);
+        } else {
+          throw new Error("Error fetching category");
+        }
+      })
+      .finally(() => setLoading(false)); // ✅ stop loading
+  };
 
   const getSubCat = (e, subCatId) => {
-    fetchDataFromApi(`/api/product/gapsBySubCatId?Id=${subCatId}`).then((res) => {
-      if (!res.error) {
-        setProductsData(res?.data)
-      }
-      else {
-        throw error
-      }
-    })
-  }
+    setLoading(true);
+    fetchDataFromApi(`/api/product/gapsBySubCatId?Id=${subCatId}`)
+      .then((res) => {
+        if (!res.error) {
+          setProductsData(res?.data);
+        } else {
+          throw new Error("Error fetching subcategory");
+        }
+      })
+      .finally(() => setLoading(false));
+  };
 
   const getThirdCat = (e, thirdSubCatIdId) => {
-    fetchDataFromApi(`/api/product/gapsByThirdCatId?thirdSubCatId=${thirdSubCatIdId}`).then((res) => {
-      if (!res.error) {
-        setProductsData(res?.data)
-      }
-      else {
-
-
-        throw error
-      }
-    })
-
-  }
+    setLoading(true);
+    fetchDataFromApi(`/api/product/gapsByThirdCatId?thirdSubCatId=${thirdSubCatIdId}`)
+      .then((res) => {
+        if (!res.error) {
+          setProductsData(res?.data);
+        } else {
+          throw new Error("Error fetching third subcategory");
+        }
+      })
+      .finally(() => setLoading(false));
+  };
 
   return (
-<nav className="sticky top-[-90px]   z-[100] w-full">
-  <div className=" max-w-[2560px] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between bg-gradient-to-l from-[#798ca8] via-[#334257] to-[#131e30]">
-   {/* Logo Section */}
-    <div className="flex gap-0 items-center">
-          <Image
-            className="w-16 h-16 rounded-full"
-            src="/images/logo.png"
-            alt="S N Steel Fabrication Logo"
-            width={64}
-            height={64}
-            priority={true}
-          />
-          <Image src="/images/snsf-text.png" alt="" height={64} width={173}  className=" ml-0" />
+    <nav className=" sticky top-[-90px]   z-[100] bg-gradient-to-r from-indigo-950 via-indigo-900 to-[#1e40af]  text-white border-t border-[#1e293b] shadow-md">
 
-          {/* <h1 className={`${righteous.className} text-4xl text-white text-[64px]`}>
-        This should be in Righteous
-      </h1> */}
+      {/* bg-gradient-to-l from-blue-600 to-indigo-800 
+      
+      
+      bg-gradient-to-l from-[#798ca8] via-[#334257] to-[#131e30]
+      
+      
+      */}
 
-        </div>
+      {/* //  <header className="bg-gradient-to-r from-[#1c2044] to-[#5c37a7]  text-white border-t border-[#1e293b] shadow-md"> */}
+      <div className="max-w-[1440px] mx-auto px-6 py-3 flex items-center justify-between">
+        {/* Logo Section */}
+        <div className="flex items-center gap-1 flex-shrink-0 w-auto">
+  <Image
+    src="/images/logo.png"
+    alt="Logo"
+    width={60}
+    height={60}
+    className="rounded-full"
+  />
+  <Image
+    src="/images/snsf-text.png"
+    alt="SNSF Text"
+    width={174}
+    height={60}
+    className="drop-shadow-xl"
+  />
+</div>
 
-        {/* Search Box */}
-        <div className="Search w-[30vw] border border-gray-500 h-[35px] px-1 flex items-center active:backdrop-blur-3xl rounded-full">
-          <Image
-            className=" mr-1 invert"
-            src="/images/search.png"
-            alt="Search Icon"
-            width={20}
-            height={20}
-          />
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full bg-transparent outline-none font-sans"
-            aria-label="Search for products"
-          />
-        </div>
 
-        {/* Contact, Account, and Cart */}
-        <div className="contact-account-cart  w-auto flex justify-between items-center gap-3">
-          <IconButton aria-label="Home" onClick={() => router.push('/')} >
+        <div className="flex items-center gap-4">
+          {/* Search Bar */}
+          <div className="max-w-md w-full">
+  <div className="flex items-center bg-transparent border border-slate-400 rounded-md px-4 py-2 shadow-inner">
+    <Image
+      src="/images/search.png"
+      alt="Search"
+      width={18}
+      height={18}
+      className="invert mr-3"
+    />
+    <input
+      type="text"
+      placeholder="Search products..."
+      className="flex-grow bg-transparent outline-none text-sm text-white placeholder-slate-400"
+    />
+  </div>
+</div>
 
-            <IoMdHome className="text-3xl  rounded-none  text-white shrink-0 hover:bg-opacity-20 " />
+
+          {/* Actions */}
+          <IconButton aria-label="Home" onClick={() => router.push("/")}>
+            <IoMdHome className="text-3xl text-white" />
           </IconButton>
-
-          <IconButton aria-label="Call" >
-
-            <MdCall
-
-              href="tel:+917847911696"
-
-              className="text-3xl rounded-none  text-white shrink-0 hover:bg-opacity-20 " />
-          </IconButton>
-
-          <IconButton aria-label="Home" onClick={() => router.push((isLogin) ? "/profile" : "/login")} >
-
+         <IconButton aria-label="Call" onClick={() => window.location.href = 'tel:+917847911696'}>
+  <MdCall className="text-3xl text-white" />
+</IconButton>
+          <IconButton
+            aria-label="Account"
+            onClick={() => router.push(isLogin ? "/profile" : "/login") }className="text-slate-200"
+          >
             <Image
-              className={`shrink-0 w-8 h-8 cursor-pointer rounded-full ${(isLogin) ? "" : "invert"
-                }`}
-              src={userData?.avatar || "/images/account.png"}
-              alt="User Account"
+              src={userData?.avatar || "/images/emptyAccount.png"}
+              alt="Account"
               width={32}
               height={32}
-
+              className="shrink-0 w-8 h-8 rounded-full border-2 border-slate-200 cursor-pointer object-cover"
             />
-
-
-
           </IconButton>
 
-          <IconButton aria-label="cart" onClick={() => router.push((isLogin) ? "/cart" : "/login")}>
-            <StyledBadge badgeContent={cartData?.length} color="secondary">
-
-              <FaCartPlus className="text-3xl rounded-none  text-white shrink-0 hover:bg-opacity-20 " />
+          <IconButton aria-label="Cart" onClick={() => router.push(isLogin ? "/cart" : "/login")}>
+            <StyledBadge badgeContent={userData && cartData?.length} color="secondary">
+              <FaCartPlus className="text-3xl text-white" />
             </StyledBadge>
           </IconButton>
         </div>
-
       </div>
 
-
-      <ul className="flex justify-around p-1 border  border-b-slate-200 mb-0   bg-white">
+      <ul className="flex justify-around pb-1 border border-b-slate-200 bg-white">
         {catData?.map((cat, index) => (
           <li key={index} className="relative group">
-
-            <Link href={`/ProductListing?catId=${cat._id}`}
-              className="text-[17px] font-semibold font-sans text-gray-700 hover:text-[#131e30] hover:border-b-2 hover:border-[#131e30] active:border-[#131e30] pb-1 transform-origin-left  "
+            <Link
+              href={`/ProductListing?catId=${cat._id}`}
+              className="text-[15px]  text-gray-700 hover:text-[#131e30] hover:border-b-2 hover:border-[#131e30] pb-1"
             >
               {cat.name}
             </Link>
 
             {cat.children?.length > 0 && (
               <div
-                className={`absolute top-full mt-4 ${index > catData.length - 3 ? 'right-0' : 'left-0'
-                  } bg-white shadow-xl px-6 py-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-[300] overflow-auto scrollbar-hide`}
-                style={{
-                  maxWidth: '100vw', // Prevent overflow
-                  whiteSpace: 'nowrap', // Ensure columns line up horizontally
-                }}
+                className={`absolute top-full mt-4 ${index > catData.length - 3 ? "right-0" : "left-0"} bg-white shadow-xl px-6 py-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-[300] overflow-auto scrollbar-hide`}
+                style={{ maxWidth: "100vw", whiteSpace: "nowrap" }}
               >
-                <div
-                  className={`flex gap-2 `}
-                  style={{
-                    width: `${cat.children.length * 200}px`, // 200px per column, adjust if needed
-                  }}
-                >
+                <div className="flex gap-2" style={{ width: `${cat.children.length * 200}px` }}>
                   {cat.children.map((subCat, subIndex) => (
                     <div key={subIndex} className="min-w-[200px]">
-
-                      <Link href={`/ProductListing?subCatId=${subCat._id}`}
-
-                      >
-                        <h4 className="text-[16px] font-semibold font-sans mb-2 text-gray-800">{subCat.name}</h4>
+                      <Link href={`/ProductListing?subCatId=${subCat._id}`}>
+                        <h4 className="text-[16px] font-semibold mb-2 text-gray-800">{subCat.name}</h4>
                       </Link>
                       <ul className="space-y-1">
                         {subCat.children?.map((thirdSubCatId, thirdIndex) => (
                           <li key={thirdIndex}>
-
                             <Link
                               href={`/ProductListing?thirdSubCatId=${thirdSubCatId._id}`}
-                              className="text-[16px] font-sans text-gray-600 hover:text-[#131e30] transition"
-
+                              className="text-[16px] text-gray-600 hover:text-[#131e30] transition"
                             >
                               {thirdSubCatId.name}
                             </Link>
@@ -215,7 +198,6 @@ const Navbar = ({ fontClass, cartItems = [] }) => {
                 </div>
               </div>
             )}
-
           </li>
         ))}
       </ul>

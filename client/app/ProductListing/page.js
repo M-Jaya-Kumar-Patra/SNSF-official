@@ -19,7 +19,7 @@ import { MdFavorite } from "react-icons/md";
 import { MdFavoriteBorder } from "react-icons/md";
 import { useWishlist } from '@/app/context/WishlistContext';
 import Image from 'next/image';
-
+import Loading from '../Loading';
 
 
 
@@ -50,22 +50,26 @@ const ProductListing = () => {
     const [selectedSortVal, setSelectedSortVal] = useState("Name, A to Z")
 
 
-    const handleSortBy = (name, order, products, value) => {
-        setSelectedSortVal(value);
-        postData(`/api/product/sortBy`, {
-            products: products,
-            sortBy: name,
-            order: order
-        }, false).then((res) => {
-            setProductsData(res?.products);
-            setAnchorEl(null)
-        })
-    }
+    const handleSortBy = async (name, order, products, value) => {
+  setIsLoading(true);
+  setSelectedSortVal(value);
+  try {
+    const res = await postData(`/api/product/sortBy`, {
+      products,
+      sortBy: name,
+      order,
+    }, false);
+    setProductsData(res?.products);
+  } finally {
+    setIsLoading(false);
+    setAnchorEl(null);
+  }
+};
 
 useEffect(() => {
-  getCartItems();
-  getProductsData();
-}, [getCartItems, getProductsData]); // ✅ ESLint happy
+  setIsLoading(true);
+  Promise.all([getCartItems(), getProductsData()]).finally(() => setIsLoading(false));
+}, []);
 
 
     //useWishlist
@@ -97,9 +101,10 @@ useEffect(() => {
 
 
     return (
-        <div className='w-full relative'>
+        <div className='w-full relative bg-slate-100'>
+             {isLoading && <Loading />}
             {/* Breadcrumb */}  
-                <div role="presentation" className='sticky top-[33px] z-[90] bg-slate-100 py-2 w-full text-center'>
+                <div role="presentation" className='sticky top-[28px] z-[90] bg-slate-100 py-1 border border-slate-100 w-full text-center'>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link underline="hover" color="" href="/">Home</Link>
                         <Link underline="hover" color="inherit" href="/ProductListing">Products</Link>
@@ -108,7 +113,7 @@ useEffect(() => {
                 </div>
 
             {/* Main Container */}
-            <div className='flex  min-h-screen justify-center bg-slate-100'>
+            <div className='flex  min-h-screen justify-center bg-slate-100 border border-slate-100'>
                 <div className="container w-[90%]  mx-auto flex gap-4 justify-between">
 
                     {/* Sidebar */}

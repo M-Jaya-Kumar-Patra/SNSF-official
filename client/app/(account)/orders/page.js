@@ -63,7 +63,7 @@ const Account = () => {
                             <ul className="text-gray-600 font-sans">
                                 <li>
                                     <Link href="/orders">
-                                        <div className="h-[40px] flex items-center pl-[12.5px] font-semibold  border  border-l-8 border-y-0 border-r-0 border-slate-700  cursor-pointer  text-[#131e30] bg-slate-100 active:bg-slate-100 gap-[9px] ">
+                                        <div className="h-[40px] flex items-center pl-[12.5px] font-semibold  border  border-l-8 border-y-0 border-r-0 border-indigo-950  cursor-pointer  text-indigo-950 bg-slate-100 active:bg-slate-100 gap-[9px] ">
 
                                             <Package size={18} /> My Orders
                                         </div>
