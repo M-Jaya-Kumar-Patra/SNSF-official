@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { fetchDataFromApi } from "@/utils/api";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import { useAuth } from "@/app/context/AuthContext"; // ✅ Import loading context
+import { useAuth } from "@/app/context/AuthContext"; // ✅ import Loading context
 
 const Slider = () => {
   const [slides, setSlides] = useState([]);

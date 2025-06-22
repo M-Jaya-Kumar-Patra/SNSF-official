@@ -19,7 +19,7 @@ import { MdFavorite } from "react-icons/md";
 import { MdFavoriteBorder } from "react-icons/md";
 import { useWishlist } from '@/app/context/WishlistContext';
 import Image from 'next/image';
-import Loading from '../Loading';
+import Loading from '@/components/Loading';
 import SidebarWrapper from '@/components/SidebarWrapper';
 
 const ProductListing = () => {

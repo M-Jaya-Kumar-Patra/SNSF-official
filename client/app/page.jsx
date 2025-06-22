@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import  {useAuth}  from "./context/AuthContext";; // Assuming you moved your Zustand logic here
-import Loading from "./Loading";
+import Loading from "@/components/Loading";
 import Slider from "@/components/Slider";
 import Shopbycat from "@/components/Shopbycat";
 import Bestsellers from "@/components/Bestsellers";
