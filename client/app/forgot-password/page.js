@@ -1,194 +1,165 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import { Righteous, Poppins } from "next/font/google";
 import { useRouter } from "next/navigation";
-import * as React from "react";
-
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import IconButton from "@mui/material/IconButton";
-import Input from "@mui/material/Input";
-import FilledInput from "@mui/material/FilledInput";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputLabel from "@mui/material/InputLabel";
-import InputAdornment from "@mui/material/InputAdornment";
-import FormHelperText from "@mui/material/FormHelperText";
-import FormControl from "@mui/material/FormControl";
-
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { useAlert } from "../context/AlertContext";
 import { postData } from "@/utils/api";
+import { useAlert } from "../context/AlertContext";
+import {
+  Box,
+  FormControl,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+  CircularProgress,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
-
-const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
-const poppins = Poppins({ subsets: ["latin"], weight: '300' })
-
-
-const Page = () => {
-  const [isClient, setIsClient] = useState(false);
-  const router = useRouter();
-  const [type, setType] = useState("password");
+export default function ResetPasswordPage() {
   const [formFields, setFormFields] = useState({
     email: "",
     newPassword: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
+  const router = useRouter();
   const alert = useAlert();
-  const [showPassword, setShowPassword] = React.useState(false);
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-
-  const handleMouseUpPassword = (event) => {
-    event.preventDefault();
-  };
-
-  const handleChangePassword = async () => {
-    const { newPassword, confirmPassword } = formFields
-
-    if (!newPassword) {
-      alert.alertBox({ type: "error", msg: "Please enter new password" });
-      // setIsLoading(false);
-      return;
-    }
-
-    if (!confirmPassword) {
-      alert.alertBox({ type: "error", msg: "Confirm your password" });
-      // setIsLoading(false);
-      return;
-    }
-
-    try {
-      const response = await postData("/api/user/reset-password", formFields, false);
-
-      if (!response.error) {
-        alert.alertBox({ type: "success", msg: "Password changed successfully" });
-
-
-
-        setFormFields({ newPassword: "", confirmPassword: "" });
-        router.push("/login");
-        localStorage.removeItem("actionType")
-      } else {
-        alert.alertBox({ type: "error", msg: response?.message });
+  useEffect(() => {
+    setIsClient(true);
+    if (typeof window !== "undefined") {
+      const storedEmail = localStorage.getItem("userEmail");
+      if(!storedEmail){
+        router.push("/")
       }
-    } catch (err) {
-      alert.alertBox({ type: "error", msg: err?.message });
+      setFormFields((prev) => ({ ...prev, email: storedEmail || "" }));
     }
-  }
+  }, []);
 
+  if (!isClient) return null;
 
   const onChangeInput = (e) => {
     const { name, value } = e.target;
     setFormFields((prev) => ({ ...prev, [name]: value }));
   };
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const handleChangePassword = async () => {
+    const { newPassword, confirmPassword } = formFields;
 
+    if (!newPassword) {
+      alert.alertBox({ type: "error", msg: "Please enter new password" });
+      return;
+    }
 
-useEffect(() => {
-  if (typeof window !== "undefined") {
-    const storedEmail = localStorage.getItem("userEmail");
-    setFormFields((prev) => ({ ...prev, email: storedEmail || "" }));
-  }
-}, []);
+    if (!confirmPassword) {
+      alert.alertBox({ type: "error", msg: "Confirm your password" });
+      return;
+    }
 
-  if (!isClient) return null;
+    if (newPassword !== confirmPassword) {
+      alert.alertBox({ type: "error", msg: "Passwords do not match" });
+      return;
+    }
 
-  const togglePasswordVisibility = () => {
-    if (type === "password") {
-      setType("text");
-      setShowPassword("Hide");
-    } else {
-      setType("password");
-      setShowPassword("Show");
+    setIsSubmitting(true);
+    try {
+      const response = await postData("/api/user/reset-password", formFields, false);
+      if (!response.error) {
+        alert.alertBox({ type: "success", msg: "Password changed successfully" });
+        setFormFields({ newPassword: "", confirmPassword: "", email: "" });
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("actionType");
+        router.push("/login");
+      } else {
+        alert.alertBox({ type: "error", msg: response?.message });
+      }
+    } catch (err) {
+      alert.alertBox({ type: "error", msg: err?.message || "Something went wrong" });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-
   return (
     <div className="flex justify-center items-center w-full h-screen bg-gray-100">
-      <div className="w-[300px] h-[auto] border border-gray-200 rounded-md shadow bg-white py-4 px-5 flex flex-col items-center">
-
-        <div className="w-full  gap-3 text-center">
+      <div className="w-[300px] h-auto border border-gray-200 rounded-md shadow bg-white py-4 px-5 flex flex-col items-center">
+        <div className="w-full gap-3 text-center">
           <h1 className="text-[#131e30] my-2 font-bold text-lg">Reset Your Password</h1>
-
-
         </div>
 
-        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-          <div>
+        <Box sx={{ display: "flex", flexWrap: "wrap", width: "100%" }}>
+          <FormControl size="small" fullWidth margin="dense" variant="outlined">
+            <InputLabel>New Password</InputLabel>
+            <OutlinedInput
+              name="newPassword"
+              value={formFields.newPassword}
+              onChange={onChangeInput}
+              type={showPassword ? "text" : "password"}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              label="New Password"
+            />
+          </FormControl>
 
-
-            <FormControl size="small" fullWidth margin="dense" variant="outlined">
-              <InputLabel>New Password</InputLabel>
-              <OutlinedInput
-                name="newPassword"
-                value={formFields.newPassword}
-                type={showPassword ? "text" : "password"}
-                onChange={onChangeInput}
-
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword((show) => !show)}
-                      onMouseDown={(e) => e.preventDefault()}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Password"
-              />
-            </FormControl>
-            <FormControl size="small" fullWidth margin="normal" variant="outlined">
-              <InputLabel>Confirm Password</InputLabel>
-              <OutlinedInput
-                name="confirmPassword"
-                value={formFields.confirmPassword}
-                type={showPassword ? "text" : "password"}
-                onChange={onChangeInput}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword((show) => !show)}
-                      onMouseDown={(e) => e.preventDefault()}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Password"
-              />
-            </FormControl>
-
-          </div>
+          <FormControl size="small" fullWidth margin="normal" variant="outlined">
+            <InputLabel>Confirm Password</InputLabel>
+            <OutlinedInput
+              name="confirmPassword"
+              value={formFields.confirmPassword}
+              onChange={onChangeInput}
+              type={showPassword ? "text" : "password"}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              label="Confirm Password"
+            />
+          </FormControl>
         </Box>
-        <button className="bg-gradient-to-l from-[#798ca8] via-[#334257] to-[#131e30] text-white px-4 py-1 rounded-md mt-3 hover:opacity-90 text-[15px]" onClick={handleChangePassword}>
-          Change Password
+
+        <button
+          onClick={handleChangePassword}
+          disabled={isSubmitting}
+          className={`w-[140px] h-[36px] flex justify-center items-center 
+            !bg-primary-gradient hover:opacity-90 
+            transition duration-200 text-white rounded-md mt-3 text-[15px]
+            shadow-[0_4px_10px_rgba(0,0,0,0.3)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.35)] 
+            active:scale-95 active:shadow-inner`}
+        >
+          {isSubmitting ? (
+            <CircularProgress size={20} sx={{ color: "white" }} />
+          ) : (
+            "Change Password"
+          )}
         </button>
-        {/* Already have an account? Login */}
-        <div className="w-full text-center mt-3 ">
-          <h3 className="text-[#131e30] text-[14px] cursor-pointer hover:text-[#363fa6]" onClick={() => router.push("/login")}>Remembered your password? Back to Login</h3>
+
+        <div className="w-full text-center mt-3">
+          <h3
+            className="text-[#131e30] text-[14px] cursor-pointer hover:text-[#363fa6]"
+            onClick={() => router.push("/login")}
+          >
+            Remembered your password? Back to Login
+          </h3>
         </div>
-
-
-
       </div>
     </div>
   );
-};
-
-export default Page;
+}

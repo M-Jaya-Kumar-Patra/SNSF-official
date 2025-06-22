@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Righteous, Poppins } from "next/font/google";
 import { useRouter } from "next/navigation";
 import {
   TextField,
@@ -11,90 +10,88 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
-  CircularProgress
+  CircularProgress,
+  Box,
+  LinearProgress
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Righteous, Poppins } from "next/font/google";
 import { postData } from "@/utils/api";
 import { useAlert } from "../context/AlertContext";
 import { useAuth } from "../context/AuthContext";
 
-import Box from '@mui/material/Box';
-import LinearProgress from '@mui/material/LinearProgress';
-
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
 const poppins = Poppins({ subsets: ["latin"], weight: "300" });
 
-const Page = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
-  const [checkingAuth, setCheckingAuth] = useState(true);
-
-  const alert = useAlert();
+export default function Signup() {
   const [formFields, setFormFields] = useState({
     name: "",
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
+  const router = useRouter();
+  const alert = useAlert();
   const { isLogin } = useAuth();
 
-  // Redirect if already logged in
   useEffect(() => {
     if (isLogin) {
       router.push("/profile");
     } else {
-      setCheckingAuth(false); // allow rendering login form
+      setCheckingAuth(false);
     }
   }, [isLogin, router]);
 
-  if (checkingAuth) return null;
-
+  
   const onChangeInput = (e) => {
     const { name, value } = e.target;
-    setFormFields((prev) => ({ ...prev, [name]: value }));
+    setFormFields((prev) => ({
+      ...prev,
+      [name]: name === "email" ? value.toLowerCase() : value,
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    if (formFields.name.trim() === "") {
+    const { name, email, password } = formFields;
+
+    if (!name.trim()) {
       alert.alertBox({ type: "error", msg: "Please enter full name" });
       setIsLoading(false);
       return;
     }
-    if (formFields.email.trim() === "") {
+    if (!email.trim()) {
       alert.alertBox({ type: "error", msg: "Please enter your email id" });
       setIsLoading(false);
       return;
     }
-    if (formFields.password.trim() === "") {
+    if (!password.trim()) {
       alert.alertBox({ type: "error", msg: "Please enter password" });
       setIsLoading(false);
       return;
     }
 
-    postData("/api/user/register", formFields, false).then((response) => {
-      if (!response.error) {
-        localStorage.setItem("userEmail", formFields.email);
-        localStorage.setItem("userName", formFields.name);
-
-        setFormFields({ name: "", email: "", password: "" });
-        router.push("/verify-otp");
-      } else {
-        alert.alertBox({ type: "error", msg: response?.message });
-      }
-      setIsLoading(false);
-    });
+    const response = await postData("/api/user/register", formFields, false);
+    if (!response.error) {
+      localStorage.setItem("userEmail", email);
+      localStorage.setItem("userName", name);
+      setFormFields({ name: "", email: "", password: "" });
+      router.push("/verify-otp");
+    } else {
+      alert.alertBox({ type: "error", msg: response?.message || "Signup failed" });
+    }
+    setIsLoading(false);
   };
 
   return (
     <div className="flex justify-center items-center w-full h-screen bg-gray-100">
       <div className="w-[300px] border rounded-md shadow overflow-hidden bg-white">
-        <Box className={isLoading ? "top-0 w-full" : "top-0 w-0"}>
-          <LinearProgress />
-        </Box>
+        {isLoading && <Box><LinearProgress /></Box>}
 
         <div className="w-full py-4 px-5 flex flex-col items-center">
           <Image
@@ -120,34 +117,36 @@ const Page = () => {
             margin="dense"
             size="small"
             fullWidth
-            value={formFields.name}
-            disabled={isLoading}
             name="name"
+            disabled={isLoading}
+            value={formFields.name}
             onChange={onChangeInput}
           />
+
           <TextField
             label="Email Id"
             variant="outlined"
+            margin="dense"
             size="small"
             fullWidth
-            value={formFields.email}
-            disabled={isLoading}
-            margin="dense"
             name="email"
+            disabled={isLoading}
+            value={formFields.email}
             onChange={onChangeInput}
           />
+
           <FormControl size="small" fullWidth margin="dense" variant="outlined">
             <InputLabel>Password</InputLabel>
             <OutlinedInput
               name="password"
-              value={formFields.password}
-              disabled={isLoading}
               type={showPassword ? "text" : "password"}
+              disabled={isLoading}
+              value={formFields.password}
               onChange={onChangeInput}
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton
-                    onClick={() => setShowPassword((show) => !show)}
+                    onClick={() => setShowPassword((prev) => !prev)}
                     onMouseDown={(e) => e.preventDefault()}
                     edge="end"
                   >
@@ -163,13 +162,13 @@ const Page = () => {
             type="submit"
             onClick={handleSubmit}
             disabled={isLoading}
-            className="hover:opacity-90 bg-gradient-to-l from-[#798ca8] via-[rgb(51,66,87)] to-[#131e30] text-white px-4 py-1 rounded-md mt-4 text-[15px] w-[40%] flex justify-center items-center"
+            className="w-[120px] h-[36px] flex justify-center items-center 
+              !bg-primary-gradient hover:opacity-90 
+              transition duration-200 text-white rounded-md mt-4 text-[15px]
+              shadow-[0_4px_10px_rgba(0,0,0,0.3)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.35)] 
+              active:scale-95 active:shadow-inner"
           >
-            {isLoading ? (
-              <CircularProgress size={20} sx={{ color: "white" }} />
-            ) : (
-              "Sign Up"
-            )}
+            {isLoading ? <CircularProgress size={20} sx={{ color: "white" }} /> : "Sign Up"}
           </button>
 
           <div className="w-full text-center mt-3">
@@ -185,6 +184,4 @@ const Page = () => {
       </div>
     </div>
   );
-};
-
-export default Page;
+}

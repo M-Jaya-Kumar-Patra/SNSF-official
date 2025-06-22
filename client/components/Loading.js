@@ -15,13 +15,13 @@ export default function Loading() {
       open={true}
     >
       <div className="flex flex-col items-center justify-center">
-        <div className="w-32 h-32 md:w-40 md:h-40 p-4 rounded-full shadow-lg bg-white/20 backdrop-blur-md flex items-center justify-center">
+        {/* <div className="w-32 h-32 md:w-40 md:h-40 p-4 rounded-full shadow-lg bg-white/20 backdrop-blur-md flex items-center justify-center"> */}
           <DotLottieReact
             src="https://lottie.host/f0d67ccf-00d6-4753-81f0-45de6e6de551/xon0h7LmyW.lottie"
             loop
             autoplay
           />
-        </div>
+        {/* </div> */}
         <p className="mt-4 text-white font-medium text-sm tracking-wide animate-pulse">Loading, please wait...</p>
       </div>
     </Backdrop>
