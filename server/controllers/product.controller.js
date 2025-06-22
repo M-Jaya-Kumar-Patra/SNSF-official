@@ -150,7 +150,7 @@ export async function getAllProductsByCatId(request, response) {
         const products = await ProductModel.find({ catId: request.params.Id })
             .populate("category").skip((page - 1) * perPage)
             .limit(perPage).exec();
-        if (!products) {    
+        if (!products) {
             response.status(500).json({
                 error: true,
                 success: false
@@ -603,56 +603,56 @@ export async function deleteProduct(request, response) {
 
 export async function deleteMultipleProducts(request, response) {
     console.log("🔁 DELETE request received at /api/product/deleteMultiple");
-        
-  try {
-    const { ids } = request.body;
 
-    console.log("🛠️ Deleting multiple products:", ids);
+    try {
+        const { ids } = request.body;
 
-    if (!ids || !Array.isArray(ids)) {
-      return response.status(400).json({
-        error: true,
-        success: false,
-        message: "Invalid input",
-      });
-    }
+        console.log("🛠️ Deleting multiple products:", ids);
 
-    for (let i = 0; i < ids.length; i++) {
-      const product = await ProductModel.findById(ids[i]);
-
-      if (!product) continue;
-
-      const images = product.images;
-
-      for (let img of images) {
-        if (typeof img !== "string") continue;
-
-        const urlArr = img.split("/");
-        const image = urlArr[urlArr.length - 1];
-        const imageName = image.split(".")[0];
-
-        if (imageName) {
-          await cloudinary.uploader.destroy(imageName);
+        if (!ids || !Array.isArray(ids)) {
+            return response.status(400).json({
+                error: true,
+                success: false,
+                message: "Invalid input",
+            });
         }
-      }
+
+        for (let i = 0; i < ids.length; i++) {
+            const product = await ProductModel.findById(ids[i]);
+
+            if (!product) continue;
+
+            const images = product.images;
+
+            for (let img of images) {
+                if (typeof img !== "string") continue;
+
+                const urlArr = img.split("/");
+                const image = urlArr[urlArr.length - 1];
+                const imageName = image.split(".")[0];
+
+                if (imageName) {
+                    await cloudinary.uploader.destroy(imageName);
+                }
+            }
+        }
+
+        // ✅ Delete all products at once after cleaning up images
+        await ProductModel.deleteMany({ _id: { $in: ids } });
+
+        return response.status(200).json({
+            message: "Products deleted successfully",
+            error: false,
+            success: true,
+        });
+    } catch (error) {
+        console.error("🔥 Backend deleteMultiple error:", error);
+        return response.status(500).json({
+            message: error.message || "Something went wrong",
+            error: true,
+            success: false,
+        });
     }
-
-    // ✅ Delete all products at once after cleaning up images
-    await ProductModel.deleteMany({ _id: { $in: ids } });
-
-    return response.status(200).json({
-      message: "Products deleted successfully",
-      error: false,
-      success: true,
-    });
-  } catch (error) {
-    console.error("🔥 Backend deleteMultiple error:", error);
-    return response.status(500).json({
-      message: error.message || "Something went wrong",
-      error: true,
-      success: false,
-    });
-  }
 }
 
 export async function getProduct(request, response) {
@@ -782,77 +782,77 @@ export async function updateProduct(request, response) {
     }
 }
 export async function filters(request, response) {
-  const {
-    catId = [],
-    subCatId = [],
-    thirdSubCatId = [],
-    minPrice = 0,
-    maxPrice = Infinity,
-    rating,
-    page = 1,
-    limit = 10 // default limit
-  } = request.body;
+    const {
+        catId = [],
+        subCatId = [],
+        thirdSubCatId = [],
+        minPrice = 0,
+        maxPrice = Infinity,
+        rating,
+        page = 1,
+        limit = 10 // default limit
+    } = request.body;
 
-  try {
-    const filters = [];
+    try {
+        const filters = [];
 
-    // Only push filters if the arrays are not empty
-    if (catId.length > 0) filters.push({ catId: { $in: catId } });
-    if (subCatId.length > 0) filters.push({ subCatId: { $in: subCatId } });
-    if (thirdSubCatId.length > 0) filters.push({ thirdSubCatId: { $in: thirdSubCatId } });
+        // Only push filters if the arrays are not empty
+        if (catId.length > 0) filters.push({ catId: { $in: catId } });
+        if (subCatId.length > 0) filters.push({ subCatId: { $in: subCatId } });
+        if (thirdSubCatId.length > 0) filters.push({ thirdSubCatId: { $in: thirdSubCatId } });
 
-    // Build the query object
-    const query = {};
+        // Build the query object
+        const query = {};
 
-    // Only apply OR condition if we have category filters
-    if (filters.length > 0) {
-      query.$or = filters;
+        // Only apply OR condition if we have category filters
+        if (filters.length > 0) {
+            query.$or = filters;
+        }
+
+        // Always apply price range
+        query.price = {
+            $gte: parseFloat(minPrice) || 0,
+            $lte: parseFloat(maxPrice) || Infinity
+        };
+
+        // Optional rating filter
+        if (rating !== undefined && rating !== null) {
+            query.rating = { $gte: parseFloat(rating) };
+        }
+
+        // Log the final query for debugging
+        console.log("Query filters:", query);
+
+        // Pagination logic
+        const parsedLimit = parseInt(limit) || 10;
+        const skip = (parseInt(page) - 1) * parsedLimit;
+
+        const products = await ProductModel.find(query)
+            .populate("category")
+            .skip(skip)
+            .limit(parsedLimit);
+
+        const total = await ProductModel.countDocuments(query);
+
+        console.log("Total matched documents:", total);
+        console.log("Returned products:", products.length);
+
+        return response.status(200).json({
+            error: false,
+            success: true,
+            products,
+            total,
+            page: parseInt(page),
+            totalPages: Math.ceil(total / parsedLimit)
+        });
+
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false
+        });
     }
-
-    // Always apply price range
-    query.price = {
-      $gte: parseFloat(minPrice) || 0,
-      $lte: parseFloat(maxPrice) || Infinity
-    };
-
-    // Optional rating filter
-    if (rating !== undefined && rating !== null) {
-      query.rating = { $gte: parseFloat(rating) };
-    }
-
-    // Log the final query for debugging
-    console.log("Query filters:", query);
-
-    // Pagination logic
-    const parsedLimit = parseInt(limit) || 10;
-    const skip = (parseInt(page) - 1) * parsedLimit;
-
-    const products = await ProductModel.find(query)
-      .populate("category")
-      .skip(skip)
-      .limit(parsedLimit);
-
-    const total = await ProductModel.countDocuments(query);
-
-    console.log("Total matched documents:", total);
-console.log("Returned products:", products.length);
-
-    return response.status(200).json({
-      error: false,
-      success: true,
-      products,
-      total,
-      page: parseInt(page),
-      totalPages: Math.ceil(total / parsedLimit)
-    });
-
-  } catch (error) {
-    return response.status(500).json({
-      message: error.message || error,
-      error: true,
-      success: false
-    });
-  }
 }
 
 
@@ -861,37 +861,82 @@ console.log("Returned products:", products.length);
 
 // Sort function
 const sortItems = (products, sortBy, order) => {
-  return products.sort((a, b) => {
-    if (sortBy === 'name') {
-      return order === 'asc'
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name);
-    }
+    return products.sort((a, b) => {
+        if (sortBy === 'name') {
+            return order === 'asc'
+                ? a.name.localeCompare(b.name)
+                : b.name.localeCompare(a.name);
+        }
 
-    if (sortBy === 'price') {
-      return order === 'asc'
-        ? a.price - b.price
-        : b.price - a.price;
-    }
+        if (sortBy === 'price') {
+            return order === 'asc'
+                ? a.price - b.price
+                : b.price - a.price;
+        }
 
-    return 0; // Default: no sorting applied
-  });
+        return 0; // Default: no sorting applied
+    });
 };
 
 
 export async function sortBy(request, response) {
-  try {
-    const { products, sortBy, order } = request.body;
+    try {
+        const { products, sortBy, order } = request.body;
 
-    const sortedItems = sortItems([...products], sortBy, order);
+        const sortedItems = sortItems([...products], sortBy, order);
+
+        return response.status(200).json({
+            error: false,
+            success: true,
+            products: sortedItems,
+            totalPages: 0,
+            page: 0,
+        });
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false,
+        });
+    }
+}
+
+
+
+export async function SearchProductsController(request, response) {
+  try {
+    const query = request.query.q;
+    const page = parseInt(request.query.page) || 1;
+    const limit = parseInt(request.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    if (!query) {
+      return response.status(400).json({
+        message: "Query is required",
+        error: true,
+        success: false
+      });
+    }
+
+    const items = await ProductModel.find({
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { brand: { $regex: query, $options: "i" } },
+        { catName: { $regex: query, $options: "i" } },
+        { subCat: { $regex: query, $options: "i" } },
+        { thirdSubCat: { $regex: query, $options: "i" } },
+      ]
+    })
+    .populate("category")
+    .skip(skip)
+    .limit(limit);
 
     return response.status(200).json({
-      error: false, 
+      error: false,
       success: true,
-      products: sortedItems,
-      totalPages: 0,
-      page: 0,
+      products: items,
     });
+
   } catch (error) {
     return response.status(500).json({
       message: error.message || error,
@@ -900,7 +945,3 @@ export async function sortBy(request, response) {
     });
   }
 }
-
-
-
-

@@ -19,7 +19,7 @@ import { usePrd } from "@/app/context/ProductContext";
 import { useCart } from "@/app/context/CartContext";
 import { FaCartPlus } from "react-icons/fa6";
 import { MdAccountCircle } from "react-icons/md";
-
+import Search from "./Search";
 
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -81,7 +81,7 @@ const Navbar = ({ fontClass, cartItems = [] }) => {
   };
 
   return (
-    <nav className=" sticky top-[-90px]   z-[100] bg-gradient-to-r from-indigo-950 via-indigo-900 to-[#1e40af]  text-white border-t border-[#1e293b] shadow-md">
+    <nav className=" sticky top-[-70px]   z-[100] bg-gradient-to-r from-indigo-950 via-indigo-900 to-[#1e40af]  text-white border-t border-[#1e293b] shadow-md">
 
       {/* bg-gradient-to-l from-blue-600 to-indigo-800 
       
@@ -94,7 +94,7 @@ const Navbar = ({ fontClass, cartItems = [] }) => {
       {/* //  <header className="bg-gradient-to-r from-[#1c2044] to-[#5c37a7]  text-white border-t border-[#1e293b] shadow-md"> */}
       <div className="max-w-full mx-auto px-6 py-2 flex items-center justify-between">
         {/* Logo Section */}
-        <div className="flex items-center gap-1 flex-shrink-0 w-auto">
+        <div className="flex items-center gap-1 flex-shrink-0 w-[200px]">
           <Image
             src="/images/logo.png"
             alt="Logo"
@@ -111,34 +111,23 @@ const Navbar = ({ fontClass, cartItems = [] }) => {
           />
         </div>
 
-
-        <div className="flex items-center gap-4">
           {/* Search Bar */}
-          <div className="max-w-md w-full mr-2">
-            <div className="flex items-center bg-transparent border border-slate-400 rounded-md px-2  py-1 shadow-inner">
-              <Image
-                src="/images/search.png"
-                alt="Search"
-                width={18}
-                height={18}
-                className="invert mr-2"
-              />
-              <input
-                type="text"
-                placeholder="Search products..."
-                className="flex-grow bg-transparent outline-none text-sm text-white placeholder-slate-400"
-              />
-            </div>
-          </div>
+          <Search/>
+
+        <div className="flex items-center justify-between w-[200px]">
 
 
           {/* Actions */}
           <IconButton aria-label="Home" onClick={() => router.push("/")}>
             <IoMdHome className="text-3xl text-white" />
           </IconButton>
+
+
           <IconButton aria-label="Call" onClick={() => window.location.href = 'tel:+917847911696'}>
             <MdCall className="text-3xl text-white" />
           </IconButton>
+
+
           <IconButton
             aria-label="Account"
             onClick={() => router.push(isLogin ? "/profile" : "/login")} className="text-slate-200"
@@ -152,11 +141,15 @@ const Navbar = ({ fontClass, cartItems = [] }) => {
             />
           </IconButton>
 
+
+
           <IconButton aria-label="Cart" onClick={() => router.push(isLogin ? "/cart" : "/login")}>
             <StyledBadge badgeContent={userData && cartData?.length} color="secondary">
               <FaCartPlus className="text-[27px] text-white" />
             </StyledBadge>
           </IconButton>
+
+
         </div>
       </div>
 
