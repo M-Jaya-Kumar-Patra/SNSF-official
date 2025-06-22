@@ -12,8 +12,8 @@ const Shopbycat = () => {
   const catLength = catData?.length || 0;
 
   return (
-    <div className="mt-3 flex flex-col items-center bg-slate-100 w-full pb-10">
-      <h1 className={`text-3xl font-bold text-black mt-10 mb-12 ${joSan.className}`}>
+    <div className="mt-3 flex flex-col items-center bg-slate-100 w-full pb-8">
+      <h1 className={`text-3xl font-bold text-black mt-8 mb-8 ${joSan.className}`}>
         Shop by category
       </h1>
 

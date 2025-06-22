@@ -74,7 +74,7 @@ const ProductListing = () => {
     const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist()
 
     return (
-        <div className='w-full'>
+        <div className='w-full '>
             <div className="w-full bg-slate-100 flex justify-center pt-3">
                 <div role="presentation" className='bg-slate-100 w-[1020px] text-center'>
                     <Breadcrumbs aria-label="breadcrumb">

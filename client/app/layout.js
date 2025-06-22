@@ -31,7 +31,7 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="icon" href="/favicon-32x32.png" type="image/png" />
       </head>
-      <body className={`${inter.className} w-full`}>
+      <body className={`${inter.className} w-full `}>
         <AlertProvider>
           <AuthWrapper>
             <AuthProvider>

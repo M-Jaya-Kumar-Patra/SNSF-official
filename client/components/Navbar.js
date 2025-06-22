@@ -92,69 +92,69 @@ const Navbar = ({ fontClass, cartItems = [] }) => {
       */}
 
       {/* //  <header className="bg-gradient-to-r from-[#1c2044] to-[#5c37a7]  text-white border-t border-[#1e293b] shadow-md"> */}
-      <div className="max-w-[1440px] mx-auto px-6 py-3 flex items-center justify-between">
+      <div className="max-w-full mx-auto px-6 py-2 flex items-center justify-between">
         {/* Logo Section */}
         <div className="flex items-center gap-1 flex-shrink-0 w-auto">
-  <Image
-    src="/images/logo.png"
-    alt="Logo"
-    width={60}
-    height={60}
-    className="rounded-full"
-  />
-  <Image
-    src="/images/snsf-text.png"
-    alt="SNSF Text"
-    width={174}
-    height={60}
-    className="drop-shadow-xl"
-  />
-</div>
+          <Image
+            src="/images/logo.png"
+            alt="Logo"
+            width={50}
+            height={50}
+            className="rounded-full"
+          />
+          <Image
+            src="/images/snsf-text.png"
+            alt="SNSF Text"
+            height={50}
+            width={145}
+            className="drop-shadow-xl"
+          />
+        </div>
 
 
         <div className="flex items-center gap-4">
           {/* Search Bar */}
-          <div className="max-w-md w-full">
-  <div className="flex items-center bg-transparent border border-slate-400 rounded-md px-4 py-2 shadow-inner">
-    <Image
-      src="/images/search.png"
-      alt="Search"
-      width={18}
-      height={18}
-      className="invert mr-3"
-    />
-    <input
-      type="text"
-      placeholder="Search products..."
-      className="flex-grow bg-transparent outline-none text-sm text-white placeholder-slate-400"
-    />
-  </div>
-</div>
+          <div className="max-w-md w-full mr-2">
+            <div className="flex items-center bg-transparent border border-slate-400 rounded-md px-2  py-1 shadow-inner">
+              <Image
+                src="/images/search.png"
+                alt="Search"
+                width={18}
+                height={18}
+                className="invert mr-2"
+              />
+              <input
+                type="text"
+                placeholder="Search products..."
+                className="flex-grow bg-transparent outline-none text-sm text-white placeholder-slate-400"
+              />
+            </div>
+          </div>
 
 
           {/* Actions */}
           <IconButton aria-label="Home" onClick={() => router.push("/")}>
             <IoMdHome className="text-3xl text-white" />
           </IconButton>
-         <IconButton aria-label="Call" onClick={() => window.location.href = 'tel:+917847911696'}>
-  <MdCall className="text-3xl text-white" />
-</IconButton>
+          <IconButton aria-label="Call" onClick={() => window.location.href = 'tel:+917847911696'}>
+            <MdCall className="text-3xl text-white" />
+          </IconButton>
           <IconButton
             aria-label="Account"
-            onClick={() => router.push(isLogin ? "/profile" : "/login") }className="text-slate-200"
+            onClick={() => router.push(isLogin ? "/profile" : "/login")} className="text-slate-200"
           >
             <Image
               src={userData?.avatar || "/images/emptyAccount.png"}
               alt="Account"
               width={32}
               height={32}
-              className="shrink-0 w-8 h-8 rounded-full border-2 border-slate-200 cursor-pointer object-cover"
+              className="shrink-0 w-[24px] h-[24px] rounded-full border-2 border-slate-200 cursor-pointer object-cover"
             />
           </IconButton>
 
           <IconButton aria-label="Cart" onClick={() => router.push(isLogin ? "/cart" : "/login")}>
             <StyledBadge badgeContent={userData && cartData?.length} color="secondary">
-              <FaCartPlus className="text-3xl text-white" />
+              <FaCartPlus className="text-[27px] text-white" />
             </StyledBadge>
           </IconButton>
         </div>

@@ -51,13 +51,6 @@ export default function Login() {
     }
   }, [alert]);
 
-  if (checkingAuth) {
-    return (
-      <div className="w-full h-screen flex justify-center items-center">
-        <CircularProgress />
-      </div>
-    );
-  }
 
   const onChangeInput = (e) => {
     const { name, value } = e.target;

@@ -31,8 +31,8 @@ const Bestsellers = () => {
     };
 
     return (
-        <div className="flex flex-col items-center mt-5 w-full pb-10">
-            <h1 className={`text-3xl font-bold text-black mt-10 mb-14 ${joSan.className}`}>Best sellers</h1>
+        <div className="flex flex-col items-center mt-5 w-full pb-8">
+            <h1 className={`text-3xl font-bold text-black mt-8 mb-8 ${joSan.className}`}>Best sellers</h1>
 
             <div className="flex justify-center items-center">
                 <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 place-items-center gap-5 mb-5">
