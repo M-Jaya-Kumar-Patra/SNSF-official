@@ -20,8 +20,7 @@ import { MdFavoriteBorder } from "react-icons/md";
 import { useWishlist } from '@/app/context/WishlistContext';
 import Image from 'next/image';
 import Loading from '../Loading';
-
-
+import SidebarWrapper from '@/components/SidebarWrapper';
 
 const ProductListing = () => {
     const { prdData, productsData, setProductsData, getProductsData } = usePrd()
@@ -119,7 +118,7 @@ useEffect(() => {
                     {/* Sidebar */}
                     <div className='w-[240px]  shrink-0 bg-white p-5 shadow-lg text-black '>
                
-                        <Sidebar
+                        <SidebarWrapper
                             productsData={productsData}
                             setProductsData={setProductsData}
                             isLoading={isLoading}
