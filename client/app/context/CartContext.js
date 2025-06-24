@@ -1,7 +1,7 @@
 // context/CartContext.js
 "use client";
 import { Club } from "lucide-react";
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useAlert } from "./AlertContext";
 import { fetchDataFromApi, postData } from "@/utils/api";
 import { useAuth } from "./AuthContext";
@@ -15,15 +15,8 @@ const CartProvider = ({ children }) => {
   const { isLogin } = useAuth()
   const [buyNowItem, setBuyNowItem] = useState([]);
 
-
-
-  useEffect(() => {
-    getCartItems();
-    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ")
-  }, []); // Only once on component mount
-
-
-
+  
+  
 
 
   const addToCart = (prd, userId, quantity) => {
@@ -62,19 +55,22 @@ const CartProvider = ({ children }) => {
   };
 
 
-  const getCartItems = () => {
-  fetchDataFromApi(`/api/cart/get`).then((res) => {
-    if (!res.error) {
+  const getCartItems = useCallback(() => {
+    fetchDataFromApi(`/api/cart/get`).then((res) => {
+      if (!res.error) {
       setCartData(res?.data);
-
-      // ✅ Extract product IDs for easy checks like "Go to cart"
       const ids = res?.data?.map((item) => item.productId);
       setCartItems(ids || []);
-
       console.log("--------------------------------------", res?.data);
     }
   });
-};
+}, []); // 👈 add dependencies if needed (e.g., token, userId, etc.)
+
+
+useEffect(() => {
+  getCartItems();
+  console.log("CartContext mounted & fetched cart");
+}, [getCartItems]); // ✅ Proper dependency
 
 
   return (

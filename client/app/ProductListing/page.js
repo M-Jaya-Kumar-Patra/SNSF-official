@@ -102,18 +102,9 @@ useEffect(() => {
     return (
         <div className='w-full relative bg-slate-100'>
              {isLoading && <Loading />}
-            {/* Breadcrumb */}  
-                <div role="presentation" className='sticky top-[28px] z-[90] bg-slate-100 py-1 border border-slate-100 w-full text-center'>
-                    <Breadcrumbs aria-label="breadcrumb">
-                        <Link underline="hover" color="" href="/">Home</Link>
-                        <Link underline="hover" color="inherit" href="/ProductListing">Products</Link>
-                        <Link underline="hover" color="inherit" href="/Sofas">Sofas</Link>
-                    </Breadcrumbs>
-                </div>
-
             {/* Main Container */}
             <div className='flex  min-h-screen justify-center bg-slate-100 border border-slate-100'>
-                <div className="container w-[90%]  mx-auto flex gap-4 justify-between">
+                <div className="container w-[90%] my-4 mx-auto flex gap-4 justify-between">
 
                     {/* Sidebar */}
                     <div className='w-[240px]  shrink-0 bg-white p-5 shadow-lg text-black '>

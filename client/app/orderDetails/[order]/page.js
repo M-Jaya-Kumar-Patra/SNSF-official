@@ -23,11 +23,18 @@ const OrdersPage = () => {
   const params = useParams()
   const orderId = params.order
   
+
+    // New state for call confirmation modal
+  const [showCallConfirm, setShowCallConfirm] = useState(false)
+  const [callPurpose, setCallPurpose] = useState("") // "exchange" or "cancel"
+
+
+  
   
   useEffect(() => {
     if (!isLogin) return;
     getOrdersItems();
-  });
+  }, []);
   
 
 
@@ -88,6 +95,35 @@ const OrdersPage = () => {
     setSelectedProduct(null)
   }
   
+
+
+   // Show call confirmation modal with purpose
+  const handleExchange = () => {
+    setCallPurpose("exchange")
+    setShowCallConfirm(true)
+  }
+
+  const handleCancel = () => {
+    setCallPurpose("cancel")
+    setShowCallConfirm(true)
+  }
+
+  // Confirm and redirect to call
+  const confirmCall = () => {
+    const phoneNumber = "+919776501230"
+    window.location.href = `tel:${phoneNumber}`
+    setShowCallConfirm(false)
+    setCallPurpose("")
+  }
+
+  // Cancel call modal
+  const cancelCall = () => {
+    setShowCallConfirm(false)
+    setCallPurpose("")
+  }
+
+
+  
   return (
     <div className='w-full bg-slate-100 flex justify-center items-center'>
       <div className='w-[1020px] bg-white min-h-screen my-3 p-4'>
@@ -96,7 +132,7 @@ const OrdersPage = () => {
           <h1 className='text-2xl font-bold text-gray-700 mb-4'>Order Details</h1>
           <div >
            
-            <Button variant='contained' className='!bg-indigo-500 hover:!bg-indigo-600'>Download Invoice</Button>
+            <Button variant='contained' className='bg-primary-gradient'>Download Invoice</Button>
 
           </div>
         </div>
@@ -166,27 +202,56 @@ const OrdersPage = () => {
 
   </div>
 
-  {/* Delivery Date */}
+ {openedOrder?.order_Status === "Delivered" ? (
   <div className="flex flex-col items-center justify-center text-center col-span-1 md:col-span-1">
-    <span className="text-sm text-gray-500 font-semibold">Delivery Date</span>
-    <span className="text-black text-sm font-semibold">
-  {openedOrder?.createdAt && (
-    <>
-      {new Date(openedOrder.createdAt).toLocaleDateString("en-IN", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      })}{" "}
-      {new Date(openedOrder.createdAt).toLocaleTimeString("en-IN", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: false,
-      })}
-    </>
-  )}
-</span>
+  <span className="text-sm text-gray-500 font-semibold">Order Delivered On</span>
+  <span className="text-black text-sm font-semibold">
+    {openedOrder?.delivery_date
+      ? new Date(openedOrder.delivery_date).toLocaleString("en-IN", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: false,
+        })
+      : "N/A"}
+  </span>
+</div>
 
-  </div>
+) : (
+  <div className="flex flex-col items-center justify-center text-center col-span-1 md:col-span-1">
+  <span className="text-sm text-gray-500 font-semibold">Estimated Delivery Date</span>
+  <span className="text-black text-sm font-semibold">
+    {(() => {
+      if (openedOrder?.estimated_delivery_date) {
+        const date = new Date(openedOrder.estimated_delivery_date);
+        return `${date.toLocaleDateString("en-IN", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}`;
+      } else if (openedOrder?.createdAt) {
+        const deliveryDays = Math.floor(Math.random() * 3) + 5; // 5 to 7 days
+        const estimate = new Date(openedOrder.createdAt);
+        estimate.setDate(estimate.getDate() + deliveryDays);
+        return `${estimate.toLocaleDateString("en-IN", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}`;
+      } else {
+        return "N/A";
+      }
+    })()}
+  </span>
+</div>
+
+)}
+
+
+  {/* Delivery Date */}
+  
 </div>
 
 
@@ -249,8 +314,9 @@ const OrdersPage = () => {
                     <Button
                       variant='outlined'
                       color='inherit'
+                      onClick={()=>handleExchange()}
                     >
-                      Return
+                      Exchange
                     </Button>
 
                   </div>
@@ -259,6 +325,7 @@ const OrdersPage = () => {
                     <Button
                       variant='outlined'
                       color='inherit'
+                      onClick={()=>handleCancel()}
                       className='!bg-white !border !border-red-500 !text-red-500 hover:!bg-red-100 !rounded !px-3 !py-1'
                     >
                       Cancel
@@ -329,6 +396,30 @@ const OrdersPage = () => {
             </div>
           </div>
         )}
+
+         {/* Call Confirmation Modal */}
+{showCallConfirm && (
+  <div className='fixed inset-0 z-[1000] bg-black bg-opacity-50 flex justify-center items-center'>
+    <div className='bg-white rounded-lg p-6 max-w-sm w-full shadow-lg text-center'>
+      <h3 className='text-lg font-semibold mb-4'>
+        {callPurpose === "exchange" && "Confirm Exchange Call"}
+        {callPurpose === "cancel" && "Confirm Cancellation Call"}
+      </h3>
+      <p className='mb-6 text-gray-700'>
+        Are you sure you want to call <strong>S N Steel Fabrication</strong> for {callPurpose}?
+      </p>
+      <div className='flex justify-center gap-6'>
+        <Button variant='outlined' onClick={cancelCall}>
+          No
+        </Button>
+        <Button variant='contained' onClick={confirmCall} className="!bg-primary-gradient">
+          Yes, Call
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
+
       </div>
     </div>
   )

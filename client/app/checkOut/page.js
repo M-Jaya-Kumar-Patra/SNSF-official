@@ -116,32 +116,34 @@ const Page = () => {
 
 
 
-  const { buyNowItem, getCartItems } = useCart("");
+  const { buyNowItem, getCartItems } = useCart();
   const { getOrdersItems } = useOrders()
 
+
+
+
+  
   const [itemsToCheckout, setItemsToCheckout] = useState([]);
 
 
   const [fromCart, setFromCart] = useState(true)
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
-  useEffect(() => {
-    if (!itemsToCheckout) {
-      router.push("/cart")
-    }
-  }, [itemsToCheckout, router])
+useEffect(() => {
+  if (buyNowItem === undefined) return; // wait until context is loaded
 
+  const normalizedItems = Array.isArray(buyNowItem) ? buyNowItem : [buyNowItem];
+  if (!Array.isArray(buyNowItem)) {
+    setFromCart(false);
+  }
 
-  useEffect(() => {
-    if (!Array.isArray(buyNowItem)) {
-      setFromCart(false);
-    }
-
-    const normalizedItems = Array.isArray(buyNowItem) ? buyNowItem : [buyNowItem];
+  if (normalizedItems.length === 0) {
+    router.push("/cart");
+  } else {
     setItemsToCheckout(normalizedItems);
+  }
+}, [buyNowItem, router]);
 
-    console.log("Normalized items:", normalizedItems);
-  }, [buyNowItem, setFromCart, setItemsToCheckout]);
 
 
   useEffect(() => {
@@ -179,7 +181,7 @@ const Page = () => {
   });
   const [addressArray, setaddressArray] = useState([
     {
-      name: userData?.address_details?.name,
+      name: "",
       phone: "",
       pin: "",
       address: "",
@@ -206,13 +208,15 @@ const Page = () => {
       console.error("Failed to fetch addresses:", error);
     }
   };
-  useEffect(() => {
+ useEffect(() => {
+  if (typeof fromCart !== "undefined") {
     if (!isLogin) {
       router.push("/login");
-    } else {
+    } else if (fromCart) {
       getCartItems();
     }
-  }, [isLogin, getCartItems, router]);
+  }
+}, [isLogin, fromCart]);
 
 
 
@@ -241,10 +245,9 @@ const Page = () => {
       return;
     }
 
-    const userId = userData._id; // or however you get the logged-in user ID
-
-
-
+    
+    const userId = userData._id; // or however you get the logged-in user ID  
+    console.log("Sending address data:", { ...address, userId });
     const response = await postData("/api/user/addAddress", {
       ...address,
       userId,
@@ -267,20 +270,10 @@ const Page = () => {
       fetchAddresses();
 
     } else {
-      alert.alertBox({ type: "error", msg: "Failed to save address.Please retry or reload the page" })
+      alert.alertBox({ type: "error", msg: response?.message })
     }
 
-    // const newAddress = { ...address, id: uuidv4() };
-    // if (newAddress !== null) {
-    //     const updatedAddressArray = [...addressArray, newAddress];
-
-    //     setaddressArray(updatedAddressArray);
-    //     localStorage.setItem("addresses", JSON.stringify(updatedAddressArray));
-    //     setShowAddressForm(false)
   }
-
-
-
 
   const handleAddressChange = (e) => {
     setAddress({ ...address, [e.target.name]: e.target.value })
@@ -403,13 +396,6 @@ const Page = () => {
     );
   }, []);
 
-  useEffect(() => {
-
-  }, [removeItemFromOrders])
-
-
-
-
 
 
 
@@ -450,12 +436,10 @@ const Page = () => {
   };
 
 
-  const [paymentMethod, setPaymentMethod] = useState()
 
 
 
-
-  const handleCheckout = async (e) => {
+  const handleCheckout = async (e, paymentMethod) => {
     e.preventDefault()
 
 
@@ -566,7 +550,7 @@ const Page = () => {
 
   const [showPaymentOptions, setShowPaymentOptions] = useState(false)
 
-  const handleCOD = async () => {
+  const handleCOD = async (e, paymentMethod) => {
     // Make backend call to create COD order
 
     const generateOrderId = () => {
@@ -655,6 +639,9 @@ const Page = () => {
     const razorpayOrder = await createRazorpayOrder(); // API call
     openRazorpayCheckout(razorpayOrder);
   };
+
+  const [cnfCODModal, setCnfCODModal] = useState(false)
+
 
   return (
     <>
@@ -862,9 +849,8 @@ const Page = () => {
                               }}
                               fullWidth
 
-                              onClick={() => {
-                                setPaymentMethod("online")
-                                handleCOD()
+                              onClick={(e) => {
+                               setCnfCODModal(e)
                               }}
                             >
                               Cash on Delivery
@@ -881,12 +867,13 @@ const Page = () => {
                                   });
                                   return;
                                 }
-                                setPaymentMethod("online")
-                                handleCheckout(e);
+                                handleCheckout(e, "online");
                               }}
                             >
                               Continue to Payment
                             </Button>
+
+
                           </div>
 
                         </div>
@@ -1194,6 +1181,39 @@ const Page = () => {
           )}
         </div>
       )}
+
+
+      {cnfCODModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 mx-4">
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">
+        Confirm Cash on Delivery
+      </h3>
+      <p className="text-gray-700 mb-6">
+        Are you sure you want to place this order with Cash on Delivery?
+      </p>
+
+      <div className="flex justify-end gap-4">
+        <button
+          className="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100"
+          onClick={() => setCnfCODModal(false)}
+        >
+          Cancel
+        </button>
+        <button
+          className="px-4 py-2 rounded bg-primary-gradient text-white font-semibold hover:brightness-110"
+          onClick={(e) => {
+            e.preventDefault();
+            setCnfCODModal(false);
+            handleCOD(e, "COD");  // Call your original COD handler here
+          }}
+        >
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
 
 

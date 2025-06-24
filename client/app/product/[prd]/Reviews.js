@@ -1,46 +1,101 @@
-import React, { useEffect, useState } from 'react'
-import { fetchDataFromApi } from '@/utils/api'
-import Box from '@mui/material/Box';
-import Rating from '@mui/material/Rating';
+import React, { useEffect, useState } from "react";
+import { fetchDataFromApi } from "@/utils/api";
+import {
+  Box,
+  Typography,
+  Rating,
+  Paper,
+  Divider,
+  Avatar,
+} from "@mui/material";
 
+const Reviews = ({ productId }) => {
+  const [reviews, setReviews] = useState([]);
 
-const Reviews = (props) => {
+  useEffect(() => {
+    if (!productId) return;
 
-    const [reviews, setReviews] = useState([])
+    fetchDataFromApi(`/api/user/getReviews?productId=${productId}`)
+      .then((res) => {
+        setReviews(res?.reviews || []);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch reviews:", err);
+      });
+  }, [productId]);
 
-    useEffect(() => {
-        console.log("Current productId passed to review fetch:", props.productId)
+  return (
+    <Box className="w-full mt-10">
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: 600,
+          fontSize: "20px",
+          color: "#1e293b",
+          mb: 2,
+          borderBottom: "2px solid #e2e8f0",
+          pb: 1,
+        }}
+      >
+        Customer Reviews
+      </Typography>
 
+      {reviews.length > 0 ? (
+        reviews.map((review, index) => (
+          <Paper
+            key={index}
+            elevation={1}
+            sx={{
+              display: "flex",
+              gap: 2,
+              p: 2.5,
+              mb: 2,
+              borderRadius: "10px",
+              border: "1px solid #e5e7eb",
+              backgroundColor: "#ffffff",
+            }}
+          >
+            <Avatar sx={{ bgcolor: "#3b82f6" }}>
+              {review?.userName?.[0]?.toUpperCase() || "U"}
+            </Avatar>
 
-        fetchDataFromApi(`/api/user/getReviews?productId=${props.productId}`).then((res) => {
-            console.log("Fetching the reviews", res)
-            console.log(res)
-            setReviews(res.reviews)
-            
-        })
-    }, [props.productId])
+            <Box flex={1}>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography sx={{ fontWeight: 600, fontSize: "16px", color: "#111827" }}>
+                  {review.userName || "Anonymous"}
+                </Typography>
+                <Rating
+                  name="read-only"
+                  value={review.rating || 0}
+                  readOnly
+                  size="small"
+                />
+              </Box>
 
+              <Typography sx={{ fontSize: "14px", color: "#4b5563", mt: 0.5 }}>
+                {review.review}
+              </Typography>
+            </Box>
+          </Paper>
+        ))
+      ) : (
+        <Typography
+          sx={{
+            fontSize: "15px",
+            fontStyle: "italic",
+            color: "#6b7280",
+            mt: 2,
+          }}
+        >
+          No reviews yet. Be the first to review this product.
+        </Typography>
+      )}
+    </Box>
+  );
+};
 
-    return (
-        <div className=' text-black font-bold text-[22px] border-y  mt-5 border-slate-400 py-1'>
-            Customer reviews
-            {reviews?.length > 0 && reviews?.map((review, index) => {
-                return (
-                    <div className=' w-full p-2 py-3   border-t flex justify-between'  key={index}>
-                        <div>
-                            <h2 className='text-black font-semibold text-lg'>{review.userName}</h2>
-                            <p className='text-gray-600 font-normal text-base'>{review?.review}</p>
-                        </div>
-                        <div>
-                            <Rating name="read-only" value={review?.rating} readOnly size='small' />
-                        </div>
-
-                    </div>
-                )
-            })}
-
-        </div>
-    )
-}
-
-export default Reviews
+export default Reviews;

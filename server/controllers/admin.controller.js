@@ -3,7 +3,7 @@ import AdminModel from "../models/admin.model.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import sendEmailFun from "../config/sendEmail.js";
-import verificationAdminEmail from '../utils/verifyAdminEmailTemplate.js';
+import verificationAdminEmail from "../utils/EmailTemplates/verifyAdminEmailTemplate.js";
 import generatedAccessToken from '../utils/generatedAccessToken.js';
 import generatedRefreshToken from '../utils/generatedRefreshToken.js';
 import { v2 as cloudinary } from 'cloudinary';

@@ -48,31 +48,44 @@ import { useEffect } from 'react';
 const Products = () => {
 
 
-    const [formFields, setFormFields] = useState([
-        {
-            name: "",
-            productId: "",
-            description: "",
-            images: [],
-            brand: "",
-            price: "",
-            oldPrice: "",
-            catName: "",
-            catId: "",
-            subCatId: "",
-            subCat: "",
-            thirdSubCat: "",
-            thirdSubCatId: "",
-            countInStock: "",
-            sales: "",
-            rating: "",
-            isFeatured: "",
-            discount: "",
-            size: [],
-            location: "",
-            countInStock: ""
-        }
-    ])
+   const [formFields, setFormFields] = useState({
+  name: "",
+  productId: "",
+  description: "",
+  images: [],
+  brand: "",
+  price: "",
+  oldPrice: "",
+  catName: "",
+  catId: "",
+  subCatId: "",
+  subCat: "",
+  thirdSubCat: "",
+  thirdSubCatId: "",
+  countInStock: "",
+  sales: "",
+  rating: "",
+  isFeatured: false,
+  discount: "",
+  size: [],
+  location: "",
+  specifications: {
+    material: "",
+    grade: "",
+    fabric: "",
+    fabricColor: "",
+    size: "",
+    weight: "",
+    height: "",
+    warranty: "",
+    thickness: "",
+    length: "",
+    width: "",
+    polish: "",
+    frameMaterial: ""
+  }
+});
+
 
     const [editProduct, setEditProduct] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -94,9 +107,47 @@ const Products = () => {
 
     const [addProduct, setAddProduct] = useState(null);
     const [showAddModal, setShowAddModal] = useState(false);
-    const handleAddClick = () => {
-        setShowAddModal(true);
-    }
+   const handleAddClick = () => {
+    setFormFields({
+        name: "",
+        productId: "",
+        description: "",
+        images: [],
+        brand: "",
+        price: "",
+        oldPrice: "",
+        catName: "",
+        catId: "",
+        subCatId: "",
+        subCat: "",
+        thirdSubCat: "",
+        thirdSubCatId: "",
+        countInStock: "",
+        sales: "",
+        rating: "",
+        isFeatured: false,
+        discount: "",
+        size: [],
+        location: "",
+        specifications: {
+            material: "",
+            grade: "",
+            fabric: "",
+            fabricColor: "",
+            size: "",
+            weight: "",
+            height: "",
+            warranty: "",
+            thickness: "",
+            length: "",
+            width: "",
+            polish: "",
+            frameMaterial: ""
+        }
+    });
+    setPreviews([]);
+    setShowAddModal(true);
+};
 
     const [previews, setPreviews] = useState([]);
 
@@ -240,12 +291,30 @@ const Products = () => {
 
     const [editPrdObj, setEditPrdObj] = useState(null)
 
-    const handleClickEdit = (prdId, product) => {
-        setShowEditModal(true);
-        setEditProduct(prdId);
-        setEditPrdObj(product);
-        setPreviews(product.images || []);
+  const handleClickEdit = (prdId, product) => {
+  setShowEditModal(true);
+  setEditProduct(prdId);
+  setEditPrdObj({
+    ...product,
+    specifications: {
+      material: "",
+      grade: "",
+      fabric: "",
+      fabricColor: "",
+      size: "",
+      weight: "",
+      height: "",
+      warranty: "",
+      thickness: "",
+      length: "",
+      width: "",
+      polish: "",
+      frameMaterial: "",
+      ...(product.specifications || {})
     }
+  });
+  setPreviews(product.images || []);
+};
 
 
 
@@ -260,10 +329,11 @@ const Products = () => {
         e.preventDefault();
         setIsLoading(true);
 
-        const payload = {
-            ...editPrdObj,
-            images: previews, // IMPORTANT: this must overwrite on backend
-        };
+       const payload = {
+  ...editPrdObj,
+  specifications: editPrdObj.specifications || {},
+  images: previews,
+};
 
 
         if (!editPrdObj.name || !editPrdObj.catName || !editPrdObj.subCat || !editPrdObj.price) {
@@ -378,6 +448,36 @@ const Products = () => {
         console.log(selectedIds);
     };
     const [searchQuery, setSearchQuery] = useState('');
+
+
+
+
+const handleSpecificationsChangeAdd = (e) => {
+    const { name, value } = e.target;
+    setFormFields(prev => ({
+        ...prev,
+        specifications: {
+            ...prev.specifications,
+            [name]: value,
+        }
+    }));
+};
+
+
+
+
+
+    const handleSpecificationsChange = (e) => {
+        const { name, value } = e.target;
+        setEditPrdObj(prev => ({
+            ...prev,
+            specifications: {
+                ...prev.specifications,
+                [name]: value,
+            }
+        }));
+    };
+
 
 
 
@@ -811,6 +911,107 @@ const Products = () => {
                                             </Box>
                                         </div>
 
+                                        {/* --- Specifications Section --- */}
+                                        <div className="my-6">
+                                            <h3 className="text-lg font-semibold mb-3">Product Specifications</h3>
+                                            <div className="grid grid-cols-2 gap-4">
+
+                                                <TextField
+                                                    label="Material"
+                                                    size="small"
+                                                    name="material"
+                                                    value={editPrdObj?.specifications?.material || ""}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+                                                <TextField
+                                                    label="Grade"
+                                                    size="small"
+                                                    name="grade"
+                                                    value={editPrdObj?.specifications?.grade || ""}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+                                                <TextField
+                                                    label="Fabric"
+                                                    size="small"
+                                                    name="fabric"
+                                                    value={editPrdObj?.specifications?.fabric || ""}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+                                                <TextField
+                                                    label="Fabric Color"
+                                                    size="small"
+                                                    name="fabricColor"
+                                                    value={editPrdObj?.specifications?.fabricColor || ""}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+                                                <TextField
+                                                    label="Size"
+                                                    size="small"
+                                                    name="size"
+                                                    value={editPrdObj?.specifications?.size || ""}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+                                                <TextField
+                                                    label="Weight"
+                                                    size="small"
+                                                    name="weight"
+                                                    value={editPrdObj?.specifications?.weight || ""}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+                                                <TextField
+                                                    label="Height"
+                                                    size="small"
+                                                    name="height"
+                                                    value={editPrdObj?.specifications?.height || ""}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+                                                <TextField
+                                                    label="Warranty"
+                                                    size="small"
+                                                    name="warranty"
+                                                    value={editPrdObj?.specifications?.warranty || ""}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+                                                <TextField
+                                                    label="Thickness"
+                                                    size="small"
+                                                    name="thickness"
+                                                    value={editPrdObj?.specifications?.thickness || ""}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+                                                <TextField
+                                                    label="Length"
+                                                    size="small"
+                                                    name="length"
+                                                    value={editPrdObj?.specifications?.length || ""}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+                                                <TextField
+                                                    label="Width"
+                                                    size="small"
+                                                    name="width"
+                                                    value={editPrdObj?.specifications?.width || ""}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+                                                <TextField
+                                                    label="Polish"
+                                                    size="small"
+                                                    name="polish"
+                                                    value={editPrdObj?.specifications?.polish || ""}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+                                                <TextField
+                                                    label="Frame Material"
+                                                    size="small"
+                                                    name="frameMaterial"
+                                                    value={editPrdObj?.specifications?.frameMaterial || ""}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+
+                                            </div>
+                                        </div>
+
+
                                     </div>
 
                                 </Box>
@@ -1084,13 +1285,117 @@ const Products = () => {
                                         <Typography component="legend" className='text-slate-500'>Rating</Typography>
                                         <Rating
                                             name="rating"
-                                            value={formFields?.rating || 0}
+                                            value={formFields.rating || 0}
                                             onChange={(event, newValue) => {
-                                                setFormFields({ ...formFields, rating: newValue });
+                                                setFormFields(prev => ({
+                                                    ...prev,
+                                                    rating: newValue
+                                                }));
                                             }}
                                         />
                                     </Box>
                                 </div>
+
+                                {/* --- Specifications Section --- */}
+                                <div className="my-6">
+                                    <h3 className="text-lg font-semibold mb-3">Product Specifications</h3>
+                                    <div className="grid grid-cols-2 gap-4">
+
+                                        <TextField
+                                            label="Material"
+                                            size="small"
+                                            name="material"
+                                            value={formFields.specifications?.material || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Grade"
+                                            size="small"
+                                            name="grade"
+                                            value={formFields.specifications?.grade || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Fabric"
+                                            size="small"
+                                            name="fabric"
+                                            value={formFields.specifications?.fabric || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Fabric Color"
+                                            size="small"
+                                            name="fabricColor"
+                                            value={formFields.specifications?.fabricColor || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Size"
+                                            size="small"
+                                            name="size"
+                                            value={formFields.specifications?.size || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Weight"
+                                            size="small"
+                                            name="weight"
+                                            value={formFields.specifications?.weight || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Height"
+                                            size="small"
+                                            name="height"
+                                            value={formFields.specifications?.height || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Warranty"
+                                            size="small"
+                                            name="warranty"
+                                            value={formFields.specifications?.warranty || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Thickness"
+                                            size="small"
+                                            name="thickness"
+                                            value={formFields.specifications?.thickness || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Length"
+                                            size="small"
+                                            name="length"
+                                            value={formFields.specifications?.length || ""}
+                                            onChange={handleSpecificationsChange}
+                                        />
+                                        <TextField
+                                            label="Width"
+                                            size="small"
+                                            name="width"
+                                            value={formFields.specifications?.width || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Polish"
+                                            size="small"
+                                            name="polish"
+                                            value={formFields.specifications?.polish || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Frame Material"
+                                            size="small"
+                                            name="frameMaterial"
+                                            value={formFields.specifications?.frameMaterial || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+
+                                    </div>
+                                </div>
+
 
                             </div>
 

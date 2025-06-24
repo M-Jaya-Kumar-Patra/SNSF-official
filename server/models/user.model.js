@@ -76,6 +76,9 @@ const userSchema = new mongoose.Schema({
   otpExpires: {
     type: Date,
   },
+  notification_array:[{
+    type: mongoose.Schema.ObjectId,
+  }],
   signUpWithGoogle: {
     type: Boolean,
     default: function () {

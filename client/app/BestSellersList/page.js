@@ -74,19 +74,10 @@ const ProductListing = () => {
     const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist()
 
     return (
-        <div className='w-full '>
-            <div className="w-full bg-slate-100 flex justify-center pt-3">
-                <div role="presentation" className='bg-slate-100 w-[1020px] text-center'>
-                    <Breadcrumbs aria-label="breadcrumb">
-                        <Link underline="hover" color="" href="/">Home</Link>
-                        <Link underline="hover" color="inherit" href="/ProductListing">Products</Link>
-                        <Link underline="hover" color="inherit" href="/Sofas">Sofas</Link>
-                    </Breadcrumbs>
-                </div>
-            </div>
+        <div className='w-full bg-slate-100 '>
 
             <div className='flex w-full min-h-screen justify-center bg-slate-100'>
-                <div className="container w-[90%] my-3 mx-auto ">
+                <div className="container w-[90%] my-4 mx-auto ">
                     <div className='flex-grow h-full bg-white p-5 shadow-lg text-black'>
                         <div className='w-full bg-slate-100 p-2 flex justify-between items-center rounded'>
                             <p className='pl-3 text-gray-600 text-base'>{`${prdData?.length} Products found`}</p>

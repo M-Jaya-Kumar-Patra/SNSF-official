@@ -3,7 +3,7 @@ import UserModel from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import sendEmailFun from "../config/sendEmail.js";
-import verificationEmail from '../utils/verifyEmailTemplate.js';
+import verificationEmail from "../utils/EmailTemplates/verifyEmailTemplate.js";
 import generatedAccessToken from '../utils/generatedAccessToken.js';
 import generatedRefreshToken from '../utils/generatedRefreshToken.js';
 import { v2 as cloudinary } from 'cloudinary';
@@ -12,6 +12,10 @@ import { error } from "console";
 import { hash } from "crypto";
 import AddressModel from "../models/address.model.js";
 import ReviewModel from "../models/reviews.model.js";
+import welcomeEmail from "../utils/EmailTemplates/welcomeEmailTemplate.js";
+import forgotPasswordEmail from "../utils/EmailTemplates/forgotPasswordTemplate.js";
+import passwordResetSuccessEmail from "../utils/EmailTemplates/passwordResetSuccessEmail.js";
+import newLoginEmail from "../utils/EmailTemplates/loginTemplate.js";
 
 cloudinary.config({
     cloud_name: process.env.cloudinary_Config_Cloud_Name,
@@ -25,20 +29,11 @@ var imagesArr = [];
 export async function registerUserController(request, response) {
     try {
         const { name, email, password } = request.body;
-        console.log("registerUserController triggered")
+        console.log("registerUserController triggered");
 
         if (!name || !email || !password) {
             return response.status(400).json({
-                message: "Provide name, email, password",
-                error: true,
-                success: false
-            });
-        }
-
-        const existingUser = await UserModel.findOne({ email });
-        if (existingUser) {
-            return response.json({
-                message: "User already registered with this email",
+                message: "Provide name, email, and password",
                 error: true,
                 success: false
             });
@@ -48,49 +43,78 @@ export async function registerUserController(request, response) {
         const salt = await bcryptjs.genSalt(10);
         const hashPassword = await bcryptjs.hash(password, salt);
 
-        const newUser = new UserModel({
-            name,
-            email,
-            password: hashPassword,
-            otp: verifyCode,
-            otpExpires: Date.now() + 600000 // 10 minutes
-        });
+        let user;
 
-        await newUser.save();
+        const existingUser = await UserModel.findOne({ email });
 
-        // Send verification email
+        if (existingUser && existingUser.verify_email) {
+            return response.status(400).json({
+                message: "User already registered with this email",
+                error: true,
+                success: false
+            });
+        }
+
+        if (existingUser && !existingUser.verify_email) {
+            // 🛠 Update existing unverified user
+            existingUser.name = name;
+            existingUser.password = hashPassword;
+            existingUser.otp = verifyCode;
+            existingUser.otpExpires = Date.now() + 600000;
+            await existingUser.save();
+            user = existingUser;
+        } else {
+            // ✅ Create new user
+            user = new UserModel({
+                name,
+                email,
+                password: hashPassword,
+                otp: verifyCode,
+                otpExpires: Date.now() + 600000
+            });
+            await user.save();
+        }
+
+        // 📧 Send verification email
         await sendEmailFun(
             email,
-            "Verify email from Ecommerce App",
+            "Verify your email – SNSF",
             "",
             verificationEmail(name, verifyCode)
         );
 
+        // 🔐 Generate JWT token
         const token = jwt.sign(
-            { email: newUser.email, id: newUser._id },
+            { email: user.email, id: user._id },
             process.env.JWT_SECRET
         );
 
         return response.status(200).json({
-            message: "User registered successfully",
+            message: "OTP sent successfully",
             error: false,
             success: true,
-            token
+            token,
+            user: {
+                _id: user._id,
+                email: user.email,
+                name: user.name
+            }
         });
 
     } catch (error) {
         return response.status(500).json({
-            message: error.message || error,
+            message: error.message || "Internal Server Error",
             error: true,
             success: false
         });
     }
 }
 
+
 export async function verifyEmailController(request, response) {
     try {
         const { email, otp } = request.body;
-        console.log("verifyEmailController triggered")
+        console.log("✅ verifyEmailController triggered");
 
         if (!email || !otp) {
             return response.status(400).json({
@@ -109,7 +133,15 @@ export async function verifyEmailController(request, response) {
             });
         }
 
-        if (user.otp !== otp) {
+        if (user.verify_email) {
+            return response.status(400).json({
+                message: "Email already verified",
+                error: true,
+                success: false
+            });
+        }
+
+        if (user.otp !== otp.toString()) {
             return response.status(400).json({
                 message: "Invalid OTP",
                 error: true,
@@ -128,8 +160,20 @@ export async function verifyEmailController(request, response) {
         user.verify_email = true;
         user.otp = undefined;
         user.otpExpires = undefined;
-
         await user.save();
+
+        // Try to send welcome email, but don't break if it fails
+        try {
+            await sendEmailFun(
+                email,
+                "Welcome to S N Steel Fabrication – We’re glad to have you here!",
+                "",
+                welcomeEmail(user.name)
+            );
+            console.log("📨 Welcome email sent to:", email);
+        } catch (emailErr) {
+            console.error("⚠️ Failed to send welcome email:", emailErr.message || emailErr);
+        }
 
         return response.status(200).json({
             message: "Email verified successfully",
@@ -145,6 +189,7 @@ export async function verifyEmailController(request, response) {
         });
     }
 }
+
 
 export async function loginController(request, response) {
     try {
@@ -213,6 +258,13 @@ export async function loginController(request, response) {
         response.cookie("accessToken", accessToken, cookieOptions);
         response.cookie("refreshToken", refreshToken, cookieOptions);
         console.log(accessToken, refreshToken)
+
+        await sendEmailFun(
+            email,
+             "New Login Detected – SNSF",
+            "",
+            newLoginEmail(user?.name)
+        );
 
         return response.json({
             message: "Login successfully",
@@ -652,9 +704,9 @@ export async function forgotPasswordController(request, response) {
 
             await sendEmailFun(
                 email,
-                "Verify email from Ecommerce App",
+                "Reset Your Password – SNSF",
                 "",
-                verificationEmail(user?.name, verifyCode)
+                forgotPasswordEmail(user?.name, verifyCode)
             );
 
             return response.json({
@@ -718,6 +770,14 @@ export async function verifyForgotPasswordOtp(request, response) {
         user.otpExpires = ""
 
         await user.save()
+
+        await sendEmailFun(
+            email,
+            "Your SNSF Password Has Been Changed",
+            "",
+            passwordResetSuccessEmail(user?.name)
+        );
+
 
 
 
@@ -997,7 +1057,7 @@ export async function addAddress(request, response) {
             { new: true }
         );
 
-        return response.status(201).json({
+        return response.status(200).json({
             message: "Address added successfully.",
             error: false,
             success: true,
@@ -1023,11 +1083,11 @@ export async function getUserAddress(request, response) {
 
         const user = await UserModel.findById(userId).populate("address_details"); // ✅ Populates address data
 
-        if (!user) {    
+        if (!user) {
             return response.status(404).json({ error: true, message: "User not found." });
         }
 
-    //    
+        //    
 
         return response.status(200).json({
             error: false,
@@ -1044,7 +1104,7 @@ export async function getUserAddress(request, response) {
     }
 }
 
-export async function deleteAddress(request, response){
+export async function deleteAddress(request, response) {
     console.log(request.params)
     const { id, addressId } = request.params; // ✅ Corrected
     console.log(id, addressId)
@@ -1054,22 +1114,22 @@ export async function deleteAddress(request, response){
             return response.status(400).json({ error: true, message: "User ID is required." });
         }
 
-         const address = await AddressModel.findByIdAndDelete(addressId);
-         
-         
-         if (!address) {
-        console.log(id, "addressId")
-      return response.status(404).json({ message: 'Address not found' });
-    }
+        const address = await AddressModel.findByIdAndDelete(addressId);
 
-     await UserModel.findByIdAndUpdate(id, {
-      $pull: { address_details: addressId }
-    });
+
+        if (!address) {
+            console.log(id, "addressId")
+            return response.status(404).json({ message: 'Address not found' });
+        }
+
+        await UserModel.findByIdAndUpdate(id, {
+            $pull: { address_details: addressId }
+        });
         return response.status(200).json({
             error: false,
             message: "User address deleted successfully.",
         });
-        
+
     }
     catch (error) {
         return response.status(500).json({
@@ -1149,106 +1209,132 @@ export async function updateUserAddress(request, response) {
 }
 
 
-export async function resendOTP(request, response){
+export async function resendOTP(request, response) {
     try {
-        const { email, name, userId} = request.body;
-        console.log("registerUserController triggered")
+        const { email, name, userId } = request.body;
+        console.log("resendOTP triggered");
 
-        if ( !email || !name ) {
+        if (!email || !name || !userId) {
             return response.status(400).json({
-                message: "Provide email, name",
+                message: "Provide email, name, and userId",
                 error: true,
-                success: false
+                success: false,
             });
         }
 
-        
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return response.status(404).json({
+                message: "User not found",
+                error: true,
+                success: false,
+            });
+        }
 
+        if (user.verify_email) {
+            return response.status(400).json({
+                message: "Email already verified. No need to resend OTP.",
+                error: true,
+                success: false,
+            });
+        }
 
         const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-      
+        user.otp = verifyCode;
+        user.otpExpires = Date.now() + 600000; // 10 minutes
+        await user.save();
 
-        const updateUser = await UserModel.findByIdAndUpdate(
-            userId,
-            {
-                otp: verifyCode,
-                otpExpires: verifyCode !== "" ? Date.now() + 600000 : null,
-            },
-            { new: true }
-        );
-
-        // Send verification email
         await sendEmailFun(
-            name,
             email,
-            "Verify email from Ecommerce App",
+            "Verify your email – S N Steel Fabrication",
             "",
             verificationEmail(name, verifyCode)
         );
 
         return response.status(200).json({
-            message: `OTP sent to ${email}`,
+            message: `OTP resent to ${email}`,
             error: false,
             success: true,
         });
-
     } catch (error) {
         return response.status(500).json({
             message: error.message || "Server Error",
             error: true,
-            success: false
+            success: false,
         });
     }
 }
+
 
 
 
 //review controller
 
 export async function addReview(request, response) {
-    try {
+  try {
+    const { userName, review, rating, productId, orderId } = request.body;
 
-        const { userName, review, rating,  productId, orderId } = request.body
-
-        const userReview = new ReviewModel({
-            // image: image,
-            userName: userName,
-            review: review,
-            rating: rating,
-            // userId: userId,
-            productId: productId,
-            orderId : orderId
-            
-        })
-
-        await userReview.save();
-
-
-        return response.status(200).json({
-            message: "Review add successfully",
-            error: false,
-            success: true
-        })
-        
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || "Server Error",
-            error: true,
-            success: false
-        });
+    if (!rating || !productId || !userName || !review) {
+      return response.status(400).json({
+        error: true,
+        success: false,
+        message: "Missing required fields",
+      });
     }
-}
 
+    // Step 1: Save the review
+    const userReview = new ReviewModel({
+      userName,
+      review,
+      rating,
+      productId,
+      orderId,
+    });
+
+    await userReview.save();
+
+    // Step 2: Update product rating
+    const product = await ProductModel.findById(productId);
+    if (!product) {
+      return response.status(404).json({
+        error: true,
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    const currentTotalRating = product.rating * product.ratingCount;
+    const newRatingCount = product.ratingCount + 1;
+    const newAverageRating = (currentTotalRating + rating) / newRatingCount;
+
+    product.rating = newAverageRating;
+    product.ratingCount = newRatingCount;
+
+    await product.save();
+
+    return response.status(200).json({
+      message: "Review added successfully and rating updated",
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || "Server Error",
+      error: true,
+      success: false,
+    });
+  }
+}
 export async function getReviews(request, response) {
     try {
 
         const productId = request.query.productId;
-        
-        const reviews = await ReviewModel.find({productId: productId})
-        
+
+        const reviews = await ReviewModel.find({ productId: productId })
+
         console.log(reviews, "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp")
-        if(!reviews){
+        if (!reviews) {
             return response.status(400).json({
                 error: true,
                 success: false,
@@ -1261,7 +1347,7 @@ export async function getReviews(request, response) {
             success: true,
             reviews: reviews
         })
-        
+
     } catch (error) {
         return response.status(500).json({
             message: error.message || "Server Error",
@@ -1276,75 +1362,75 @@ import ProductModel from "../models/product.model.js";
 import CategoryModel from "../models/category.model.js";
 
 export async function getRelatedProductsByCategory(req, res) {
-  try {
-    const { productId } = req.query;
+    try {
+        const { productId } = req.query;
 
-    if (!productId) {
-      return res.status(400).json({
-        success: false,
-        error: true,
-        message: "Product ID is required"
-      });
+        if (!productId) {
+            return res.status(400).json({
+                success: false,
+                error: true,
+                message: "Product ID is required"
+            });
+        }
+
+        const product = await ProductModel.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                error: true,
+                message: "Product not found"
+            });
+        }
+
+        const { catId, subCatId, thirdSubCatId } = product;
+
+        const relatedProducts = await ProductModel.find({
+            $or: [
+                { catId: catId },
+                { subCatId: catId },
+                { thirdSubCatId: catId },
+                { catId: subCatId },
+                { subCatId: subCatId },
+                { thirdSubCatId: subCatId },
+                { catId: thirdSubCatId },
+                { subCatId: thirdSubCatId },
+                { thirdSubCatId: thirdSubCatId },
+            ]
+        });
+
+        return res.status(200).json({
+            success: true,
+            error: false,
+            products: relatedProducts
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: true,
+            message: error.message || "Server Error"
+        });
     }
-
-    const product = await ProductModel.findById(productId);
-
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        error: true,
-        message: "Product not found"
-      });
-    }
-
-    const { catId, subCatId, thirdSubCatId } = product;
-
-    const relatedProducts = await ProductModel.find({
-      $or: [
-        { catId: catId },
-        { subCatId: catId },
-        { thirdSubCatId: catId },
-        { catId: subCatId },
-        { subCatId: subCatId },
-        { thirdSubCatId: subCatId },
-        { catId: thirdSubCatId },
-        { subCatId: thirdSubCatId },
-        { thirdSubCatId: thirdSubCatId },
-      ]
-    });
-
-    return res.status(200).json({
-      success: true,
-      error: false,
-      products: relatedProducts
-    });
-
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: true,
-      message: error.message || "Server Error"
-    });
-  }
 }
 
 
 
 export async function getAllUsers(req, res) {
-  try {
-    const users = await UserModel.find().select("-password").populate("address_details").populate("orders"); // exclude password
+    try {
+        const users = await UserModel.find().select("-password").populate("address_details").populate("orders"); // exclude password
 
-    return res.status(200).json({
-      success: true,
-      error: false,
-      users,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: true,
-      message: error.message || "Server Error",
-    });
-  }
+        return res.status(200).json({
+            success: true,
+            error: false,
+            users,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: true,
+            message: error.message || "Server Error",
+        });
+    }
 }
 

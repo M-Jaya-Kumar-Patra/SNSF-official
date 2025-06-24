@@ -1,113 +1,143 @@
 import ProductModel from "../models/product.model.js";
 import { v2 as cloudinary } from "cloudinary";
-import { error } from "console";
 import fs from "fs";
 import CategoryModel from "../models/category.model.js";
 
 // Cloudinary Config
 cloudinary.config({
-    cloud_name: process.env.cloudinary_Config_Cloud_Name,
-    api_key: process.env.cloudinary_Config_API_Key,
-    api_secret: process.env.cloudinary_Config_API_Secret,
-    secure: true
+  cloud_name: process.env.cloudinary_Config_Cloud_Name,
+  api_key: process.env.cloudinary_Config_API_Key,
+  api_secret: process.env.cloudinary_Config_API_Secret,
+  secure: true,
 });
 
+let imagesArr = [];
 
-let imagesArr = []
-
+// Upload Images Controller
 export async function uploadImages(request, response) {
-    try {
-        const image = request.files || [];
+  try {
+    const image = request.files || [];
 
-
-        if (!image.length) {
-            return response.status(400).json({
-                message: "No images uploaded",
-                error: true,
-                success: false
-            });
-        }
-
-        const options = {
-            use_filename: true,
-            unique_filename: false,
-            overwrite: false,
-        };
-
-        for (let i = 0; i < image.length; i++) {
-            const result = await cloudinary.uploader.upload(image[i].path, options);
-            imagesArr.push(result.secure_url);
-            fs.unlinkSync(image[i].path);
-        }
-
-        return response.status(200).json({
-            images: imagesArr,
-            error: false,
-            success: true
-        });
-
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        });
+    if (!image.length) {
+      return response.status(400).json({
+        message: "No images uploaded",
+        error: true,
+        success: false,
+      });
     }
+
+    const options = {
+      use_filename: true,
+      unique_filename: false,
+      overwrite: false,
+    };
+
+    for (let i = 0; i < image.length; i++) {
+      const result = await cloudinary.uploader.upload(image[i].path, options);
+      imagesArr.push(result.secure_url);
+      fs.unlinkSync(image[i].path);
+    }
+
+    return response.status(200).json({
+      images: imagesArr,
+      error: false,
+      success: true,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
 }
-// createProduct
+
+// Create Product Controller
 export async function createProduct(request, response) {
-    try {
+  try {
+    console.log("Images Array:", imagesArr);
+    console.log(request.body);
 
+    const {
+      name,
+      description,
+      images,
+      brand,
+      price,
+      oldPrice,
+      catName,
+      catId,
+      subCat,
+      subCatId,
+      thirdSubCat,
+      thirdSubCatId,
+      countInStock,
+      rating,
+      isFeatured,
+      discount,
+      size,
+      specifications, // should be an object from the frontend
+    } = request.body;
 
-        console.log("Images Array:", imagesArr);
+    const product = new ProductModel({
+      name,
+      description,
+      images: images || imagesArr, // fallback to uploaded images
+      brand,
+      price,
+      oldPrice,
+      catName,
+      catId,
+      subCat,
+      subCatId,
+      thirdSubCat,
+      thirdSubCatId,
+      countInStock,
+      rating,
+      isFeatured,
+      discount,
+      size,
+      specifications: {
+        material: specifications?.material || "",
+        grade: specifications?.grade || "",
+        fabric: specifications?.fabric || "",
+        fabricColor: specifications?.fabricColor || "",
+        size: specifications?.size || "",
+        weight: specifications?.weight || "",
+        height: specifications?.height || "",
+        warranty: specifications?.warranty || "",
+        thickness: specifications?.thickness || "",
+        length: specifications?.length || "",
+        width: specifications?.width || "",
+        polish: specifications?.polish || "",
+        frameMaterial: specifications?.frameMaterial || "",
+      },
+    });
 
-        console.log(request.body)
-        const product = new ProductModel({
-            name: request.body.name,
-            description: request.body.description,
-            images: request.body.images,
-            brand: request.body.brand,
-            price: request.body.price,
-            oldPrice: request.body.oldPrice,
-            catName: request.body.catName,//1
-            catId: request.body.catId,//1
-            subCat: request.body.subCat,//2
-            subCatId: request.body.subCatId,//2
-            thirdSubCat: request.body.thirdSubCat,//3
-            thirdSubCatId: request.body.thirdSubCatId,//3
-            countInStock: request.body.countInStock,
-            rating: request.body.rating,
-            isFeatured: request.body.isFeatured,
-            discount: request.body.discount,
-            productWeight: request.body.productWeight,
-            brand: request.body.brand,
-            size: request.body.size, // ✅ add this line
-        });
-        await product.save()
+    await product.save();
 
-        if (!product) {
-            response.status(500).json({
-                error: true,
-                success: false,
-                message: "Product Not Created"
-            })
-        }
-
-        imagesArr = [];
-        response.status(200).json({
-            error: false,
-            success: true,
-            message: "Product created successfully"
-        });
-
-
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        });
+    if (!product) {
+      return response.status(500).json({
+        error: true,
+        success: false,
+        message: "Product not created",
+      });
     }
+
+    imagesArr = [];
+
+    return response.status(200).json({
+      error: false,
+      success: true,
+      message: "Product created successfully",
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
 }
 
 // /api/product/getProducts.js
@@ -732,55 +762,92 @@ export async function removeImageFromCloudinary(request, response) {
     }
 }
 export async function updateProduct(request, response) {
-    try {
-        const product = await ProductModel.findByIdAndUpdate(
-            request.params.id, {
-            name: request.body.name,
-            description: request.body.description,
-            images: request.body.images,
-            brand: request.body.brand,
-            price: request.body.price,
-            oldPrice: request.body.oldPrice,
-            catName: request.body.catName,//1
-            catId: request.body.catId,//1
-            subCat: request.body.subCat,//1
-            subCatId: request.body.subCatId,//2
-            thirdSubCat: request.body.thirdsubCat,//3
-            thirdSubCatId: request.body.thirdsubCatId,//3
-            countInStock: request.body.countInStock,
-            rating: request.body.rating,
-            isFeatured: request.body.isFeatured,
-            discount: request.body.discount,
-            productWeight: request.body.productWeight,
-            brand: request.body.brand,
+  try {
+    const {
+      name,
+      description,
+      images,
+      brand,
+      price,
+      oldPrice,
+      catName,
+      catId,
+      subCat,
+      subCatId,
+      thirdSubCat,
+      thirdSubCatId,
+      countInStock,
+      rating,
+      isFeatured,
+      discount,
+      size,
+      specifications,
+    } = request.body;
+
+    const updatedProduct = await ProductModel.findByIdAndUpdate(
+      request.params.id,
+      {
+        name,
+        description,
+        images,
+        brand,
+        price,
+        oldPrice,
+        catName,
+        catId,
+        subCat,
+        subCatId,
+        thirdSubCat,
+        thirdSubCatId,
+        countInStock,
+        rating,
+        isFeatured,
+        discount,
+        size,
+        specifications: {
+          material: specifications?.material || "",
+          grade: specifications?.grade || "",
+          fabric: specifications?.fabric || "",
+          fabricColor: specifications?.fabricColor || "",
+          size: specifications?.size || "",
+          weight: specifications?.weight || "",
+          height: specifications?.height || "",
+          warranty: specifications?.warranty || "",
+          thickness: specifications?.thickness || "",
+          length: specifications?.length || "",
+          width: specifications?.width || "",
+          polish: specifications?.polish || "",
+          frameMaterial: specifications?.frameMaterial || "",
         },
+      },
+      { new: true }
+    );
 
-            { new: true }
-        );
-
-        if (!product) {
-            response.status(404).json({
-                status: false,
-                message: "The product cannot be updated"
-            })
-        }
-
-        imagesArr = [];
-
-        return response.status(200).json({
-            message: "The product is created",
-            error: false,
-            success: true
-        })
-
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        });
+    if (!updatedProduct) {
+      return response.status(404).json({
+        success: false,
+        message: "The product could not be updated",
+        error: true,
+      });
     }
+
+    imagesArr = [];
+
+    return response.status(200).json({
+      message: "The product has been updated successfully",
+      error: false,
+      success: true,
+      product: updatedProduct,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
 }
+
 export async function filters(request, response) {
     const {
         catId = [],

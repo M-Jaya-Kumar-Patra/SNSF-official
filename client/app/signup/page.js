@@ -33,6 +33,9 @@ export default function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
+
+  
+
   const router = useRouter();
   const alert = useAlert();
   const { isLogin } = useAuth();
@@ -55,38 +58,46 @@ export default function Signup() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+  e.preventDefault();
+  setIsLoading(true);
 
-    const { name, email, password } = formFields;
+  const { name, email, password } = formFields;
 
-    if (!name.trim()) {
-      alert.alertBox({ type: "error", msg: "Please enter full name" });
-      setIsLoading(false);
-      return;
-    }
-    if (!email.trim()) {
-      alert.alertBox({ type: "error", msg: "Please enter your email id" });
-      setIsLoading(false);
-      return;
-    }
-    if (!password.trim()) {
-      alert.alertBox({ type: "error", msg: "Please enter password" });
-      setIsLoading(false);
-      return;
-    }
-
-    const response = await postData("/api/user/register", formFields, false);
-    if (!response.error) {
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("userName", name);
-      setFormFields({ name: "", email: "", password: "" });
-      router.push("/verify-otp");
-    } else {
-      alert.alertBox({ type: "error", msg: response?.message || "Signup failed" });
-    }
+  if (!name.trim()) {
+    alert.alertBox({ type: "error", msg: "Please enter full name" });
     setIsLoading(false);
-  };
+    return;
+  }
+  if (!email.trim()) {
+    alert.alertBox({ type: "error", msg: "Please enter your email id" });
+    setIsLoading(false);
+    return;
+  }
+  if (!password.trim()) {
+    alert.alertBox({ type: "error", msg: "Please enter password" });
+    setIsLoading(false);
+    return;
+  }
+
+  const response = await postData("/api/user/register", formFields, false);
+  if (!response.error) {
+    const { email, name, _id } = response.user;
+
+    // ✅ Save to localStorage for OTP screen
+    localStorage.setItem("userEmail", email);
+    localStorage.setItem("userName", name);
+    localStorage.setItem("userId", _id);
+    localStorage.setItem("actionType", "register");
+
+    setFormFields({ name: "", email: "", password: "" });
+    router.push("/verify-otp");
+  } else {
+    alert.alertBox({ type: "error", msg: response?.message || "Signup failed" });
+  }
+
+  setIsLoading(false);
+};
+
 
   return (
     <div className="flex justify-center items-center w-full h-screen bg-gray-100">

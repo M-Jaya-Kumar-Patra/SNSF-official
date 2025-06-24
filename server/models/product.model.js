@@ -1,117 +1,129 @@
-  import mongoose from "mongoose";
+import mongoose from "mongoose";
 
-  const productSchema = mongoose.Schema({
-    name: {
+const productSchema = mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  productId: {
+    type: mongoose.Schema.ObjectId,
+  },
+  checked: {
+    type: Boolean,
+    default: false,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  images: [
+    {
       type: String,
       required: true,
     },
-    productId:{
-      type: mongoose.Schema.ObjectId,
-    },
-    checked:{
-      type: Boolean,
-      default: false,
-    },
-    description: {
+  ],
+  brand: {
+    type: String,
+    default: '',
+  },
+  price: {
+    type: Number,
+    default: 0,
+  },
+  oldPrice: {
+    type: Number,
+    default: 0,
+  },
+  catId: {
+    type: String,
+    default: '',
+  },
+  catName: {
+    type: String,
+    default: '',
+  },
+  subCatId: {
+    type: String,
+    default: '',
+  },
+  subCat: {
+    type: String,
+    default: '',
+  },
+  thirdSubCatId: {
+    type: String,
+    default: '',
+  },
+  thirdSubCat: {
+    type: String,
+    default: '',
+  },
+  countInStock: {
+    type: Number,
+    required: true,
+  },
+  sales: {
+    type: Number,
+    default: 0,
+  },rating: {
+  type: Number,
+  default: 0,
+},
+ratingCount: {
+  type: Number,
+  default: 0,
+},
+  isFeatured: {
+    type: Boolean,
+    default: false,
+  },
+  discount: {
+    type: Number,
+    required: true,
+  },
+  size: [
+    {
       type: String,
-      required: true,
+      default: null,
     },
-    images: [
-      {
+  ],
+  location: [
+    {
+      value: {
         type: String,
-        required: true,
-      }
-    ],
-    brand: {
-      type: String,
-      default: '',
-    },
-    price: {
-      type: Number,
-      default: 0,
-    },
-    oldPrice: {
-      type: Number,
-      default: 0,
-    },
-    catId: {
-      type: String,
-      default: '',
-    },
-    catName: {
-      type: String,
-      default: '',
-    },
-    subCatId: {
-      type: String,
-      default: '',
-    },
-    subCat: {
-      type: String,
-      default: '',
-    },
-    thirdSubCatId: {
-      type: String,
-      default: '',
-    },
-    thirdSubCat: {
-      type: String,
-      default: '',
-    },
-    countInStock: {
-      type: Number,
-      required: true,
-    },
-    sales: {
-      type: Number,
-      default: 0,
-    },
-    rating: {
-      type: Number,
-      default: 0,
-    },
-    isFeatured: {
-      type: Boolean,
-      default: false,
-    },
-    discount: {
-      type: Number,
-      required: true,
-    },
-    size: [
-      {
+      },
+      label: {
         type: String,
-        default: null,
-      }
-    ],
-    location: [
-      {
-        value: {
-          type: String,
-        },
-        label: {
-          type: String,
-        }
-      }
-    ],
-    dateCreated: {
-      type: Date,
-      default: Date.now,
+      },
     },
+  ],
+  dateCreated: {
+    type: Date,
+    default: Date.now,
+  },
 
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+  },
 
+  specifications: {
+    material: { type: String, default: "" },
+    grade: { type: String, default: "" },
+    fabric: { type: String, default: "" },
+    fabricColor: { type: String, default: "" },
+    size: { type: String, default: "" }, // use `specifications.size` if you want detailed size string
+    weight: { type: String, default: "" },
+    height: { type: String, default: "" },
+    warranty: { type: String, default: "" },
+    thickness: { type: String, default: "" },
+    length: { type: String, default: "" },
+    width: { type: String, default: "" },
+    polish: { type: String, default: "" },  // optional
+    frameMaterial: { type: String, default: "" }, // optional
+  }
+});
 
-    category: {
-  type: mongoose.Schema.Types.ObjectId,
-  ref: "Category"
-}
+const ProductModel = mongoose.model("Product", productSchema);
 
-
-
-
-  });
-
-
-  const ProductModel = mongoose.model('Product', productSchema)
-
-  export default ProductModel
+export default ProductModel;

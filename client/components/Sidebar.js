@@ -128,7 +128,7 @@ useEffect(() => {
 
   return (
     <aside className='sidebar 
-    sticky top-[94px]'>
+    sticky top-[54px]'>
 
       <div className='mb-4 w-full flex gap-3'>
         <Button variant='outlined' color='primary' className='w-full' onClick={() => filtersData()}>Apply</Button>

@@ -20,6 +20,8 @@ import { useCart } from "@/app/context/CartContext";
 import { FaCartPlus } from "react-icons/fa6";
 import { MdAccountCircle } from "react-icons/md";
 import Search from "./Search";
+import { FaBell } from "react-icons/fa";
+import { useNotice } from "@/app/context/NotificationContext";
 
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -35,63 +37,24 @@ const righteous = Righteous({ subsets: ["latin"], weight: "400" });
 
 const Navbar = ({ fontClass, cartItems = [] }) => {
   const { catData, setCatData } = useCat();
-  const { productsData, setProductsData } = usePrd();
   const { setLoading } = useAuth(); // ✅ Added for loader
   const router = useRouter();
   const { userData, isLogin } = useAuth();
   const { cartData } = useCart();
+  const { notices, getNotifications } = useNotice();
 
-  const getCat = (e, catId) => {
-    setLoading(true); // ✅ start loading
-    fetchDataFromApi(`/api/product/gapsByCatId?Id=${catId}`)
-      .then((res) => {
-        if (!res.error) {
-          setProductsData(res?.data);
-        } else {
-          throw new Error("Error fetching category");
-        }
-      })
-      .finally(() => setLoading(false)); // ✅ stop loading
-  };
 
-  const getSubCat = (e, subCatId) => {
-    setLoading(true);
-    fetchDataFromApi(`/api/product/gapsBySubCatId?Id=${subCatId}`)
-      .then((res) => {
-        if (!res.error) {
-          setProductsData(res?.data);
-        } else {
-          throw new Error("Error fetching subcategory");
-        }
-      })
-      .finally(() => setLoading(false));
-  };
 
-  const getThirdCat = (e, thirdSubCatIdId) => {
-    setLoading(true);
-    fetchDataFromApi(`/api/product/gapsByThirdCatId?thirdSubCatId=${thirdSubCatIdId}`)
-      .then((res) => {
-        if (!res.error) {
-          setProductsData(res?.data);
-        } else {
-          throw new Error("Error fetching third subcategory");
-        }
-      })
-      .finally(() => setLoading(false));
-  };
+
+
+  useEffect(() => {
+    getNotifications();
+  }, []);
 
   return (
     <nav className=" sticky top-[-70px]   z-[100] bg-gradient-to-r from-indigo-950 via-indigo-900 to-[#1e40af]  text-white border-t border-[#1e293b] shadow-md">
 
-      {/* bg-gradient-to-l from-blue-600 to-indigo-800 
-      
-      
-      bg-gradient-to-l from-[#798ca8] via-[#334257] to-[#131e30]
-      
-      
-      */}
 
-      {/* //  <header className="bg-gradient-to-r from-[#1c2044] to-[#5c37a7]  text-white border-t border-[#1e293b] shadow-md"> */}
       <div className="max-w-full mx-auto px-6 py-2 flex items-center justify-between">
         {/* Logo Section */}
         <div className="flex items-center gap-1 flex-shrink-0 w-[200px]">
@@ -111,19 +74,21 @@ const Navbar = ({ fontClass, cartItems = [] }) => {
           />
         </div>
 
-          {/* Search Bar */}
-          <Search/>
+        {/* Search Bar */}
+        <Search />
 
         <div className="flex items-center justify-between w-[200px]">
 
 
           {/* Actions */}
-          <IconButton aria-label="Home" onClick={() => router.push("/")}>
-            <IoMdHome className="text-3xl text-white" />
+          <IconButton aria-label="Notification" onClick={() => router.push("/notifications")}>
+            {/* <StyledBadge badgeContent={notices.map((notice)=>!notice.read).length} color="secondary"> */}
+            <FaBell className="text-2xl text-white" />
+            {/* </StyledBadge> */}
           </IconButton>
 
 
-          <IconButton aria-label="Call" onClick={() => window.location.href = 'tel:+917847911696'}>
+          <IconButton aria-label="Call" onClick={() => window.location.href = 'tel:+919776501230'}>
             <MdCall className="text-3xl text-white" />
           </IconButton>
 
@@ -153,36 +118,61 @@ const Navbar = ({ fontClass, cartItems = [] }) => {
         </div>
       </div>
 
-      <ul className="flex justify-around pb-1 border border-b-slate-200 bg-white">
+      <ul className="flex justify-evenly border border-b-slate-200 bg-white shadow-sm  px-10">
+        <li
+          onClick={() => router.push("/")}
+          className="cursor-pointer flex items-center justify-center text-[18px] px-10 bg-slate-100 hover:bg-slate-200 text-[#131e30] hover:font-semibold py-1 transition-all duration-200"
+          title="Back to Home"
+        >
+          <IoMdHome/>
+        </li>
+
         {catData?.map((cat, index) => (
-          <li key={index} className="relative group">
-            <Link
-              href={`/ProductListing?catId=${cat._id}`}
-              className="text-[15px]  text-gray-700 hover:text-[#131e30] hover:border-b-2 hover:border-[#131e30] pb-1"
-            >
+          <li
+            key={index}
+            onClick={() => router.push(`/ProductListing?catId=${cat._id}`)}
+            className="relative group  w-full text-center cursor-pointer transition-all duration-200  "
+          >
+            <span className="block text-[15px] font-medium text-slate-800 transition duration-200 group-hover:text-[#131e30] hover:font-semibold w-full h-full py-1
+          group-hover:font-semibold
+          ">
               {cat.name}
-            </Link>
+            </span>
 
             {cat.children?.length > 0 && (
               <div
-                className={`absolute top-full mt-4 ${index > catData.length - 3 ? "right-0" : "left-0"} bg-white shadow-xl px-6 py-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-[300] overflow-auto scrollbar-hide`}
+                onClick={(e) => e.stopPropagation()}
+                className={`absolute top-full left-0 text-left ${index > catData.length - 3 ? "right-0 left-auto" : ""
+                  } bg-white shadow-2xl border border-gray-200 rounded-lg px-6 py-5 
+    opacity-0 invisible group-hover:opacity-100 group-hover:visible 
+    group-hover:translate-y-2 transition-all duration-300 ease-in-out 
+    z-[300] overflow-auto scrollbar-hide`}
                 style={{ maxWidth: "100vw", whiteSpace: "nowrap" }}
               >
-                <div className="flex gap-2" style={{ width: `${cat.children.length * 200}px` }}>
+                <div
+                  className="flex gap-4"
+                  style={{ width: `${cat.children.length * 220}px` }}
+                >
                   {cat.children.map((subCat, subIndex) => (
-                    <div key={subIndex} className="min-w-[200px]">
-                      <Link href={`/ProductListing?subCatId=${subCat._id}`}>
-                        <h4 className="text-[16px] font-semibold mb-2 text-gray-800">{subCat.name}</h4>
-                      </Link>
+                    <div
+                      key={subIndex}
+                      className="min-w-[200px] transition-transform duration-300 hover:scale-[1.02]"
+                    >
+                      <a
+                        href={`/ProductListing?subCatId=${subCat._id}`}
+                        className="block text-[15px] font-semibold mb-3 text-slate-800 hover:text-indigo-700"
+                      >
+                        {subCat.name}
+                      </a>
                       <ul className="space-y-1">
                         {subCat.children?.map((thirdSubCatId, thirdIndex) => (
                           <li key={thirdIndex}>
-                            <Link
+                            <a
                               href={`/ProductListing?thirdSubCatId=${thirdSubCatId._id}`}
-                              className="text-[16px] text-gray-600 hover:text-[#131e30] transition"
+                              className="block text-[15px] text-gray-600 hover:text-[#131e30] transition-all duration-200"
                             >
                               {thirdSubCatId.name}
-                            </Link>
+                            </a>
                           </li>
                         ))}
                       </ul>
@@ -191,6 +181,7 @@ const Navbar = ({ fontClass, cartItems = [] }) => {
                 </div>
               </div>
             )}
+
           </li>
         ))}
       </ul>

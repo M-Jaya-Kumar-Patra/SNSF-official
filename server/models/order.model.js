@@ -63,6 +63,12 @@
 payment_method:{
     type: String,
         
+}, 
+delivery_date:{
+    type: Date
+},
+estimated_delivery_date:{
+    type: Date
 }
         
 

@@ -97,12 +97,12 @@ const Search = () => {
 
       {/* Dropdown */}
       {isDropdownVisible && searchQuery.trim() !== "" && (
-        <ul className="absolute z-50 top-full left-0 w-full bg-white rounded-lg shadow-lg max-h-[320px] overflow-y-auto border border-gray-200 mt-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+        <ul className="absolute z-50 top-full left-0 w-full bg-white rounded-lg shadow-lg max-h-[320px] overflow-y-auto border border-gray-200 mt-2 scrollbar-hide">
           {results.length > 0 ? (
             results.map((item) => (
               <li
                 key={item._id}
-                className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-indigo-100 transition-colors duration-150 rounded-lg"
+                className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-indigo-50 transition-colors duration-150 rounded-lg"
                 onClick={() => {
                   if (item.thirdSubCatId) {
                     router.push(`/ProductListing?thirdSubCatId=${item.thirdSubCatId}`);

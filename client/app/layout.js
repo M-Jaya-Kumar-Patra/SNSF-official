@@ -13,6 +13,7 @@ import { PrdProvider } from "./context/ProductContext";
 import { ItemProvider } from "./context/ItemContext";
 import { WishlistProvider } from "./context/WishlistContext";
 import { OrdersProvider } from "./context/OrdersContext";
+import { NoticeProviders } from "./context/NotificationContext";
 import GlobalLoader from "@/components/GlobalLoader"; // ✅ import loader component
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "700"] });
@@ -35,29 +36,31 @@ export default function RootLayout({ children }) {
         <AlertProvider>
           <AuthWrapper>
             <AuthProvider>
-              <OrdersProvider>
-                <ItemProvider>
-                  <CatProvider>
-                    <WishlistProvider>
-                      <PrdProvider>
-                        <CartProvider>
-                          <Navbar />
+              <NoticeProviders>
+                <OrdersProvider>
+                  <ItemProvider>
+                    <CatProvider>
+                      <WishlistProvider>
+                        <PrdProvider>
+                          <CartProvider>
+                            <Navbar />
 
-                          {/* ✅ Global loader (client-only) */}
-                          <GlobalLoader />
+                            {/* ✅ Global loader (client-only) */}
+                            <GlobalLoader />
 
-                          <main className="min-h-screen flex flex-col">
-                            {children}
-                          </main>
+                            <main className="min-h-screen flex flex-col">
+                              {children}
+                            </main>
 
-                          <Footer />
-                          <Toaster position="top-right" />
-                        </CartProvider>
-                      </PrdProvider>
-                    </WishlistProvider>
-                  </CatProvider>
-                </ItemProvider>
-              </OrdersProvider>
+                            <Footer />
+                            <Toaster position="top-right" />
+                          </CartProvider>
+                        </PrdProvider>
+                      </WishlistProvider>
+                    </CatProvider>
+                  </ItemProvider>
+                </OrdersProvider>
+              </NoticeProviders>
             </AuthProvider>
           </AuthWrapper>
         </AlertProvider>

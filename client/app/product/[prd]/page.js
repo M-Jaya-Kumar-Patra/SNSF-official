@@ -14,7 +14,9 @@ import { MdFavorite } from "react-icons/md";
 import { MdFavoriteBorder } from "react-icons/md";
 import Image from "next/image";
 import { useWishlist } from '@/app/context/WishlistContext';
-
+import Pincode from "./pincode";
+import ProductSpecs from "@/components/ProductSpecs";
+import Link from "next/link";
 
 
 
@@ -185,89 +187,80 @@ const Page = () => {
         </div>
 
         {/* Right: Product Details */}
-        <div className="details w-[600px] p-4 pt-6">
-          <h2 className="text-[25px] font-medium mb-3 text-gray-800">
-            {openedProduct?.name}
-          </h2>
+<div className="details w-[600px] p-4 pt-6">
+  <h2 className="text-[25px] font-medium mb-3 text-gray-800">
+    {openedProduct?.name}
+  </h2>
 
-          <h2 className="text-[20px] font-medium mb-3 text-gray-500">
-            {openedProduct?.brand}
-          </h2>
+  <h2 className="text-[20px] font-medium mb-3 text-gray-500">
+    {openedProduct?.brand}
+  </h2>
 
+  <div
+    className={`flex justify-center items-center gap-[2px] text-white text-sm font-semibold px-[6px] w-[50px] h-[23px] rounded ${
+      openedProduct?.rating > 4.5
+        ? 'bg-green-600'
+        : openedProduct?.rating > 3.5
+        ? 'bg-green-500'
+        : openedProduct?.rating > 2.5
+        ? 'bg-amber-500'
+        : openedProduct?.rating > 1.5
+        ? 'bg-orange-500'
+        : 'bg-red-500'
+    }`}
+  >
+    {parseFloat(openedProduct?.rating).toFixed(1)} <MdStar />
+  </div>
 
+  <div className="flex items-center gap-2">
+    <div className="mt-4 text-[25px] font-semibold text-black">
+      ₹{openedProduct?.price}
+    </div>
+    <div className="line-through text-gray-500 mt-4 text-[17px] font-normal">
+      ₹{openedProduct?.oldPrice}
+    </div>
+    <div className="text-green-700 mt-4 text-[17px] font-medium">
+      {openedProduct?.discount}% off
+    </div>
+  </div>
 
-          <div
-            className={`flex justify-center items-center gap-[2px] text-white text-sm font-semibold px-[6px] w-[50px] h-[23px] rounded ${openedProduct?.rating > 4.5
-              ? 'bg-green-600'
-              : openedProduct?.rating > 3.5
-                ? 'bg-green-500'
-                : openedProduct?.rating > 2.5
-                  ? 'bg-amber-500'
-                  : openedProduct?.rating > 1.5
-                    ? 'bg-orange-500'
-                    : 'bg-red-500'
-              }`}
-          >
-            {parseFloat(openedProduct?.rating).toFixed(1)} <MdStar />
-
-          </div>
-
-
-
-          <div className="flex items-center gap-2">
-            <div className="mt-4 text-[25px] font-semibold text-black ">
-              ₹{openedProduct?.price}
-            </div>
-            <div className=" line-through text-gray-500 mt-4 text-[17px] font-normal ">
-              ₹{openedProduct?.oldPrice}
-            </div>
-
-            <div className="  text-green-700 mt-4 text-[17px] font-medium ">
-              {openedProduct?.discount}% off
-            </div>
-          </div>
-
-          <div className="flex gap-4 mt-4">
-            <h1 className="text-gray-500 font-semibold ">
-              Delivery
-            </h1>
-            <p className="text-black font">
-
-            </p>
-          </div>
-
-          <div className="flex gap-4 mt-4">
-            <h1 className="text-gray-500 font-semibold ">
-              Highlights
-            </h1>
-            <p className="text-black font">
-
-            </p>
-          </div>
-
-          <div className="flex gap-4 mt-4">
-            <h1 className="text-gray-500 font-semibold ">
-              Description
-            </h1>
-            <p className="text-black font">
-              {openedProduct?.description}
-            </p>
-          </div>
-
-          <h2 className="text-[22px] text-black font-bold mt-10">Specification</h2>
+  {/* Pincode Checker */}
+  <div className="flex gap-4 mt-6">
+    <h1 className="text-gray-500 font-semibold">Check delivery availability</h1>
+    <Pincode />
+  </div>
+  {/* Estimated Delivery */}
+  <div className="flex gap-4 mt-4">
+    
+    <p className="text-black">
+      Delivery within 5–7 business days from order confirmation.
+    </p>
+  </div>
 
 
-          {/* <table className="text-black border border-black">
-              <td className="border-black">Model Name</td>
-              <td>S N Steel Fabrication Lorem ipsum dolor sit amet, consectetur adipisicing elit. Molestiae labore aspernatur quae facere ut itaque blanditiis vero architecto cum at corporis odit laboriosam maxime velit, maiores tempore quidem suscipit. Quam, numquam. Sequi sunt inventore aspernatur recusandae officiis minima aliquam fugit non maxime iure quas id porro dolorum unde, tempore enim cum ea praesentium earum? Harum, aspernatur nesciunt quas soluta illo, sit at dolores a omnis, ullam laborum suscipit error animi tempora quod ipsam magnam consectetur dolor illum deleniti adipisci et. Nostrum, harum! Voluptate, voluptatem! Eos, tenetur, reiciendis vt minima expedita similique eos inventore totam consequuntur assumenda necessitatibus distinctio blanditiis ipsam, maiores corrupti quos impedit deleniti repudiandae veniam. Est aliquam iste alias, iure rerum fuga magnam facere similique eaque dolor modi expedita corporis, beatae libero. Officiis, illum. Sint voluptatibus dolorum quptates, quaerat, vero recusandae tempore saepe! Optio, vel corrupti. Consequatur dolorem explicabo temporibus commodi incidunt ex autem sed expedita hic velit sit maiores launeque libero vero ullam accusantium suscipit iste, iusto tempora perspiciatis provident voluptatum deserunt pariatur? Quod sint molestiae quia officiis libero animi, assumenda fugit qui, accusantium atque ad asperiores perspiciatis magni nihil? Minima, ipsa incidunt ratione dolores voluptas animi ab magni eveniet est totam, placeat porro velit pariatur earum cum a hic quo. Ipsa obcaecati similique pariatur alias, eveniet voluptatibus doloremque, rerum mollitia omnis voluptatum earum eum deleniti sint? Quia exercitationem nesciunt minus inventore! Minima natus modi, a laboriosam, quidem aliquid cupiditate, ea neque nesciunt debitis dolorum. Harum vel minima recusandae soluta odit dicta voluptatibus dolorem velit ree aut quibusdam quisquam distinctio debitis fugit non quasi! Mollitia, perspiciatis fugiat veniam quae corporis error vitae modi a veritatis doloremque maxime expturi ducimus voluptate consequuntur officia, iusto accusamus necexercitationem quia minus sint minima adipisci maxime esse illo voluptates? Corporis, qui a nemo, odio autem dolor nobis nisi ducimus temporibus dolorum corrupti culpa quam eius natus nostrum sunt adipisci ipsa tenetur id voluptatem consectetur, reprehenderit rem eligendi! Dolore, eveniet ratione repudiandae non cum minus modi. Obcaecati omnis perspiciatis amet natus repellat reiciendis id illum perferendis in, assumenda quidem porro et a dolorem veniam, recusandae soluta deserunt! Eaque maxime aliquam sapiente laborum!</td>
-            
-          </table> */}
-          <div className="text-black border border-black">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Officia unde harum natus animi ut laborum recusandae dolor dolore, ex repudiandae, aspernatur, magni a! Quaerat accusantium fuga aut blanditiis distinctio sed eaque incidunt quas quia dolorem maxime, vero iste commodi ut suscipit nam saepe voluptas dolores excepturi? Tenetur, voluxime veniam nam tempore quasi laborum velit sed id ab, quis qui necessitatibus omnis, odio quia deserunt possimus! Odio blanditiis amet doloribus natus sapiente perspiciatis, quaerat repellat reprehenderit atque eos obcaecati inventore voluptate voluptas impedit iste vitae corporis error quis illo voluptates.
-          </div>
+  {/* Warranty Info */}
+  <div className="flex gap-4 mt-4">
+     <h1 className="text-gray-500 font-semibold">Warranty </h1>
+  <p className="text-black text-sm">
+    Frame warranty available. <Link href="/warranty" className="text-blue-600 underline">View warranty policy</Link>
+  </p>
+  </div>
 
-          <Reviews productId={prdId} />
-        </div>
+  {/* Description */}
+  <div className="flex gap-4 mt-4">
+    <h1 className="text-gray-500 font-semibold">Description</h1>
+    <p className="text-black">
+      {openedProduct?.description}
+    </p>
+  </div>
+
+  {/* Product Specs */}
+  <ProductSpecs specs={openedProduct?.specifications} />
+
+  {/* Reviews */}
+  <Reviews productId={prdId} />
+</div>
+
       </div>
 
 
