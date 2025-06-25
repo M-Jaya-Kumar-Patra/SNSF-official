@@ -14,7 +14,7 @@ import { MdFavorite } from "react-icons/md";
 import { MdFavoriteBorder } from "react-icons/md";
 import Image from "next/image";
 import { useWishlist } from '@/app/context/WishlistContext';
-import Pincode from "./pincode";
+import Pincode from "./Pincode";
 import ProductSpecs from "@/components/ProductSpecs";
 import Link from "next/link";
 
