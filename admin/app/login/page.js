@@ -27,14 +27,17 @@ export default function Login() {
   const alert = useAlert();
   const { isLogin, login, setIsLogin, setLoading, loading } = useAuth();
 
-  // ✅ Redirect if already logged in
-  useEffect(() => {
-    if (isLogin) {
-      router.push("/profile");
-    } else {
-      setCheckingAuth(false);
-    }
-  }, [isLogin, router]);
+ useEffect(() => {
+  if (typeof window === "undefined") return;
+  
+  const token = localStorage.getItem("accessToken");
+  if (token && isLogin) {
+    router.replace("/profile");
+  } else {
+    setCheckingAuth(false);
+  }
+}, [isLogin]);
+
 
   // ✅ Alert from previous page (safe SSR)
   useEffect(() => {

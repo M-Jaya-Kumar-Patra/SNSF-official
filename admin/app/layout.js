@@ -8,11 +8,8 @@ import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast";
 import SessionGuard from "@/components/SessionGuard";
 import { CatProvider } from "./context/CategoryContext";
-import { Inter } from "next/font/google";
 import { PrdProvider } from "./context/ProductContext";
 import { OrdersProvider } from "./context/OrdersContext";
-
-const inter = Inter({ subsets: ["latin"], weight: ["400", "700"] });
 
 export const metadata = {
   title: "SNSF",
@@ -25,7 +22,7 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="icon" href="/favicon-32x32.png" type="image/png" />
       </head>
-      <body className={inter.className}>
+      <body >
           <SessionGuard>
             <AuthProvider>
               <PrdProvider>

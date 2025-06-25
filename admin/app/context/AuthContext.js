@@ -3,12 +3,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import jwtDecode from "jwt-decode";
 import { fetchDataFromApi } from "@/utils/api";
-import { useRouter } from "next/navigation";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const router = useRouter();
   const [adminData, setAdminData] = useState(null);
   const [isLogin, setIsLogin] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -25,22 +23,28 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
+    let decoded;
     try {
-      const decoded = jwtDecode(token);
-      const currentTime = Date.now() / 1000;
-
-      if (decoded.exp < currentTime) {
-        logout();
-      } else {
-        // Set timeout to auto logout when token expires
-        const timeLeft = (decoded.exp - currentTime) * 1000;
-        setTimeout(() => logout(), timeLeft);
-        fetchAdminDetails();
-      }
+      decoded = jwtDecode(token);
     } catch (err) {
-      console.error("Invalid token", err);
+      console.error("❌ Invalid JWT:", err);
       logout();
+      return;
     }
+
+    const currentTime = Date.now() / 1000;
+    if (decoded.exp < currentTime) {
+      logout();
+      return;
+    }
+
+    // ⏰ Auto logout at token expiry
+    const timeout = setTimeout(() => logout(), (decoded.exp - currentTime) * 1000);
+
+    // 👇 Fetch admin details
+    fetchAdminDetails();
+
+    return () => clearTimeout(timeout); // cleanup
   }, []);
 
   const fetchAdminDetails = async () => {
@@ -50,14 +54,11 @@ export const AuthProvider = ({ children }) => {
         setAdminData(response.data);
         setIsLogin(true);
       } else {
-        console.warn("API error:", response.message);
-        if (response.message === "Something is wrong") {
-          alert("Your session is closed, please login again");
-        }
+        console.warn("⚠️ API error:", response.message);
         logout();
       }
-    } catch (error) {
-      console.error("Failed to fetch admin details", error);
+    } catch (err) {
+      console.error("❌ Failed to fetch admin:", err);
       logout();
     } finally {
       setLoading(false);
@@ -65,18 +66,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = (data, token) => {
-    if (typeof window !== "undefined" && data && token) {
+    if (typeof window !== "undefined") {
       localStorage.setItem("accessToken", token);
       setAdminData(data);
       setIsLogin(true);
-      console.log("login() called in AuthContext");
     }
   };
 
   const logout = () => {
     if (typeof window !== "undefined") {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
+      localStorage.clear();
     }
     setAdminData(null);
     setIsLogin(false);
