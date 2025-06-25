@@ -50,7 +50,7 @@ const Slider = () => {
 
   return (
     <div className="flex justify-center mt-0">
-      <div className="relative w-[1000px] h-[350px] shadow flex justify-center items-center overflow-hidden">
+      <div className="relative w-[500px] h-[300px] md:w-[600px] md:h-[200px] lg:w-[1000px] lg:h-[350px]  shadow flex justify-center items-center overflow-hidden">
 
         {/* Left Arrow */}
         <button

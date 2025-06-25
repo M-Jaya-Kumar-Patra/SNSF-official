@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/favicon-32x32.png" type="image/png" />
       </head>
       <body >
-          <SessionGuard>
+          {/* <SessionGuard> */}
             <AuthProvider>
               <PrdProvider>
                 <CatProvider>
@@ -41,7 +41,7 @@ export default function RootLayout({ children }) {
               </CatProvider>
               </PrdProvider>
             </AuthProvider>
-          </SessionGuard>
+          {/* </SessionGuard> */}
       </body>
     </html>
   );

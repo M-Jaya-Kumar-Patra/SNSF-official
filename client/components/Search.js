@@ -38,10 +38,8 @@ const Search = () => {
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-
       if (results.length > 0) {
         const firstItem = results[0];
-
         if (firstItem.thirdSubCatId) {
           router.push(`/ProductListing?thirdSubCatId=${firstItem.thirdSubCatId}`);
         } else if (firstItem.subCatId) {
@@ -56,7 +54,6 @@ const Search = () => {
     }
   };
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -68,10 +65,15 @@ const Search = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative max-w-md w-full">
+    <div
+      ref={containerRef}
+      className="relative w-full max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl"
+    >
+      {/* Search input box */}
       <div
-        className="flex items-center bg-indigo-50  bg-opacity-5 focus-within:bg-indigo-100  focus-within:bg-opacity-15 rounded-lg px-4 py-[6px] shadow-sm
-                   border border-slate-400 focus-within:ring-[0.5px] focus-within:ring-slate-200
+        className="flex items-center w-full bg-indigo-50 bg-opacity-5 focus-within:bg-indigo-100 focus-within:bg-opacity-15
+                   rounded-lg px-3 py-[6px] shadow-sm border border-slate-400
+                   focus-within:ring-[0.5px] focus-within:ring-slate-200
                    transition duration-300"
       >
         <Image
@@ -85,8 +87,7 @@ const Search = () => {
         <input
           type="text"
           placeholder="Search products..."
-          className="flex-grow bg-transparent outline-none text-sm text-white placeholder-slate-200
-                     caret-blue-400"
+          className="flex-grow bg-transparent outline-none text-sm text-white placeholder-slate-200 caret-blue-400"
           onChange={onChangeInput}
           onKeyDown={handleKeyDown}
           value={searchQuery}
@@ -124,7 +125,9 @@ const Search = () => {
                     draggable={false}
                   />
                 )}
-                <div className="text-indigo-900 font-medium text-sm truncate">{item.name}</div>
+                <div className="text-indigo-900 font-medium text-sm truncate">
+                  {item.name}
+                </div>
               </li>
             ))
           ) : (
