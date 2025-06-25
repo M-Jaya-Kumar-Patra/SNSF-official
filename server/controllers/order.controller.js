@@ -10,7 +10,7 @@ import orderCancelledEmail from "../utils/EmailTemplates/orderCanceledEmail.js";
 import orderDeliveredEmail from "../utils/EmailTemplates/orderDeliveredEmail.js";
 import refundCompletedEmail from "../utils/EmailTemplates/orderRefundedEmail.js";
 import orderReturnedEmail from "../utils/EmailTemplates/orderReturnedEmail.js";
-
+import path from "path";
 
 
 cloudinary.config({
@@ -285,31 +285,7 @@ export async function updatePaymentStatus(req, res) {
     const orderProducts = order.products;
 
     // ✅ Create product list HTML for email
-    const itemsHtml = `
-      <ul style="padding-left: 20px; margin-top: 10px;">
-        ${orderProducts
-          .map(
-            (item) =>
-              `<li>🛒 ${item.productTitle || "Item"} – Qty: ${item.quantity}</li>`
-          )
-          .join("")}
-      </ul>
-    `;
-
-    // ✅ Send email if payment completed
-    switch (payment_status) {
-      case "Completed":
-        await sendEmailFun(
-          email,
-          `💰 Payment Successful – ${orderIdStr}`,
-          ``,
-          paymentSuccessEmail(name, orderIdStr, totalAmt, paymentMethod, itemsHtml)
-        );
-        break;
-
-      default:
-        console.warn("No email template configured for this payment status:", payment_status);
-    }
+    
 
     res.status(200).json({ message: "Payment status updated", order });
   } catch (error) {
@@ -569,5 +545,48 @@ export const setEstimatedDeliveryDate = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: true, message: "Server error" });
+  }
+};
+
+
+export const downloadInvoiceImage = async (req, res) => {
+  const { orderId } = req.params;
+
+  try {
+    // Define supported image types (you can support both .jpg and .png)
+    const possibleExtensions = [".jpg", ".jpeg", ".png"];
+
+    let invoicePath = null;
+    let fileExtension = null;
+
+    for (let ext of possibleExtensions) {
+      const fullPath = path.resolve(`./invoices/invoice-${orderId}${ext}`);
+      if (fs.existsSync(fullPath)) {
+        invoicePath = fullPath;
+        fileExtension = ext;
+        break;
+      }
+    }
+
+    if (!invoicePath) {
+      return res.status(404).json({
+        success: false,
+        message: "Invoice image not found",
+      });
+    }
+
+    // Set headers for image download
+    res.setHeader("Content-Type", `image/${fileExtension.replace(".", "")}`);
+    res.setHeader("Content-Disposition", `attachment; filename=invoice-${orderId}${fileExtension}`);
+
+    const imageStream = fs.createReadStream(invoicePath);
+    imageStream.pipe(res);
+
+  } catch (error) {
+    console.error("Error downloading invoice image:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to download invoice image",
+    });
   }
 };

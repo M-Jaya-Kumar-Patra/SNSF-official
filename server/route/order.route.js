@@ -1,6 +1,6 @@
 import { Router } from "express";
 import auth from "../middlewares/auth.js";
-import {createOrder, getAllOrders, getOrderById, getOrdersByUser, updateOrderStatus, updatePaymentStatus, deleteOrder, deleteOrdersItemController, updateOrdersItemQtyController, uploadSinglePDF, removeImageFromCloudinary, uploadInvoice, setEstimatedDeliveryDate} from "../controllers/order.controller.js"
+import {createOrder, getAllOrders, getOrderById, getOrdersByUser, updateOrderStatus, updatePaymentStatus, deleteOrder, deleteOrdersItemController, updateOrdersItemQtyController, uploadSinglePDF, removeImageFromCloudinary, uploadInvoice, setEstimatedDeliveryDate, downloadInvoiceImage} from "../controllers/order.controller.js"
 
 import upload from "../middlewares/multer.js";
 
@@ -20,6 +20,8 @@ orderRouter.delete("/deleteImg", auth, removeImageFromCloudinary);
 orderRouter.post("/uploadInvoice", auth, uploadInvoice);
 orderRouter.post("/setEstimatedDate/:orderId", auth, setEstimatedDeliveryDate );
 orderRouter.post('/updatePaymentStatus',auth, updatePaymentStatus)
+orderRouter.get('/:orderId/invoice', auth, downloadInvoiceImage);  
+
 
 
 export default orderRouter          

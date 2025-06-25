@@ -1,203 +1,279 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect } from 'react';
-import { useOrders } from '../context/OrdersContext';
-import { useAlert } from '../context/AlertContext';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect } from 'react'
+import { useOrders } from '../context/OrdersContext'
+import { usePrd } from '../context/ProductContext'
+import { useAlert } from '../context/AlertContext'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '../context/AuthContext'
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import Button from '@mui/material/Button';
-import { IoMdClose } from 'react-icons/io';
-
-import UploadBox from '@/components/UploadBox';
+import { postData, deleteImages } from '@/utils/api'
+import Button from '@mui/material/Button'
 import PDFUploadBox from '@/components/PDFUploadBox';
-import { postData, deleteImages } from '@/utils/api';
+import { IoMdClose } from "react-icons/io";
+
+import UploadBox from '@/components/UploadBox'
+
+
+
 
 const statusOptions = [
-  { value: "Pending", label: "Pending", color: "bg-amber-100", text: "#92400e" },
-  { value: "Confirmed", label: "Confirmed", color: "bg-blue-100", text: "#1d4ed8" },
-  { value: "Processing", label: "Processing", color: "bg-cyan-100", text: "#155e75" },
-  { value: "Delivered", label: "Delivered", color: "bg-green-100", text: "#15803d" },
-  { value: "Canceled", label: "Canceled", color: "bg-red-100", text: "#b91c1c" },
-  { value: "Returned", label: "Returned", color: "bg-orange-100", text: "#7c2d12" },
-  { value: "Refunded", label: "Refunded", color: "bg-lime-100", text: "#3f6212" },
+    { value: "Pending", label: "Pending", color: "bg-amber-100", text: "#92400e" },
+    { value: "Confirmed", label: "Confirmed", color: "bg-blue-100", text: "#1d4ed8" },
+    { value: "Processing", label: "Processing", color: "bg-cyan-100", text: "#155e75" },
+    { value: "Delivered", label: "Delivered", color: "bg-green-100", text: "#15803d" },
+    { value: "Canceled", label: "Canceled", color: "bg-red-100", text: "#b91c1c" },
+    { value: "Returned", label: "Returned", color: "bg-orange-100", text: "#7c2d12" },
+    { value: "Refunded", label: "Refunded", color: "bg-lime-100", text: "#3f6212" },
 ];
 
 const getStatusStyle = (status) => {
-  const found = statusOptions.find(opt => opt.value === status);
-  return {
-    bgClass: found?.color || "bg-gray-100",
-    textColor: found?.text || "#334155",
-  };
+    const found = statusOptions.find(opt => opt.value === status);
+    return {
+        bgClass: found?.color || "bg-gray-100",
+        textColor: found?.text || "#334155",
+    };
 };
 
 const Orders = () => {
-  const [formFields, setFormFields] = useState({ images: [] });
-  const { getOrders, ordersData } = useOrders();
-  const router = useRouter();
-  const alert = useAlert();
-  const { userData } = useAuth();
-  const [orderStatusMap, setOrderStatusMap] = useState({});
-const [paymentStatusMap, setPaymentStatusMap] = useState({});
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [previews, setPreviews] = useState([]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      getOrders();
-    }
-  }, []);
-
-  const getNotificationMessage = (status, orderCode) => {
-    const boldCode = `<strong>${orderCode}</strong>`;
-    switch (status) {
-      case "Confirmed": return `Great news! Your order ${boldCode} has been confirmed.`;
-      case "Processing": return `Your order ${boldCode} is being prepared.`;
-      case "Delivered": return `Woohoo! Your order ${boldCode} has been delivered.`;
-      case "Canceled": return `Your order ${boldCode} has been canceled.`;
-      case "Returned": return `We?ve received the return for your order ${boldCode}.`;
-      case "Refunded": return `Your refund for order ${boldCode} has been processed.`;
-      default: return `Update on your order ${boldCode}.`;
-    }
-  };
-
-  const handleChangeOrderStatus = async (orderId, newStatus, order) => {
-    try {
-      const updateRes = await postData(`/api/order/updateStatus?orderId=${orderId}`, {
-        order_Status: newStatus
-      }, true);
-
-      if (updateRes.error) {
-        alert.alertBox({ type: "error", msg: "Failed to update status" });
-        return;
-      }
-
-      alert.alertBox({ type: "success", msg: "Status updated" });
-      setOrderStatusMap((prev) => ({ ...prev, [orderId]: newStatus }));
 
 
-      const body = {
-        recipientId: order?.delivery_address?.userId?.[0],
-        message: getNotificationMessage(newStatus, order?.orderId),
-        image: "",
-        link: `/orderDetails/${order?._id}`,
-      };
 
-      await postData(`/api/notice/send`, body, true);
-    } catch (err) {
-      console.error("? Unexpected error:", err.message);
-      alert.alertBox({ type: "error", msg: "Something went wrong" });
-    }
-  };
+    const [formFields, setFormFields] = useState({
+        images: []  // single PDF instead of array
+    });
 
-  const handleOrderDetails = (order) => {
-    setSelectedOrder(order);
-    if (order?.invoiceImages?.length > 0) {
-      setPreviews(order.invoiceImages);
-    } else if (order?.invoiceUrl) {
-      setPreviews([order.invoiceUrl]);
-    } else {
-      setPreviews([]);
-    }
-  };
+    const { getOrders, ordersData } = useOrders();
+    const router = useRouter();
+    const alert = useAlert();
+    const { userData } = useAuth()
 
-  const closeDetails = () => setSelectedOrder(null);
+    const [statusMap, setStatusMap] = useState({});
+    const [selectedOrder, setSelectedOrder] = useState(null);
 
-  const setPreviewsFun = (previewsArr) => {
-    setPreviews(previewsArr);
-    setFormFields((prev) => ({ ...prev, images: previewsArr }));
-  };
-
-  const handleChangeAdd = (e) => {
-    e.preventDefault();
-    setFormFields({ ...formFields, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmitAddForm = async (e) => {
-    e.preventDefault();
-
-    if (!formFields.images || previews.length === 0) {
-      alert.alertBox({ type: "error", msg: "Please select invoice image" });
-      return;
-    }
-
-    try {
-      const response = await postData(
-        `/api/order/uploadInvoice?orderId=${selectedOrder._id}`,
-        formFields
-      );
-
-      if (!response.error) {
-        alert.alertBox({ type: "success", msg: "Invoice uploaded!" });
-        setFormFields({ images: [] });
-        setPreviews([]);
-        setTimeout(() => getOrders(), 300);
-      } else {
-        alert.alertBox({ type: "error", msg: response.message || "Failed to upload invoice" });
-      }
-    } catch (err) {
-      console.error("? Upload failed:", err);
-      alert.alertBox({ type: "error", msg: "Something went wrong. Please try again." });
-    }
-  };
-
-  const removeImage = async (image, index) => {
-    const publicId = image.split("/").pop().split(".")[0];
-    try {
-      await deleteImages(`/api/order/deleteImg?img=${publicId}`);
-      const updated = [...previews];
-      updated.splice(index, 1);
-      setPreviews(updated);
-      setFormFields((prev) => ({ ...prev, images: updated }));
-    } catch (err) {
-      console.error("? Failed to delete image:", err);
-    }
-  };
-
-  const updateEstimatedDeliveryDate = async (orderId, date) => {
-    try {
-      const res = await postData(`/api/order/setEstimatedDate/${orderId}`, { estimatedDate: date }, true);
-      if (res.success) {
-        alert.alertBox({ type: "success", msg: "Estimated delivery date updated!" });
+    useEffect(() => {
         getOrders();
-      } else {
-        alert.alertBox({ type: "error", msg: res.message || "Failed to update date" });
-      }
-    } catch (err) {
-      console.error(err);
-      alert.alertBox({ type: "error", msg: "Something went wrong." });
+    }, []);
+
+
+
+
+    const getNotificationMessage = (status, orderCode) => {
+        const boldCode = `<strong>${orderCode}</strong>`;
+        switch (status) {
+            case "Confirmed":
+                return `Great news! Your order ${boldCode} has been confirmed. We'll process it soon.`;
+            case "Processing":
+                return `Your order ${boldCode} is being prepared. Hang tight!`;
+            case "Delivered":
+                return `Woohoo! Your order ${boldCode} has been delivered. Enjoy!`;
+            case "Canceled":
+                return `Your order ${boldCode} has been canceled. Contact support if needed.`;
+            case "Returned":
+                return `We’ve received the return for your order ${boldCode}. Thank you!`;
+            case "Refunded":
+                return `Your refund for order ${boldCode} has been processed.`;
+            default:
+                return `Update on your order ${boldCode}.`;
+        }
+    };
+
+
+
+    const handleChangeOrderStatus = async (orderId, newStatus, order) => {
+        console.log("Updating order ID:", orderId);
+
+        try {
+            // 1. Update the order status
+            const updateRes = await postData(`/api/order/updateStatus?orderId=${orderId}`, {
+                order_Status: newStatus
+            }, true);
+
+            if (updateRes.error) {
+                alert.alertBox({ type: "error", msg: "Failed to update status" });
+                return;
+            }
+
+            alert.alertBox({ type: "success", msg: "Status updated" });
+            setStatusMap((prev) => ({ ...prev, [orderId]: newStatus }));
+
+            // 2. Send notification
+            const body = {
+                recipientId: order?.delivery_address?.userId[0], // Make sure this is a valid ObjectId
+                message: getNotificationMessage(newStatus, order?.orderId),
+                image: "", // Optionally add product or order image
+                link: `/orderDetails/${order?._id}`, // Link to order details
+            };
+
+            const notifyRes = await postData(`/api/notice/send`, body, true);
+
+            if (!notifyRes.error) {
+                console.log("✅ Notification sent:", notifyRes.data);
+            } else {
+                console.error("❌ Failed to send notification:", notifyRes.message);
+            }
+        } catch (err) {
+            console.error("❌ Unexpected error:", err.message);
+            alert.alertBox({ type: "error", msg: "Something went wrong" });
+        }
+    };
+
+    const handleOrderDetails = (order) => {
+        setSelectedOrder(order);
+
+        // Show invoice if it exists
+        if (order?.invoiceImages?.length > 0) {
+            setPreviews(order.invoiceImages);
+        } else if (order?.invoiceUrl) {
+            setPreviews([order.invoiceUrl]); // ✅ Add this
+        } else {
+            setPreviews([]);
+        }
+    };
+
+
+    const closeDetails = () => {
+        setSelectedOrder(null);
+    };
+
+
+    const [isUploading, setIsUploading] = useState(false);
+
+
+    const [previews, setPreviews] = useState([]);
+
+    const setPreviewsFun = (previewsArr) => {
+        setPreviews(previewsArr)
+        setFormFields((prev) => ({
+            ...prev,
+            images: previewsArr // ✅ set it in formFields
+        }));
+
     }
-  };
-
-const paymentStatusOptions = ["Pending", "Completed", "Canceled", "Refunded"];
 
 
-  const handleChangePaymentStatus = async (orderId, newStatus) => {
-    try {
-      const res = await postData(
-        `/api/order/updatePaymentStatus`,
-        { orderId, payment_status: newStatus },
-        true
-      );
+    const handleChangeAdd = (e) => {
+        e.preventDefault();
+        setFormFields({ ...formFields, [e.target.name]: e.target.value });
 
-      if (!res.error) {
-        alert.alertBox({ type: "success", msg: "Payment status updated!" });
-        setPaymentStatusMap((prev) => ({ ...prev, [orderId]: newStatus }));
 
-      } else {
-        alert.alertBox({ type: "error", msg: res.message || "Failed to update status" });
-      }
-    } catch (err) {
-      console.error("Error updating payment status:", err);
-      alert.alertBox({ type: "error", msg: "Something went wrong." });
     }
-  };
+
+    const handleSubmitAddForm = (e) => {
+        e.preventDefault();
+        if (!formFields.images) {
+            alert.alertBox({ type: "error", msg: "Please fill all the required fields" });
+            return;
+        }
+        if (previews?.length === 0) {
+            alert.alertBox({ type: "error", msg: "Please select product image" });
+            return;
+        }
+        // console.log(typeof selectedOrder._id, selectedOrder._id)
+        postData(`/api/order/uploadInvoice?orderId=${selectedOrder._id}`, formFields)
+            .then((response) => {
+                if (!response.error) {
+                    alert.alertBox({ type: "success", msg: "Product Created" });
+                    setFormFields({
+                        images: [],
+                    })
+                    setPreviews([])
+                } else {
+                    alert.alertBox({ type: "error", msg: response.message || "Failed to create product" });
+                }
+            })
+            .catch((error) => {
+                console.error("Post error:", error);
+                alert.alertBox({ type: "error", msg: "Something went wrong. Please try again." });
+            });
+    }
+
+
+    const removeImage = async (image, index) => {
+        const publicId = image.split("/").pop().split(".")[0]; // Extract public_id from URL
+        console.log(previews, "previews")
+        var imageArr = []
+        imageArr = previews;
+        console.log(image, "image")
+        deleteImages(`/api/order/deleteImg?img=${publicId}`).then((response) => {
+            console.log(response)
+            imageArr.splice(index, 1);
+
+            setPreviews([])
+
+            setTimeout(() => {
+                setPreviews(imageArr);
+                setFormFields(previews => ({
+                    ...previews,
+                    images: imageArr
+                })
+                )
+            }, 100)
+            setPreviews([])
+        })
+    }
+
+
+
+    const updateEstimatedDeliveryDate = async (orderId, date) => {
+        try {
+            const res = await postData(`/api/order/setEstimatedDate/${orderId}`, {
+                estimatedDate: date,
+            }, true);
+
+            if (res.success) {
+                alert.alertBox({ type: "success", msg: "Estimated delivery date updated!" });
+                getOrders(); // Refresh data
+            } else {
+                alert.alertBox({ type: "error", msg: res.message || "Failed to update date" });
+            }
+        } catch (err) {
+            console.error(err);
+            alert.alertBox({ type: "error", msg: "Something went wrong." });
+        }
+    };
+
+
+    const paymentStatusOptions = [
+        "Pending",
+        "Completed",
+        "Canceled",
+        "Refunded",
+    ];
+
+const handleChangePaymentStatus = async (orderId, newStatus) => {
+  try {
+    const res = await postData(
+      `/api/order/updatePaymentStatus`, // 👈 Removed query param
+      {
+        orderId,                      // 👈 Pass in body
+        payment_status: newStatus,
+      },
+      true
+    );
+
+    console.log(res)
+
+    if (!res.error) {
+      alert.alertBox({ type: "success", msg: "Payment status updated!" });
+      getOrders();
+    } else {
+      alert.alertBox({ type: "error", msg: res.message || "Failed to update status" });
+    }
+  } catch (err) {
+    console.error("❌ Error updating payment status:", err);
+    alert.alertBox({ type: "error", msg: "Something went wrong." });
+  }
+};
+
+
+
 
 
     return (
@@ -219,8 +295,7 @@ const paymentStatusOptions = ["Pending", "Completed", "Canceled", "Refunded"];
                 </thead>
                 <tbody className="bg-slate-50">
                     {[...ordersData].reverse().map((order) => {
-                        const currentStatus = orderStatusMap[order._id] || order.order_Status;
-
+                        const currentStatus = statusMap[order._id] || order.order_Status;
                         const { bgClass, textColor } = getStatusStyle(currentStatus);
 
                         return (
@@ -264,8 +339,7 @@ const paymentStatusOptions = ["Pending", "Completed", "Canceled", "Refunded"];
                                 <td className="px-4 py-2 align-top">
                                     <FormControl fullWidth>
                                         <Select
-                                        value={paymentStatusMap[order._id] || order?.payment_status}
-
+                                            value={order?.payment_status}
                                             onChange={(e) => handleChangePaymentStatus(order._id, e.target.value)}
                                             variant="standard"
                                             disableUnderline
@@ -284,7 +358,7 @@ const paymentStatusOptions = ["Pending", "Completed", "Canceled", "Refunded"];
                                     {order?.paymentId}
                                 </td>
                                 <td className="text-black px-4 py-2 align-top" onClick={() => handleOrderDetails(order)}>
-                                    {order?.totalAmt}
+                                    ₹{order?.totalAmt}
                                 </td>
                                 <td className="text-black px-4 py-2 align-top">
                                     <input
@@ -427,7 +501,7 @@ const paymentStatusOptions = ["Pending", "Completed", "Canceled", "Refunded"];
 
                             <div className="flex justify-between items-center">
                                 <h2 className="text-black text-lg font-medium">
-                                    Total Amount: <span className="text-xl font-semibold">{selectedOrder?.totalAmt}</span>
+                                    Total Amount: <span className="text-xl font-semibold">₹{selectedOrder?.totalAmt}</span>
                                 </h2>
                                 <h2 className="text-black text-lg font-medium">
                                     Payment ID: <span className="text-xl font-semibold">{selectedOrder?.paymentId}</span>
@@ -479,7 +553,7 @@ const paymentStatusOptions = ["Pending", "Completed", "Canceled", "Refunded"];
                                         <div className="text-right w-[20%]">
                                             <p className="text-gray-500 text-sm">Price</p>
                                             <p className="text-xl font-bold text-[#131e30]">
-                                                ?{(prd?.price || 0) * (prd?.quantity || 1)}
+                                                ₹{(prd?.price || 0) * (prd?.quantity || 1)}
                                             </p>
                                         </div>
                                     </div>

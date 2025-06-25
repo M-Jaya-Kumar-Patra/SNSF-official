@@ -123,6 +123,47 @@ const OrdersPage = () => {
   }
 
 
+
+const handleDownload = async (e, orderId) => {
+  e.preventDefault();
+
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/order/${orderId}/invoice`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to download invoice");
+    }
+
+    const blob = await response.blob();
+    const contentType = response.headers.get("Content-Type");
+    
+    // Detect extension from content-type
+    let extension = "jpg";
+    if (contentType === "image/png") extension = "png";
+    else if (contentType === "image/jpeg") extension = "jpg";
+
+    const url = window.URL.createObjectURL(new Blob([blob]));
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `invoice-${orderId}.${extension}`);
+    document.body.appendChild(link);
+    link.click();
+
+    link.parentNode.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error downloading invoice:", error);
+    alert("Something went wrong while downloading the invoice.");
+  }
+};
+
+
   
   return (
     <div className='w-full bg-slate-100 flex justify-center items-center'>
@@ -132,7 +173,7 @@ const OrdersPage = () => {
           <h1 className='text-2xl font-bold text-gray-700 mb-4'>Order Details</h1>
           <div >
            {openedOrder?.order_Status === "Delivered" &&
-            <Button variant='contained' className='bg-primary-gradient'>Download Invoice</Button>}
+            <Button variant='contained' className='bg-primary-gradient' onClick={(e)=>handleDownload(e,openedOrder?._id)}>Download Invoice</Button>}
 
           </div>
         </div>
