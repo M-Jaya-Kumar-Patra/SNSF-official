@@ -81,7 +81,7 @@ const Home = () => {
 
   return (
     <>
-    {isLogin && <div>
+    {!isLogin && <div>
       <div className="w-full flex justify-center">
         <div className='w-[full] px-6'>
           <h1 className='text-blue-900 font-sans text-xl font-semibold p-4 pl-0 py-1 rounded-md my-3   '>
