@@ -6,10 +6,6 @@ const nextConfig = {
       "res.cloudinary.com",        // ✅ add Cloudinary domain
     ],
   },
-  devIndicators: {
-    buildActivity: false,
-    devIndicators: false,
-  },
   env: {
     GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
   },
