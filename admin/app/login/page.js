@@ -11,12 +11,15 @@ import {
   Box,
   Button,
   CircularProgress,
+  LinearProgress,
+  TextField,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import Image from "next/image";
+import { Righteous } from "next/font/google";
 import { postData } from "@/utils/api";
-import { useAlert } from "../context/AlertContext";
-import { useAuth } from "../context/AuthContext";
-
+import { useAlert } from "@/context/AlertContext";
+import { useAuth } from "@/context/AuthContext";
 export default function Login() {
   const [formFields, setFormFields] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
