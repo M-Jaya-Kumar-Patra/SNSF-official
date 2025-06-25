@@ -1,6 +1,6 @@
-// context/CartContext.js
+// context/OrdersContext.js
 "use client";
-import { Club } from "lucide-react";
+
 import { createContext, useContext, useState, useEffect } from "react";
 import { useAlert } from "./AlertContext";
 import { fetchDataFromApi, postData } from "@/utils/api";
@@ -9,82 +9,80 @@ import { useAuth } from "./AuthContext";
 const OrdersContext = createContext();
 
 const OrdersProvider = ({ children }) => {
-  const alert = useAlert()
-  const [ordersItems, setOrdersItems] = useState([]);
-  const [OrdersData, setOrdersData] = useState([])
-  const { isLogin, userData } = useAuth()
+  const alert = useAlert();
+  const { isLogin, adminData } = useAuth();
 
-
+  const [ordersData, setOrdersData] = useState([]);
 
   useEffect(() => {
-    getOrders();  
-  }, []); // Only once on component mount
-
-
-
-
-
-  const addToOrders = (prd, userId, quantity) => {
-    // setCartItems((prev) => [...prev, product]);
-    console.log("efrtrtythg                  ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddhgh" , prd, userId, quantity)
-    
-    if (userId === undefined || userId === null) {
-      alert.alertBox({ type: "error", msg: "Please login first" })
-      return false
+    if (typeof window !== "undefined") {
+      getOrders(); // Run only on client
     }
-    
-    
+  }, []);
+
+  const addToOrders = (product, userId, quantity = 1) => {
+    if (!userId) {
+      alert.alertBox({ type: "error", msg: "Please login first" });
+      return;
+    }
+
     const data = {
-      productTitle: prd?.name,
-      image: prd?.images[0],
-      rating: prd?.rating,
-      price: prd?.price,
-      quantity: quantity,
-      subTotal: parseInt(prd?.price * quantity),
-      productId: prd?._id,
-      countInStock: prd?.countInStock,
-      userId: userId,
-      brand: prd?.brand
-    }
-    
-    postData(`/api/order/create`, data, true).then((res) => {
-      console.log(prd, userId, "hhhhhhhhhhhhh")
-      if (!res.error) {
-        alert.alertBox({ type: "success", msg: res?.message });
-        getCartItems();
-      } else {
-        alert.alertBox({ type: "error", msg: res?.message });
+      productTitle: product?.name,
+      image: product?.images?.[0],
+      rating: product?.rating,
+      price: product?.price,
+      quantity,
+      subTotal: parseInt(product?.price * quantity),
+      productId: product?._id,
+      countInStock: product?.countInStock,
+      userId,
+      brand: product?.brand,
+    };
 
+    postData("/api/order/create", data, true).then((res) => {
+      if (!res.error) {
+        alert.alertBox({ type: "success", msg: res?.message || "Order placed" });
+        getOrders(); // Refresh orders
+      } else {
+        alert.alertBox({ type: "error", msg: res?.message || "Order failed" });
       }
-    })
+    });
   };
 
-
   const getOrders = () => {
+    let adminId;
 
-    const adminId = localStorage.getItem("adminId")
+    if (typeof window !== "undefined") {
+      adminId = localStorage.getItem("adminId");
+    }
 
-    console.log(adminId)
-    fetchDataFromApi(`/api/order/get`).then((res) => {
+    if (!adminId) {
+      console.warn("No adminId found in localStorage");
+      return;
+    }
+
+    fetchDataFromApi("/api/order/get").then((res) => {
       if (!res.error) {
-        
-        setOrdersData(res?.data)
-        console.log("------OrdersData--------------------------------", res?.data)
+        setOrdersData(res?.data || []);
+        console.log("Fetched orders:", res?.data);
+      } else {
+        console.error("Failed to fetch orders:", res.message);
       }
-    })
-
-  }
-
+    });
+  };
 
   return (
-    <OrdersContext.Provider value={{ ordersItems, addToOrders, getOrders, OrdersData,  }}>
+    <OrdersContext.Provider
+      value={{
+        ordersData,
+        addToOrders,
+        getOrders,
+      }}
+    >
       {children}
     </OrdersContext.Provider>
   );
 };
 
-// Export both provider and hook
 export { OrdersProvider };
-
-// Custom hook
 export const useOrders = () => useContext(OrdersContext);

@@ -2,98 +2,65 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { User, Package, CreditCard, Bell, Heart } from "lucide-react";
 import LogoutBTN from "@/components/LogoutBTN";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
-import { FaCloudUploadAlt } from "react-icons/fa";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useAlert } from "@/app/context/AlertContext";
-import { uploadImage } from "@/utils/api";
-import { editData } from "@/utils/api";
+import { uploadImage, editData, postData } from "@/utils/api";
 import { useAuth } from "@/app/context/AuthContext";
-import Button from '@mui/material/Button';
+import Button from "@mui/material/Button";
+import { FaCloudUploadAlt } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
-import { RiLockPasswordFill } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";
-import { postData } from "@/utils/api";
-
 
 const Account = () => {
   const router = useRouter();
   const alert = useAlert();
+  const { isLogin, adminData, setAdminData } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [adminId, setAdminId] = useState("");
-  const [passLoading, setPassLoading] = useState(false)
-
-  
-  
-const [showTopForm, setShowTopForm] = useState(false);
-
-  const [state, setState] = useState({
-    top: false,
-  });
-
-  
+  const [passLoading, setPassLoading] = useState(false);
+  const [showTopForm, setShowTopForm] = useState(false);
 
   const [formFields, setFormFields] = useState({
     name: "",
     email: "",
-    phone: ""
+    phone: "",
   });
 
   const [changePasswordForm, setChangePasswordForm] = useState({
-    oldPassword : "",
-    newPassword : "",
-    confirmPassword : ""
-  })
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
 
-  
-    const {isLogin, adminData, setAdminData}=useAuth()
-
-
-  
-
-
-
-
+  // Redirect if not logged in
   useEffect(() => {
-    console.log("profile page")
     if (!isLogin) {
-      console.log("p1")
       router.replace("/login");
-      console.log("p2")
-    }
-    
-    else {
-      console.log(adminData)
-      console.log("p3")
+    } else {
       setFormFields({
         name: adminData?.name || "",
         email: adminData?.email || "",
-        phone: adminData?.phone || ""
+        phone: adminData?.phone || "",
       });
-      console.log("p4")
     }
   }, [isLogin, adminData]);
 
-
-
+  // Safe localStorage access
   useEffect(() => {
-    console.log("p5")
-    console.log(adminData?._id||adminData?.id)
-        localStorage.setItem("adminId", adminData?._id||adminData?.id)
-
-    if (adminData?._id||adminData?.id) {
-      setAdminId(adminData?._id||adminData?.id);
+    const id = adminData?._id || adminData?.id;
+    if (id) {
+      setAdminId(id);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("adminId", id);
+      }
     }
-    localStorage.setItem("adminId",adminData?._id||adminData?.id)
-    console.log("p6")
-  }, [adminData]);//all check
+  }, [adminData]);
 
   const onChangeFile = async (e) => {
     e.preventDefault();
@@ -111,7 +78,9 @@ const [showTopForm, setShowTopForm] = useState(false);
 
         if (response?.success && response.avatar) {
           setAdminData((prev) => ({ ...prev, avatar: response.avatar }));
-          localStorage.setItem("adminAvatar", response.avatar);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("adminAvatar", response.avatar);
+          }
         } else {
           alert.alertBox({ type: "error", msg: response.message || "Failed to update avatar" });
         }
@@ -124,17 +93,17 @@ const [showTopForm, setShowTopForm] = useState(false);
     } finally {
       setUploading(false);
     }
-  };///////////////////
+  };
 
   const onChangeInput = (e) => {
     const { name, value } = e.target;
     setFormFields((prev) => ({ ...prev, [name]: value }));
   };
+
   const onChangePassword = (e) => {
     const { name, value } = e.target;
     setChangePasswordForm((prev) => ({ ...prev, [name]: value }));
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -157,19 +126,15 @@ const [showTopForm, setShowTopForm] = useState(false);
     try {
       const response = await editData(`/api/admin/${adminId}`, formFields, false);
 
-      console.log("Updated", response?.admin)
-
-      setAdminData({
-        ...adminData,
-        name: response.admin?.name || name,
-        email: response.admin?.email || email,
-        phone: response.admin?.phone || phone,
-        avatar: response.admin?.avatar || adminData.avatar
-      });
       if (!response.error) {
         alert.alertBox({ type: "success", msg: "Profile updated successfully" });
-
-        // Update adminData  
+        setAdminData({
+          ...adminData,
+          name: response.admin?.name || name,
+          email: response.admin?.email || email,
+          phone: response.admin?.phone || phone,
+          avatar: response.admin?.avatar || adminData.avatar,
+        });
       } else {
         alert.alertBox({ type: "error", msg: response?.message || "Update failed" });
       }
@@ -180,71 +145,63 @@ const [showTopForm, setShowTopForm] = useState(false);
     }
   };
 
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setPassLoading(true);
 
+    const { oldPassword, newPassword, confirmPassword } = changePasswordForm;
 
-  const handlePasswordChange = async (e)=>{
-    e.preventDefault()
-    setPassLoading(true)
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      alert.alertBox({ type: "error", msg: "All password fields are required" });
+      setPassLoading(false);
+      return;
+    }
 
-    const {oldPassword, newPassword, confirmPassword} = changePasswordForm
+    if (oldPassword === newPassword) {
+      alert.alertBox({
+        type: "error",
+        msg: "New password cannot be same as old password",
+      });
+      setPassLoading(false);
+      return;
+    }
 
-    if(!oldPassword){
-      setPassLoading(false)
-      alert.alertBox({ type: "error", msg: "Please enter your old password" })
-      return
-    }
-    if(!newPassword){
-      setPassLoading(false)
-      alert.alertBox({ type: "error", msg: "Please enter your new password" })
-      return
-    }
-    if(!confirmPassword){
-      setPassLoading(false)
-      alert.alertBox({ type: "error", msg: "Please enter your confirm password" })
-      return
-    }
-    if(oldPassword===newPassword){
-      setPassLoading(false)
-      // alert.alertBox({ type: "error", msg: "Your new password is same as you old password. Try different." })
-      return
-    }
-    if(confirmPassword!==newPassword){
-      setPassLoading(false)
-      // alert.alertBox({ type: "error", msg: "Both the password field must same" })
-      return
+    if (confirmPassword !== newPassword) {
+      alert.alertBox({
+        type: "error",
+        msg: "New password and confirm password must match",
+      });
+      setPassLoading(false);
+      return;
     }
 
     try {
-          const response = await postData("/api/admin/changePassword", {
-  email: adminData?.email,
-  oldPassword,
-  newPassword,
-  confirmPassword
-});
-        
-              if (!response.error) {
-                alert.alertBox({ type: "success", msg: "Password changed successfully" });
-        
-        
-        
-                setChangePasswordForm({ oldPassword:"", newPassword: "", confirmPassword: "" });
-                // setIsLoading(false)
-                // router.push("/profile");
-              } else {
-                alert.alertBox({ type: "error", msg: response?.message });
-              }
-            } catch (err) {
-              alert.alertBox({ type: "error", msg: err?.message });
-            } finally {
+      const response = await postData("/api/admin/changePassword", {
+        email: adminData?.email,
+        oldPassword,
+        newPassword,
+        confirmPassword,
+      });
+
+      if (!response.error) {
+        alert.alertBox({ type: "success", msg: "Password changed successfully" });
+        setChangePasswordForm({
+          oldPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      } else {
+        alert.alertBox({ type: "error", msg: response?.message });
+      }
+    } catch (err) {
+      alert.alertBox({ type: "error", msg: err?.message });
+    } finally {
       setPassLoading(false);
     }
-  }
-
-  console.log(isLogin, isLoading,  )
+  };
 
   if (!isLogin) return <div className="text-center mt-10">Loading...</div>;
 
-  
 
 
   return (

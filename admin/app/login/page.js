@@ -2,25 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import {
-  TextField,
   FormControl,
   InputLabel,
   OutlinedInput,
   InputAdornment,
   IconButton,
-    Box,
-    LinearProgress,
-  } from "@mui/material";
+  Box,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Righteous, Poppins } from "next/font/google";
 import { postData } from "@/utils/api";
 import { useAlert } from "../context/AlertContext";
 import { useAuth } from "../context/AuthContext";
-
-const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
-const poppins = Poppins({ subsets: ["latin"], weight: "300" });
 
 export default function Login() {
   const [formFields, setFormFields] = useState({ email: "", password: "" });
@@ -29,20 +24,18 @@ export default function Login() {
 
   const router = useRouter();
   const alert = useAlert();
+  const { isLogin, login, setIsLogin, setLoading, loading } = useAuth();
 
-  const { isLogin, login, setIsLogin, setLoading, loading, adminData } = useAuth();
-
-  // Redirect if already logged in
+  // ✅ If already logged in, redirect
   useEffect(() => {
     if (isLogin) {
       router.push("/profile");
     } else {
-      setCheckingAuth(false); // allow rendering login form
+      setCheckingAuth(false);
     }
   }, [isLogin, router]);
 
-  
-  // Show alert after redirect (like from signup)
+  // ✅ Optional alert from previous page (e.g., signup success)
   useEffect(() => {
     const alertData = sessionStorage.getItem("alert");
     if (alertData) {
@@ -50,13 +43,10 @@ export default function Login() {
       alert.alertBox({ type, msg });
       sessionStorage.removeItem("alert");
     }
-    console.log("login4")
-  }, [alert]);
-  console.log("login5")
-  if (checkingAuth) {
-    // Optional: return a spinner or just null
-    return null;
-  }
+  }, []);
+
+  // ✅ Prevent SSR flash while checking login
+  if (checkingAuth) return null;
 
   const onChangeInput = (e) => {
     const { name, value } = e.target;
@@ -74,11 +64,13 @@ export default function Login() {
       setLoading(false);
       return;
     }
+
     if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
       alert.alertBox({ type: "error", msg: "Invalid email format" });
       setLoading(false);
       return;
     }
+
     if (!password) {
       alert.alertBox({ type: "error", msg: "Please enter your password" });
       setLoading(false);
@@ -89,26 +81,23 @@ export default function Login() {
       const response = await postData("/api/admin/login", { email, password }, false);
 
       if (!response.error && response.data?.accessToken) {
+        const token = response.data.accessToken;
+        const refreshToken = response.data.refreshToken;
+
+        // ✅ Save session & tokens
+        login(response.data, token);
+        localStorage.setItem("accessToken", token);
+        localStorage.setItem("refreshToken", refreshToken);
+        localStorage.setItem("email", response.data.email);
+
+        setFormFields({ email: "", password: "" });
+        setIsLogin(true);
         alert.alertBox({ type: "success", msg: "Logged in successfully" });
 
-        // Save tokens and login
-        const token = response.data.accessToken;
-        console.log(response?.data, token)
-        login(response.data, token);
-
-        localStorage.setItem("accessToken", token);
-        localStorage.setItem("refreshToken", response.data.refreshToken);
-        setFormFields({ email: "", password: "" });
-        console.log("form fields set")
-
-
-        localStorage.setItem("email",(response.data.email))
-        setIsLogin(true);
         router.push("/profile");
       } else {
         alert.alertBox({ type: "error", msg: response?.message || "Login failed" });
         setFormFields({ email: "", password: "" });
-
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -119,17 +108,17 @@ export default function Login() {
   };
 
   const forgotPassword = async () => {
-    if (!formFields.email) {
+    const email = formFields.email.trim();
+
+    if (!email) {
       alert.alertBox({ type: "error", msg: "Please enter your email" });
       return;
     }
 
-    alert.alertBox({ type: "success", msg: `OTP Sent to ${formFields.email}` });
-
-    localStorage.setItem("adminEmail", formFields.email);
+    localStorage.setItem("adminEmail", email);
     localStorage.setItem("actionType", "forgot-password");
 
-    const response = await postData("/api/admin/forgot-password", { email: formFields.email }, false);
+    const response = await postData("/api/admin/forgot-password", { email }, false);
     if (!response.error) {
       alert.alertBox({ type: "success", msg: response.message });
       router.push("/verify-otp");

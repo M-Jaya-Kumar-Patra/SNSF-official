@@ -2,7 +2,6 @@
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import SessionWrapper from "./components/SessionWrapper";
 import { CartProvider } from "./context/CartContext";
 import { AlertProvider } from "./context/AlertContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -27,7 +26,6 @@ export default function RootLayout({ children }) {
         <link rel="icon" href="/favicon-32x32.png" type="image/png" />
       </head>
       <body className={inter.className}>
-        <SessionWrapper>
           <SessionGuard>
             <AuthProvider>
               <PrdProvider>
@@ -47,7 +45,6 @@ export default function RootLayout({ children }) {
               </PrdProvider>
             </AuthProvider>
           </SessionGuard>
-        </SessionWrapper>
       </body>
     </html>
   );
