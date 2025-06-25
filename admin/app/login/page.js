@@ -9,17 +9,15 @@ import {
   InputAdornment,
   IconButton,
   Box,
-  Button,
-  CircularProgress,
   LinearProgress,
   TextField,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import Image from "next/image";
-import { Righteous } from "next/font/google";
 import { postData } from "@/utils/api";
 import { useAlert } from "../context/AlertContext";
 import { useAuth } from "../context/AuthContext";
+
 export default function Login() {
   const [formFields, setFormFields] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +27,7 @@ export default function Login() {
   const alert = useAlert();
   const { isLogin, login, setIsLogin, setLoading, loading } = useAuth();
 
-  // ✅ If already logged in, redirect
+  // ✅ Redirect if already logged in
   useEffect(() => {
     if (isLogin) {
       router.push("/profile");
@@ -38,17 +36,18 @@ export default function Login() {
     }
   }, [isLogin, router]);
 
-  // ✅ Optional alert from previous page (e.g., signup success)
+  // ✅ Alert from previous page (safe SSR)
   useEffect(() => {
-    const alertData = sessionStorage.getItem("alert");
-    if (alertData) {
-      const { type, msg } = JSON.parse(alertData);
-      alert.alertBox({ type, msg });
-      sessionStorage.removeItem("alert");
+    if (typeof window !== "undefined") {
+      const alertData = sessionStorage.getItem("alert");
+      if (alertData) {
+        const { type, msg } = JSON.parse(alertData);
+        alert.alertBox({ type, msg });
+        sessionStorage.removeItem("alert");
+      }
     }
   }, []);
 
-  // ✅ Prevent SSR flash while checking login
   if (checkingAuth) return null;
 
   const onChangeInput = (e) => {
@@ -84,19 +83,19 @@ export default function Login() {
       const response = await postData("/api/admin/login", { email, password }, false);
 
       if (!response.error && response.data?.accessToken) {
-        const token = response.data.accessToken;
-        const refreshToken = response.data.refreshToken;
+        const { accessToken, refreshToken, email, name } = response.data;
 
-        // ✅ Save session & tokens
-        login(response.data, token);
-        localStorage.setItem("accessToken", token);
-        localStorage.setItem("refreshToken", refreshToken);
-        localStorage.setItem("email", response.data.email);
+        // ✅ safe for browser
+        if (typeof window !== "undefined") {
+          localStorage.setItem("accessToken", accessToken);
+          localStorage.setItem("refreshToken", refreshToken);
+          localStorage.setItem("email", email);
+        }
 
+        login(response.data, accessToken);
         setFormFields({ email: "", password: "" });
         setIsLogin(true);
         alert.alertBox({ type: "success", msg: "Logged in successfully" });
-
         router.push("/profile");
       } else {
         alert.alertBox({ type: "error", msg: response?.message || "Login failed" });
@@ -118,15 +117,23 @@ export default function Login() {
       return;
     }
 
-    localStorage.setItem("adminEmail", email);
-    localStorage.setItem("actionType", "forgot-password");
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.setItem("adminEmail", email);
+        localStorage.setItem("actionType", "forgot-password");
+      }
 
-    const response = await postData("/api/admin/forgot-password", { email }, false);
-    if (!response.error) {
-      alert.alertBox({ type: "success", msg: response.message });
-      router.push("/verify-otp");
-    } else {
-      alert.alertBox({ type: "error", msg: response?.message || "Failed to send OTP" });
+      const response = await postData("/api/admin/forgot-password", { email }, false);
+
+      if (!response.error) {
+        alert.alertBox({ type: "success", msg: response.message });
+        router.push("/verify-otp");
+      } else {
+        alert.alertBox({ type: "error", msg: response?.message || "Failed to send OTP" });
+      }
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      alert.alertBox({ type: "error", msg: "Something went wrong. Please try again." });
     }
   };
 
@@ -146,9 +153,7 @@ export default function Login() {
 
           <div className="w-full flex items-center gap-3 justify-center">
             <h1 className="text-[#131e30] my-2 font-bold text-lg">Log in to</h1>
-            <h1
-              className={`text-xl font-bold font-sans bg-gradient-to-b from-[#8ca4b4] via-[#4c6984] to-[#93b2c7] bg-clip-text text-transparent`}
-            >
+            <h1 className="text-xl font-bold font-sans bg-gradient-to-b from-[#8ca4b4] via-[#4c6984] to-[#93b2c7] bg-clip-text text-transparent">
               SNSF
             </h1>
           </div>

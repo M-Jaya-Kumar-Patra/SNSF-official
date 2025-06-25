@@ -165,34 +165,41 @@ const Orders = () => {
 
     }
 
-    const handleSubmitAddForm = (e) => {
-        e.preventDefault();
-        if (!formFields.images) {
-            alert.alertBox({ type: "error", msg: "Please fill all the required fields" });
-            return;
-        }
-        if (previews?.length === 0) {
-            alert.alertBox({ type: "error", msg: "Please select product image" });
-            return;
-        }
-        // console.log(typeof selectedOrder._id, selectedOrder._id)
-        postData(`/api/order/uploadInvoice?orderId=${selectedOrder._id}`, formFields)
-            .then((response) => {
-                if (!response.error) {
-                    alert.alertBox({ type: "success", msg: "Product Created" });
-                    setFormFields({
-                        images: [],
-                    })
-                    setPreviews([])
-                } else {
-                    alert.alertBox({ type: "error", msg: response.message || "Failed to create product" });
-                }
-            })
-            .catch((error) => {
-                console.error("Post error:", error);
-                alert.alertBox({ type: "error", msg: "Something went wrong. Please try again." });
-            });
+ const handleSubmitAddForm = async (e) => {
+  e.preventDefault();
+
+  if (!formFields.images || previews.length === 0) {
+    alert.alertBox({ type: "error", msg: "Please select invoice image" });
+    return;
+  }
+
+  try {
+    const response = await postData(
+      `/api/order/uploadInvoice?orderId=${selectedOrder._id}`,
+      formFields
+    );
+
+    if (!response.error) {
+      alert.alertBox({ type: "success", msg: "Invoice uploaded!" });
+
+      // Reset form
+      setFormFields({ images: [] });
+      setPreviews([]);
+
+      // 🔁 Refresh orders
+      setTimeout(() => getOrders(), 300);
+    } else {
+      alert.alertBox({
+        type: "error",
+        msg: response.message || "Failed to upload invoice",
+      });
     }
+  } catch (err) {
+    console.error("❌ Upload failed:", err);
+    alert.alertBox({ type: "error", msg: "Something went wrong. Please try again." });
+  }
+};
+
 
 
     const removeImage = async (image, index) => {
@@ -250,20 +257,23 @@ const Orders = () => {
 const handleChangePaymentStatus = async (orderId, newStatus) => {
   try {
     const res = await postData(
-      `/api/order/updatePaymentStatus`, // 👈 Removed query param
-      {
-        orderId,                      // 👈 Pass in body
-        payment_status: newStatus,
-      },
+      `/api/order/updatePaymentStatus`,
+      { orderId, payment_status: newStatus },
       true
     );
 
-    console.log(res)
-
     if (!res.error) {
       alert.alertBox({ type: "success", msg: "Payment status updated!" });
-      getOrders();
+
+      // Optional: Manually update order in UI without full refresh
+      setStatusMap((prev) => ({ ...prev, [orderId]: newStatus }));
+
+      // Ensure fresh fetch (wait to avoid race conditions)
+      setTimeout(() => {
+        getOrders();
+      }, 300);
     } else {
+      console.error("❌ Payment update failed:", res);
       alert.alertBox({ type: "error", msg: res.message || "Failed to update status" });
     }
   } catch (err) {
@@ -271,6 +281,7 @@ const handleChangePaymentStatus = async (orderId, newStatus) => {
     alert.alertBox({ type: "error", msg: "Something went wrong." });
   }
 };
+
 
 
 
