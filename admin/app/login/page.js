@@ -147,7 +147,7 @@ export default function Login() {
           <div className="w-full flex items-center gap-3 justify-center">
             <h1 className="text-[#131e30] my-2 font-bold text-lg">Log in to</h1>
             <h1
-              className={`text-xl font-bold ${righteous.className} bg-gradient-to-b from-[#8ca4b4] via-[#4c6984] to-[#93b2c7] bg-clip-text text-transparent`}
+              className={`text-xl font-bold font-sans bg-gradient-to-b from-[#8ca4b4] via-[#4c6984] to-[#93b2c7] bg-clip-text text-transparent`}
             >
               SNSF
             </h1>

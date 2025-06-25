@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
+import jwtDecode from "jwt-decode";
 
 const SessionGuard = ({ children }) => {
   const router = useRouter();
   const [checkingToken, setCheckingToken] = useState(true);
 
   useEffect(() => {
-    // ✅ Safe: this runs only on client
     const token = localStorage.getItem("accessToken");
 
     if (!token) {
@@ -22,12 +21,11 @@ const SessionGuard = ({ children }) => {
       const currentTime = Date.now() / 1000;
 
       if (decoded.exp < currentTime) {
-        // Token is expired
         alert("Session expired. Please log in again.");
         localStorage.removeItem("accessToken");
         router.push("/login");
       } else {
-        setCheckingToken(false); // ✅ allow render
+        setCheckingToken(false);
       }
     } catch (err) {
       console.error("Invalid token:", err);
@@ -36,8 +34,7 @@ const SessionGuard = ({ children }) => {
     }
   }, [router]);
 
-  // ❌ Prevent render until token is verified
-  if (checkingToken) return null;
+  if (checkingToken) return <div>Loading...</div>;
 
   return <>{children}</>;
 };

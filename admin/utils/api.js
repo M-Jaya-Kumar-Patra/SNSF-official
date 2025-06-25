@@ -14,29 +14,28 @@ export const postData = async (url, formData, authRequired = true) => {
     };
 
     if (authRequired) {
-      const token = localStorage.getItem("accessToken")
-
+      const token = localStorage.getItem("accessToken");
       if (!token) throw new Error("Access token is missing or expired");
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const response = await fetch(apiUrl+url, {
+    const response = await fetch(apiUrl + url, {
       method: "POST",
       headers,
-      credentials: "include", // ✅ REQUIRED
+      credentials: "include",
       body: JSON.stringify(formData),
     });
 
-    const text = await response.text();
-console.log("Raw response text:", text);
+    const data = await response.json(); // ✅ Only one read
+    console.log("Response JSON:", data);
 
-    const data = await response.json();
     return data;
   } catch (error) {
     console.error("POST request error:", error);
     throw error;
   }
 };
+
 
 // GET request
 export const fetchDataFromApi = async (url, authRequired = true) => {

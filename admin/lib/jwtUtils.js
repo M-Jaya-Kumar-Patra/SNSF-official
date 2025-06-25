@@ -1,5 +1,5 @@
 // lib/jwtUtils.js
-import jwtDecode from 'jwt-decode';
+import jwtDecode from "jwt-decode";
 
 export function getTokenExpiration(token) {
   try {
