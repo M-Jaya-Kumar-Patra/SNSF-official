@@ -1,76 +1,37 @@
-// context/OrdersContext.js
+// context/CartContext.js
 "use client";
-
 import { createContext, useContext, useState, useEffect } from "react";
-import { useAlert } from "./AlertContext";
-import { fetchDataFromApi, postData } from "@/utils/api";
-import { useAuth } from "./AuthContext";
+import { fetchDataFromApi } from "@/utils/api";
 
-const OrdersContext = createContext();
+const PrdContext = createContext();
 
-const OrdersProvider = ({ children }) => {
-  const alert = useAlert();
-  const { isLogin, adminData } = useAuth();
-  const [ordersData, setOrdersData] = useState([]);
+const PrdProvider = ({ children }) => {
+  const [prdData, setPrdData] = useState();
+  
+   
+   const [productsData, setProductsData] = useState([]);
 
-  useEffect(() => {
-    getOrders(); // Fetch on mount
-  }, []);
-
-  const addToOrders = (product, userId, quantity = 1) => {
-    if (!userId) {
-      alert.alertBox({ type: "error", msg: "Please login first" });
-      return;
-    }
-
-    const data = {
-      productTitle: product?.name,
-      image: product?.images?.[0],
-      rating: product?.rating,
-      price: product?.price,
-      quantity,
-      subTotal: parseInt(product?.price * quantity),
-      productId: product?._id,
-      countInStock: product?.countInStock,
-      userId,
-      brand: product?.brand,
-    };
-
-    postData("/api/order/create", data, true).then((res) => {
-      if (!res.error) {
-        alert.alertBox({ type: "success", msg: res?.message || "Order placed" });
-        getOrders(); // Refresh orders
-      } else {
-        alert.alertBox({ type: "error", msg: res?.message || "Order failed" });
-      }
-    });
-  };
-
-  const getOrders = () => {
-    fetchDataFromApi("/api/order/get").then((res) => {
-      if (!res.error) {
-        setOrdersData(res?.data || []);
-        console.log("Fetched Orders:", res?.data);
-      } else {
-        console.error("Failed to fetch orders:", res.message);
-      }
-    });
-  };
+   const getProductsData = () =>{
+    fetchDataFromApi("/api/product/gaps", false).then((response) => {
+        if (!response.error) {
+          setPrdData(response?.data)
+        }
+      })
+   }
+   useEffect(() => {
+      getProductsData()
+    }, [])
+  
 
   return (
-    <OrdersContext.Provider
-      value={{
-        ordersData,
-        addToOrders,
-        getOrders,
-      }}
-    >
+    <PrdContext.Provider value={{ prdData, setPrdData, productsData, setProductsData, getProductsData }}>
       {children}
-    </OrdersContext.Provider>
+    </PrdContext.Provider>
   );
 };
 
-export { OrdersProvider };
+// Export both provider and hook
+export { PrdProvider };
 
 // Custom hook
-export const useOrders = () => useContext(OrdersContext);
+export const usePrd = () => useContext(PrdContext);
