@@ -27,6 +27,9 @@ export const postData = async (url, formData, authRequired = true) => {
       body: JSON.stringify(formData),
     });
 
+    const text = await response.text();
+console.log("Raw response text:", text);
+
     const data = await response.json();
     return data;
   } catch (error) {

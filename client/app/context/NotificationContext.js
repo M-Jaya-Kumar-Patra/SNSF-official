@@ -26,10 +26,10 @@ const NoticeProviders = ({ children }) => {
         setNotices(res.data);  // Assuming API returns { data: [...] }
         console.log("Fetched Notices:", res.data);
       } else {
-        alert.error(res.message || "Failed to fetch notifications");
+        console.log(res.message || "Failed to fetch notifications");
       }
     } catch (error) {
-      alert.error("Error fetching notifications");
+      console.log("Error fetching notifications");
       console.error(error);
     }
   };

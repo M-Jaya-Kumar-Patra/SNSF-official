@@ -265,6 +265,63 @@ export async function updateOrderStatus(req, res) {
   }
 }
 
+export async function updatePaymentStatus(req, res) {
+  try {
+    const { orderId, payment_status } = req.body; // ✅ get orderId from body
+
+    const order = await OrderModel.findById(orderId).populate("userId");
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    order.payment_status = payment_status;
+    order.updatedAt = new Date();
+    await order.save();
+
+    const user = order.userId;
+    const email = user.email;
+    const name = user.name;
+    const orderIdStr = order.orderId;
+    const totalAmt = order.totalAmt;
+    const paymentMethod = order.payment_method;
+    const orderProducts = order.products;
+
+    // ✅ Create product list HTML for email
+    const itemsHtml = `
+      <ul style="padding-left: 20px; margin-top: 10px;">
+        ${orderProducts
+          .map(
+            (item) =>
+              `<li>🛒 ${item.productTitle || "Item"} – Qty: ${item.quantity}</li>`
+          )
+          .join("")}
+      </ul>
+    `;
+
+    // ✅ Send email if payment completed
+    switch (payment_status) {
+      case "Completed":
+        await sendEmailFun(
+          email,
+          `💰 Payment Successful – ${orderIdStr}`,
+          ``,
+          paymentSuccessEmail(name, orderIdStr, totalAmt, paymentMethod, itemsHtml)
+        );
+        break;
+
+      default:
+        console.warn("No email template configured for this payment status:", payment_status);
+    }
+
+    res.status(200).json({ message: "Payment status updated", order });
+  } catch (error) {
+    console.error("Error updating payment status:", error);
+    res.status(500).json({
+      message: "Failed to update payment status",
+      error: error.message,
+    });
+  }
+}
+
+
 // Delete an order
 export async function deleteOrder(req, res) {
   try {

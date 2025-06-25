@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon-32x32.png" type="image/png" />
+        <link rel="icon" href="/favicon.ico" type="image/png" />
       </head>
       <body className={inter.className}>
           <SessionGuard>

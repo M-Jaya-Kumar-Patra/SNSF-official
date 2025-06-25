@@ -450,7 +450,7 @@ useEffect(() => {
       currency: "INR",
       order_receipt: userData?.name,
       name: "S N Steel Fabrication",
-      description: "for testing purpose",
+      description: "",
       handler: function (response) {
 
         const paymentId = response.razorpay_payment_id
@@ -677,7 +677,7 @@ useEffect(() => {
                       addressArray.map((address, index) => (
                         <li
                           key={index}
-                          className={`relative w-[400px] border-2 rounded-md text-black text-base p-4 flex-shrink-0 ${selectedAddressId === address ? `border-blue-400   shadow-sm scale-100` : `border-slate-300`}`}
+                          className={`relative w-[400px] border-2 rounded-md text-black text-base p-4 flex-shrink-0 ${selectedAddressId === address ? `border-blue-400  bg-indigo-50  shadow-sm scale-100` : `border-slate-300`}`}
                           onClick={(e) => handleSetShippingAddress(e, address)}
                         >
                           <h3 className="text-lg font-bold mb-1">{address?.name}</h3>
@@ -825,15 +825,12 @@ useEffect(() => {
                           setShowPaymentOptions(true);
                         }}
                       >
-                        Proceed to Payment
+                        Proceed to Checkout
                       </Button>
 
                       {showPaymentOptions && (
                         <div className="mt-4 space-y-3">
-                          <h4 className="text-md font-semibold text-slate-700 text-center mb-2">
-                            Choose Payment Method
-                          </h4>
-
+                            
                           <div className="mt-4 space-y-3">
                             <Button
                               variant="outlined"
@@ -850,28 +847,12 @@ useEffect(() => {
                               fullWidth
 
                               onClick={(e) => {
-                               setCnfCODModal(e)
+                               handleCOD(e, "COD")
                               }}
                             >
-                              Cash on Delivery
+                              Place Order (COD)
                             </Button>
 
-                            <Button
-                              variant="contained"
-                              className="w-full !bg-primary-gradient"
-                              onClick={(e) => {
-                                if (!selectedAddressId) {
-                                  alert.alertBox({
-                                    type: "error",
-                                    msg: "Please select a delivery address",
-                                  });
-                                  return;
-                                }
-                                handleCheckout(e, "online");
-                              }}
-                            >
-                              Continue to Payment
-                            </Button>
 
 
                           </div>

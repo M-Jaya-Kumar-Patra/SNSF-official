@@ -16,7 +16,6 @@ const Footer = () => {
     <footer className="bg-black text-white px-6 md:px-16 pt-10 pb-6 font-sans">
       {/* Main Grid */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-10 mb-10">
-        
         {/* Company */}
         <div>
           <h4 className="font-semibold text-lg mb-4">Company</h4>
@@ -50,7 +49,7 @@ const Footer = () => {
               <Link href="/warranty" className="hover:text-white">Warranty & Guarantee</Link>
             </li>
             <li>
-              <Link href="/return-policy" className="hover:text-white">Return Policy</Link>
+              <Link href="/return-policy" className="hover:text-white">Return & Refund Policy</Link>
             </li>
           </ul>
         </div>
