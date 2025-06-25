@@ -20,7 +20,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'https://snsf-o5mp.onrender.com', 'http://192.168.137.1:3000/', 'https://snsteelfabrication.com', 'https://snsteelfabrication.com/', 'snsteelfabrication.com', 'snsteelfabrication.com/'],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'https://snsf-o5mp.onrender.com', 'http://192.168.137.1:3000/', 'https://snsteelfabrication.com', 'https://snsteelfabrication.com/', 'https://snsf-admin.onrender.com', 'snsteelfabrication.com/'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true, // ✅ Needed to allow cookies and auth headers
 }));
