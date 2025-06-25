@@ -20,8 +20,8 @@ export default function WarrantyPage() {
   We use two high-quality grades of stainless steel in our products:
 </p>
 <ul className="list-disc list-inside mb-4">
-  <li><strong>202 Grade Stainless Steel:</strong> 10 years warranty</li>
-  <li><strong>304 Grade Stainless Steel:</strong> 20 years warranty</li>
+  <li><strong>202 Grade Stainless Steel:</strong> 5 years warranty</li>
+  <li><strong>304 Grade Stainless Steel:</strong> 15 years warranty</li>
 </ul>
 
 
