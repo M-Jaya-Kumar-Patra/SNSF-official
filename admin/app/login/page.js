@@ -142,6 +142,7 @@ export default function Login() {
 
   return (
     <div className="flex justify-center items-center w-full h-screen bg-gray-100">
+         <h1>🔥 Debug: Login Page Mounted</h1>
       <div className="w-[300px] border rounded-md shadow overflow-hidden bg-white">
         {loading && <Box><LinearProgress /></Box>}
 

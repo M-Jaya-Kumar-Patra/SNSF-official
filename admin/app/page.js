@@ -38,7 +38,7 @@ const Home = () => {
    const [state, setState] = useState({ right: false });
     const [selectedText, setSelectedText] = useState("Dashboard");
     const anchor = 'right';
-    const {OrdersData} = useOrders()
+    const {ordersData} = useOrders()
 
     const router = useRouter()
   
@@ -74,7 +74,7 @@ const Home = () => {
 
 
       const countPendingOrders = () => {
-  return OrdersData?.filter(order => order?.order_Status === "Pending").length || 0;
+  return ordersData?.filter(order => order?.order_Status === "Pending").length || 0;
 };
 
 
@@ -126,7 +126,7 @@ const Home = () => {
               </div>
                <div className='w-[60%] '> 
                 <div className="text-nowrap first-letter:capitalize font-normal font-sans ">Total Orders</div>
-                <div className='font-bold font-sans text-2xl' >{OrdersData?.length}</div>
+                <div className='font-bold font-sans text-2xl' >{ordersData?.length}</div>
 
               </div>
                <div className='w-[20%]  flex justify-center items-center'>

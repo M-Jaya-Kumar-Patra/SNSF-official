@@ -58,7 +58,7 @@ const Page = () => {
     setFormFields((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -87,7 +87,7 @@ const Page = () => {
       return;
     }
 
-    postData("/api/admin/register", formFields, false).then((response) => {
+   await  postData("/api/admin/register", formFields, false).then((response) => {
       if (!response.error) {
         localStorage.setItem("adminEmail", formFields.email);
         localStorage.setItem("adminName", formFields.name);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { postData } from "@/utils/api";
 import { useAlert } from "../context/AlertContext";
@@ -11,6 +11,17 @@ const Page = () => {
     const router = useRouter();
     const alert = useAlert();
 
+    // ✅ Local state for values fetched from localStorage
+    const [adminEmail, setAdminEmail] = useState("");
+    const [actionType, setActionType] = useState("");
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            setAdminEmail(localStorage.getItem("adminEmail") || "");
+            setActionType(localStorage.getItem("actionType") || "");
+        }
+    }, []);
+
     const handleChange = (element, index) => {
         const value = element.value.replace(/\D/, "");
         if (value) {
@@ -18,7 +29,7 @@ const Page = () => {
             newOtp[index] = value;
             setOtp(newOtp);
             if (index < 5) {
-                inputRefs.current[index + 1].focus();
+                inputRefs.current[index + 1]?.focus();
             }
         }
     };
@@ -30,74 +41,65 @@ const Page = () => {
                 newOtp[index] = "";
                 setOtp(newOtp);
             } else if (index > 0) {
-                inputRefs.current[index - 1].focus();
+                inputRefs.current[index - 1]?.focus();
             }
         }
     };
 
-    const verifyOTP = (e) => {
+    const verifyOTP = async (e) => {
         e.preventDefault();
         const fullOtp = otp.join("");
 
         if (fullOtp.length !== 6) {
-            alert.alertBox({type:"error", msg:"Please enter all 6 digits."});
+            alert.alertBox({ type: "error", msg: "Please enter all 6 digits." });
             return;
         }
 
-        const actionType = localStorage.getItem("actionType")
+        if (actionType === "forgot-password") {
+            localStorage.removeItem("actionType");
+            const res = await postData("/api/admin/verify-forgot-password-otp", {
+                email: adminEmail,
+                otp: fullOtp,
+            });
 
-        if(actionType === "forgot-password"){
-            localStorage.removeItem("actionType")   
-            postData("/api/admin/verify-forgot-password-otp", {
-            email: localStorage.getItem("adminEmail"),
-            otp: fullOtp,
-        }, false).then((response) => {
-            if (response?.error === false) {
+            if (!res?.error) {
                 router.push("/forgot-password");
             } else {
-                alert.alertBox({type:"error", msg:"Invalid OTP"||response?.message});
+                alert.alertBox({ type: "error", msg: res?.message || "Invalid OTP" });
             }
-        });
+        } else {
+            const res = await postData("/api/admin/verifyEmail", {
+                email: adminEmail,
+                otp: fullOtp,
+            });
 
-
-            
-        }else{
-             postData("/api/admin/verifyEmail", {
-            email: localStorage.getItem("adminEmail"),
-            otp: fullOtp,
-        }, false).then((response) => {
-            if (response?.error === false) {    
+            if (!res?.error) {
                 localStorage.removeItem("adminEmail");
                 sessionStorage.setItem("alert", JSON.stringify({
                     type: "success",
-                    msg: response?.message
+                    msg: res?.message,
                 }));
                 router.push("/login");
             } else {
-                alert.alertBox({type:"error", msg:"Invalid OTP"||response?.message});
+                alert.alertBox({ type: "error", msg: res?.message || "Invalid OTP" });
             }
-        });
         }
-        
-
-        
     };
-     const resendOTP = async () =>{
-        const email = localStorage.getItem("adminEmail")
-        const name = localStorage.getItem("adminName")
-        const adminId = localStorage.getItem("adminId")
 
+    const resendOTP = async () => {
+        if (typeof window === "undefined") return;
+        const email = localStorage.getItem("adminEmail");
+        const name = localStorage.getItem("adminName");
+        const adminId = localStorage.getItem("adminId");
 
+        const response = await postData("/api/user/resendOTP", { email, name, adminId }, false);
 
-        const response = await postData("/api/user/resendOTP",{ email, name, adminId }, false);
-    if (!response.error) {
-      alert.alertBox({ type: "success", msg: response.message });
-      router.push("/verify-otp");
-    } else {
-      alert.alertBox({ type: "error", msg: response?.message || "Failed to send OTP" });
-    }
-
-    }
+        if (!response.error) {
+            alert.alertBox({ type: "success", msg: response.message });
+        } else {
+            alert.alertBox({ type: "error", msg: response?.message || "Failed to send OTP" });
+        }
+    };
 
     return (
         <div className="flex justify-center items-center w-full h-screen bg-gray-100">
@@ -105,7 +107,7 @@ const Page = () => {
                 <div className="w-full gap-3 text-center">
                     <h1 className="text-[#131e30] my-2 font-bold text-lg">Verify OTP</h1>
                     <h1 className="text-gray-500 text-[13px] mb-4">
-                        OTP sent to {localStorage.getItem("adminEmail")}
+                        OTP sent to {adminEmail}
                     </h1>
                 </div>
 

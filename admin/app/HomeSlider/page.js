@@ -117,14 +117,14 @@ const Slider = () => {
     ///
 
 
-    const handleSubmitAddForm = (e) => {
+    const handleSubmitAddForm = async (e) => {
         e.preventDefault();
 
         if (previews?.length === 0) {
             alert.alertBox({ type: "error", msg: "Please select product image" });
             return;
         }
-        postData("/api/homeslider/create", formFields, true)
+        await postData("/api/homeslider/create", formFields, true)
             .then((response) => {
                 if (!response.error) {
                     alert.alertBox({ type: "success", msg: "slide Created" });

@@ -14,6 +14,8 @@ import Button from "@mui/material/Button";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { MdModeEdit } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
+import Link from "next/link";
+import { User, Bell } from "lucide-react";
 
 const Account = () => {
   const router = useRouter();

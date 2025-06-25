@@ -236,7 +236,7 @@
         }
 
 
-        const handleSubmit = (e) => {
+        const handleSubmit = async (e) => {
             e.preventDefault();
             setIsLoading(true)
 
@@ -252,7 +252,7 @@
                 setIsLoading(false);
                 return;
             }
-            postData("/api/category/create", categs)
+            await postData("/api/category/create", categs)
                 .then((response) => {
                     setIsLoading(false);
                     if (!response.error) {
@@ -276,7 +276,7 @@
                 });
         }
 
-        const handleSubmit2 = (e) => {
+        const handleSubmit2 = async(e) => {
             e.preventDefault();
             setIsLoading(true)
 
@@ -291,7 +291,7 @@
                 setIsLoading(false);
                 return;
             }
-            postData("/api/category/create", categs2)
+            await postData("/api/category/create", categs2)
                 .then((response) => {
                     setIsLoading(false);
                     if (!response.error) {

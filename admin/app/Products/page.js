@@ -207,7 +207,7 @@ const Products = () => {
 
     }
 
-    const handleSubmitAddForm = (e) => {
+    const handleSubmitAddForm =  (e) => {
         e.preventDefault();
         setIsLoading(true)
         if (!formFields.name || !formFields.catName || !formFields.subCat || !formFields.price) {
@@ -268,11 +268,10 @@ const Products = () => {
         var imageArr = []
         imageArr = previews;
         console.log(image, "image")
-        deleteImages(`/api/product/deleteImg?img=${publicId}`).then((response) => {
+        await deleteImages(`/api/product/deleteImg?img=${publicId}`).then((response) => {
             console.log(response)
             imageArr.splice(index, 1);
 
-            setPreviews([])
 
             setTimeout(() => {
                 setPreviews(imageArr);
@@ -325,7 +324,7 @@ const Products = () => {
         }));
     }
 
-    const handleSubmitEditForm = (e) => {
+    const handleSubmitEditForm =  (e) => {
         e.preventDefault();
         setIsLoading(true);
 
@@ -425,7 +424,7 @@ const Products = () => {
 
         if (isChecked) {
             const ids = updatedItems.map((item) => item._id).sort((a, b) => a - b);
-            setSortedIds(true)
+            setSortedIds(ids)
         }
     }
 

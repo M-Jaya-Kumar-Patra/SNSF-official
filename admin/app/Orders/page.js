@@ -42,7 +42,8 @@ const Orders = () => {
   const router = useRouter();
   const alert = useAlert();
   const { userData } = useAuth();
-  const [statusMap, setStatusMap] = useState({});
+  const [orderStatusMap, setOrderStatusMap] = useState({});
+const [paymentStatusMap, setPaymentStatusMap] = useState({});
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [previews, setPreviews] = useState([]);
@@ -51,7 +52,7 @@ const Orders = () => {
     if (typeof window !== 'undefined') {
       getOrders();
     }
-  }, [getOrders]);
+  }, []);
 
   const getNotificationMessage = (status, orderCode) => {
     const boldCode = `<strong>${orderCode}</strong>`;
@@ -60,7 +61,7 @@ const Orders = () => {
       case "Processing": return `Your order ${boldCode} is being prepared.`;
       case "Delivered": return `Woohoo! Your order ${boldCode} has been delivered.`;
       case "Canceled": return `Your order ${boldCode} has been canceled.`;
-      case "Returned": return `We’ve received the return for your order ${boldCode}.`;
+      case "Returned": return `We?ve received the return for your order ${boldCode}.`;
       case "Refunded": return `Your refund for order ${boldCode} has been processed.`;
       default: return `Update on your order ${boldCode}.`;
     }
@@ -78,7 +79,8 @@ const Orders = () => {
       }
 
       alert.alertBox({ type: "success", msg: "Status updated" });
-      setStatusMap((prev) => ({ ...prev, [orderId]: newStatus }));
+      setOrderStatusMap((prev) => ({ ...prev, [orderId]: newStatus }));
+
 
       const body = {
         recipientId: order?.delivery_address?.userId?.[0],
@@ -89,7 +91,7 @@ const Orders = () => {
 
       await postData(`/api/notice/send`, body, true);
     } catch (err) {
-      console.error("❌ Unexpected error:", err.message);
+      console.error("? Unexpected error:", err.message);
       alert.alertBox({ type: "error", msg: "Something went wrong" });
     }
   };
@@ -140,7 +142,7 @@ const Orders = () => {
         alert.alertBox({ type: "error", msg: response.message || "Failed to upload invoice" });
       }
     } catch (err) {
-      console.error("❌ Upload failed:", err);
+      console.error("? Upload failed:", err);
       alert.alertBox({ type: "error", msg: "Something went wrong. Please try again." });
     }
   };
@@ -154,7 +156,7 @@ const Orders = () => {
       setPreviews(updated);
       setFormFields((prev) => ({ ...prev, images: updated }));
     } catch (err) {
-      console.error("❌ Failed to delete image:", err);
+      console.error("? Failed to delete image:", err);
     }
   };
 
@@ -173,6 +175,9 @@ const Orders = () => {
     }
   };
 
+const paymentStatusOptions = ["Pending", "Completed", "Canceled", "Refunded"];
+
+
   const handleChangePaymentStatus = async (orderId, newStatus) => {
     try {
       const res = await postData(
@@ -183,13 +188,13 @@ const Orders = () => {
 
       if (!res.error) {
         alert.alertBox({ type: "success", msg: "Payment status updated!" });
-        setStatusMap((prev) => ({ ...prev, [orderId]: newStatus }));
-        setTimeout(() => getOrders(), 300);
+        setPaymentStatusMap((prev) => ({ ...prev, [orderId]: newStatus }));
+
       } else {
         alert.alertBox({ type: "error", msg: res.message || "Failed to update status" });
       }
     } catch (err) {
-      console.error("❌ Error updating payment status:", err);
+      console.error("? Error updating payment status:", err);
       alert.alertBox({ type: "error", msg: "Something went wrong." });
     }
   };
@@ -214,7 +219,8 @@ const Orders = () => {
                 </thead>
                 <tbody className="bg-slate-50">
                     {[...ordersData].reverse().map((order) => {
-                        const currentStatus = statusMap[order._id] || order.order_Status;
+                        const currentStatus = orderStatusMap[order._id] || order.order_Status;
+
                         const { bgClass, textColor } = getStatusStyle(currentStatus);
 
                         return (
@@ -258,7 +264,8 @@ const Orders = () => {
                                 <td className="px-4 py-2 align-top">
                                     <FormControl fullWidth>
                                         <Select
-                                            value={order?.payment_status}
+                                        value={paymentStatusMap[order._id] || order?.payment_status}
+
                                             onChange={(e) => handleChangePaymentStatus(order._id, e.target.value)}
                                             variant="standard"
                                             disableUnderline
@@ -277,7 +284,7 @@ const Orders = () => {
                                     {order?.paymentId}
                                 </td>
                                 <td className="text-black px-4 py-2 align-top" onClick={() => handleOrderDetails(order)}>
-                                    ₹{order?.totalAmt}
+                                    ?{order?.totalAmt}
                                 </td>
                                 <td className="text-black px-4 py-2 align-top">
                                     <input
@@ -420,7 +427,7 @@ const Orders = () => {
 
                             <div className="flex justify-between items-center">
                                 <h2 className="text-black text-lg font-medium">
-                                    Total Amount: <span className="text-xl font-semibold">₹{selectedOrder?.totalAmt}</span>
+                                    Total Amount: <span className="text-xl font-semibold">?{selectedOrder?.totalAmt}</span>
                                 </h2>
                                 <h2 className="text-black text-lg font-medium">
                                     Payment ID: <span className="text-xl font-semibold">{selectedOrder?.paymentId}</span>
@@ -472,7 +479,7 @@ const Orders = () => {
                                         <div className="text-right w-[20%]">
                                             <p className="text-gray-500 text-sm">Price</p>
                                             <p className="text-xl font-bold text-[#131e30]">
-                                                ₹{(prd?.price || 0) * (prd?.quantity || 1)}
+                                                ?{(prd?.price || 0) * (prd?.quantity || 1)}
                                             </p>
                                         </div>
                                     </div>

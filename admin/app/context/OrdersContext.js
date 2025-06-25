@@ -20,7 +20,7 @@ const OrdersProvider = ({ children }) => {
     }
   }, []);
 
-  const addToOrders = (product, userId, quantity = 1) => {
+  const addToOrders = async (product, userId, quantity = 1) => {
     if (!userId) {
       alert.alertBox({ type: "error", msg: "Please login first" });
       return;
@@ -39,7 +39,7 @@ const OrdersProvider = ({ children }) => {
       brand: product?.brand,
     };
 
-    postData("/api/order/create", data, true).then((res) => {
+    await postData("/api/order/create", data, true).then((res) => {
       if (!res.error) {
         alert.alertBox({ type: "success", msg: res?.message || "Order placed" });
         getOrders(); // Refresh orders

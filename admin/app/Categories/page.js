@@ -191,7 +191,7 @@ const Categories = () => {
             setPreviews([])
         })
     }
-    const handleSubmitAddForm = (e) => {
+    const handleSubmitAddForm = async (e) => {
         e.preventDefault();
         setIsLoading(true)
         const { name, parentCatName, parentId } = categs;
@@ -205,7 +205,7 @@ const Categories = () => {
             setIsLoading(false);
             return;
         }
-        postData("/api/category/create", categs)
+        await postData("/api/category/create", categs)
             .then((response) => {
                 setIsLoading(false);
                 if (!response.error) {
