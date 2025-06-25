@@ -131,8 +131,8 @@ const OrdersPage = () => {
         <div className='flex justify-between items-center'>
           <h1 className='text-2xl font-bold text-gray-700 mb-4'>Order Details</h1>
           <div >
-           
-            <Button variant='contained' className='bg-primary-gradient'>Download Invoice</Button>
+           {openedOrder?.order_Status === "Delivered" &&
+            <Button variant='contained' className='bg-primary-gradient'>Download Invoice</Button>}
 
           </div>
         </div>
