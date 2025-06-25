@@ -90,7 +90,7 @@ const Products = () => {
     const [editProduct, setEditProduct] = useState(null);
     const [showEditModal, setShowEditModal] = useState(false);
 
-    const { prdData, setPrdData, getProducts, loading, setLoading } = usePrd();
+    const { prdData, setPrdData, getProductsData, loading, setLoading } = usePrd();
     const { catData } = useCat();
     const alert = useAlert();
 
@@ -250,7 +250,7 @@ const Products = () => {
                     })
                     setPreviews([])
                     setShowAddModal(false)
-                    getProducts()
+                    getProductsData()
                 } else {
                     alert.alertBox({ type: "error", msg: response.message || "Failed to create product" });
                 }
@@ -353,7 +353,7 @@ const Products = () => {
                     setEditPrdObj(null);
                     setPreviews([]);
                     setShowEditModal(false);
-                    getProducts();
+                    getProductsData();
                 } else {
                     alert.alertBox({ type: "error", msg: response.message || "Failed to update product" });
                 }
@@ -381,7 +381,7 @@ const Products = () => {
             if (!response.error) {
                 alert.alertBox({ type: "success", msg: "Product deleted" })
                 // alert.alertBox({ type: "success", msg: "Product Created" });
-                getProducts()
+                getProductsData()
 
             } else {
                 alert.alertBox({ type: "error", msg: "Failed to delete product" })
@@ -403,7 +403,7 @@ const Products = () => {
             await deleteMultipleData(`/api/product/deleteMultiple`, { ids: sortedIds },
             ).then((response) => {
                 console.log(response)
-                getProducts();
+                getProductsData();
                 alert.alertBox({ type: "success", msg: "Products deleted successfully" })
             })
         } catch (error) {
@@ -558,7 +558,7 @@ const handleSpecificationsChangeAdd = (e) => {
                                             subCategory.includes(searchQuery.toLowerCase())
                                         );
                                     })
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).reverse()
                                     .map((prd, index) => (
                                         <tr key={index} className="border-b border-slate-300">
                                             <td className="w-[55px]">

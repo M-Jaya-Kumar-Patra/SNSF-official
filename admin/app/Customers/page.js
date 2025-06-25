@@ -100,7 +100,7 @@ const Admins = () => {
               >
                 <td className="px-3 py-3"><Checkbox /></td>
                 <td className="px-3 py-3">
-                  <img src={user.avatar} alt="avatar" className="w-10 h-10 rounded-full object-cover border" />
+                  <img src={user?.avatar||"/images/account.png"} alt="avatar" className="w-10 h-10 rounded-full object-cover border" />
                 </td>
                 <td className="px-3 py-3 font-medium text-slate-800">{user.name}</td>
                 <td className="px-3 py-3 text-slate-600">{user.email}</td>
@@ -180,7 +180,7 @@ const Admins = () => {
 
 
                       <div className='w-[100px] h-auto] border-2 border-slate-40-'>
-                        <img src={selectedUser?.avatar} alt="" className='w-full h-auto'/>
+                        <img src={selectedUser?.avatar || "/images/account.png"} alt="" className='w-full h-auto'/>
                       </div>
                      </div>
                      <div className="grid grid-cols-2 gap-3">
