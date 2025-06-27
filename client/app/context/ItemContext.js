@@ -6,6 +6,10 @@ import { fetchDataFromApi } from "@/utils/api";
 const ItemContext = createContext();
 
 const ItemProvider = ({ children }) => {
+   useEffect(()=>{
+    console.log("ItemContext")
+  },[])
+
   const [item, setItem] = useState();
 
 //    useEffect(() => {

@@ -105,12 +105,13 @@ const indianStates = [
 const Page = () => {
   const alert = useAlert()
   const router = useRouter()
-  const { userData, setUserData, isLogin } = useAuth();
+  const { userData, setUserData, isLogin ,isCheckingToken, setIsCheckingToken } = useAuth();
 
 
 
   const [ShowAddressChoice, setShowAddressChoice] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
+      if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
 
 
@@ -211,6 +212,7 @@ useEffect(() => {
  useEffect(() => {
   if (typeof fromCart !== "undefined") {
     if (!isLogin) {
+      setIsCheckingToken(false)
       router.push("/login");
     } else if (fromCart) {
       getCartItems();

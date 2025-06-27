@@ -8,9 +8,14 @@ import {
   Divider,
   Avatar,
 } from "@mui/material";
+import { useAuth } from "@/app/context/AuthContext";
 
 const Reviews = ({ productId }) => {
   const [reviews, setReviews] = useState([]);
+
+ const { isCheckingToken } = useAuth()
+    if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
+
 
   useEffect(() => {
     if (!productId) return;

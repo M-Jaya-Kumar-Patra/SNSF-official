@@ -14,6 +14,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useAuth } from "../context/AuthContext";
 
 export default function ResetPasswordPage() {
   const [formFields, setFormFields] = useState({
@@ -28,7 +29,8 @@ export default function ResetPasswordPage() {
 
   const router = useRouter();
   const alert = useAlert();
-
+ const { isCheckingToken } = useAuth()
+    if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
   useEffect(() => {
     setIsClient(true);
     if (typeof window !== "undefined") {

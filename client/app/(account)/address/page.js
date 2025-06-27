@@ -74,7 +74,8 @@ const indianStates = [
 const Account = () => {
     const router = useRouter();
     const alert = useAlert();
-    const { isLogin, userData, setUserData, isLoading } = useAuth()
+    const { isLogin, userData, setUserData, isLoading,isCheckingToken  } = useAuth()
+        if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
     const [showAddAddressForm, setShowAddAddressForm] = useState(false);
 

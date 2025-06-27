@@ -1,8 +1,12 @@
 "use client";
 
 import React from "react";
+import { useAuth } from "../context/AuthContext";
 
 export default function ReturnPolicyPage() {
+  
+const { isCheckingToken, isLogin, userData } = useAuth();
+if (isCheckingToken) return <div>Loading...</div>;
   return (
     <main className="max-w-5xl mx-auto p-8 bg-white rounded-xl shadow-lg border-t-4 border-red-700 my-12">
       <h1 className="text-4xl font-extrabold text-red-800 mb-4">Return, Exchange & Refund Policy</h1>

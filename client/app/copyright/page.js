@@ -1,8 +1,11 @@
 "use client";
 
 import React from "react";
+import { useAuth } from "../context/AuthContext";
 
 export default function CopyrightPage() {
+  const { isCheckingToken, isLogin, userData } = useAuth();
+  if (isCheckingToken) return <div>Loading...</div>;
   return (
     <main className="max-w-4xl mx-auto p-8 bg-white rounded-xl shadow-lg border-t-4 border-blue-700 my-12">
       <h1 className="text-4xl font-extrabold text-blue-800 mb-6">Copyright Notice</h1>

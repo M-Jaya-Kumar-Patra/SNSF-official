@@ -19,13 +19,15 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import Link from 'next/link';
 
 const Cart = () => {
-  const { cartData, getCartItems, buyNowItem, setBuyNowItem } = useCart();
+  const { cartData, getCartItems, buyNowItem, setBuyNowItem,isCheckingToken , setIsCheckingToken } = useCart();
   const alert = useAlert();
   const router = useRouter();
   const { setUserData, userData, isLogin } = useAuth();
+      if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
   useEffect(() => {
     if (!isLogin) {
+      setIsCheckingToken(false)
       router.push("/login");
     } else {
       getCartItems();

@@ -28,7 +28,8 @@ const OrdersPage = () => {
   const [showCallConfirm, setShowCallConfirm] = useState(false)
   const [callPurpose, setCallPurpose] = useState("") // "exchange" or "cancel"
 
-
+ const { isCheckingToken } = useAuth()
+    if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
   
   
   useEffect(() => {

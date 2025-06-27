@@ -21,9 +21,10 @@ import Image from "next/image";
 
 const ProductListing = () => {
     const { prdData, productsData, setProductsData, getProductsData } = usePrd()
-    const { userData, isLogin, setIsLogin, setUserData, loading, setLoading, login, logout } = useAuth()
+    const { userData, isLogin, setIsLogin, setUserData, loading, setLoading, login, logout,isCheckingToken  } = useAuth()
     const { addToCart, buyNowItem, setBuyNowItem } = useCart()
     const router = useRouter()
+        if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
     
         useEffect(() => {
             setLoading(false)

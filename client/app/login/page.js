@@ -29,13 +29,15 @@ export default function Login() {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [loading, setLoading] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
+  const { isLogin, login, setIsLogin,isCheckingToken ,setIsCheckingToken} = useAuth();
+      if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
   const router = useRouter();
   const alert = useAlert();
-  const { isLogin, login, setIsLogin } = useAuth();
 
   useEffect(() => {
     if (isLogin) {
+      setIsCheckingToken(false)
       router.push("/profile");
     } else {
       setCheckingAuth(false);

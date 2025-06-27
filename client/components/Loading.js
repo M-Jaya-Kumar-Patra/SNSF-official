@@ -9,7 +9,7 @@ export default function Loading() {
     <Backdrop
       sx={{
         zIndex: (theme) => theme.zIndex.drawer + 9999,
-        backgroundColor: '#ffffff',
+        backgroundColor: 'ffffff',
       }}
       open={true}
     >

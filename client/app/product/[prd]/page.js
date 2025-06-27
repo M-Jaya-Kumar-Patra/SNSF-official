@@ -25,9 +25,10 @@ import Link from "next/link";
 const Page = () => {
   const [productImages, setProductImages] = useState([]);
 
-  const { userData, setUserData, isLogin } = useAuth()
+  const { userData, setUserData, isLogin,isCheckingToken  } = useAuth()
 
   const { cartData, addToCart, buyNowItem, setBuyNowItem } = useCart()
+      if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
 
   const router = useRouter();

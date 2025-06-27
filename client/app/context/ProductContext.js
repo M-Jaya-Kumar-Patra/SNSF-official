@@ -11,6 +11,12 @@ const PrdProvider = ({ children }) => {
    
    const [productsData, setProductsData] = useState([]);
 
+
+    useEffect(()=>{
+    console.log("Product")
+  },[])
+
+
    const getProductsData = () =>{
     fetchDataFromApi("/api/product/gaps", false).then((response) => {
         if (!response.error) {

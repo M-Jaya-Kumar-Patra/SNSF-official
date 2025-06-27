@@ -23,6 +23,11 @@ const WishlistProvider = ({ children }) => {
   //   localStorage.setItem("wishlist", JSON.stringify(wishlistItems));
   // }, [wishlistItems]);
 
+   useEffect(()=>{
+    console.log("Wishlist")
+  },[])
+
+
 
   useEffect(() => {
     getWishlistItems();

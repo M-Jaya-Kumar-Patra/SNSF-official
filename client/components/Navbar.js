@@ -38,9 +38,8 @@ const righteous = Righteous({ subsets: ["latin"], weight: "400" });
 
 const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
   const { catData, setCatData } = useCat();
-  const { setLoading } = useAuth();
   const router = useRouter();
-  const { userData, isLogin } = useAuth();
+  const {setLoading, userData, isLogin } = useAuth();
   const { cartData } = useCart();
   const { getNotifications } = useNotice();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

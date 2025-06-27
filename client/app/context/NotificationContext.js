@@ -10,11 +10,16 @@ const NoticeContext = createContext();
 const NoticeProviders = ({ children }) => {
   const alert = useAlert();
   const [notices, setNotices] = useState([]);
-  const { isLogin } = useAuth();
+  const { isLogin, setIsCheckingToken } = useAuth();
 
   // Fetch notifications only if user is logged in
+   useEffect(()=>{
+    console.log("Notification")
+  },[])
+
   useEffect(() => {
     if (isLogin) {
+      setIsCheckingToken(false)
       getNotifications();
     }
   }, [isLogin]);

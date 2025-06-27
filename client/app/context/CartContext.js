@@ -15,6 +15,11 @@ const CartProvider = ({ children }) => {
   const { isLogin } = useAuth()
   const [buyNowItem, setBuyNowItem] = useState([]);
 
+
+  useEffect(()=>{
+    console.log("cart")
+  },[])
+
   
   
 

@@ -34,7 +34,8 @@ import { MdDelete } from "react-icons/md";
 const Account = () => {
     const router = useRouter();
     const { ordersItems, addToOrders, getOrdersItems, OrdersData } = useOrders()
-    const { userData, isLogin } = useAuth()
+    const { userData, isLogin, isCheckingToken } = useAuth()
+    if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
     useEffect(() => {
         getOrdersItems()

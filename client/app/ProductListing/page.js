@@ -28,7 +28,7 @@ import { FaFilter, FaSortAmountDown } from "react-icons/fa"; // Import icons
 
 const ProductListing = () => {
     const { prdData, productsData, setProductsData, getProductsData } = usePrd()
-    const { userData, isLogin, setIsLogin, setUserData, loading, setLoading, login, logout } = useAuth()
+    const { userData, isLogin, setIsLogin, setUserData, loading, setLoading, login, logout, isCheckingToken } = useAuth()
     const { addToCart, buyNowItem, setBuyNowItem, cartItems, getCartItems } = useCart()
     const router = useRouter()
 
@@ -46,6 +46,8 @@ const ProductListing = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
+
+   if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
 
 

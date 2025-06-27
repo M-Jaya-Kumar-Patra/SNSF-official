@@ -22,6 +22,8 @@ export const AuthProvider = ({ children }) => {
 
     setUserData(null);
     setIsLogin(false);
+    
+  setIsCheckingToken(false); // ✅ This is crucial
     router.push("/login");
   }, [router]);
 
@@ -57,6 +59,10 @@ export const AuthProvider = ({ children }) => {
       console.log("✅ Login successful");
     }
   }, []);
+   useEffect(()=>{
+    console.log("auth")
+  },[])
+
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -106,6 +112,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         fetchUserDetails,
         isCheckingToken, // ✅ exposed to context
+        setIsCheckingToken,
       }}
     >
       {children}

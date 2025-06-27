@@ -3,8 +3,11 @@
 import React, { useState } from "react";
 import { TextField, Button } from "@mui/material";
 import { CheckCircle, Cancel } from "@mui/icons-material";
+import { useAuth } from "@/app/context/AuthContext";
 
 const Pincode = () => {
+   const { isCheckingToken } = useAuth()
+      if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
     const [pincode, setPincode] = useState("");
   const [status, setStatus] = useState(null);
 

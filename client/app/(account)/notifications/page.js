@@ -20,7 +20,8 @@ import Empty from "@/app/(ack)/Empty";
 const Account = () => {
   const router = useRouter();
   const { userData } = useAuth();
-  const { notices, getNotifications, markAllUnreadAsRead } = useNotice();
+  const { notices, getNotifications, markAllUnreadAsRead ,isCheckingToken } = useNotice();
+      if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
   useEffect(() => {
   getNotifications();

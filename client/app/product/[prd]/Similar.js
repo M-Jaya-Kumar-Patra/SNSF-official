@@ -9,6 +9,7 @@ import { LiaRupeeSignSolid } from "react-icons/lia";
 import { fetchDataFromApi } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useAuth } from "@/app/context/AuthContext";
 
 
 
@@ -19,6 +20,9 @@ const New = (props) => {
   const { prdData } = usePrd();
   const scrollRef = useRef(null);
   const router = useRouter()
+  const {isCheckingToken} = useAuth()
+   if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
+  
 
   const scroll = (direction) => {
     if (scrollRef.current) {

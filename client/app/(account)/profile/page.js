@@ -11,112 +11,59 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useAlert } from "@/app/context/AlertContext";
-import { uploadImage } from "@/utils/api";
-import { editData } from "@/utils/api";
+import { uploadImage, editData, postData } from "@/utils/api";
 import { useAuth } from "@/app/context/AuthContext";
-import Button from '@mui/material/Button';
+import Button from "@mui/material/Button";
 import { MdModeEdit } from "react-icons/md";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";
-import { postData } from "@/utils/api";
 import Image from "next/image";
-
-
 
 const Account = () => {
   const router = useRouter();
   const alert = useAlert();
+  const { isLogin, userData, setUserData, isCheckingToken, setIsCheckingToken } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [userId, setUserId] = useState("");
-  const [passLoading, setPassLoading] = useState(false)
-
+  const [passLoading, setPassLoading] = useState(false);
+  const [formFields, setFormFields] = useState({ name: "", email: "", phone: "" });
+  const [changePasswordForm, setChangePasswordForm] = useState({ oldPassword: "", newPassword: "", confirmPassword: "" });
   
-  
-const [showTopForm, setShowTopForm] = useState(false);
+   if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
+  useEffect(() => {
+    if (!isLogin) {
+      setIsCheckingToken(false)
+      router.replace("/login");
 
-  const [state, setState] = useState({
-    top: false,
-  });
+    } else {
+      setFormFields({
+        name: userData?.name || "",
+        email: userData?.email || "",
+        phone: userData?.phone || "",
+      });
+    }
+  }, [isLogin, userData, router]);
 
-  
-
-  const [formFields, setFormFields] = useState({
-    name: "",
-    email: "",
-    phone: ""
-  });
-
-  const [changePasswordForm, setChangePasswordForm] = useState({
-    oldPassword : "",
-    newPassword : "",
-    confirmPassword : ""
-  })
-
-  
-    const {isLogin, userData, setUserData}=useAuth()
-
-
-  
-
-
-
-
-useEffect(() => {
-  console.log("profile page");
-  if (!isLogin) {
-    console.log("p1");
-    router.replace("/login");
-    console.log("p2");
-  } else {
-    console.log(userData);
-    console.log("p3");
-    setFormFields({
-      name: userData?.name || "",
-      email: userData?.email || "",
-      phone: userData?.phone || "",
-    });
-    console.log("p4");
-  }
-}, [isLogin, userData, router, setFormFields]);
-
-
-
-useEffect(() => {
-  const id = userData?._id || userData?.id;
-  if (id) {
-    setUserId(id);
-    localStorage.setItem("userId", id);
-  }
-}, [userData]);
-
-  // useEffect(() => {
-  //   console.log("p5")
-  //   console.log(userData?._id||userData?.id)
-        
-
-  //   if (userData?._id||userData?.id) {
-  //     setUserId(userData?._id||userData?.id);
-  //   }
-  //   localStorage.setItem("userId",userData?._id||userData?.id)
-  //   console.log("p6")
-  // }, [userData]);//all check
+  useEffect(() => {
+    const id = userData?._id || userData?.id;
+    if (id) {
+      setUserId(id);
+      localStorage.setItem("userId", id);
+    }
+  }, [userData]);
 
   const onChangeFile = async (e) => {
     e.preventDefault();
     try {
       const file = e.target.files?.[0];
-      if (
-        file &&
-        ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type)
-      ) {
+      if (file && ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type)) {
         setUploading(true);
         const formData = new FormData();
         formData.append("avatar", file);
 
         const response = await uploadImage("/api/user/user-avatar", formData);
-
         if (response?.success && response.avatar) {
           setUserData((prev) => ({ ...prev, avatar: response.avatar }));
           localStorage.setItem("userAvatar", response.avatar);
@@ -132,22 +79,22 @@ useEffect(() => {
     } finally {
       setUploading(false);
     }
-  };///////////////////
+  };
+  
 
   const onChangeInput = (e) => {
     const { name, value } = e.target;
     setFormFields((prev) => ({ ...prev, [name]: value }));
   };
+
   const onChangePassword = (e) => {
     const { name, value } = e.target;
     setChangePasswordForm((prev) => ({ ...prev, [name]: value }));
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
     const { name, email, phone } = formFields;
 
     if (!name || !email || !phone) {
@@ -164,20 +111,16 @@ useEffect(() => {
 
     try {
       const response = await editData(`/api/user/${userId}`, formFields, false);
-
-      console.log("Updated", response?.user)
-
       setUserData({
         ...userData,
         name: response.user?.name || name,
         email: response.user?.email || email,
         phone: response.user?.phone || phone,
-        avatar: response.user?.avatar || userData.avatar
+        avatar: response.user?.avatar || userData.avatar,
       });
+
       if (!response.error) {
         alert.alertBox({ type: "success", msg: "Profile updated successfully" });
-
-        // Update userData  
       } else {
         alert.alertBox({ type: "error", msg: response?.message || "Update failed" });
       }
@@ -188,69 +131,49 @@ useEffect(() => {
     }
   };
 
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setPassLoading(true);
+    const { oldPassword, newPassword, confirmPassword } = changePasswordForm;
 
-
-  const handlePasswordChange = async (e)=>{
-    e.preventDefault()
-    setPassLoading(true)
-
-    const {oldPassword, newPassword, confirmPassword} = changePasswordForm
-
-    if(!oldPassword){
-      setPassLoading(false)
-      alert.alertBox({ type: "error", msg: "Please enter your old password" })
-      return
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      setPassLoading(false);
+      alert.alertBox({ type: "error", msg: "Please fill all password fields" });
+      return;
     }
-    if(!newPassword){
-      setPassLoading(false)
-      alert.alertBox({ type: "error", msg: "Please enter your new password" })
-      return
+    if (oldPassword === newPassword) {
+      setPassLoading(false);
+      alert.alertBox({ type: "error", msg: "New password must be different from old password" });
+      return;
     }
-    if(!confirmPassword){
-      setPassLoading(false)
-      alert.alertBox({ type: "error", msg: "Please enter your confirm password" })
-      return
-    }
-    if(oldPassword===newPassword){
-      setPassLoading(false)
-      // alert.alertBox({ type: "error", msg: "Your new password is same as you old password. Try different." })
-      return
-    }
-    if(confirmPassword!==newPassword){
-      setPassLoading(false)
-      // alert.alertBox({ type: "error", msg: "Both the password field must same" })
-      return
+    if (confirmPassword !== newPassword) {
+      setPassLoading(false);
+      alert.alertBox({ type: "error", msg: "Passwords do not match" });
+      return;
     }
 
     try {
-          const response = await postData("/api/user/changePassword", {
-  email: userData?.email,
-  oldPassword,
-  newPassword,
-  confirmPassword
-});
-        
-              if (!response.error) {
-                alert.alertBox({ type: "success", msg: "Password changed successfully" });
-        
-        
-        
-                setChangePasswordForm({ oldPassword:"", newPassword: "", confirmPassword: "" });
-                // setIsLoading(false)
-                // router.push("/profile");
-              } else {
-                alert.alertBox({ type: "error", msg: response?.message });
-              }
-            } catch (err) {
-              alert.alertBox({ type: "error", msg: err?.message });
-            } finally {
+      const response = await postData("/api/user/changePassword", {
+        email: userData?.email,
+        oldPassword,
+        newPassword,
+        confirmPassword,
+      });
+
+      if (!response.error) {
+        alert.alertBox({ type: "success", msg: "Password changed successfully" });
+        setChangePasswordForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
+      } else {
+        alert.alertBox({ type: "error", msg: response?.message });
+      }
+    } catch (err) {
+      alert.alertBox({ type: "error", msg: err?.message });
+    } finally {
       setPassLoading(false);
     }
-  }
+  };
 
   if (!isLogin) return <div className="text-center mt-10">Loading...</div>;
-
-  
 
 
   return (

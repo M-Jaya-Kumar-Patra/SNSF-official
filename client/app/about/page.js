@@ -1,8 +1,11 @@
 "use client";
 
 import React from "react";
+import { useAuth } from "../context/AuthContext";
 
 export default function AboutUsPage() {
+   const { isCheckingToken } = useAuth()
+      if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
   return (
     <main className="max-w-5xl mx-auto p-8 bg-white rounded-xl shadow-lg border-t-4 border-blue-700 my-12">
       <h1 className="text-4xl font-extrabold text-blue-800 mb-4">About Us</h1>

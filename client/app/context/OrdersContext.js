@@ -13,12 +13,17 @@ const OrdersProvider = ({ children }) => {
   const [ordersItems, setOrdersItems] = useState([]);
   const [OrdersData, setOrdersData] = useState([])
   const { isLogin, userData } = useAuth()
+  
+   useEffect(()=>{
+    console.log("Order")
+  },[])
+
 
 
 
   useEffect(() => {
     getOrdersItems();
-    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ")
+    console.log("aaaaaaaaaaaaaaaaaaaaaaaaasdsssssssssssssaaaaaaa ")
   }, []); // Only once on component mount
 
 

@@ -7,6 +7,10 @@ const CatContext = createContext();
 
 const CatProvider = ({ children }) => {
   const [catData, setCatData] = useState();
+   useEffect(()=>{
+    console.log("category")
+  },[])
+
 
    useEffect(() => {
       fetchDataFromApi("/api/category/getCategories", false).then((response) => {

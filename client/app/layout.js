@@ -46,9 +46,9 @@ export default function RootLayout({ children }) {
         <meta name="theme-color" content="#000000" />
       </head>
       <body className={`${inter.className} w-full`}>
-        <AlertProvider>
-          <AuthWrapper>
             <AuthProvider>
+          <AuthWrapper>
+        <AlertProvider>
               <NoticeProviders>
                 <OrdersProvider>
                   <ItemProvider>
@@ -74,9 +74,9 @@ export default function RootLayout({ children }) {
                   </ItemProvider>
                 </OrdersProvider>
               </NoticeProviders>
-            </AuthProvider>
-          </AuthWrapper>
         </AlertProvider>
+          </AuthWrapper>
+            </AuthProvider>
       </body>
     </html>
   );

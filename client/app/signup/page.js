@@ -38,10 +38,13 @@ export default function Signup() {
 
   const router = useRouter();
   const alert = useAlert();
-  const { isLogin } = useAuth();
+  const { isLogin, isCheckingToken, setIsCheckingToken } = useAuth();
+  
+   if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
   useEffect(() => {
     if (isLogin) {
+      setIsCheckingToken(false)
       router.push("/profile");
     } else {
       setCheckingAuth(false);

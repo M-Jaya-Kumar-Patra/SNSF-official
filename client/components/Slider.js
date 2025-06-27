@@ -4,13 +4,18 @@ import React, { useState, useEffect } from "react";
 import { fetchDataFromApi } from "@/utils/api";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
+import { useAuth } from "@/app/context/AuthContext"; // ✅ Added
 
 const Slider = () => {
+  const { isCheckingToken } = useAuth(); // ✅ Get from context
   const [slides, setSlides] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [localLoading, setLocalLoading] = useState(false);
 
   useEffect(() => {
+    console.log("Slider", isCheckingToken)
+    if (isCheckingToken) return; // ✅ Prevent fetching too early
+
     const getSlides = async () => {
       try {
         setLocalLoading(true);
@@ -24,7 +29,7 @@ const Slider = () => {
     };
 
     getSlides();
-  }, []);
+  }, [isCheckingToken]); // ✅ Only runs after token is checked
 
   useEffect(() => {
     if (!slides?.length) return;
@@ -44,14 +49,12 @@ const Slider = () => {
     setCurrentIndex((prev) => (prev + 1) % slides.length);
   };
 
-  if (!slides?.length) return null;
+  // ✅ Render nothing while loading or waiting for token
+  if (isCheckingToken || localLoading || !slides.length) return null;
 
   return (
     <div className="flex justify-center w-full mt-2 sm:mt-3">
       <div className="relative w-full aspect-[16/9] max-w-[1000px] mx-auto sm:rounded-xl overflow-hidden shadow-md">
-  
-
-
         {/* Left Arrow */}
         <button
           onClick={handlePrev}

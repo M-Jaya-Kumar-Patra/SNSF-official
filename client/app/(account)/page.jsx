@@ -11,12 +11,15 @@ import Image from "next/image";
 
 const Account = () => {
   const router = useRouter();
-  const { userData, isLogin } = useAuth();
+  const { userData, isLogin ,isCheckingToken,setIsCheckingToken } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+      if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
   useEffect(() => {
     if (!isLogin) {
+      setIsCheckingToken(false); // ✅ This is crucial
       router.push("/login");
+      
     }
   }, [isLogin]);
 
