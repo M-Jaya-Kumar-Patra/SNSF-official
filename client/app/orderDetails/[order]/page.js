@@ -316,12 +316,12 @@ const handleDownload = async (e, orderId) => {
 
 
         {/* Products List */}
-        <div className='w-full p-3 border rounded-sm bg-white mb-4 flex flex-col justify-between'>
+        <div className='w-full p-1 sm:p-3 border rounded-sm bg-white mb-4 flex flex-col justify-between'>
           {Array.isArray(openedOrder?.products) && openedOrder.products.length > 0 ? (
             openedOrder.products.map((prd, index) => (
               <div
                 key={index}
-                className='w-full border border-gray-300 h-fit text-black p-4 rounded mb-2 flex justify-between items-center'
+                className='w-full border border-gray-300 h-fit text-black p-2 sm:p-4 rounded mb-2 flex justify-between items-center'
               >
                 <div className="flex gap-4 items-center cursor-pointer w-[60%]"
                   onClick={() => router.push(`/product/${prd?.productId}`)}>

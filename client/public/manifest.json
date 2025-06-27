@@ -1,0 +1,16 @@
+{
+  "name": "SNSF",
+  "short_name": "SNSF",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e40af",
+  "description": "SNSF - Steel Fabrication Services",
+  "icons": [
+    {
+      "src": "/images/favicon-32x32.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    }
+  ]
+}

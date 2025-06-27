@@ -255,11 +255,11 @@ useEffect(() => {
 
   return (
     <div className="flex w-full min-h-screen justify-center bg-slate-100">
-      <div className="w-[1020px] my-3 mx-auto flex justify-between">
+      <div className="w-full sm:w-[1020px] my-2 sm:my-3 mx-auto sm:flex justify-between">
         {/* Sidebar */}
-        <div className="left h-full">
-          <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5 gap-3 flex flex-col justify-center items-center ">
-            <div className="mt-2 mr-2 w-[140px] h-[140px] relative group overflow-hidden border   rounded-full border-gray-300 shadow">
+        <div className="left sm:h-full">
+          <div className=" w-full sm:w-[256px] mb-2 bg-white shadow-lg pb-2 sm:pb-5 pt-2 sm:pt-6 sm:px-5 gap-3 flex flex-col justify-center items-center ">
+            <div className="mt-2 mr-2 w-[60px] h-[60px] sm:w-[140px] sm:h-[140px] relative group overflow-hidden border   rounded-full border-gray-300 shadow">
             {!uploading && (
               <Image
                 src={userData?.avatar || "/images/account.png"}
@@ -289,12 +289,12 @@ useEffect(() => {
               />
             </div>
           </div>
-            <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide">
+            <h1 className=" text-black font-sans font-semibold overflow-x-auto scrollbar-hide">
               {userData?.name}
             </h1>
           </div>
 
-          <div className="leftlower mt-3 w-[256px] bg-white shadow-lg">
+          <div className="hidden sm:block leftlower mt-3 w-[256px] bg-white shadow-lg">
                             <ul className="text-gray-600 font-sans">
                                 <li>
                                     <Link href="/orders">
@@ -353,44 +353,56 @@ useEffect(() => {
         </div>
 
         {/* Main Panel */}
-        <div className="w-[750px] bg-white shadow-lg p-5">
+        <div className="w-full sm:w-[750px] bg-white shadow-lg p-2 sm:p-5">
           <div className="flex items-center justify-between">
-            <span className="text-black font-semibold text-[25px]">Profile Information</span>
+            <span className="text-black font-semibold text-[18px] ml-1 sm:ml-0 sm:text-[25px]">Profile Information</span>
           </div>
 
           
 
           {/* Profile Info Form */}
-          <form onSubmit={handleSubmit} className="  border-slate-400 rounded-md mt-4  pt-3">
+          <form onSubmit={handleSubmit} className="  sm:border-slate-400 rounded-md mt-2 sm:mt-4  pt-1 sm:pt-3">
             <Box
               component="div"
-              sx={{ "& .MuiTextField-root": { m: 1.5, width: "full" } }}
-              className=" w-full"
+              sx={{ "& .MuiTextField-root": { width: "full" } }}
+              className=" w-full "
             >
                 <div className="flex flex-col w-full ">
                 <TextField
                   label="Full Name"
                   variant="outlined"
                   name="name"
+                  size="small"
                   value={formFields.name}
                   disabled={isLoading}
                   onChange={onChangeInput}
+
+
+                  className="!m-1 !my-2 sm:!m-3 "
                 />
                 <TextField
                   label="Email"
                   variant="outlined"
                   name="email"
+                  size="small"
+
                   value={formFields.email}
                   disabled={true}
                   onChange={onChangeInput}
+                  className="!m-1 !my-2 sm:!m-3"
+
                 />
                 <TextField
                   label="Phone"
                   variant="outlined"
                   name="phone"
+                  size="small"
+
                   value={formFields.phone}
                   disabled={isLoading}
                   onChange={onChangeInput}
+                  className="!m-1 !my-2 sm:!m-3"
+
                   InputProps={{
                     startAdornment: <InputAdornment position="start">+91</InputAdornment>,
                   }}
@@ -399,33 +411,34 @@ useEffect(() => {
               <div>
                 
               </div>
-                <div className="flex items-center gap-4 ">
-                  <button
-                    type="submit"
-                    
-                    disabled={isLoading}
-                    className={`btn-org btn-sm w-full bg-green-700 p-1 mx-3 mt-1 rounded-md ${
-                      (isLoading) ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                  >
-                    {isLoading ? (
-                      <CircularProgress color="inherit" size={22} />
-                    ) : (
-                      <div className="flex items-center justify-center font-semibold gap-2"><MdModeEdit /><h1>Update Profile</h1></div>
-                    )}
-                  </button>
-                  
-                </div>
+                <div className="flex items-center gap-4">
+  <button
+    type="submit"
+    disabled={isLoading}
+    className={`w-full flex items-center text-xs sm:text-normal justify-center gap-2 px-3 py-2 mt-1 mx-1 sm:mx-3 rounded-md font-semibold text-white text-sm sm:text-base transition-all duration-200
+      ${isLoading ? 'bg-green-700 opacity-50 cursor-not-allowed' : 'bg-green-700 hover:bg-green-800 active:scale-95'}`}
+  >
+    {isLoading ? (
+      <CircularProgress color="inherit" size={22} />
+    ) : (
+      <>
+        <MdModeEdit className="text-xs sm:text-normal" />
+        <span>Update Profile</span>
+      </>
+    )}
+  </button>
+</div>
+
             </Box>
           </form>
-          <form className="border border-slate-400 rounded-md mt-6 mx-3 p-2 pt-3 " onSubmit={handlePasswordChange}>
+          <form className="border border-slate-400 rounded-md mt-3 sm:mt-6 mx-1 sm:mx-3 p-2 sm:pt-3 " onSubmit={handlePasswordChange}>
   <div>
   <div key={'top'}>
-    <div className="flex justify-between" onClick={() => setShowTopForm(prev => !prev)}>
-      <div className="text-gray-700 font-semibold text-lg">Change Password</div>
+    <div className="flex justify-center sm:justify-between" onClick={() => setShowTopForm(prev => !prev)}>
+      <div className="hidden sm:block text-gray-700 font-semibold text-sm  sm:text-lg">Change Password</div>
       <button
         // onClick={() => setShowTopForm(prev => !prev)}
-        className="mt-0 text-blue-500 font-sans font-bold text-md"
+        className="mt-0 text-[#1e40af] font-sans font-bold text-xs sm:text-md"
         type="button"
       >
         CHANGE PASSWORD
@@ -434,10 +447,10 @@ useEffect(() => {
 
     {showTopForm && (
       <div className="border-slate-500 rounded-md flex flex-col justify-center items-center">
-        <div className="mt-4  gap-x-3 w-2/3 ">
+        <div className="mt-4  gap-x-3 w-full sm:w-2/3 ">
         <Box
               component="div"
-              sx={{ "& .MuiTextField-root": { m: 1.5, width: "full" } }}
+              sx={{ "& .MuiTextField-root": {  width: "full" } }}
               className=" w-full"
             >
           <TextField
@@ -446,8 +459,10 @@ useEffect(() => {
             size="small"
             name="oldPassword"
             margin="dense"
+            
             value={changePasswordForm.oldPassword}
             fullWidth
+
             onChange={onChangePassword}
           />  
           <TextField
@@ -473,12 +488,12 @@ useEffect(() => {
 
           />
 
-        <div className="flex w-full mx-3 gap-3 ">
+        <div className="flex w-full gap-3 ">
           <button
           type="submit"
           disabled={passLoading}
           onClick={()=>setShowTopForm(prev => !prev)}
-          className={`btn-org btn-sm w-full bg-white p-1 mt-3 mb-2 border border-slate-400 rounded-md ${
+          className={`btn-org btn-sm w-full bg-white p-1 mt-3 mb-2 border text-xs sm:text-normal  border-slate-400 rounded-md ${
             passLoading ? 'opacity-50 cursor-not-allowed' : ''
           }`}> 
           
@@ -487,7 +502,7 @@ useEffect(() => {
         <button
           type="submit"
           disabled={passLoading}
-          className={`btn-org btn-sm w-full bg-blue-600 p-1 mt-3 mb-2 rounded-md ${
+          className={`btn-org btn-sm w-full bg-primary-gradient text-xs sm:text-normal text-nowrap p-1 mt-3 mb-2 rounded-md ${
             passLoading ? 'opacity-50 cursor-not-allowed' : ''
           }`}
           >

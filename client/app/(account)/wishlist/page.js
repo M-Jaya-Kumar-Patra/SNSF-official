@@ -37,9 +37,9 @@ const Account = () => {
 
   return (
     <div className="flex w-full min-h-screen justify-center bg-slate-100">
-      <div className="w-[1020px] my-3 mx-auto flex justify-between">
+      <div className="w-full sm:w-[1020px] my-2 sm:my-3 mx-auto flex justify-between">
         {/* Sidebar */}
-        <div className="left h-full">
+        <div className="hidden sm:block left h-full">
           <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5 gap-3 flex flex-col justify-center items-center">
             <Image
               className="h-[140px] w-[140px] rounded-full object-cover"
@@ -110,19 +110,19 @@ const Account = () => {
         </div>
 
         {/* Wishlist Section */}
-<div className="right h-full w-[750px] bg-white shadow-xl rounded-xl p-6">
-  <div className="mb-6">
-    <h2 className="text-2xl font-bold text-gray-800 border-b pb-2">
+<div className="right h-full w-full sm:w-[750px] bg-white shadow-xl sm:rounded-xl p-2 sm:p-6">
+  <div className="mb-2 sm:mb-6">
+    <h2 className="text-[22px] sm:text-2xl font-bold text-gray-800 border-b pb-2">
       My Wishlist
     </h2>
   </div>
 
-  <div className="list-section space-y-4">
+  <div className="list-section space-y-2 sm:space-y-4">
     {wishlistData?.length > 0 ? (
       wishlistData.map((item, index) => (
         <div
           key={index}
-          className="flex gap-4 p-4 border rounded-lg shadow-sm hover:shadow-md transition"
+          className="flex gap-4 p-2 sm:p-4 border rounded-lg shadow-sm hover:shadow-md transition"
         >
           {/* Product Image */}
           <div

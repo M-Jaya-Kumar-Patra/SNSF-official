@@ -1,7 +1,7 @@
 
 
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,7 +22,8 @@ import { MdAccountCircle } from "react-icons/md";
 import Search from "./Search";
 import { FaBell } from "react-icons/fa";
 import { useNotice } from "@/app/context/NotificationContext";
-
+import LogoutBTN from "./LogoutBTN";
+import { Package, User, CreditCard, Bell, Heart } from "lucide-react";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -37,20 +38,38 @@ const righteous = Righteous({ subsets: ["latin"], weight: "400" });
 
 const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
   const { catData, setCatData } = useCat();
-  const { setLoading } = useAuth(); // ✅ Added for loader
+  const { setLoading } = useAuth();
   const router = useRouter();
   const { userData, isLogin } = useAuth();
   const { cartData } = useCart();
-  const { notices, getNotifications } = useNotice();
+  const { getNotifications } = useNotice();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-
-
-
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
 
   useEffect(() => {
     getNotifications();
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
 
   return (
     <nav className=" sticky top-0 sm:top-[-70px]   z-[100] bg-gradient-to-r from-indigo-950 via-indigo-900 to-[#1e40af]  text-white border-t border-[#1e293b] shadow-md">
@@ -88,16 +107,88 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
         <div className="w-auto sm:hidden flex">
 
           
-           <IconButton aria-label="Account" onClick={() => router.push(isLogin ? "/profile" : "/login")} className="text-slate-200">
-              <Image src={userData?.avatar || "/images/emptyAccount.png"} alt="Account" width={32} height={32} className="shrink-0 w-[30px] h-[30px] sm:w-[24px] sm:h-[24px] rounded-full border-2 border-slate-200 cursor-pointer object-cover" />
+<div className="w-auto sm:hidden flex">
+          <div className="relative block sm:hidden" ref={dropdownRef}>
+            <IconButton aria-label="Account" onClick={toggleMenu} className="text-slate-200">
+              <Image
+                src={userData?.avatar || "/images/emptyAccount.png"}
+                alt="Account"
+                width={32}
+                height={32}
+                className="!w-[30px] !h-[30px] rounded-full border-2 border-slate-200 cursor-pointer object-cover"
+              />
             </IconButton>
 
-            <IconButton aria-label="Cart" onClick={() => router.push(isLogin ? "/cart" : "/login")}>
-    <StyledBadge badgeContent={userData && cartData?.length} color="secondary">
-      <FaCartPlus className="!text-[30px] text-white" />
-    </StyledBadge>
-  </IconButton>
+            {menuOpen && (
+              <div className="absolute right-0 mt-2 w-[230px] bg-white text-[#1e293b] rounded-xl shadow-2xl z-50">
+                <div className="flex flex-col p-3 space-y-2 text-sm">
+                  {!isLogin ? (
+                    <>
+                      <div className="font-semibold text-gray-900">Welcome, Guest!</div>
+                      <hr className="border-gray-200" />
+                      <button
+                        onClick={() => {
+                          router.push("/login");
+                          setMenuOpen(false);
+                        }}
+                        className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition font-medium"
+                      >
+                        Login
+                      </button>
+                      <button
+                        onClick={() => {
+                          router.push("/signup");
+                          setMenuOpen(false);
+                        }}
+                        className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition font-medium"
+                      >
+                        Register
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <div className="font-semibold text-gray-900 px-3">{userData?.name || "User"}</div>
+                      <hr className="border-gray-200" />
+                      <Link href="/profile" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                        <User size={18} /> Profile
+                      </Link>
+                      <Link href="/orders" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                        <Package size={18} /> My Orders
+                      </Link>
+                      <Link href="/wishlist" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                        <Heart size={18} /> Wishlist
+                      </Link>
+                      <Link href="/notifications" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                        <Bell size={18} /> Notifications
+                      </Link>
+                      <Link href="/address" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                        <User size={18} /> Manage Address
+                      </Link>
+                      <Link href="/payments" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                        <CreditCard size={18} /> Payments
+                      </Link>
+                      <div className="pt-2">
+                        <LogoutBTN />
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <IconButton aria-label="Cart" onClick={() => router.push(isLogin ? "/cart" : "/login")}>
+            <StyledBadge badgeContent={userData && cartData?.length} color="secondary">
+              <FaCartPlus className="!text-[30px] text-white" />
+            </StyledBadge>
+          </IconButton>
         </div>
+
+
+
+        </div>
+
+        
 
 
 <div className="hidden sm:flex items-center gap-3">
@@ -133,9 +224,77 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
   <IconButton aria-label="Call" onClick={() => window.location.href = 'tel:+919776501230'}>
     <MdCall className="text-3xl text-white" />
   </IconButton>
-  <IconButton aria-label="Account" onClick={() => router.push(isLogin ? "/profile" : "/login")} className="text-slate-200">
-    <Image src={userData?.avatar || "/images/emptyAccount.png"} alt="Account" width={32} height={32} className="shrink-0 w-[24px] h-[24px] rounded-full border-2 border-slate-200 cursor-pointer object-cover" />
+
+  
+<div className="relative group hidden sm:block">
+  <IconButton
+    aria-label="Account"
+    onClick={() => router.push(isLogin ? "/profile" : "/login")}
+    className="text-slate-200"
+  >
+    <Image
+      src={userData?.avatar || "/images/emptyAccount.png"}
+      alt="Account"
+      width={32}
+      height={32}
+      className="w-[24px] h-[24px] rounded-full border-2 border-slate-200 cursor-pointer object-cover"
+    />
   </IconButton>
+
+  {/* Hover Dropdown */}
+  <div className="absolute right-0 mt-2 w-[220px] bg-white text-[#1e293b] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[3000]">
+    <div className="flex flex-col p-3 space-y-2 text-sm">
+      {isLogin ? (
+        <>
+          <div className="font-semibold text-gray-900">{userData?.name || "User"}</div>
+          <hr className="border-gray-200" />
+          <Link href="/profile" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+            <User size={18} /> Profile
+          </Link>
+          <Link href="/orders" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+            <Package size={18} /> My Orders
+          </Link>
+          <Link href="/wishlist" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+            <Heart size={18} /> Wishlist
+          </Link>
+          <Link href="/notifications" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+            <Bell size={18} /> Notifications
+          </Link>
+          <Link href="/address" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+            <User size={18} /> Manage Address
+          </Link>
+          <Link href="/payments" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+            <CreditCard size={18} /> Payments
+          </Link>
+          <div className="pt-2">
+            <LogoutBTN />
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="font-semibold text-gray-900">Welcome, Guest!</div>
+          <hr className="border-gray-200" />
+          <button
+            onClick={() => router.push("/login")}
+            className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition font-medium"
+          >
+            Login
+          </button>
+          <button
+            onClick={() => router.push("/signup")}
+            className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition font-medium"
+          >
+            Register
+          </button>
+        </>
+      )}
+    </div>
+  </div>
+</div>
+
+
+
+
   <IconButton aria-label="Cart" onClick={() => router.push(isLogin ? "/cart" : "/login")}>
     <StyledBadge badgeContent={userData && cartData?.length} color="secondary">
       <FaCartPlus className="text-[27px] text-white" />

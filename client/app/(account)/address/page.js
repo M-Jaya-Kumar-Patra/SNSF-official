@@ -309,10 +309,10 @@ const Account = () => {
     return (
         <>
             <div className="flex w-full min-h-screen justify-center bg-slate-100">
-                <div className="w-[1020px] my-3 mx-auto flex justify-between">
+                <div className="w-full sm:w-[1020px] my-2  sm:my-3 mx-auto flex justify-between">
 
                     {/* Left Sidebar */}
-                    <div className="left h-full">
+                    <div className="hidden sm:block left h-full">
                         <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5   gap-3 flex flex-col justify-center items-center ">
                             <Image
                                 className="h-[140px] w-[140px] rounded-full object-cover"
@@ -385,44 +385,56 @@ const Account = () => {
                     </div>
 
                     {/* Right Profile Section */}
-                    <div className="right h-full w-[750px] bg-white shadow-lg p-5">
-                        <div className="mb-6">
-                            <span className="text-black font-semibold font-sans text-[25px]">Manage addresses</span>
+                    <div className="right h-full w-full sm:w-[750px] bg-white shadow-lg p-2 sm:p-5">
+                        <div className="mb-3 sm:mb-6">
+                            <span className="text-black font-semibold font-sans text-[22px] sm:text-[25px]">Manage addresses</span>
                         </div>
 
 
                         {!showAddAddressForm && (
                             <button
                                 onClick={() => setShowAddAddressForm(true)}
-                                className=" border border-[#131e30] h-10 bg-indigo-950 flex items-center font-sans p-5 text-lg font-normal gap-2 rounded-md">
-                                <IoMdAdd size={30} />Add a new address
+                                className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md border border-indigo-900 bg-indigo-950 text-white text-sm font-medium shadow-sm hover:bg-indigo-900 hover:shadow-md transition duration-200"
+                            >
+                                <IoMdAdd className="text-base sm:text-lg" />
+                                Add Address
                             </button>
+
                         )}
                         {addressArray && addressArray.length > 0 ? (
                             addressArray.reverse().map((address, index) => (
-                                <div key={index} className="border p-5 my-4 rounded-xl shadow-md bg-white flex justify-between hover:shadow-lg transition duration-300">
+                                <div key={index} className="border p-3 sm:p-5 my-2 sm:my-4 rounded-md sm:rounded-xl shadow-md bg-white flex justify-between hover:shadow-lg transition duration-300">
                                     <div>
-                                        <h3 className="text-lg font-bold text-black mb-1">{address?.name}</h3>
-                                        <p className="text-gray-800 mb-1">{address.address}</p>
-                                        <p className="text-gray-700 mb-1">
+                                        <h3 className="text-md sm:text-lg font-bold text-black mb-[2px] sm:mb-1">{address?.name}</h3>
+                                        <p className="text-gray-800 text-sm sm:text-md mb-[2px] sm:mb-1">{address.address}</p>
+                                        <p className="text-gray-700 text-sm sm:text-md mb-[2px] sm:mb-1">
                                             {address.locality && `${address.locality}, `}
                                             {address.city && `${address.city}, `}
                                             {address.state && `${address.state}`} - {address.pin}
                                         </p>
-                                        <p className="text-gray-600 mb-1">
+                                        <p className="text-gray-600 mb-[2px] sm:mb-1">
                                             Phone: {address.phone} {address.altPhone && `| Alt: ${address.altPhone}`}
                                         </p>
-                                        {address.landmark && <p className="text-gray-500 italic mb-1">{address.landmark}</p>}
-                                        <p className="text-sm text-gray-500">{address.addressType}</p>
+                                        {address.landmark && <p className="text-gray-500 italic mb-[2px] sm:mb-1">{address.landmark}</p>}
+                                        <p className="text-xs sm:text-sm text-gray-500">{address.addressType}</p>
                                     </div>
-                                    <div className="flex gap-4 pr-2 pt-1">
-                                        <button onClick={(e) => toggleEditAddress(e, address)} className="hover:scale-110 transition">
-                                            <FaEdit size={22} className="text-gray-700" />
+                                    <div className="flex gap-3 sm:gap-4 pr-1 sm:pr-2 pt-1">
+                                        <button
+                                            onClick={(e) => toggleEditAddress(e, address)}
+                                            className="p-1 rounded transition hover:scale-105 active:scale-95"
+                                            aria-label="Edit Address"
+                                        >
+                                            <FaEdit size={18} className="text-gray-700" />
                                         </button>
-                                        <button onClick={(e) => handleClickOpenDeleteAlert(e, address._id)} className="hover:scale-110 transition">
-                                            <MdDelete size={22} className="text-red-600" />
+                                        <button
+                                            onClick={(e) => handleClickOpenDeleteAlert(e, address._id)}
+                                            className="p-1 rounded transition hover:scale-105 active:scale-95 "
+                                            aria-label="Delete Address"
+                                        >
+                                            <MdDelete size={18} className="text-red-600" />
                                         </button>
                                     </div>
+
                                 </div>
 
                             )))

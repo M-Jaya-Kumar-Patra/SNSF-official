@@ -8,7 +8,7 @@ import { CartProvider } from "./context/CartContext";
 import { AlertProvider } from "./context/AlertContext";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast";
-import { Inter, Geist, Geist_Mono, Righteous } from "next/font/google";
+import { Inter } from "next/font/google";
 
 import { CatProvider } from "./context/CategoryContext";
 import { PrdProvider } from "./context/ProductContext";
@@ -19,19 +19,24 @@ import { NoticeProviders } from "./context/NotificationContext";
 import GlobalLoader from "@/components/GlobalLoader";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import BottomNav from "@/components/BottomNav";
+import { useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "700"] });
 
 export default function RootLayout({ children }) {
-
-  if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
+  // ✅ Register Service Worker inside useEffect
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
       navigator.serviceWorker
         .register("/sw.js")
-        .then(() => console.log("SW Registered"))
-        .catch((err) => console.error("SW Failed", err));
-    });
-  }
+        .then((registration) => {
+          console.log("Service Worker registered:", registration);
+        })
+        .catch((error) => {
+          console.error("Service Worker registration failed:", error);
+        });
+    }
+  }, []);
 
   return (
     <html lang="en">
@@ -51,19 +56,15 @@ export default function RootLayout({ children }) {
                       <WishlistProvider>
                         <PrdProvider>
                           <CartProvider>
-                            {/* Navbar with scroll effect */}
                             <Navbar />
-
                             <GlobalLoader />
 
-                            <main className=" min-h-screen flex flex-col">
+                            <main className="min-h-screen flex flex-col">
                               {children}
                               <PWAInstallPrompt />
                             </main>
 
-                            {/* Bottom nav with scroll effect */}
-                            <BottomNav/>
-
+                            <BottomNav />
                             <Footer />
                             <Toaster position="top-right" />
                           </CartProvider>

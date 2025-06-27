@@ -44,9 +44,9 @@ const Account = () => {
     return (
         <>
             <div className="flex w-full min-h-screen justify-center bg-slate-100">
-                <div className="w-[1020px] my-3 mx-auto flex justify-between">
+                <div className="w-full sm:w-[1020px] my-2 sm:my-3 mx-auto flex justify-between">
                     {/* Left Sidebar */}
-                    <div className="left h-fit sticky top-8">
+                    <div className="hidden sm:block  left h-fit sticky top-8">
                         <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5   gap-3 flex flex-col justify-center items-center ">
                             <Image
                                 className="h-[140px] w-[140px] rounded-full object-cover"
@@ -122,25 +122,25 @@ const Account = () => {
 
 
                     {/* Right Profile Section */}
-                    <div className="right h-full w-[750px] bg-white shadow-lg p-5">
-                        <div className="mb-6">
-                            <h2 className="text-3xl font-bold text-[#131e30]  inline-block">
+                    <div className="right h-full w-full  sm:w-[750px] bg-white shadow-lg p-2 sm:p-5">
+                        <div className="mb-3 sm:mb-6">
+                            <h2 className="text-2xl sm:text-3xl font-bold text-[#131e30]  inline-block">
                                 📦 My Orders
                             </h2>
                         </div>
 
                         {OrdersData?.length > 0 ? (
-                            <div className="space-y-8">
+                            <div className="space-y-3 sm:space-y-8">
                                 {OrdersData.slice().reverse().map((order, index) => (
                                     <div
                                         key={index}
-                                        className="bg-white border border-gray-200 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all"
+                                        className="bg-white border border-gray-200 rounded-md sm:rounded-2xl p-2 sm:p-6 shadow-md hover:shadow-lg transition-all"
                                         onClick={() => router.push(`/orderDetails/${order?._id}`)}
                                     >
                                         {/* Order Header */}
-                                        <div className="flex justify-between items-start flex-wrap gap-4 mb-6 border-b pb-4 border-gray-100">
+                                        <div className="flex justify-between items-start flex-wrap gap-4 mb-2 sm:mb-6 border-b pb-1 sm:pb-4 border-gray-100">
                                             <div>
-                                                <h3 className="text-lg font-semibold text-gray-700">
+                                                <h3 className="text-md sm:text-lg font-semibold text-gray-700">
                                                     Order ID: <span className="text-[#131e30]">{order?.orderId || order?._id}</span>
                                                 </h3>
                                                 <p className="text-sm text-gray-500">
@@ -159,11 +159,11 @@ const Account = () => {
 
                                             </div>
 
-                                            <div className="flex  gap-8 text-center">
+                                            <div className="flex  gap-8 text-center mt-0">
                                                 <div className="flex flex-col">
-                                                    <span className="text-sm text-gray-500 font-semibold">Order Status</span>
+                                                    <span className="text-xs sm:text-sm text-gray-500 font-semibold">Order Status</span>
                                                     <span
-                                                        className={`text-sm px-2 py-1 rounded-full font-bold ${order?.order_Status === "Pending" ? "bg-amber-100 text-amber-800" :
+                                                        className={ `text-xs sm:text-sm  px-2 py-1 rounded-full font-bold ${order?.order_Status === "Pending" ? "bg-amber-100 text-amber-800" :
                                                                 order?.order_Status === "Confirmed" ? "bg-blue-100 text-blue-800" :
                                                                     order?.order_Status === "Processing" ? "bg-cyan-100 text-cyan-800" :
                                                                         order?.order_Status === "Delivered" ? "bg-green-100 text-green-800" :
@@ -179,11 +179,11 @@ const Account = () => {
 
 
 
-                                                <div className="flex flex-col justify-center items-center">
+                                                <div className="hidden sm:flex flex-col justify-center items-center">
 
                                                     <span className="text-sm text-gray-500 font-semibold">Payment Status</span>
                                                     <span
-                                                        className={`text-sm px-2 py-1 rounded-full font-bold ${order?.payment_status === "Completed" ? "bg-green-100 text-green-800" :
+                                                        className={`text-xs sm:text-sm px-2 py-1 rounded-full font-bold ${order?.payment_status === "Completed" ? "bg-green-100 text-green-800" :
                                                                 order?.payment_status === "Canceled" ? "bg-red-100 text-red-600" :
                                                                     order?.payment_status === "Refunded" ? "bg-lime-100 text-lime-800" :
                                                                         order?.payment_status === "Pending" ? "bg-amber-100 text-amber-800" :
@@ -197,22 +197,22 @@ const Account = () => {
                                         </div>
 
                                         {/* Products */}
-                                        <div className="space-y-4">
+                                        <div className="space-y-2 sm:space-y-4">
                                             {order?.products?.map((product, idx) => (
                                                 <div
                                                     key={idx}
-                                                    className="flex items-center gap-5 border border-slate-200 rounded-lg p-4 bg-slate-50"
+                                                    className="flex items-center gap-5 border border-slate-200 rounded-md sm:rounded-lg p-2 sm:p-4 bg-slate-50"
                                                 >
                                                     {/* Product Image */}
                                                     <div
-                                                        className="w-[120px] h-[100px] flex items-center justify-center bg-white rounded-xl shadow cursor-pointer"
+                                                        className="w-[120px] h-[100px] flex items-center justify-center bg-white rounded-sm sm:rounded-xl shadow cursor-pointer object-cover"
                                                         onClick={() => router.push(`/product/${product?.productId}`)}
                                                     >
                                                         <Image
                                                             src={product?.image || product?.images?.[0]}
                                                             alt={product?.productTitle || "Product"}
-                                                            className="max-w-full max-h-full object-contain"
-                                width={100} height={100}
+                                                            className="max-w-full max-h-full object-cover"
+                                width={200} height={200}
 
                                                         />
                                                     </div>
@@ -229,7 +229,7 @@ const Account = () => {
                                                         <div className="flex justify-between items-center mt-2">
                                                             <span className="text-sm text-gray-700">Qty: {product?.quantity || 1}</span>
                                                             <span className="text-base font-bold text-[#131e30]">
-                                                                {(product?.price || 0) * (product?.quantity || 1)}
+                                                                ₹{(product?.price || 0) * (product?.quantity || 1)}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -238,10 +238,10 @@ const Account = () => {
                                         </div>
 
                                         {/* Total Amount */}
-                                        <div className="flex justify-end mt-6">
+                                        <div className="flex justify-end mt-2 sm:mt-6">
                                             <div className="text-right">
                                                 <p className="text-sm text-gray-500">Total Amount</p>
-                                                <h3 className="text-2xl font-bold text-[#131e30]">₹{order?.totalAmt}</h3>
+                                                <h3 className="text-[22px] sm:text-2xl font-bold text-[#131e30]">₹{order?.totalAmt}</h3>
                                             </div>
                                         </div>
                                     </div>
