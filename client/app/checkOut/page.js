@@ -105,13 +105,13 @@ const indianStates = [
 const Page = () => {
   const alert = useAlert()
   const router = useRouter()
-  const { userData, setUserData, isLogin ,isCheckingToken, setIsCheckingToken } = useAuth();
+  const { userData, setUserData, isLogin, isCheckingToken, setIsCheckingToken } = useAuth();
 
 
 
   const [ShowAddressChoice, setShowAddressChoice] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
-      if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
+  if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
 
 
@@ -123,27 +123,27 @@ const Page = () => {
 
 
 
-  
+
   const [itemsToCheckout, setItemsToCheckout] = useState([]);
 
 
   const [fromCart, setFromCart] = useState(true)
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
-useEffect(() => {
-  if (buyNowItem === undefined) return; // wait until context is loaded
+  useEffect(() => {
+    if (buyNowItem === undefined) return; // wait until context is loaded
 
-  const normalizedItems = Array.isArray(buyNowItem) ? buyNowItem : [buyNowItem];
-  if (!Array.isArray(buyNowItem)) {
-    setFromCart(false);
-  }
+    const normalizedItems = Array.isArray(buyNowItem) ? buyNowItem : [buyNowItem];
+    if (!Array.isArray(buyNowItem)) {
+      setFromCart(false);
+    }
 
-  if (normalizedItems.length === 0) {
-    router.push("/cart");
-  } else {
-    setItemsToCheckout(normalizedItems);
-  }
-}, [buyNowItem, router]);
+    if (normalizedItems.length === 0) {
+      router.push("/cart");
+    } else {
+      setItemsToCheckout(normalizedItems);
+    }
+  }, [buyNowItem, router]);
 
 
 
@@ -209,16 +209,16 @@ useEffect(() => {
       console.error("Failed to fetch addresses:", error);
     }
   };
- useEffect(() => {
-  if (typeof fromCart !== "undefined") {
-    if (!isLogin) {
-      setIsCheckingToken(false)
-      router.push("/login");
-    } else if (fromCart) {
-      getCartItems();
+  useEffect(() => {
+    if (typeof fromCart !== "undefined") {
+      if (!isLogin) {
+        setIsCheckingToken(false)
+        router.push("/login");
+      } else if (fromCart) {
+        getCartItems();
+      }
     }
-  }
-}, [isLogin, fromCart]);
+  }, [isLogin, fromCart]);
 
 
 
@@ -247,7 +247,7 @@ useEffect(() => {
       return;
     }
 
-    
+
     const userId = userData._id; // or however you get the logged-in user ID  
     console.log("Sending address data:", { ...address, userId });
     const response = await postData("/api/user/addAddress", {
@@ -389,6 +389,7 @@ useEffect(() => {
     }));
   };
 
+  const [orderType, setOrderType] = useState("")
 
   const removeItemFromOrders = useCallback((e, productIdToRemove) => {
     e.preventDefault();
@@ -494,7 +495,7 @@ useEffect(() => {
           products: normalizedProducts,
           paymentId: paymentId,
           payment_status: "Completed",
-          payment_method: paymentMethod,
+          payment_method: orderType,
           delivery_address: selectedAddressId,
           totalAmt: totalAmount,
           date: new Date().toLocaleString("en-IN", {
@@ -591,7 +592,7 @@ useEffect(() => {
       products: normalizedProducts,
       paymentId: "COD",
       payment_status: "Pending",
-      payment_method: paymentMethod,
+      payment_method: orderType,
       delivery_address: selectedAddressId,
       totalAmt: totalAmount,
       date: new Date().toLocaleString("en-IN", {
@@ -645,6 +646,7 @@ useEffect(() => {
   const [cnfCODModal, setCnfCODModal] = useState(false)
 
 
+
   return (
     <>
 
@@ -657,19 +659,19 @@ useEffect(() => {
         <div className="flex w-full min-h-screen justify-center bg-slate-100">
           <div className="w-full sm:w-[1020px] flex flex-col gap-2 sm:my-3 mx-auto ">
             {/* Shipping Information */}
-            <div className="p-2 sm:p-5   bg-white  shadow-slate-400 shadow-lg">
+            <div className="p-3 sm:p-5   bg-white  shadow-slate-400 shadow-lg">
               <div className="flex justify-between items-center">
                 <div className="text-[14px] sm:text-[25px] text-black font-semibold">
                   Shipping Information
                 </div>
-              <Button
-  variant="outlined"
-  onClick={toggleAddressSelectButton}
-  className="!text-sm !font-medium !text-indigo-950 !border-indigo-950 hover:!bg-indigo-50 transition-colors duration-200 px-2 sm:px-4 py-1 sm:py-2 sm:!w-auto !w-10"
->
-  <span className="hidden sm:inline">Choose Delivery Address</span>
-  <span className="sm:hidden"><FaLocationDot size={15} /></span>
-</Button>
+                <Button
+                  variant="outlined"
+                  onClick={toggleAddressSelectButton}
+                  className="!text-sm !font-medium !text-indigo-950 !border-indigo-950 hover:!bg-indigo-50 transition-colors duration-200 px-2 sm:px-4 py-1 sm:py-2 sm:!w-auto !w-10"
+                >
+                  <span className="hidden sm:inline">Choose Delivery Address</span>
+                  <span className="sm:hidden p-1"><FaLocationDot size={15} /></span>
+                </Button>
 
               </div>
 
@@ -746,7 +748,7 @@ useEffect(() => {
                           key={index}
                           className="flex gap-3 sm:gap-4 border border-slate-300 bg-slate-50 rounded-sm sm:rounded-md p-1 sm:p-4 mb-2 sm:mb-4 hover:shadow-md transition-all"
                         >
-                          <div className="w-[100px] h-[90px] sm:w-[130px] sm:h-[120px] flex-shrink-0 rounded overflow-hidden ">
+                          <div className="w-[130px] h-[100px] sm:w-[130px] sm:h-[120px] flex-shrink-0 rounded overflow-hidden flex items-center">
                             <Image
                               src={item?.image || item?.images?.[0]}
                               alt={item?.name || item?.productTitle}
@@ -764,16 +766,16 @@ useEffect(() => {
                                   router.replace(`/product/${item?.name ? item?._id : item?.productId}`)
                                 }
                               >
-                                <h3 className="text-sm sm:text-lg font-semibold text-gray-800">
+                                <h3 className="text-lg font-semibold text-gray-800">
                                   {item?.name || item?.productTitle}
                                 </h3>
-                                <p className="text-xs sm:text-sm text-gray-600">{item?.brand}</p>
+                                <p className="text-sm text-gray-600">{item?.brand}</p>
                               </div>
                             </div>
 
-                            <div className="flex justify-between items-center text-slate-700 text-xs sm:text-sm">
+                            <div className="flex justify-between items-center text-slate-700 text-xs pr-1 sm:pr-0 sm:text-sm">
                               <span>Qty: {item?.quantity}</span>
-                              <span className="font-semibold text-sm sm:text-lg">₹{item?.quantity * item?.price}</span>
+                              <span className="font-semibold text-[16px] sm:text-lg">₹{item?.quantity * item?.price}</span>
                             </div>
                           </div>
                         </li>
@@ -801,7 +803,7 @@ useEffect(() => {
                       </div>
                     ))}
 
-                    <div className="flex justify-between font-bold text-slate-800 text-sm sm:text-xl  sm:pt-1">
+                    <div className="flex justify-between font-bold text-slate-800 text-lg sm:text-xl  sm:pt-1">
                       <span>Total Amount</span>
                       <span>
                         ₹
@@ -812,59 +814,92 @@ useEffect(() => {
                       </span>
                     </div>
 
-                    <div className="pt-3 sm:pt-6">
-                      <Button
-                        variant="contained"
-                        className="w-full !text-xs sm:!text-normal !bg-primary-gradient"
-                        onClick={(e) => {
-                          if (!selectedAddressId) {
-                            alert.alertBox({
-                              type: "error",
-                              msg: "Please select a delivery address",
-                            });
-                            return;
-                          }
+                    <div className="pt-3 sm:pt-6 flex flex-col sm:flex-row gap-3">
+  {/* Book & Pickup */}
+  <Button
+    variant="contained"
+    className="w-full !text-sm sm:!text-normal !bg-gradient-to-r from-emerald-600 to-emerald-700"
+    onClick={(e) => {
+      setOrderType("pickup"); // <-- Store type in state
+      setShowPaymentOptions(true);
+    }}
+  >
+    Book & Pickup
+  </Button>
 
-                          // Ask user to choose payment method
-                          setShowPaymentOptions(true);
-                        }}
-                      >
-                        Proceed to Checkout
-                      </Button>
+  {/* Contact for Delivery */}
+  <Button
+    variant="contained"
+    className="w-full !text-sm sm:!text-normal !bg-gradient-to-r from-blue-600 to-blue-700"
+    onClick={(e) => {
+      if (!selectedAddressId) {
+        alert.alertBox({
+          type: "error",
+          msg: "Please select a delivery address",
+        });
+        return;
+      }
+      setOrderType("delivery"); // <-- Store type in state
+      setShowPaymentOptions(true);
+    }}
+  > 
+    Contact for Home Delivery
+  </Button>
 
-                      {showPaymentOptions && (
-                        <div className="mt-2 sm:mt-4 space-y-1 sm:space-y-3">
-                            
-                          <div className="mt-2 sm:mt-4 space-y-1 sm:space-y-3 ">
-                            <Button
-                              variant="outlined"
-                              sx={{
-                                color: "#1e293b", // slate-800
-                                borderColor: "#cbd5e1", // slate-300
-                                "&:hover": {
-                                  borderColor: "#1e293b",
-                                  backgroundColor: "#f1f5f9", // slate-100
-                                },
-                                fontWeight: 600,
-                                fontSize: "16px",
-                              }}
-                              fullWidth
-                              className="!text-xs sm:!text-normal"
+  {/* Payment Options (COD / or maybe UPI later) */}
+  {showPaymentOptions && (
+  <div className="mt-2 sm:mt-4 space-y-2 sm:space-y-3">
+    <div className="font-semibold text-slate-700 text-center">
+      {orderType === "pickup"
+        ? "Confirm your booking for pickup"
+        : "Contact us to confirm delivery"}
+    </div>
 
-                              onClick={(e) => {
-                               handleCOD(e, "COD")
-                              }}
-                            >
-                              Place Order (COD)
-                            </Button>
+    {orderType === "pickup" ? (
+      <Button
+        variant="outlined"
+        sx={{
+          color: "#1e293b",
+          borderColor: "#cbd5e1",
+          "&:hover": {
+            borderColor: "#1e293b",
+            backgroundColor: "#f1f5f9",
+          },
+          fontWeight: 600,
+          fontSize: "16px",
+        }}
+        fullWidth
+        className="!text-sm sm:!text-normal"
+        onClick={(e) => handleCOD(e, orderType)}
+      >
+        Place Booking (COD)
+      </Button>
+    ) : (
+      <a href="tel:+919776501230" className="block w-full">
+        <Button
+          variant="outlined"
+          sx={{
+            color: "#1e293b",
+            borderColor: "#cbd5e1",
+            "&:hover": {
+              borderColor: "#1e293b",
+              backgroundColor: "#f1f5f9",
+            },
+            fontWeight: 600,
+            fontSize: "16px",
+          }}
+          fullWidth
+          className="!text-sm sm:!text-normal"
+        >
+          Call to Confirm Delivery
+        </Button>
+      </a>
+    )}
+  </div>
+)}
 
+</div>
 
-
-                          </div>
-
-                        </div>
-                      )}
-                    </div>
                   </div>
                 </div>
               </div>
@@ -1170,36 +1205,36 @@ useEffect(() => {
 
 
       {cnfCODModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 mx-4">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">
-        Confirm Cash on Delivery
-      </h3>
-      <p className="text-gray-700 mb-6">
-        Are you sure you want to place this order with Cash on Delivery?
-      </p>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-sm w-full p-6 mx-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              Confirm Cash on Delivery
+            </h3>
+            <p className="text-gray-700 mb-6">
+              Are you sure you want to place this order with Cash on Delivery?
+            </p>
 
-      <div className="flex justify-end gap-4">
-        <button
-          className="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100"
-          onClick={() => setCnfCODModal(false)}
-        >
-          Cancel
-        </button>
-        <button
-          className="px-4 py-2 rounded bg-primary-gradient text-white font-semibold hover:brightness-110"
-          onClick={(e) => {
-            e.preventDefault();
-            setCnfCODModal(false);
-            handleCOD(e, "COD");  // Call your original COD handler here
-          }}
-        >
-          Confirm
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+            <div className="flex justify-end gap-4">
+              <button
+                className="px-4 py-2 rounded border border-gray-300 text-gray-700 hover:bg-gray-100"
+                onClick={() => setCnfCODModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-primary-gradient text-white font-semibold hover:brightness-110"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCnfCODModal(false);
+                  handleCOD(e, "COD");  // Call your original COD handler here
+                }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
 
 

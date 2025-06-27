@@ -19,11 +19,11 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import Link from 'next/link';
 
 const Cart = () => {
-  const { cartData, getCartItems, buyNowItem, setBuyNowItem,isCheckingToken , setIsCheckingToken } = useCart();
+  const { cartData, getCartItems, buyNowItem, setBuyNowItem, isCheckingToken, setIsCheckingToken } = useCart();
   const alert = useAlert();
   const router = useRouter();
   const { setUserData, userData, isLogin } = useAuth();
-      if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
+  if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
   useEffect(() => {
     if (!isLogin) {
@@ -88,218 +88,220 @@ const Cart = () => {
           </div>
         ) : (
           <>
-          <div className='hidden sm:block w-full h-full border sm:rounded-lg bg-white shadow-xl p-1 sm:p-5'>
-            
-          <div className="w-full bg-white mb-2">
-  <h1 className="text-2xl sm:text-3xl font-semibold bg-white text-gray-800 mb-0">🛒 My Cart</h1>
-</div>
+            <div className='hidden sm:block w-full h-full border sm:rounded-lg bg-white shadow-xl p-1 sm:p-5'>
 
-            <ul>
-              {cartData.map((item, index) => (
-                <li
-                  key={index}
-                  className='flex  border border-slate-300 hover:shadow-lg gap-4 p-1 sm:p-4 w-full mb-5 rounded-md bg-slate-50 hover:bg-white transition'
-                >
-                  <div
-                    className='w-full sm:w-[220px] sm:h-[200px] flex items-center justify-center rounded-lg overflow-hidden bg-white shadow mx-auto sm:mx-0'
-                    onClick={() => router.push(`/product/${item?.productId}`)}
+              <div className="w-full bg-white mb-2">
+                <h1 className="text-3xl font-sans font-bold bg-white text-gray-800 mb-0">🛒 My Cart</h1>
+              </div>
+
+              <ul>
+                {cartData.map((item, index) => (
+                  <li
+                    key={index}
+                    className='flex   border border-slate-300 hover:shadow-lg gap-4 p-1 sm:p-4 w-full mb-5 rounded-md bg-slate-50 hover:bg-white transition'
                   >
-                    <Image
-                      src={item.image}
-                      className='object-contain h-full w-auto cursor-pointer'
-                      alt={item.title || "no img"}
-                      width={100}
-                      height={100}
-                    />
-                  </div>
-
-                  <div className='w-full p-2 flex flex-col justify-between'>
-                    <div className='flex flex-col sm:flex-row border-b pb-2 justify-between items-start gap-2 sm:gap-0'>
-                      <div className='cursor-pointer' onClick={() => router.push(`/product/${item?.productId}`)}>
-                        <h1 className='text-gray-800 text-[17px] sm:text-[22px] font-semibold break-words'>{item?.productTitle}</h1>
-                        <h3 className='text-gray-600 text-[15px] sm:text-[18px]'>{item?.brand}</h3>
-                      </div>
-                      <RxCross2
-                        className='text-gray-500 text-[22px] sm:text-[25px] hover:text-red-600 cursor-pointer'
-                        onClick={(e) => removeItemFromCart(e, item?._id, item?.productId)}
+                    <div
+                      className='w-full sm:w-[220px] sm:h-[200px] flex items-center justify-center rounded-lg overflow-hidden bg-white shadow mx-auto sm:mx-0'
+                      onClick={() => router.push(`/product/${item?.productId}`)}
+                    >
+                      <Image
+                        src={item.image}
+                        className='object-contain h-full w-auto cursor-pointer'
+                        alt={item.title || "no img"}
+                        width={100}
+                        height={100}
                       />
                     </div>
 
-                    <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center pt-3 gap-4'>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <ButtonGroup variant="outlined" aria-label="quantity controls" size="small">
-                          <Button
-                            className='!text-red-600 !border-black !border-r-0'
-                            onClick={(e) => handleQuantityChange(e, item._id, item.quantity - 1)}
-                          >
-                            <RemoveIcon />
-                          </Button>
-                          <Button disabled className='!text-black !border-black bg-white'>
-                            {item?.quantity}
-                          </Button>
-                          <Button
-                            className='!text-blue-600 !border-black !border-l-0'
-                            onClick={(e) => handleQuantityChange(e, item._id, item.quantity + 1)}
-                          >
-                            <AddIcon />
-                          </Button>
-                        </ButtonGroup>
-                      </Box>
-                      <div className='text-lg sm:text-xl font-semibold text-slate-700'>₹{item?.quantity * item?.price}</div>
+                    <div className='w-full p-2 flex flex-col justify-between'>
+                      <div className='flex flex-col h-[65%] sm:flex-row border-b pb-2 justify-between items-start gap-2 sm:gap-0'>
+                        <div className='cursor-pointer' onClick={() => router.push(`/product/${item?.productId}`)}>
+                          <h1 className='text-gray-800 text-[17px] sm:text-[22px] font-semibold break-words'>{item?.productTitle}</h1>
+                          <h3 className='text-gray-600 text-[15px] sm:text-[18px]'>{item?.brand}</h3>
+                        </div>
+                        <RxCross2
+                          className='text-gray-500 text-[22px] sm:text-[25px] hover:text-red-600 cursor-pointer'
+                          onClick={(e) => removeItemFromCart(e, item?._id, item?.productId)}
+                        />
+                      </div>
+
+                      <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center pt-3 gap-4'>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <ButtonGroup variant="outlined" aria-label="quantity controls" size="small">
+                            <Button
+                              className='!text-red-600 !border-black !border-r-0'
+                              onClick={(e) => handleQuantityChange(e, item._id, item.quantity - 1)}
+                            >
+                              <RemoveIcon />
+                            </Button>
+                            <Button disabled className='!text-black !border-black bg-white'>
+                              {item?.quantity}
+                            </Button>
+                            <Button
+                              className='!text-blue-600 !border-black !border-l-0'
+                              onClick={(e) => handleQuantityChange(e, item._id, item.quantity + 1)}
+                            >
+                              <AddIcon />
+                            </Button>
+                          </ButtonGroup>
+                        </Box>
+                        <div className='text-lg sm:text-xl font-semibold text-slate-700'>₹{item?.quantity * item?.price}</div>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+
+                <li className='flex flex-col border border-slate-300 shadow-lg bg-white p-4 sm:p-6 rounded-lg mt-5'>
+                  <h2 className="text-gray-700 font-bold text-[17px] sm:text-[24px] mb-4 sm:mb-6 text-center">Billing Details</h2>
+                  <div className="text-black space-y-3 sm:space-y-4 text-sm sm:text-base">
+                    {cartData.map((item, index) => (
+                      <div key={index} className="flex justify-between px-2">
+                        <span>{item?.productTitle} × {item.quantity}</span>
+                        <span className="text-slate-700">₹{item.quantity * item.price}</span>
+                      </div>
+                    ))}
+                    <hr className="my-3" />
+                    <div className="flex justify-between font-bold text-base sm:text-xl px-2">
+                      <span>Total Amount</span>
+                      <span className="text-slate-800">
+                        ₹{cartData.reduce((acc, item) => acc + item.quantity * item.price, 0)}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-end pt-6">
+                      <Button
+                        fullWidth
+                        disabled={cartData.length === 0}
+                        variant="contained"
+                        color="primary"
+                        className="bg-primary-gradient text-white px-4  py-2 sm:px-6 sm:py-2 rounded shadow hover:shadow-md  !text-xs sm:!text-base"
+                        onClick={() => {
+                          setBuyNowItem(cartData);
+                          sessionStorage.setItem("buyNowItem", JSON.stringify(cartData));
+                          router.push('/checkOut');
+                        }}
+                      >
+                        Proceed to Checkout
+                      </Button>
                     </div>
                   </div>
                 </li>
-              ))}
+              </ul>
+            </div>
 
-              <li className='flex flex-col border border-slate-300 shadow-lg bg-white p-4 sm:p-6 rounded-lg mt-5'>
-                <h2 className="text-gray-700 font-bold text-[17px] sm:text-[24px] mb-4 sm:mb-6 text-center">Billing Details</h2>
-                <div className="text-black space-y-3 sm:space-y-4 text-sm sm:text-base">
-                  {cartData.map((item, index) => (
-                    <div key={index} className="flex justify-between px-2">
-                      <span>{item?.productTitle} × {item.quantity}</span>
-                      <span className="text-slate-700">₹{item.quantity * item.price}</span>
-                    </div>
-                  ))}
-                  <hr className="my-3" />
-                  <div className="flex justify-between font-bold text-base sm:text-xl px-2">
-                    <span>Total Amount</span>
-                    <span className="text-slate-800">
-                      ₹{cartData.reduce((acc, item) => acc + item.quantity * item.price, 0)}
-                    </span>
-                  </div>
+            <div className='block sm:hidden mt-0 w-full h-full border sm:rounded-lg bg-white shadow-xl p-1 sm:p-5'>
+              <div className="w-full bg-white mb-2">
+                <h1 className="text-xl font-sans sm:text-3xl font-semibold bg-white text-gray-800 mb-0">🛒 My Cart</h1>
+              </div>
+              <ul>
 
-                  <div className="flex justify-end pt-6">
-                    <Button
-                      fullWidth
-                      disabled={cartData.length === 0}
-                      variant="contained"
-                      color="primary"
-                      className="bg-primary-gradient text-white px-4  py-2 sm:px-6 sm:py-2 rounded shadow hover:shadow-md  !text-xs sm:!text-base"
-                      onClick={() => {
-                        setBuyNowItem(cartData);
-                        sessionStorage.setItem("buyNowItem", JSON.stringify(cartData));
-                        router.push('/checkOut');
-                      }}
-                    >
-                      Proceed to Checkout
-                    </Button>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-          
-          <div className='block sm:hidden mt-0 w-full h-full border sm:rounded-lg bg-white shadow-xl p-1 sm:p-5'>
-           <div className="w-full bg-white mb-2">
-  <h1 className="text-xl font-sans sm:text-3xl font-semibold bg-white text-gray-800 mb-0">🛒 My Cart</h1>
-</div>
-            <ul>
+                {cartData.map((item, index) => (
+                  <li
+                    key={index}
+                    className=' border bg-slate-50 border-slate-300 hover:shadow-lg gap-4 p-2 sm:p-4 w-full mb-2 rounded-md '
+                  >
 
-              {cartData.map((item, index) => (  
-                <li
-                  key={index}
-                  className=' border bg-slate-50 border-slate-300 hover:shadow-lg gap-4 p-2 sm:p-4 w-full mb-2 rounded-md '
-                >
+                    <div className='flex gap-2'>
 
-                  <div className='flex gap-2'>
+                      <div
+                        className=' !w-[200px] !h-[100px] flex items-center justify-center rounded-lg overflow-hidden bg-white shadow mx-auto sm:mx-0'
+                        onClick={() => router.push(`/product/${item?.productId}`)}
+                      >
+                        <Image
+                          src={item.image}
+                          className='object-contain h-full w-auto cursor-pointer'
+                          alt={item.title || "no img"}
+                          width={100}
+                          height={100}
+                        />
 
-                  <div
-                    className=' !w-[100px] !h-[100px] flex items-center justify-center rounded-lg overflow-hidden bg-white shadow mx-auto sm:mx-0'
-                    onClick={() => router.push(`/product/${item?.productId}`)}
-                    >
-                    <Image
-                      src={item.image}
-                      className='object-contain h-full w-auto cursor-pointer'
-                      alt={item.title || "no img"}
-                      width={100}
-                      height={100}
-                      />
-                    
-                  </div>
-
-                  <div className='flex  w-full sm:flex-row border-b pb-2  justify-between items-start gap-2 sm:gap-0'>
-                      <div className='cursor-pointer pl-2' onClick={() => router.push(`/product/${item?.productId}`)}>
-                        <h1 className='text-gray-800  text-[17px] font-medium break-words'>{item?.productTitle}</h1>
-                        <h3 className='text-gray-600 text-[12px]'>{item?.brand}</h3>
-                      </div>
-                      <RxCross2
-                        className='text-gray-500 text-[15px] sm:text-[25px] hover:text-red-600 cursor-pointer'
-                        onClick={(e) => removeItemFromCart(e, item?._id, item?.productId)}
-                      />
-                    </div>
                       </div>
 
-                  <div className='w-full  flex  justify-between'>
-                    
+                      <div className='w-full'>
+                        <div className='flex  w-full h-[65%]  sm:flex-row border-b pb-2  justify-between items-start gap-2 sm:gap-0'>
+                          <div className='cursor-pointer pl-2' onClick={() => router.push(`/product/${item?.productId}`)}>
+                            <h1 className='text-gray-800  text-[20px] font-medium break-words'>{item?.productTitle}</h1>
+                            <h3 className='text-gray-600 text-[12px]'>{item?.brand}</h3>
+                          </div>
+                          <RxCross2
+                            className='text-gray-500 text-[15px] sm:text-[25px] hover:text-red-600 cursor-pointer'
+                            onClick={(e) => removeItemFromCart(e, item?._id, item?.productId)}
+                          />
+                        </div>
+                    <div className='w-full  flex  justify-between items-center'>
 
-                    <div className='w-full flex justify-between items-start sm:items-center pt-3 gap-4'>
-  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-    <ButtonGroup variant="outlined" size="small" aria-label="quantity controls" className="!rounded">
-      <Button
-        className='!text-red-600 !border-black !border-r-0 !min-w-[28px] !h-[28px] !p-0 !text-xs'
-        onClick={(e) => handleQuantityChange(e, item._id, item.quantity - 1)}
-      >
-        <RemoveIcon fontSize="inherit" />
-      </Button>
-      <Button
-        disabled
-        className='!text-black !border-black !min-w-[28px] !h-[28px] !p-0 !text-xs bg-white'
-      >
-        {item?.quantity}
-      </Button>
-      <Button
-        className='!text-blue-600 !border-black !border-l-0 !min-w-[28px] !h-[28px] !p-0 !text-xs'
-        onClick={(e) => handleQuantityChange(e, item._id, item.quantity + 1)}
-      >
-        <AddIcon fontSize="inherit" />
-      </Button>
-    </ButtonGroup>
-  </Box>
-  <div className='text-sm font-semibold text-slate-700'>₹{item?.quantity * item?.price}</div>
-</div>
 
+                      <div className='w-full flex justify-between items-start sm:items-center pt-3 gap-4'>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                          <ButtonGroup variant="outlined" size="small" aria-label="quantity controls" className="!rounded">
+                            <Button
+                              className='!text-red-600 !border-black !border-r-0 !min-w-[28px] !h-[28px] !p-0 !text-xs'
+                              onClick={(e) => handleQuantityChange(e, item._id, item.quantity - 1)}
+                            >
+                              <RemoveIcon fontSize="inherit" />
+                            </Button>
+                            <Button
+                              disabled
+                              className='!text-black !border-black !min-w-[28px] !h-[28px] !p-0 !text-xs bg-white'
+                            >
+                              {item?.quantity}
+                            </Button>
+                            <Button
+                              className='!text-blue-600 !border-black !border-l-0 !min-w-[28px] !h-[28px] !p-0 !text-xs'
+                              onClick={(e) => handleQuantityChange(e, item._id, item.quantity + 1)}
+                            >
+                              <AddIcon fontSize="inherit" />
+                            </Button>
+                          </ButtonGroup>
+                        </Box>
+                        <div className='text-sm font-semibold text-slate-700'>₹{item?.quantity * item?.price}</div>
+                      </div>
+
+                    </div>
+                      </div>
+                    </div>
+
+                  </li>
+                ))}
+
+                <li className='flex flex-col border border-slate-300 shadow-lg bg-white p-4 sm:p-6 rounded-lg mt-2'>
+                  <h2 className="text-gray-700 font-bold text-[17px] sm:text-[24px] mb-4 sm:mb-6 text-center">Billing Details</h2>
+                  <div className="text-black space-y-3 sm:space-y-4 text-[14px] sm:text-[17px]">
+                    {cartData.map((item, index) => (
+                      <div key={index} className="flex justify-between px-2">
+                        <span>{item?.productTitle} × {item.quantity}</span>
+                        <span className="text-slate-700">₹{item.quantity * item.price}</span>
+                      </div>
+                    ))}
+                    <hr className="my-3" />
+                    <div className="flex justify-between font-bold text-sm sm:text-xl px-2">
+                      <span>Total Amount</span>
+                      <span className="text-slate-800">
+                        ₹{cartData.reduce((acc, item) => acc + item.quantity * item.price, 0)}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-end pt-6">
+                      <Button
+                        fullWidth
+                        disabled={cartData.length === 0}
+                        variant="contained"
+                        color="primary"
+                        className="bg-primary-gradient text-white px-4 py-3 sm:px-6 sm:py-2 rounded shadow hover:shadow-md !text-sm sm:!text-normal"
+                        onClick={() => {
+                          setBuyNowItem(cartData);
+                          sessionStorage.setItem("buyNowItem", JSON.stringify(cartData));
+                          router.push('/checkOut');
+                        }}
+                      >
+                        Proceed to Checkout
+                      </Button>
+                    </div>
                   </div>
                 </li>
-              ))}
+              </ul>
+            </div></>
 
-              <li className='flex flex-col border border-slate-300 shadow-lg bg-white p-4 sm:p-6 rounded-lg mt-2'>
-                <h2 className="text-gray-700 font-bold text-[17px] sm:text-[24px] mb-4 sm:mb-6 text-center">Billing Details</h2>
-                <div className="text-black space-y-3 sm:space-y-4 text-[14px] sm:text-[17px]">
-                  {cartData.map((item, index) => (
-                    <div key={index} className="flex justify-between px-2">
-                      <span>{item?.productTitle} × {item.quantity}</span>
-                      <span className="text-slate-700">₹{item.quantity * item.price}</span>
-                    </div>
-                  ))}
-                  <hr className="my-3" />
-                  <div className="flex justify-between font-bold text-sm sm:text-xl px-2">
-                    <span>Total Amount</span>
-                    <span className="text-slate-800">
-                      ₹{cartData.reduce((acc, item) => acc + item.quantity * item.price, 0)}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-end pt-6">
-                    <Button
-                      fullWidth
-                      disabled={cartData.length === 0}
-                      variant="contained"
-                      color="primary"
-                      className="bg-primary-gradient text-white px-4 py-2 sm:px-6 sm:py-2 rounded shadow hover:shadow-md !text-xs sm:!text-normal"
-                      onClick={() => {
-                        setBuyNowItem(cartData);
-                        sessionStorage.setItem("buyNowItem", JSON.stringify(cartData));
-                        router.push('/checkOut');
-                      }}
-                    >
-                      Proceed to Checkout
-                    </Button>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div></>
-          
         )}
       </div>
     </div>

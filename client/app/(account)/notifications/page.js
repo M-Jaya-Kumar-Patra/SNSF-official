@@ -53,7 +53,7 @@ useEffect(() => {
 
   return (
     <div className="flex w-full min-h-screen justify-center bg-slate-100">
-      <div className="w-full sm:w-[1020px] my-3 mx-auto flex justify-between">
+      <div className="w-full sm:w-[1020px] sm:my-3 mx-auto flex justify-between">
         {/* Left Sidebar */}
         <div className="hidden sm:block left h-fit sticky top-8">
           <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5 gap-3 flex flex-col justify-center items-center">

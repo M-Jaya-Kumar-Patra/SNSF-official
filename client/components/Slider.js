@@ -53,8 +53,8 @@ const Slider = () => {
   if (isCheckingToken || localLoading || !slides.length) return null;
 
   return (
-    <div className="flex justify-center w-full mt-2 sm:mt-3">
-      <div className="relative w-full aspect-[16/9] max-w-[1000px] mx-auto sm:rounded-xl overflow-hidden shadow-md">
+    <div className="flex justify-center w-full ">
+      <div className="relative w-full aspect-[16/9] max-w-[1000px] mx-auto  overflow-hidden shadow-md">
         {/* Left Arrow */}
         <button
           onClick={handlePrev}

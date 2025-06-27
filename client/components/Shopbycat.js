@@ -23,7 +23,7 @@ const Shopbycat = () => {
   if (!hydrated || isCheckingToken) return null; // ✅ early exit
 
   return (
-    <div className="mt-2 sm:mt-3 flex flex-col items-center bg-slate-100 w-full pb-4 sm:pb-8">
+    <div className=" flex flex-col items-center bg-slate-100 w-full pb-4 sm:pb-8">
       <h1
         className={`text-2xl sm:text-3xl font-bold text-black mt-4 sm:mt-8 mb-4 sm:mb-8 ${joSan.className}`}
       >

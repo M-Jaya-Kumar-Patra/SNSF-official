@@ -114,7 +114,7 @@ const Account = () => {
         {/* Wishlist Section */}
 <div className="right h-full w-full sm:w-[750px] bg-white shadow-xl sm:rounded-xl p-2 sm:p-6">
   <div className="mb-2 sm:mb-6">
-    <h2 className="text-[22px] sm:text-2xl font-bold text-gray-800 border-b pb-2">
+    <h2 className="text-[22px] sm:text-2xl font-extrabold text-gray-800 border-b pb-2">
       My Wishlist
     </h2>
   </div>
@@ -150,7 +150,7 @@ const Account = () => {
                 {item?.productTitle}
               </h3>
               <p className="text-gray-500 text-sm">{item?.brand}</p>
-              <p className="text-green-700 font-bold text-lg mt-2">
+              <p className="text-black font-bold text-lg mt-2">
                 ₹{item?.price}
               </p>
             </div>

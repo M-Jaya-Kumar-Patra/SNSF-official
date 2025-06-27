@@ -195,7 +195,7 @@ useEffect(() => {
   <div className="flex-1 overflow-y-auto pr-1 sm:pr-0">
     {/* Category Filter */}
     <div className='p-1 sm:p-2 bg-white'>
-      <h3 className='text-base sm:text-lg font-medium font-sans mb-2'>
+      <h3 className='text-lg font-medium font-sans mb-2'>
         Filter By Category
       </h3>
       <div className='flex flex-col ml-2 sm:ml-3'>
@@ -204,14 +204,13 @@ useEffect(() => {
             <FormControlLabel
               control={
                 <Checkbox
-                  size="small"
                   checked={filters.catId.includes(cat._id)}
                   onChange={() => handleCheckChange('catId', cat._id)}
                   className="!p-1 sm:!p-3"
                 />
               }
               label={
-                <span className="text-sm sm:text-base">{cat.name}</span>
+                <span className="text-base">{cat.name}</span>
               }
             />
           </div>
@@ -221,7 +220,7 @@ useEffect(() => {
 
     {/* Price Filter */}
     <div className='p-1 sm:p-2 bg-white mt-3'>
-      <h3 className='text-base sm:text-lg font-medium font-sans mb-3 sm:mb-4'>
+      <h3 className='text-lg font-medium font-sans mb-3 sm:mb-4'>
         Filter By Price
       </h3>
       <Box sx={{ width: '100%' }}>
@@ -248,7 +247,7 @@ useEffect(() => {
 
     {/* Rating Filter */}
     <div className='p-1 sm:p-2 bg-white mt-3'>
-      <h3 className='text-base sm:text-lg font-medium font-sans mb-3 sm:mb-4'>
+      <h3 className='text-lg font-medium font-sans mb-3 sm:mb-4'>
         Filter By Rating
       </h3>
       <Box>

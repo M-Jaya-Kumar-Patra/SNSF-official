@@ -173,16 +173,25 @@ const Account = () => {
     }
   };
 
+  const [showTopForm, setShowTopForm] = useState(false)
+
   if (!isLogin) return <div className="text-center mt-10">Loading...</div>;
+
+
 
 
   return (
     <div className="flex w-full min-h-screen justify-center bg-slate-100">
-      <div className="w-full sm:w-[1020px] my-2 sm:my-3 mx-auto sm:flex justify-between">
+      <div className="w-full sm:w-[1020px]  sm:my-3 mx-auto sm:flex justify-between">
         {/* Sidebar */}
         <div className="left sm:h-full">
+            <div className="flex sm:hidden w-full pl-3 items-center justify-start mb-2 bg-white shadow-lg py-2">
+            <span className="text-black text-[22px] sm:text-3xl font-extrabold ml-1 sm:ml-0 ">Profile Information</span>
+          </div>
           <div className=" w-full sm:w-[256px] mb-2 bg-white shadow-lg pb-2 sm:pb-5 pt-2 sm:pt-6 sm:px-5 gap-3 flex flex-col justify-center items-center ">
-            <div className="mt-2 mr-2 w-[60px] h-[60px] sm:w-[140px] sm:h-[140px] relative group overflow-hidden border   rounded-full border-gray-300 shadow">
+
+
+            <div className="mt-2 mr-2 w-[90px] h-[90px] sm:w-[140px] sm:h-[140px] relative group overflow-hidden border   rounded-full border-gray-300 shadow">
             {!uploading && (
               <Image
                 src={userData?.avatar || "/images/account.png"}
@@ -277,8 +286,8 @@ const Account = () => {
 
         {/* Main Panel */}
         <div className="w-full sm:w-[750px] bg-white shadow-lg p-2 sm:p-5">
-          <div className="flex items-center justify-between">
-            <span className="text-black font-semibold text-[18px] ml-1 sm:ml-0 sm:text-[25px]">Profile Information</span>
+          <div className="hidden sm:flex items-center justify-between">
+            <span className="text-black text-[22px] sm:text-3xl font-extrabold ml-1 sm:ml-0 ">Profile Information</span>
           </div>
 
           

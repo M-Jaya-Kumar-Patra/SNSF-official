@@ -125,7 +125,7 @@ const Account = () => {
                     {/* Right Profile Section */}
                     <div className="right h-full w-full  sm:w-[750px] bg-white shadow-lg p-2 sm:p-5">
                         <div className="mb-3 sm:mb-6">
-                            <h2 className="text-2xl sm:text-3xl font-bold text-[#131e30]  inline-block">
+                            <h2 className="text-[22px] sm:text-3xl font-extrabold text-[#131e30]  inline-block">
                                 📦 My Orders
                             </h2>
                         </div>

@@ -18,6 +18,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { MdFavorite } from "react-icons/md";
 import { MdFavoriteBorder } from "react-icons/md";
 import Image from "next/image";
+import Loading from '@/components/Loading';
 
 const ProductListing = () => {
     const { prdData, productsData, setProductsData, getProductsData } = usePrd()
@@ -26,7 +27,7 @@ const ProductListing = () => {
     const router = useRouter()
         if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
     
-        useEffect(() => {
+        useEffect(() => {   
             setLoading(false)
             getProductsData()
         }, [isLogin, userData, getProductsData])
@@ -75,12 +76,13 @@ const ProductListing = () => {
     const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist()
 
     return (
-        <div className='w-full bg-slate-100 '>
+        <div className='w-full bg-slate-100 '>  
 
             <div className='flex w-full min-h-screen justify-center bg-slate-100'>
-                <div className="container w-[90%] my-4 mx-auto ">
-                    <div className='flex-grow h-full bg-white p-5 shadow-lg text-black'>
-                        <div className='w-full bg-slate-100 p-2 flex justify-between items-center rounded'>
+                <div className="container w-full sm:w-[90%]  sm:my-4 mx-auto ">
+                    <div className='flex-grow h-full bg-white  sm:p-5 shadow-lg text-black'>
+
+                        <div className='hidden sm:flex w-full bg-slate-100 p-2  justify-between items-center rounded'>
                             <p className='pl-3 text-gray-600 text-base'>{`${prdData?.length} Products found`}</p>
                             <div className='flex items-center gap-2'>
                                 <h1 className='text-gray-600 font-medium text-[18px]'>Sort By</h1>
@@ -109,13 +111,13 @@ const ProductListing = () => {
                             </div>
                         </div>
 
-                        <div className="flex justify-center items-center mt-5">
+                        <div className="flex justify-center items-center sm:mt-5">
                             <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
                                 {prdData
                                     ?.filter(prd => prd?.isFeatured)
                                     .map((prd, index) => (
                                         <div key={prd?._id || index} className="relative group w-full">
-                                            <div className="w-full min-h-[260px] shadow-md flex flex-col items-center justify-between p-3 bg-white hover:shadow-[rgba(0,0,0,0.3)] hover:shadow-xl transition duration-300">
+                                            <div className="w-full min-h-[260px] shadow-md flex flex-col items-center justify-between p-3 bg-white hover:shadow-[rgba(0,0,0,0.3)] sm:hover:shadow-xl transition duration-300">
                                                 <div className="w-full flex flex-col items-center">
                                                     {prd?.images?.length > 0 && prd.images[0] && (
                                                         <Image
@@ -123,6 +125,7 @@ const ProductListing = () => {
                                                             alt={prd?.name || 'Product'}
                                                             width={100}
                                                             height={100}
+                                                            unoptimized 
                                                             className="h-[250px] w-auto object-cover"
                                                             onClick={() => router.push(`/product/${prd?._id}`)}
                                                         />
@@ -160,14 +163,14 @@ const ProductListing = () => {
                                                     </div>
 
                                                     <div className='w-full '>
-                                                        <h1 className="text-black text-[20px] mt-3 font-medium font-sans">
+                                                        <h1 className="text-black text-[22px] mt-3 font-medium font-sans">
                                                             {prd?.name}
                                                         </h1>
                                                     </div>
 
                                                     <div className='w-full justify-between items-center'>
                                                         <div className='w-full flex flex-col items-start'>
-                                                            <h1 className="text-gray-500 text-[16px] mt-1 font-sans">
+                                                            <h1 className="text-gray-500 text-[18px] mt-1 font-sans">
                                                                 {prd?.brand}
                                                             </h1>
 
@@ -200,7 +203,7 @@ const ProductListing = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="absolute left-0 top-full w-full z-50 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-300 group-hover:shadow-[rgba(0,0,0,0.3)] group-hover:shadow-xl">
+                                            <div className="hidden sm:blobk absolute left-0 top-full w-full z-50 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-300 group-hover:shadow-[rgba(0,0,0,0.3)] group-hover:shadow-xl">
                                                 <div className="bg-white shadow-lg p-2 flex gap-2 justify-center">
                                                     <Button
                                                         variant="outlined"
@@ -232,7 +235,7 @@ const ProductListing = () => {
                                                             router.push("/checkOut");
                                                         }}
                                                     >
-                                                        Shop now
+                                                        Book Now
                                                     </Button>
                                                 </div>
                                             </div>

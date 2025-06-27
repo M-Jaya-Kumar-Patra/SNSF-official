@@ -388,7 +388,7 @@ const Account = () => {
                     {/* Right Profile Section */}
                     <div className="right h-full w-full sm:w-[750px] bg-white shadow-lg p-2 sm:p-5">
                         <div className="mb-3 sm:mb-6">
-                            <span className="text-black font-semibold font-sans text-[22px] sm:text-[25px]">Manage addresses</span>
+                            <span className="text-black  font-sans text-[22px] sm:text-3xl font-extrabold">Manage addresses</span>
                         </div>
 
 

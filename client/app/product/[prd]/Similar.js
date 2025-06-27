@@ -84,6 +84,7 @@ const New = (props) => {
                     <Image
                       src={prd?.images[0]||prd?.images}
                       alt={prd?.name}
+                      unoptimized
                       className="w-full h-full object-cover transition-transform duration-300 "
                                 width={100} height={100}
 
@@ -96,13 +97,13 @@ const New = (props) => {
 
                   </div>
 
-                  {/* Shop Now Button */}
+                  {/* Book Now Button */}
                   <Button
                     size="small"
                     variant="contained"
                     className="!bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-1 text-xs mt-auto"
                   >
-                    Shop Now
+                    Book Now
                   </Button>
                 </div>
               ))}

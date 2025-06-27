@@ -47,7 +47,7 @@ const ProductListing = () => {
     const [totalPages, setTotalPages] = useState(1);
 
 
-   if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
+    if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
 
 
@@ -118,8 +118,8 @@ const ProductListing = () => {
                 <div className="container w-full  sm:w-[90%]     sm:my-4 mx-auto flex gap-4 justify-between">
 
                     {/* Sidebar */}
-                    
-  
+
+
                     {/* Filter Panel */}
                     <div
                         className={`fixed top-0 left-0 h-full w-[280px] z-50 bg-white shadow-lg pr-1 pt-1  sm:p-5 text-black transition-transform duration-300 ease-in-out
@@ -127,13 +127,13 @@ const ProductListing = () => {
                     >
                         {/* Close Button for Mobile */}
                         <div className="sm:hidden flex justify-end mb-4 mr-3">
-    <button
-      onClick={() => setShowFilterPannel(false)}
-      className="text-xl text-gray-500 hover:text-red-600 font-bold"
-    >
-      &times;
-    </button>
-  </div>
+                            <button
+                                onClick={() => setShowFilterPannel(false)}
+                                className="text-xl text-gray-500 hover:text-red-600 font-bold"
+                            >
+                                &times;
+                            </button>
+                        </div>
 
                         {/* Scrollable content for mobile */}
                         <div className="h-[calc(100%-40px)] overflow-y-auto pr-2 sm:overflow-visible sm:h-auto">
@@ -143,7 +143,7 @@ const ProductListing = () => {
                                 isLoading={isLoading}
                                 setIsLoading={setIsLoading}
                                 setTotalPages={setTotalPages}
-                                 setShowFilterPannel = {setShowFilterPannel}
+                                setShowFilterPannel={setShowFilterPannel}
                             />
                         </div>
                     </div>
@@ -151,10 +151,10 @@ const ProductListing = () => {
 
 
                     {/* Main Product Content */}
-                    <div className='flex-grow h-full bg-white  sm:p-5 shadow-lg text-black'>
+                    <div className='flex-grow w-full h-full bg-white  sm:p-5 shadow-lg text-black'>
 
                         {/* Sort Header */}
-                        <div className='w-full fixed sm:relative z-[200] sm:z-0 bg-slate-100 p-2 flex flex-col sm:flex-row sm:justify-between sm:items-center rounded gap-2 sm:gap-0'>
+                        <div className='w-full fixed sm:relative z-[200] sm:z-0 bg-slate-100 p-2 flex flex-col sm:flex-row sm:justify-between sm:items-center sm:rounded gap-2 sm:gap-0'>
                             {/* Product Count - visible only on sm and up */}
                             <p className='hidden sm:block sm:pl-3 text-gray-600 text-base'>
                                 {`${productsData?.length} Products found`}
@@ -236,7 +236,7 @@ const ProductListing = () => {
                                         <div key={prd?._id || index} className="relative group w-full">
                                             {/* Product Card */}
                                             <div
-                                            onClick={() => router.push(`/product/${prd?._id}`)}
+                                                onClick={() => router.push(`/product/${prd?._id}`)}
 
                                                 className="w-full min-h-[260px] shadow-md   flex flex-col items-center justify-between p-3 bg-white hover:shadow-[rgba(0,0,0,0.3)] hover:shadow-xl transition duration-300 "
                                             >
@@ -251,6 +251,8 @@ const ProductListing = () => {
                                                     <div
                                                         className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-4 right-3 cursor-pointer"
                                                         onClick={(e) => {
+                                                            e.stopPropagation(); // ✅ prevents parent click
+
                                                             if (!isLogin) {
                                                                 router.push("/login");
                                                             } else {
@@ -265,11 +267,24 @@ const ProductListing = () => {
                                                                     const itemId = wishItem?._id;
 
                                                                     if (itemId) {
-                                                                        removeFromWishlist(e, itemId, prd._id); // Assuming this function is defined and takes these args
+                                                                        removeFromWishlist(e, itemId, prd._id);
+
+                                                                        // ✅ Also update local userData context
+                                                                        setUserData((prev) => ({
+                                                                            ...prev,
+                                                                            wishlist: (prev?.wishlist || []).filter(id => id !== String(prd._id)),
+                                                                        }));
                                                                     }
                                                                 } else {
                                                                     addToWishlist(prd, userData._id);
+
+                                                                    // ✅ Update local userData context
+                                                                    setUserData((prev) => ({
+                                                                        ...prev,
+                                                                        wishlist: [...(prev?.wishlist || []), String(prd._id)],
+                                                                    }));
                                                                 }
+
                                                             }
                                                         }}
                                                     >
@@ -368,7 +383,7 @@ const ProductListing = () => {
                                                         }}
 
                                                     >
-                                                        Shop now
+                                                        Book Now
                                                     </Button>
                                                 </div>
                                             </div>
