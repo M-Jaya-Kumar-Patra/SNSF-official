@@ -12,8 +12,8 @@ export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [isLogin, setIsLogin] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isCheckingToken, setIsCheckingToken] = useState(true); // ✅
 
-  // ✅ Stable logout function
   const logout = useCallback(() => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
@@ -25,30 +25,28 @@ export const AuthProvider = ({ children }) => {
     router.push("/login");
   }, [router]);
 
-  // ✅ Stable fetch user details function
   const fetchUserDetails = useCallback(async () => {
     try {
       const response = await fetchDataFromApi("/api/user/user-details");
       if (!response.error) {
-        console.log("Fetched user details:", response);
+        console.log("✅ Fetched user details:", response);
         setUserData(response.data);
         setIsLogin(true);
       } else {
-        console.error("API error:", response.message);
+        console.error("❌ API error:", response.message);
         if (response.message === "Something is wrong") {
           alert("Your session is closed, please login again");
         }
         logout();
       }
     } catch (error) {
-      console.error("Failed to fetch user details", error);
+      console.error("❌ Failed to fetch user details", error);
       logout();
     } finally {
       setLoading(false);
     }
   }, [logout]);
 
-  // ✅ Login handler
   const login = useCallback((data, token) => {
     if (data && token) {
       localStorage.setItem("accessToken", token);
@@ -56,18 +54,17 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("email", data.email || "");
       setUserData(data);
       setIsLogin(true);
-      console.log("Login called in auth context");
+      console.log("✅ Login successful");
     }
   }, []);
 
-  // ✅ Token validation and user fetch on mount
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
 
     if (!token) {
       setIsLogin(false);
       setUserData(null);
-      setLoading(false);
+      setIsCheckingToken(false);
       return;
     }
 
@@ -77,18 +74,19 @@ export const AuthProvider = ({ children }) => {
 
       if (decoded.exp < currentTime) {
         logout();
+        setIsCheckingToken(false);
       } else {
         const timeLeft = (decoded.exp - currentTime) * 1000;
-        setTimeout(() => logout(), timeLeft); // auto-logout on expiry
-        fetchUserDetails();
+        setTimeout(() => logout(), timeLeft);
+        fetchUserDetails().finally(() => setIsCheckingToken(false));
       }
     } catch (err) {
-      console.error("Invalid token", err);
+      console.error("❌ Invalid token", err);
       logout();
+      setIsCheckingToken(false);
     }
   }, [fetchUserDetails, logout]);
 
-  // ✅ Keep userId in localStorage in sync
   useEffect(() => {
     if (userData?._id || userData?.id) {
       localStorage.setItem("userId", userData._id || userData.id);
@@ -107,6 +105,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         fetchUserDetails,
+        isCheckingToken, // ✅ exposed to context
       }}
     >
       {children}
