@@ -42,8 +42,8 @@ const New = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-3 pb-10 bg-slate-100 w-full">
-      <h1 className={`text-3xl font-bold text-black mt-8 mb-4 ${joSan.className}`}>
+    <div className="flex flex-col items-center mt-3 pb-5  sm:pb-8 bg-slate-100 w-full">
+      <h1 className={`text-2xl sm:text-3xl font-bold text-black mt-4 mb-4 sm:mt-8 sm:mb-8 ${joSan.className}`}>
         New Arrivals
       </h1>
 

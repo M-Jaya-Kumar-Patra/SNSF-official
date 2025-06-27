@@ -79,10 +79,10 @@ const Page = () => {
 
   return (
     <div className="flex flex-col w-full min-h-screen items-center bg-slate-100">
-      <div className="w-[1020px] my-3 p-2 mx-auto flex justify-between bg-white">
+      <div className="w-full sm:w-[1020px] mb-2 sm:my-3 pt-2 sm:p-2 mx-auto sm:flex justify-between bg-white">
         {/* Left: Image Section */}
-        <div className="image sticky top-[50px] w-[400px] h-[350px] p-[2px] border border-slate-400 m-3 mr-4  flex gap-[2px]">
-          <div className="w-[75px] overflow-y-auto h-full p-[2px] border scrollbar-hide">
+        <div className="image sm:sticky top-[50px] w-full sm:w-[400px] sm:h-[350px]  sm:p-[2px] sm:border sm:border-slate-400 sm:m-3 mr-4  flex gap-[2px]">
+          <div className="hidden sm:block w-[75px] overflow-y-auto h-full p-[2px] border scrollbar-hide">
             <ul className="space-y-1">
               {productImages?.map((src, idx) => (
                 <li
@@ -102,8 +102,8 @@ const Page = () => {
             </ul>
           </div>
 
-          <div>
-            <div className="w-[319px] bg-gray-100 h-[300px] flex justify-center items-center">
+          <div className="w-full">
+            <div className="w-full sm:w-[319px] bg-gray-100 sm:h-[300px] flex justify-center items-center">
               <Image
                 className="h-[300px] w-full object-contain border"
                 src={selectedImage||"/"}
@@ -137,20 +137,20 @@ const Page = () => {
                 }}
               >
                 {isLogin && userData?.wishlist?.some(item => item === String(openedProduct?._id)) ? (
-                  <MdFavorite className="!text-rose-600 text-[22px]" />
+                  <MdFavorite className="!text-rose-600 text-[22px] z-10" />
                 ) : (
                   <MdFavoriteBorder className="text-slate-600 text-[22px]" />
                 )}
               </div>
             </div>
 
-            <div className="flex justify-around my-2 gap-2">
+            <div className="hidden  sm:flex justify-around my-2 gap-2">
 
 
 
               <Button
                 variant="outlined"
-                className="text-white bg-gray-600 rounded-md px-1 py-1 text-xs w-1/2 text-nowrap"
+                className="text-white bg-gray-600 rounded-md px-1 py-1   text-xs w-1/2 text-nowrap"
                 onClick={() => {
                   if (isLogin) {
                     if (userData?.shopping_cart?.some(item => item === String(openedProduct?._id))) {
@@ -187,17 +187,17 @@ const Page = () => {
         </div>
 
         {/* Right: Product Details */}
-<div className="details w-[600px] p-4 pt-6">
-  <h2 className="text-[25px] font-medium mb-3 text-gray-800">
+<div className="details sm:w-[600px] px-2 sm:p-4 sm:pt-6">
+  <h2 className="text-[17px] sm:text-[25px] font-medium mt-2 am:mt-0 mb-1 sm:mb-3 text-gray-800">
     {openedProduct?.name}
   </h2>
 
-  <h2 className="text-[20px] font-medium mb-3 text-gray-500">
+  <h2 className="text-[15px] sm:text-[20px] font-medium mb-2 sm:mb-3 text-gray-500">
     {openedProduct?.brand}
   </h2>
 
   <div
-    className={`flex justify-center items-center gap-[2px] text-white text-sm font-semibold px-[6px] w-[50px] h-[23px] rounded ${
+    className={`flex justify-center items-center gap-[2px] text-white  !text-xs sm:text-sm font-semibold  sm:px-[6px] w-[40px] h-[21px] sm:w-[50px] sm:h-[23px] rounded ${
       openedProduct?.rating > 4.5
         ? 'bg-green-600'
         : openedProduct?.rating > 3.5
@@ -213,19 +213,60 @@ const Page = () => {
   </div>
 
   <div className="flex items-center gap-2">
-    <div className="mt-4 text-[25px] font-semibold text-black">
+    <div className="mt-2 sm:mt-4 text-[20px] sm:text-[25px] font-semibold text-black">
       ₹{openedProduct?.price}
     </div>
-    <div className="line-through text-gray-500 mt-4 text-[17px] font-normal">
+    <div className="line-through text-gray-500 mt-2 sm:mt-4 text-[15px] sm:text-[17px] font-normal">
       ₹{openedProduct?.oldPrice}
     </div>
-    <div className="text-green-700 mt-4 text-[17px] font-medium">
+    <div className="text-green-700 mt-2 sm:mt-4 text-[15px] sm:text-[17px] font-medium">
       {openedProduct?.discount}% off
     </div>
   </div>
 
+
+  <div className="sm:hidden flex justify-around my-2 gap-2">
+
+
+
+              <Button
+                variant="outlined"
+                className="!text-[#1e40af] !border-[#1e40af] bg-gray-600 rounded-md px-1 py-1 text-xs !w-1/2 !text-nowrap"
+                onClick={() => {
+                  if (isLogin) {
+                    if (userData?.shopping_cart?.some(item => item === String(openedProduct?._id))) {
+                      router.push("/cart");
+                    } else {
+                      addToCartFun(openedProduct, userData?._id, quantity);
+                    }
+                  } else {
+                    router.push("/login");
+                  }
+                }}
+              >
+                {isLogin
+                  ? userData?.shopping_cart?.some(item => item === String(openedProduct?._id))
+                    ? 'Go to cart'
+                    : 'Add to cart'
+                  : 'Add to cart'}
+              </Button>
+
+
+              <Button
+                variant="contained"
+
+                className="!bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-2 py-1 text-xs w-1/2 text-nowrap"
+                onClick={() => {
+                  setBuyNowItem({ ...openedProduct, quantity: 1 });
+                  router.push("/checkOut");
+                }}
+              >
+                Shop now
+              </Button>
+            </div>
+
   {/* Pincode Checker */}
-  <div className="flex gap-4 mt-6">
+  <div className="sm:flex gap-4 mt-6">
     <h1 className="text-gray-500 font-semibold">Check delivery availability</h1>
     <Pincode />
   </div>
@@ -241,8 +282,7 @@ const Page = () => {
   {/* Warranty Info */}
   <div className="flex gap-4 mt-4">
      <h1 className="text-gray-500 font-semibold">Warranty </h1>
-  <p className="text-black text-sm">
-    Frame warranty available. <Link href="/warranty" className="text-blue-600 underline">View warranty policy</Link>
+  <p className="text-black text-sm"><Link href="/warranty" className="text-blue-600 underline">View warranty policy</Link>
   </p>
   </div>
 

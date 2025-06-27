@@ -5,7 +5,7 @@ import Image from "next/image";
 import { fetchDataFromApi } from "@/utils/api";
 import { useRouter } from "next/navigation";
 
-const Search = () => {
+const Search = ({ onClose } ) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -48,10 +48,24 @@ const Search = () => {
           router.push(`/ProductListing?catId=${firstItem.catId}`);
         }
         setIsDropdownVisible(false);
+        if (onClose) onClose(); // ✅ Close modal
       } else {
         setIsDropdownVisible(false);
       }
     }
+  };
+
+  // inside map result
+  const handleClickResult = (item) => {
+    if (item.thirdSubCatId) {
+      router.push(`/ProductListing?thirdSubCatId=${item.thirdSubCatId}`);
+    } else if (item.subCatId) {
+      router.push(`/ProductListing?subCatId=${item.subCatId}`);
+    } else if (item.catId) {
+      router.push(`/ProductListing?catId=${item.catId}`);
+    }
+    setIsDropdownVisible(false);
+    if (onClose) onClose(); // ✅ Close modal
   };
 
   useEffect(() => {
@@ -81,13 +95,13 @@ const Search = () => {
           alt="Search"
           width={20}
           height={20}
-          className="invert opacity-80 mr-3 select-none"
+          className="sm:invert opacity-80 mr-3 select-none"
           draggable={false}
         />
         <input
           type="text"
           placeholder="Search products..."
-          className="flex-grow bg-transparent outline-none text-sm text-white placeholder-slate-200 caret-blue-400"
+          className="flex-grow bg-transparent outline-none text-sm text-black sm:text-white sm:placeholder-slate-200 caret-blue-400"
           onChange={onChangeInput}
           onKeyDown={handleKeyDown}
           value={searchQuery}

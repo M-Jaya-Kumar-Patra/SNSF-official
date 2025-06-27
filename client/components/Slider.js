@@ -4,42 +4,38 @@ import React, { useState, useEffect } from "react";
 import { fetchDataFromApi } from "@/utils/api";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import { useAuth } from "@/app/context/AuthContext"; // ✅ import Loading context
 
 const Slider = () => {
   const [slides, setSlides] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const { setLoading } = useAuth(); // ✅ Access global loading handler
+  const [localLoading, setLocalLoading] = useState(false);
 
-  // Fetch slides once on mount
   useEffect(() => {
     const getSlides = async () => {
       try {
-        setLoading(true); // ✅ Start loading
+        setLocalLoading(true);
         const response = await fetchDataFromApi(`/api/homeSlider/getAllSlides`, false);
         setSlides(response?.data || []);
       } catch (error) {
         console.error("Error fetching slides:", error);
       } finally {
-        setLoading(false); // ✅ Stop loading
+        setLocalLoading(false);
       }
     };
 
     getSlides();
-  }, [setLoading]);
+  }, []);
 
-  // Auto slide every 3 seconds
   useEffect(() => {
-    if (!slides || slides.length === 0) return;
+    if (!slides?.length) return;
 
     const timer = setTimeout(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
+      setCurrentIndex((prev) => (prev + 1) % slides.length);
     }, 3000);
 
     return () => clearTimeout(timer);
   }, [currentIndex, slides]);
 
-  // Manual navigation
   const handlePrev = () => {
     setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
   };
@@ -48,36 +44,53 @@ const Slider = () => {
     setCurrentIndex((prev) => (prev + 1) % slides.length);
   };
 
+  if (!slides?.length) return null;
+
   return (
-    <div className="flex justify-center mt-0">
-      <div className="relative w-[500px] h-[300px] md:w-[600px] md:h-[200px] lg:w-[1000px] lg:h-[350px]  shadow flex justify-center items-center overflow-hidden">
+    <div className="flex justify-center w-full mt-2 sm:mt-3">
+      <div className="relative w-full aspect-[16/9] max-w-[1000px] mx-auto sm:rounded-xl overflow-hidden shadow-md">
+  
+
 
         {/* Left Arrow */}
         <button
           onClick={handlePrev}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 bg-opacity-20"
+          aria-label="Previous Slide"
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/60 hover:bg-white text-gray-800 p-1 sm:p-2 rounded-full shadow transition text-base sm:text-xl"
         >
-          <ChevronLeft />
+          <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" />
         </button>
 
         {/* Slide Image */}
-        {slides?.[currentIndex]?.images && (
-          <Image
-            src={slides[currentIndex].images[0]}
-            alt={`Slide ${currentIndex + 1}`}
-            className="transition-opacity duration-500 object-contain"
-            width={500}
-            height={500}
-          />
-        )}
+        <Image
+          src={slides[currentIndex].images[0]}
+          alt={`Slide ${currentIndex + 1}`}
+          fill
+          className="object-cover transition-opacity duration-500 ease-in-out"
+          priority
+        />
 
         {/* Right Arrow */}
         <button
           onClick={handleNext}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 bg-opacity-20"
+          aria-label="Next Slide"
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/60 hover:bg-white text-gray-800 p-1 sm:p-2 rounded-full shadow transition text-base sm:text-xl"
         >
-          <ChevronRight />
+          <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
         </button>
+
+        {/* Dots */}
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 sm:gap-2 z-10">
+          {slides.map((_, index) => (
+            <div
+              key={index}
+              onClick={() => setCurrentIndex(index)}
+              className={`w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 rounded-full cursor-pointer transition ${
+                index === currentIndex ? "bg-white" : "bg-white/40"
+              }`}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

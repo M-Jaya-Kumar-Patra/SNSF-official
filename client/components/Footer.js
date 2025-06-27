@@ -103,7 +103,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom Copyright */}
-      <div className="border-t border-gray-700 pt-4 text-center text-gray-500 text-sm">
+      <div className="border-t border-gray-700 pt-4 text-center text-gray-500 text-sm mb-10 sm:pb-0">
         © {new Date().getFullYear()} S N Steel Fabrication. All rights reserved.
       </div>
     </footer>

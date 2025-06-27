@@ -20,8 +20,8 @@ const Pincode = () => {
     setStatus(isAvailable ? "available" : "unavailable");
   };
   return (
-    <div className="w-full max-w-md mx-auto p-4 pt-0">
-      <div className="flex flex-col sm:flex-row gap-3">
+    <div className="w-full max-w-md mx-auto pt-4 sm:p-4 sm:pt-0">
+      <div className="flex sm:flex-col flex-row gap-3">
         <TextField
           label="Enter Pincode"
           variant="outlined"

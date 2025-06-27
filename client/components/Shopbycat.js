@@ -12,18 +12,22 @@ const Shopbycat = () => {
   const catLength = catData?.length || 0;
 
   return (
-    <div className="mt-3 flex flex-col items-center bg-slate-100 w-full pb-8">
-      <h1 className={`text-3xl font-bold text-black mt-8 mb-8 ${joSan.className}`}>
+    <div className="mt-2 sm:mt-3 flex flex-col items-center bg-slate-100 w-full pb-4 sm:pb-8">
+      <h1 className={`text-2xl sm:text-3xl font-bold text-black mt-4 sm:mt-8 mb-4 sm:mb-8 ${joSan.className}`}>
         Shop by category
       </h1>
 
       <div className="flex flex-col items-center justify-center w-full">
-        <div className="grid grid-cols-4 gap-5 justify-center items-center place-items-center">
+        <div className="grid grid-cols-4 gap-2 sm:gap-5 justify-center items-center place-items-center">
           {catData?.slice(0, Math.ceil(catLength / 2)).map((cat, index) => (
             <a
               key={index}
               href={`/ProductListing?catId=${cat._id}`}
-              className="w-[100px] h-[100px] bg-white rounded-full p-2 shadow-gray-400 shadow-md flex justify-center items-center transition-transform hover:scale-110 hover:shadow-lg hover:shadow-gray-500"
+              className="w-[65px] h-[65px] 
+              sm:w-[100px] sm:h-[100px] 
+              
+              
+              bg-white rounded-full p-1 sm:p-2 shadow-gray-400 shadow-md flex justify-center items-center transition-transform hover:scale-110 hover:shadow-lg hover:shadow-gray-500"
             >
               {cat?.images?.[0] && (
                 <Image
@@ -38,12 +42,15 @@ const Shopbycat = () => {
           ))}
         </div>
 
-        <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 gap-5 justify-center items-center place-items-center">
+        <div className="mt-2 sm:mt-3 grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 gap-2 sm:gap-5  justify-center items-center place-items-center">
           {catData?.slice(Math.ceil(catLength / 2), catLength).map((cat, index) => (
             <a
               key={index}
               href={`/ProductListing?catId=${cat._id}`}
-              className="w-[100px] h-[100px] bg-white rounded-full p-2 shadow-gray-400 shadow-md flex justify-center items-center transition-transform hover:scale-110 hover:shadow-lg hover:shadow-gray-500"
+              className="w-[65px] h-[65px] 
+              sm:w-[100px] sm:h-[100px] 
+              
+              bg-white rounded-full p-2 shadow-gray-400 shadow-md flex justify-center items-center transition-transform hover:scale-110 hover:shadow-lg hover:shadow-gray-500"
             >
               {cat?.images?.[0] && (
                 <Image

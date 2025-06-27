@@ -24,10 +24,10 @@ export default function Home() {
     <>
       <Toaster position="top-right" />
       <section className="flex justify-center"><Slider /></section>
-      <section className="flex justify-center"><Shopbycat /></section>
+       <section className="flex justify-center"><Shopbycat /></section>
       <section className="flex justify-center"><Bestsellers /></section>
-      <section className="flex justify-center"><New /></section>
+      <section className="flex justify-center"><New /></section> 
 
     </>
-  );
+  );  
 }

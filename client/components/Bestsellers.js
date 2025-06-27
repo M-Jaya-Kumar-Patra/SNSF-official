@@ -31,18 +31,18 @@ const Bestsellers = () => {
     };
 
     return (
-        <div className="flex flex-col items-center mt-5 w-full pb-8">
-            <h1 className={`text-3xl font-bold text-black mt-8 mb-8 ${joSan.className}`}>Best sellers</h1>
+        <div className="flex flex-col items-center mt-2 sm:mt-5  w-full pb-4 sm:pb-8">
+            <h1 className={`text-2xl sm:text-3xl font-bold text-black mt-4 mb-4 sm:mt-8 sm:mb-8 ${joSan.className}`}>Best sellers</h1>
 
             <div className="flex justify-center items-center">
                 <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 place-items-center gap-5 mb-5">
                     {prdData
                         ?.filter(prd => prd?.isFeatured)
-                        .slice(0, 3)
+                        .slice(0, 6)
                         .map((prd, index) => (
                             <div
                                 key={prd?._id || index}
-                                className="group w-[260px] min-h-[360px] border border-slate-200 shadow-sm flex flex-col items-center justify-between p-3 hover:shadow-xl transition duration-300 hover:scale-105"
+                                className="group w-[100] h-[370px] sm:w-[260px] sm:min-h-[400px] flex flex-col items-center justify-between p-3  gap-2  transition duration-300 hover:scale-105  hover:shadow-xl  border sm:border-none  "
                             >
                                 <div
                                     className="w-full flex flex-col items-center cursor-pointer"
@@ -51,13 +51,16 @@ const Bestsellers = () => {
                                         router.push(`/product/${prd?._id}`);
                                     }}
                                 >
-                                    <Image
-                                        src={prd?.images[0]}
-                                        alt={prd?.name}
-                                        className="h-[250px] w-full object-cover"
-                                        width={100}
-                                        height={100}
-                                    />
+                                    <div className="w-full h-[200px] sm:h-[220px] md:h-[230px] lg:h-[240px] relative rounded-md overflow-hidden">
+                                        <Image  
+                                            src={prd?.images?.[0] || "/images/placeholder.png"}
+                                            alt={prd?.name}
+                                            fill
+                                            className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                                            priority
+                                        />  
+                                    </div>
+
                                     <h1 className="text-black text-[19px] mt-3 font-medium font-sans text-center">{prd?.name}</h1>
                                     <h1 className="text-gray-500 text-[16px] mt-1 font-sans text-center">{prd?.brand}</h1>
                                     <div className="flex items-center gap-2 mt-1">
@@ -68,7 +71,7 @@ const Bestsellers = () => {
                                     </div>
                                 </div>
 
-                                <div className="flex gap-2 w-full mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div className="flex gap-2 w-full mt-2 opacity-100 sm:group-hover:opacity-100 transition-opacity duration-300">
                                     <Button
                                         variant="outlined"
                                         className="text-white bg-gray-600 rounded-md px-1 py-1 text-xs w-1/2 text-nowrap"

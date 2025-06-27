@@ -653,35 +653,36 @@ useEffect(() => {
       ) : (
         // Render checkout form here
         <div className="flex w-full min-h-screen justify-center bg-slate-100">
-          <div className="w-[1020px] flex flex-col gap-2 my-3 mx-auto ">
+          <div className="w-full sm:w-[1020px] flex flex-col gap-2 sm:my-3 mx-auto ">
             {/* Shipping Information */}
-            <div className="p-5   bg-white  shadow-slate-400 shadow-lg">
+            <div className="p-2 sm:p-5   bg-white  shadow-slate-400 shadow-lg">
               <div className="flex justify-between items-center">
-                <div className="text-[25px] text-black font-semibold">
+                <div className="text-[14px] sm:text-[25px] text-black font-semibold">
                   Shipping Information
                 </div>
-                <Button
-                  variant="outlined"
-                  onClick={toggleAddressSelectButton}
-                  className="!text-indigo-950 !border-indigo-950 hover:!bg-indigo-50 transition-colors duration-200"
-                >
-                  Choose Delivery Address
-                </Button>
+              <Button
+  variant="outlined"
+  onClick={toggleAddressSelectButton}
+  className="!text-sm !font-medium !text-indigo-950 !border-indigo-950 hover:!bg-indigo-50 transition-colors duration-200 px-2 sm:px-4 py-1 sm:py-2 sm:!w-auto !w-10"
+>
+  <span className="hidden sm:inline">Choose Delivery Address</span>
+  <span className="sm:hidden"><FaLocationDot size={15} /></span>
+</Button>
 
               </div>
 
               {ShowAddressChoice && (
-                <div className="mt-3 bg-white p-5 overflow-x-auto horizontal-scroll">
+                <div className="mt-1 sm:mt-3 bg-white p-2 sm:p-5 overflow-x-auto horizontal-scroll">
                   <ul className="flex gap-4 min-w-fit">
                     {Array.isArray(addressArray) && addressArray.length > 0 && (
                       addressArray.map((address, index) => (
                         <li
                           key={index}
-                          className={`relative w-[400px] border-2 rounded-md text-black text-base p-4 flex-shrink-0 ${selectedAddressId === address ? `border-blue-400  bg-indigo-50  shadow-sm scale-100` : `border-slate-300`}`}
+                          className={`relative w-[250px] sm:w-[400px] border sm:border-2 rounded-sm sm:rounded-md text-black  p-2 sm:p-4 flex-shrink-0 text-xs sm:text-lg ${selectedAddressId === address ? `border-blue-400  bg-indigo-50  shadow-sm scale-100` : `border-slate-300`}`}
                           onClick={(e) => handleSetShippingAddress(e, address)}
                         >
-                          <h3 className="text-lg font-bold mb-1">{address?.name}</h3>
-                          <p className="text-gray-800 mb-1">{address.address}</p>
+                          <h3 className="text-sm sm:text-lg font-semibold sm:font-bold mb-1">{address?.name}</h3>
+                          <p className="text-gray-800 mb-1 ">{address.address}</p>
                           <p className="text-gray-700 mb-1">
                             {address.locality && `${address.locality}, `}
                             {address.city && `${address.city}, `}
@@ -700,7 +701,7 @@ useEffect(() => {
                             {address.addressType}
                           </p>
 
-                          <Button onClick={(e) => toggleEditAddress(e, address)} className="!absolute !right-2 !top-2">
+                          <Button onClick={(e) => toggleEditAddress(e, address)} className="!absolute !right-0 sm:!p-2 !p-0 !text-xs sm:!text-sm !top-2">
                             Edit
                           </Button>
                         </li>
@@ -708,17 +709,18 @@ useEffect(() => {
                       ))
                     )}
                     <li
-                      className="relative w-[220px] min-h-[171px] bg-white border-2 border-dashed border-blue-400 rounded-md text-black text-base p-6 flex-shrink-0 flex flex-col items-center justify-center hover:shadow-xl hover:bg-blue-50 transition-all duration-300 cursor-pointer group"
+                      className="relative w-[150px] min-h-[120px] sm:w-[220px] sm:min-h-[171px] bg-white border-2 border-dashed border-blue-400 rounded-md text-black text-base p-6 flex-shrink-0 flex flex-col items-center justify-center hover:shadow-xl hover:bg-blue-50 transition-all duration-300 cursor-pointer group"
 
                       onClick={() => setShowAddAddressForm(true)}
                     >
-                      <div className="bg-blue-100 text-blue-600 p-4 rounded-full mb-4 group-hover:bg-blue-500 group-hover:text-white transition-all">
-                        <FaLocationDot size={30} />
+                      <div className="bg-blue-100 text-blue-600 p-2 sm:p-4 rounded-full mb-4 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                        <FaLocationDot className="text-[20px] sm:text-[30px]" />
+
                       </div>
-                      <span className="text-sm font-semibold group-hover:text-blue-600 transition-all">
+                      <span className="text-xs text-nowrap sm:text-sm font-semibold sm:group-hover:text-blue-600 transition-all">
                         Add New Address
                       </span>
-                      <span className="absolute top-2 right-2 text-[10px] bg-blue-200 text-blue-800 px-2 py-0.5 rounded-full">
+                      <span className="absolute top-1  sm:top-2 right-1  sm:right-2 text-[8px] sm:text-[10px] bg-blue-200 text-blue-800 px-1 sm:px-2 py-0 sm:py-0.5 rounded-md sm:rounded-full">
                         NEW
                       </span>
                     </li>
@@ -727,12 +729,12 @@ useEffect(() => {
               )}
             </div>
 
-            <div className="p-6 md:p-8 bg-white  shadow-slate-400 shadow-lg h-full">
-              <h2 className="text-[28px] font-bold text-slate-800 mb-6 border-b pb-2 border-slate-100">
+            <div className="p-2 sm:p-6 md:p-8 bg-white  shadow-slate-400 shadow-lg h-full">
+              <h2 className="text-[16px] sm:text-[28px] font-semibold sm:font-bold text-slate-800 mb-2 sm:mb-6 border-b pb-1 sm:pb-2 border-slate-100">
                 Order Summary
               </h2>
 
-              <div className="flex flex-col lg:flex-row gap-8">
+              <div className="flex flex-col lg:flex-row gap-2 sm:gap-8">
                 {/* Items List */}
                 <div className="w-full lg:w-2/3">
                   <ul>
@@ -740,19 +742,19 @@ useEffect(() => {
                       itemsToCheckout.map((item, index) => (
                         <li
                           key={index}
-                          className="flex gap-4 border border-slate-300 bg-slate-50 rounded-md p-4 mb-4 hover:shadow-md transition-all"
+                          className="flex gap-3 sm:gap-4 border border-slate-300 bg-slate-50 rounded-sm sm:rounded-md p-1 sm:p-4 mb-2 sm:mb-4 hover:shadow-md transition-all"
                         >
-                          <div className="w-[130px] h-[120px] flex-shrink-0 rounded overflow-hidden border">
+                          <div className="w-[100px] h-[90px] sm:w-[130px] sm:h-[120px] flex-shrink-0 rounded overflow-hidden ">
                             <Image
                               src={item?.image || item?.images?.[0]}
                               alt={item?.name || item?.productTitle}
-                              className="w-auto h-auto object-cover"
+                              className="w-auto h-auto object-cover "
                               width={100} height={100}
 
                             />
                           </div>
 
-                          <div className="flex-1">
+                          <div className="flex-1 ">
                             <div className="flex justify-between items-start mb-2">
                               <div
                                 className="cursor-pointer"
@@ -760,16 +762,16 @@ useEffect(() => {
                                   router.replace(`/product/${item?.name ? item?._id : item?.productId}`)
                                 }
                               >
-                                <h3 className="text-lg font-semibold text-gray-800">
+                                <h3 className="text-sm sm:text-lg font-semibold text-gray-800">
                                   {item?.name || item?.productTitle}
                                 </h3>
-                                <p className="text-sm text-gray-600">{item?.brand}</p>
+                                <p className="text-xs sm:text-sm text-gray-600">{item?.brand}</p>
                               </div>
                             </div>
 
-                            <div className="flex justify-between items-center text-slate-700">
+                            <div className="flex justify-between items-center text-slate-700 text-xs sm:text-sm">
                               <span>Qty: {item?.quantity}</span>
-                              <span className="font-semibold text-lg">₹{item?.quantity * item?.price}</span>
+                              <span className="font-semibold text-sm sm:text-lg">₹{item?.quantity * item?.price}</span>
                             </div>
                           </div>
                         </li>
@@ -782,22 +784,22 @@ useEffect(() => {
 
                 {/* Billing Details */}
                 <div className="w-full lg:w-1/3 h-full bg-white border border-slate-300 rounded-md p-6 shadow">
-                  <h3 className="text-[24px] text-center font-bold text-slate-700 mb-6">
+                  <h3 className="text-[17px] sm:text-[24px] text-center font-bold text-slate-700 mb-6">
                     Billing Details
                   </h3>
 
-                  <div className="space-y-4 text-[17px]">
+                  <div className="space-y-2 sm:space-y-4 text-[14px] sm:text-[17px]">
                     {itemsToCheckout.map((item, index) => (
                       <div
                         key={index}
-                        className="flex justify-between border-b pb-3 text-slate-700 font-medium"
+                        className="flex justify-between border-b pb-1 sm:pb-3 text-slate-700 font-medium"
                       >
                         <span>{item?.productTitle || item?.name} × {item.quantity}</span>
                         <span>₹{item.quantity * item.price}</span>
                       </div>
                     ))}
 
-                    <div className="flex justify-between font-bold text-slate-800 text-xl  pt-1">
+                    <div className="flex justify-between font-bold text-slate-800 text-sm sm:text-xl  sm:pt-1">
                       <span>Total Amount</span>
                       <span>
                         ₹
@@ -808,10 +810,10 @@ useEffect(() => {
                       </span>
                     </div>
 
-                    <div className="pt-6">
+                    <div className="pt-3 sm:pt-6">
                       <Button
                         variant="contained"
-                        className="w-full !bg-primary-gradient"
+                        className="w-full !text-xs sm:!text-normal !bg-primary-gradient"
                         onClick={(e) => {
                           if (!selectedAddressId) {
                             alert.alertBox({
@@ -829,9 +831,9 @@ useEffect(() => {
                       </Button>
 
                       {showPaymentOptions && (
-                        <div className="mt-4 space-y-3">
+                        <div className="mt-2 sm:mt-4 space-y-1 sm:space-y-3">
                             
-                          <div className="mt-4 space-y-3">
+                          <div className="mt-2 sm:mt-4 space-y-1 sm:space-y-3 ">
                             <Button
                               variant="outlined"
                               sx={{
@@ -845,6 +847,7 @@ useEffect(() => {
                                 fontSize: "16px",
                               }}
                               fullWidth
+                              className="!text-xs sm:!text-normal"
 
                               onClick={(e) => {
                                handleCOD(e, "COD")

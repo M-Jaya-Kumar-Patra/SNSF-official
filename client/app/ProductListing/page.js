@@ -21,6 +21,10 @@ import { useWishlist } from '@/app/context/WishlistContext';
 import Image from 'next/image';
 import Loading from '@/components/Loading';
 import SidebarWrapper from '@/components/SidebarWrapper';
+import { FaFilter, FaSortAmountDown } from "react-icons/fa"; // Import icons
+
+
+
 
 const ProductListing = () => {
     const { prdData, productsData, setProductsData, getProductsData } = usePrd()
@@ -50,25 +54,25 @@ const ProductListing = () => {
 
 
     const handleSortBy = async (name, order, products, value) => {
-  setIsLoading(true);
-  setSelectedSortVal(value);
-  try {
-    const res = await postData(`/api/product/sortBy`, {
-      products,
-      sortBy: name,
-      order,
-    }, false);
-    setProductsData(res?.products);
-  } finally {
-    setIsLoading(false);
-    setAnchorEl(null);
-  }
-};
+        setIsLoading(true);
+        setSelectedSortVal(value);
+        try {
+            const res = await postData(`/api/product/sortBy`, {
+                products,
+                sortBy: name,
+                order,
+            }, false);
+            setProductsData(res?.products);
+        } finally {
+            setIsLoading(false);
+            setAnchorEl(null);
+        }
+    };
 
-useEffect(() => {
-  setIsLoading(true);
-  Promise.all([getCartItems(), getProductsData()]).finally(() => setIsLoading(false));
-}, []);
+    useEffect(() => {
+        setIsLoading(true);
+        Promise.all([getCartItems(), getProductsData()]).finally(() => setIsLoading(false));
+    }, []);
 
 
     //useWishlist
@@ -97,90 +101,140 @@ useEffect(() => {
 
 
 
+    const activeFilterCount = 2;
+
+    const [showFilterPannel, setShowFilterPannel] = useState(false)
+
+
 
 
     return (
         <div className='w-full relative bg-slate-100'>
-             {isLoading && <Loading />}
+            {isLoading && <Loading />}
             {/* Main Container */}
             <div className='flex  min-h-screen justify-center bg-slate-100 border border-slate-100'>
-                <div className="container w-[90%] my-4 mx-auto flex gap-4 justify-between">
+                <div className="container w-full  sm:w-[90%]     sm:my-4 mx-auto flex gap-4 justify-between">
 
                     {/* Sidebar */}
-                    <div className='w-[240px]  shrink-0 bg-white p-5 shadow-lg text-black '>
-               
-                        <SidebarWrapper
-                            productsData={productsData}
-                            setProductsData={setProductsData}
-                            isLoading={isLoading}
-                            setIsLoading={setIsLoading}
-                            setTotalPages={setTotalPages}
+                    
+  
+                    {/* Filter Panel */}
+                    <div
+                        className={`fixed top-0 left-0 h-full w-[280px] z-50 bg-white shadow-lg pr-1 pt-1  sm:p-5 text-black transition-transform duration-300 ease-in-out
+    ${showFilterPannel ? 'translate-x-0' : '-translate-x-full'} sm:relative sm:translate-x-0 sm:block  z-[300] sm:z-0`}
+                    >
+                        {/* Close Button for Mobile */}
+                        <div className="sm:hidden flex justify-end mb-4 mr-3">
+    <button
+      onClick={() => setShowFilterPannel(false)}
+      className="text-xl text-gray-500 hover:text-red-600 font-bold"
+    >
+      &times;
+    </button>
+  </div>
 
-                        />
+                        {/* Scrollable content for mobile */}
+                        <div className="h-[calc(100%-40px)] overflow-y-auto pr-2 sm:overflow-visible sm:h-auto">
+                            <SidebarWrapper
+                                productsData={productsData}
+                                setProductsData={setProductsData}
+                                isLoading={isLoading}
+                                setIsLoading={setIsLoading}
+                                setTotalPages={setTotalPages}
+                                 setShowFilterPannel = {setShowFilterPannel}
+                            />
+                        </div>
                     </div>
 
+
+
                     {/* Main Product Content */}
-                    <div className='flex-grow h-full bg-white p-5 shadow-lg text-black'>
+                    <div className='flex-grow h-full bg-white  sm:p-5 shadow-lg text-black'>
 
                         {/* Sort Header */}
-                        <div className='w-full bg-slate-100 p-2 flex justify-between items-center rounded'>
-                            <p className='pl-3 text-gray-600 text-base'>{`${productsData?.length} Products found`}</p>
-                            <div className='flex items-center gap-2'>
-                                <h1 className='text-gray-600 font-medium text-[18px]'>Sort By</h1>
-                                <Button
-                                    id="basic-button"
-                                    aria-controls={open ? 'basic-menu' : undefined}
-                                    aria-haspopup="true"
-                                    aria-expanded={open ? 'true' : undefined}
-                                    onClick={handleClick}
-                                    className='!bg-white px-2 py-1 rounded !text-black   hover:shadow-md uppercase font-medium font-sans text-sm'
-                                >
-                                    {selectedSortVal}
-                                </Button>
-                                <Menu
-                                    id="basic-menu"
-                                    anchorEl={anchorEl}
-                                    open={open}
-                                    onClose={handleClose}
-                                    slotProps={{ list: { 'aria-labelledby': 'basic-button' } }}
-                                >
-                                    <MenuItem
-                                        onClick={() => handleSortBy('name', 'asc', productsData, 'Name, A to Z')}
-                                    >
-                                        Name, A to Z
-                                    </MenuItem>
+                        <div className='w-full fixed sm:relative z-[200] sm:z-0 bg-slate-100 p-2 flex flex-col sm:flex-row sm:justify-between sm:items-center rounded gap-2 sm:gap-0'>
+                            {/* Product Count - visible only on sm and up */}
+                            <p className='hidden sm:block sm:pl-3 text-gray-600 text-base'>
+                                {`${productsData?.length} Products found`}
+                            </p>
 
-                                    <MenuItem
-                                        onClick={() => handleSortBy('name', 'desc', productsData, 'Name, Z to A')}
-                                    >
-                                        Name, Z to A
-                                    </MenuItem>
+                            {/* Sort Section */}
+                            <div className='w-full sm:w-auto flex flex-col sm:flex-row items-center justify-between sm:justify-end gap-2'>
 
-                                    <MenuItem
-                                        onClick={() => handleSortBy('price', 'asc', productsData, 'Price, low to high')}
+                                {/* Mobile Filter & Sort Buttons */}
+                                <div className="flex w-full sm:hidden gap-2">
+                                    {/* FILTER BUTTON */}
+                                    <Button
+                                        onClick={() => setShowFilterPannel(!showFilterPannel)}
+                                        className={`w-1/2 !bg-white text-black px-3 py-2 rounded flex items-center justify-center gap-1 shadow-sm active:!text-[#1e40af]`}
                                     >
-                                        Price, Low to High
-                                    </MenuItem>
+                                        <FaFilter className="text-slate-600" />
+                                        <span className="text-sm font-medium !text-slate-600">
+                                            Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+                                        </span>
+                                    </Button>
 
-                                    <MenuItem
-                                        onClick={() => handleSortBy('price', 'desc', productsData, 'Price, high to low')}
+                                    {/* SORT BUTTON */}
+                                    <Button
+                                        onClick={handleClick}
+                                        className={`w-1/2 !bg-white text-black px-3 py-2 rounded flex items-center justify-center gap-1 shadow-sm active:!text-[#1e40af]`}
                                     >
-                                        Price, High to Low
-                                    </MenuItem>
+                                        <FaSortAmountDown className="text-slate-600" />
+                                        <span className="text-sm font-medium !text-slate-600">
+                                            Sort
+                                        </span>
+                                    </Button>
+                                </div>
 
-                                </Menu>
+                                {/* Desktop Sort Label and Button */}
+                                <div className='hidden sm:flex items-center gap-2'>
+                                    <h1 className='text-gray-600 font-medium text-[18px] '>Sort By</h1>
+                                    <Button
+                                        id="basic-button"
+                                        aria-controls={open ? 'basic-menu' : undefined}
+                                        aria-haspopup="true"
+                                        aria-expanded={open ? 'true' : undefined}
+                                        onClick={handleClick}
+                                        className='!bg-white px-2 py-1 rounded !text-black hover:shadow-md uppercase font-medium font-sans text-sm'
+                                    >
+                                        {selectedSortVal}
+                                    </Button>
+                                </div>
                             </div>
+
+                            {/* Sort Menu */}
+                            <Menu
+                                id="basic-menu"
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleClose}
+                                slotProps={{ list: { 'aria-labelledby': 'basic-button' } }}
+                            >
+                                <MenuItem onClick={() => handleSortBy('name', 'asc', productsData, 'Name, A to Z')}>
+                                    Name, A to Z
+                                </MenuItem>
+                                <MenuItem onClick={() => handleSortBy('name', 'desc', productsData, 'Name, Z to A')}>
+                                    Name, Z to A
+                                </MenuItem>
+                                <MenuItem onClick={() => handleSortBy('price', 'asc', productsData, 'Price, low to high')}>
+                                    Price, Low to High
+                                </MenuItem>
+                                <MenuItem onClick={() => handleSortBy('price', 'desc', productsData, 'Price, high to low')}>
+                                    Price, High to Low
+                                </MenuItem>
+                            </Menu>
                         </div>
 
                         {/* Product Grid */}
-                        <div className="flex justify-center items-center mt-5">
-                            <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
-                              
+                        <div className="flex justify-center items-center mt-12 sm:mt-5 ">
+                            <div className="w-full  grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
+
                                 {
                                     productsData?.length !== 0 && productsData?.map((prd, index) => (
                                         <div key={prd?._id || index} className="relative group w-full">
                                             {/* Product Card */}
                                             <div
+                                            onClick={() => router.push(`/product/${prd?._id}`)}
 
                                                 className="w-full min-h-[260px] shadow-md   flex flex-col items-center justify-between p-3 bg-white hover:shadow-[rgba(0,0,0,0.3)] hover:shadow-xl transition duration-300 "
                                             >
@@ -270,12 +324,12 @@ useEffect(() => {
                                             </div>
 
                                             {/* Hover Dropdown Buttons */}
-                                            <div className="absolute left-0 top-full w-full z-50 opacity-0 pointer-events-none group-hover:opacity-100 
-          group-hover:pointer-events-auto transition-opacity duration-300 group-hover:shadow-[rgba(0,0,0,0.3)] group-hover:shadow-xl">
+                                            <div className="absolute left-0 top-full w-full z-50 opacity-0 pointer-events-none sm:group-hover:opacity-100 
+          sm:group-hover:pointer-events-auto transition-opacity duration-300 sm:group-hover:shadow-[rgba(0,0,0,0.3)] sm:group-hover:shadow-xl">
 
 
-                                                <div className="bg-white  shadow-lg p-2 flex gap-2 justify-center">
-                                   
+                                                <div className="bg-white  sm:shadow-lg p-2 flex gap-2 justify-center">
+
                                                     <Button
                                                         variant="outlined"
                                                         className="text-white bg-gray-600 rounded-md px-1 py-1 text-xs w-1/2 text-nowrap"
@@ -310,7 +364,7 @@ useEffect(() => {
                                                             setBuyNowItem({ ...prd, quantity: 1 });
                                                             router.push("/checkOut");
                                                         }}
-                                                        
+
                                                     >
                                                         Shop now
                                                     </Button>

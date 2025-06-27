@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useCat } from '@/app/context/CategoryContext';
 import Box from '@mui/material/Box';
 import Rating from '@mui/material/Rating';
@@ -125,83 +125,151 @@ useEffect(() => {
   //   filtersData();
   // }, [filtersData()]);
 
+  useEffect(() => {
+  const sidebar = sidebarRef.current;
+
+  if (!sidebar) return;
+
+  function handleWheel(event) {
+    const delta = event.deltaY;
+    const scrollTop = sidebar.scrollTop;
+    const scrollHeight = sidebar.scrollHeight;
+    const offsetHeight = sidebar.offsetHeight;
+
+    if (delta > 0 && scrollTop + offsetHeight >= scrollHeight) {
+      // Scrolling down, but reached bottom — prevent page scroll
+      event.preventDefault();
+    } else if (delta < 0 && scrollTop <= 0) {
+      // Scrolling up, but at top — prevent page scroll
+      event.preventDefault();
+    }
+  }
+
+  sidebar.addEventListener('wheel', handleWheel, { passive: false });
+
+  return () => {
+    sidebar.removeEventListener('wheel', handleWheel);
+  };
+}, []);
+
+  const sidebarRef = useRef(null);
+
 
   return (
-    <aside className='sidebar 
-    sticky top-[54px]'>
+    <aside
+    ref={sidebarRef} 
+  className='sidebar sticky sm:top-[54px] text-black flex flex-col h-full sm:h-auto pl-4 sm:pl-0'
+>
+  {/* Top: Apply + Clear */}
+  <div className='mb-4 w-full flex gap-2 sm:gap-4 sm:mb-6 px-1 sm:px-0'>
+  <Button
+    variant='outlined'
+    color='primary'
+    size='small' // ✅ Smaller button size
+    className='w-full text-xs sm:text-base py-1 sm:py-2'
+    onClick={() => {
+      filtersData();
+      props.setShowFilterPannel(false);
+    }}
+  >
+    Apply
+  </Button>
+  <Button
+    variant='outlined'
+    color='error'
+    size='small' // ✅ Smaller button size
+    className='w-full text-xs sm:text-base py-1 sm:py-2'
+    onClick={() => {
+      cancelFilter();
+      props.setShowFilterPannel(false);
+    }}
+  >
+    Clear
+  </Button>
 
-      <div className='mb-4 w-full flex gap-3'>
-        <Button variant='outlined' color='primary' className='w-full' onClick={() => filtersData()}>Apply</Button>
-        <Button variant='outlined' color='error' className='w-full' onClick={() => cancelFilter()}>Clear</Button>
-      </div>
-      {/* Category Filter */}
-      <div className='p-1 bg-white text-black'>
-        <h3 className='text-lg font-[500] font-sans mb-2'>Filter By Category</h3>
-        <div className='flex flex-col ml-4'>
-          {catData?.map((cat) => (
-            <div key={cat._id} className='mb-2'>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={filters.catId.includes(cat._id)}
-                    onChange={() => handleCheckChange('catId', cat._id)}
-                  />
-                }
-                label={cat.name}
-              />
+  
+</div>
 
 
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Price Filter */}
-      <div className='p-1 bg-white text-black mt-3'>
-        <h3 className='text-lg font-[500] font-sans mb-4'>Filter By Price</h3>
-        <Box sx={{ width: '100%' }}>
-          <RangeSlider
-            value={price}
-            onInput={(val) => {
-              setPrice(val);
-              setFilters((prev) => ({
-                ...prev,
-                minPrice: val[0],
-                maxPrice: val[1],
-                page: 1
-              }));
-            }}
-            min={100}
-            max={80000}
-            step={5}
-          />
-          <div className='text-sm mt-2'>
-            ₹{price[0]} – ₹{price[1]}
+  {/* Scrollable Filter Section */}
+  <div className="flex-1 overflow-y-auto pr-1 sm:pr-0">
+    {/* Category Filter */}
+    <div className='p-1 sm:p-2 bg-white'>
+      <h3 className='text-base sm:text-lg font-medium font-sans mb-2'>
+        Filter By Category
+      </h3>
+      <div className='flex flex-col ml-2 sm:ml-3'>
+        {catData?.map((cat) => (
+          <div key={cat._id} className='mb-1 text-nowrap '>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  size="small"
+                  checked={filters.catId.includes(cat._id)}
+                  onChange={() => handleCheckChange('catId', cat._id)}
+                  className="!p-1 sm:!p-3"
+                />
+              }
+              label={
+                <span className="text-sm sm:text-base">{cat.name}</span>
+              }
+            />
           </div>
-        </Box>
+        ))}
       </div>
+    </div>
 
-      {/* Rating Filter */}
-      <div className='p-1 bg-white text-black mt-3'>
-        <h3 className='text-lg font-[500] font-sans mb-4'>Filter By Rating</h3>
-        <Box>
-          <Rating
-            name="simple-controlled"
-            value={rateValue}
-            onChange={(event, newValue) => {
-              setRateValue(newValue);
-              setFilters((prev) => ({
-                ...prev,
-                rating: newValue,
-                page: 1
-              }));
-            }}
-          />
-        </Box>
-      </div>
+    {/* Price Filter */}
+    <div className='p-1 sm:p-2 bg-white mt-3'>
+      <h3 className='text-base sm:text-lg font-medium font-sans mb-3 sm:mb-4'>
+        Filter By Price
+      </h3>
+      <Box sx={{ width: '100%' }}>
+        <RangeSlider
+          value={price}
+          onInput={(val) => {
+            setPrice(val);
+            setFilters((prev) => ({
+              ...prev,
+              minPrice: val[0],
+              maxPrice: val[1],
+              page: 1,
+            }));
+          }}
+          min={100}
+          max={80000}
+          step={5}
+        />
+        <div className='text-sm mt-2'>
+          ₹{price[0]} – ₹{price[1]}
+        </div>
+      </Box>
+    </div>
 
+    {/* Rating Filter */}
+    <div className='p-1 sm:p-2 bg-white mt-3'>
+      <h3 className='text-base sm:text-lg font-medium font-sans mb-3 sm:mb-4'>
+        Filter By Rating
+      </h3>
+      <Box>
+        <Rating
+          name='simple-controlled'
+          value={rateValue}
+          onChange={(event, newValue) => {
+            setRateValue(newValue);
+            setFilters((prev) => ({
+              ...prev,
+              rating: newValue,
+              page: 1,
+            }));
+          }}
+          size='small'
+        />
+      </Box>
+    </div>
+  </div>
+</aside>
 
-    </aside>
   );
 };
 
