@@ -42,7 +42,7 @@ const Bestsellers = () => {
                         .map((prd, index) => (
                             <div
                                 key={prd?._id || index}
-                                className="group w-[100] h-[370px] sm:w-[260px] sm:min-h-[400px] flex flex-col items-center justify-between p-3  gap-2  transition duration-300 hover:scale-105  hover:shadow-xl  border sm:border-none  "
+                                className="group w-100 h-[370px] sm:w-[260px] sm:min-h-[400px] flex flex-col items-center justify-between p-3  gap-2  transition duration-300 hover:scale-105  hover:shadow-xl  border sm:border-none  "
                             >
                                 <div
                                     className="w-full flex flex-col items-center cursor-pointer"

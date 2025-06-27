@@ -24,6 +24,11 @@ const ProductListing = () => {
     const { userData, isLogin, setIsLogin, setUserData, loading, setLoading, login, logout } = useAuth()
     const { addToCart, buyNowItem, setBuyNowItem } = useCart()
     const router = useRouter()
+    
+        useEffect(() => {
+            setLoading(false)
+            getProductsData()
+        }, [isLogin, userData, getProductsData])
 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -49,11 +54,6 @@ const ProductListing = () => {
             setAnchorEl(null)
         })
     }
-
-    useEffect(() => {
-        setLoading(false)
-        getProductsData()
-    }, [isLogin, userData, getProductsData])
 
     const [quantity, setQuantity] = useState(1)
 

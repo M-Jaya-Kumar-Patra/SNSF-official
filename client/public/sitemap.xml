@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://snsteelfabrication.com/</loc></url>
+  <url><loc>https://snsteelfabrication.com/about</loc></url>
+  <url><loc>https://snsteelfabrication.com/cart</loc></url>
+  <url><loc>https://snsteelfabrication.com/checkOut</loc></url>
+  <url><loc>https://snsteelfabrication.com/copyright</loc></url>
+  <url><loc>https://snsteelfabrication.com/forgot-password</loc></url>
+  <url><loc>https://snsteelfabrication.com/login</loc></url>
+  <url><loc>https://snsteelfabrication.com/mobileSearch</loc></url>
+  <url><loc>https://snsteelfabrication.com/privacy</loc></url>
+  <url><loc>https://snsteelfabrication.com/ProductListing</loc></url>
+  <url><loc>https://snsteelfabrication.com/signup</loc></url>
+  <url><loc>https://snsteelfabrication.com/terms</loc></url>
+  <url><loc>https://snsteelfabrication.com/test</loc></url>
+  <url><loc>https://snsteelfabrication.com/verified</loc></url>
+  <url><loc>https://snsteelfabrication.com/verify-otp</loc></url>
+  <url><loc>https://snsteelfabrication.com/warranty</loc></url>
+
+  <!-- Account Routes -->
+  <url><loc>https://snsteelfabrication.com/account/address</loc></url>
+  <url><loc>https://snsteelfabrication.com/account/orders</loc></url>
+  <url><loc>https://snsteelfabrication.com/account/notifications</loc></url>
+  <url><loc>https://snsteelfabrication.com/account/payments</loc></url>
+  <url><loc>https://snsteelfabrication.com/account/profile</loc></url>
+  <url><loc>https://snsteelfabrication.com/account/wishlist</loc></url>
+
+  <!-- Product Routes -->
+  <url><loc>https://snsteelfabrication.com/product</loc></url>
+  <url><loc>https://snsteelfabrication.com/ProductListing</loc></url>
+  <url><loc>https://snsteelfabrication.com/product/Pincode</loc></url>
+  <url><loc>https://snsteelfabrication.com/product/Reviews</loc></url>
+  <url><loc>https://snsteelfabrication.com/product/Similar</loc></url>
+
+  <!-- Dynamic example -->
+  <!-- Ideally, you'd generate dynamic product/order URLs in backend -->
+  <url><loc>https://snsteelfabrication.com/orderDetails/ORD-18062025003237</loc></url>
+</urlset>
