@@ -415,7 +415,7 @@ useEffect(() => {
   <button
     type="submit"
     disabled={isLoading}
-    className={`w-full flex items-center text-xs sm:text-normal justify-center gap-2 px-3 py-2 mt-1 mx-1 sm:mx-3 rounded-md font-semibold text-white text-sm sm:text-base transition-all duration-200
+    className={`w-full flex items-center text-xs sm:text-normal justify-center gap-2 px-3 py-2 mt-1 mx-1 sm:mx-3 rounded-md font-semibold text-white  sm:text-base transition-all duration-200
       ${isLoading ? 'bg-green-700 opacity-50 cursor-not-allowed' : 'bg-green-700 hover:bg-green-800 active:scale-95'}`}
   >
     {isLoading ? (
