@@ -4,7 +4,7 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#1e40af",
+  "theme_color": "#000000",
   "description": "SNSF - Premium Steel Fabrication Services and Furniture",
   "orientation": "portrait",
   "icons": [

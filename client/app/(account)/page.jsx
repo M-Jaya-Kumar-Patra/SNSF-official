@@ -8,13 +8,13 @@ import { useAuth } from '../../context/AuthContext';
 import { User, Package, MapPin, Heart, RefreshCcw, Bell, LifeBuoy, Menu } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import Loading from "@/components/Loading";
 
 const Account = () => {
   const router = useRouter();
   const { userData, isLogin ,isCheckingToken,setIsCheckingToken } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-      if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
-
+  
   useEffect(() => {
     if (!isLogin) {
       setIsCheckingToken(false); // ✅ This is crucial
@@ -22,6 +22,8 @@ const Account = () => {
       
     }
   }, [isLogin]);
+  
+  if (isCheckingToken) return <Loading/>;
 
   return (
     <div className="flex flex-col sm:flex-row w-full min-h-screen">

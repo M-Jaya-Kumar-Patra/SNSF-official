@@ -89,7 +89,7 @@ export default function RootLayout({ children }) {
               setDeferredPrompt(null);
               setShowInstallBtn(false);
             }}
-            className="fixed bottom-5 right-5 bg-blue-600 text-white px-4 py-2 rounded-md shadow-lg z-50"
+            className="fixed bottom-14 right-5 bg-primary-gradient text-white px-4 py-2 rounded-md shadow-lg z-50"
           >
             Install SNSF App
           </button>
