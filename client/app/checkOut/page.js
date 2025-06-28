@@ -779,6 +779,7 @@ const Page = () => {
                 {/* Items List */}
                 <div className="w-full lg:w-2/3">
                   <ul>
+                    {console.log(itemsToCheckout)}
                     {itemsToCheckout.length > 0 ? (
                       itemsToCheckout.map((item, index) => (
                         <li

@@ -252,7 +252,9 @@ const Products = () => {
                         discount: "",
                         size: [],
                         location: "",
-                        countInStock: ""
+                        countInStock: "",
+                        delivery_days: "",
+                        callOnlyDelivery: "",
                     })
                     setPreviews([])
                     setShowAddModal(false)
@@ -316,6 +318,8 @@ const Products = () => {
                 width: "",
                 polish: "",
                 frameMaterial: "",
+                delivery_days: "",
+                callOnlyDelivery: "",
                 ...(product.specifications || {})
             }
         });
@@ -887,7 +891,7 @@ const Products = () => {
                                                 name='discount'
 
                                             />
-                                             <TextField
+                                            <TextField
                                                 label="Delivery Within"
                                                 value={editPrdObj?.delivery_days || ""}
                                                 onChange={handleChangeEditInput}
@@ -895,7 +899,7 @@ const Products = () => {
                                                 name='delivery_days'
 
                                             />
-                                             <TextField
+                                            <TextField
                                                 label="Call only Booking"
                                                 value={editPrdObj?.callOnlyDelivery || ""}
                                                 onChange={handleChangeEditInput}
@@ -959,7 +963,7 @@ const Products = () => {
                                                     value={editPrdObj?.specifications?.grade || ""}
                                                     onChange={(e) => handleSpecificationsChange(e)}
                                                 />
-                                                
+
                                                 <TextField
                                                     label="Fabric"
                                                     size="small"
