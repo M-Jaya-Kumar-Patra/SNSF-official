@@ -9,7 +9,6 @@ import { AlertProvider } from "./context/AlertContext";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast";
 import { Inter } from "next/font/google";
-
 import { CatProvider } from "./context/CategoryContext";
 import { PrdProvider } from "./context/ProductContext";
 import { ItemProvider } from "./context/ItemContext";
@@ -19,14 +18,11 @@ import { NoticeProviders } from "./context/NotificationContext";
 import GlobalLoader from "@/components/GlobalLoader";
 import BottomNav from "@/components/BottomNav";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "700"] });
 
 export default function RootLayout({ children }) {
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showInstallBtn, setShowInstallBtn] = useState(false);
-
   // ✅ Register Service Worker
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -39,21 +35,6 @@ export default function RootLayout({ children }) {
           console.error("❌ Service Worker registration failed:", error);
         });
     }
-  }, []);
-
-  // ✅ Handle install prompt
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShowInstallBtn(true);
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    };
   }, []);
 
   return (
@@ -71,30 +52,6 @@ export default function RootLayout({ children }) {
       </head>
 
       <body className={`${inter.className} w-full`}>
-        {showInstallBtn && (
-          <button
-            onClick={async () => {
-              if (!deferredPrompt) return;
-
-              deferredPrompt.prompt();
-              const choiceResult = await deferredPrompt.userChoice;
-              console.log("User choice:", choiceResult.outcome);
-
-              if (choiceResult.outcome === "accepted") {
-                console.log("✅ App installed");
-              } else {
-                console.log("❌ App install dismissed");
-              }
-
-              setDeferredPrompt(null);
-              setShowInstallBtn(false);
-            }}
-            className="fixed bottom-14 right-5 bg-primary-gradient text-white px-4 py-2 rounded-md shadow-lg z-50"
-          >
-            Install SNSF App
-          </button>
-        )}
-
         <AuthProvider>
           <AuthWrapper>
             <AlertProvider>
