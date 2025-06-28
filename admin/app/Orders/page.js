@@ -209,7 +209,7 @@ const paymentStatusOptions = ["Pending", "Completed", "Canceled", "Refunded"];
                         <th className="text-black px-4 py-2">Order Date</th>
                         <th className="text-black px-4 py-2">Order Status</th>
                         <th className="text-black px-4 py-2">Total Products</th>
-                        <th className="text-black px-4 py-2">Payment Method</th>
+                        <th className="text-black px-4 py-2">Order type</th>
                         <th className="text-black px-4 py-2">Payment Status</th>
                         <th className="text-black px-4 py-2">Payment ID</th>
                         <th className="text-black px-4 py-2">Total</th>
@@ -259,7 +259,7 @@ const paymentStatusOptions = ["Pending", "Completed", "Canceled", "Refunded"];
                                     {order?.products?.length}
                                 </td>
                                 <td className="text-black px-4 py-2 align-top" onClick={() => handleOrderDetails(order)}>
-                                    {order?.payment_method || "N/A"}
+                                    {order?.order_type || "N/A"}
                                 </td>
                                 <td className="px-4 py-2 align-top">
                                     <FormControl fullWidth>

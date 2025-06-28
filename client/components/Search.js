@@ -5,7 +5,7 @@ import Image from "next/image";
 import { fetchDataFromApi } from "@/utils/api";
 import { useRouter } from "next/navigation";
 
-const Search = ({ onClose } ) => {
+const Search = ({ onClose }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -40,22 +40,13 @@ const Search = ({ onClose } ) => {
       e.preventDefault();
       if (results.length > 0) {
         const firstItem = results[0];
-        if (firstItem.thirdSubCatId) {
-          router.push(`/ProductListing?thirdSubCatId=${firstItem.thirdSubCatId}`);
-        } else if (firstItem.subCatId) {
-          router.push(`/ProductListing?subCatId=${firstItem.subCatId}`);
-        } else if (firstItem.catId) {
-          router.push(`/ProductListing?catId=${firstItem.catId}`);
-        }
-        setIsDropdownVisible(false);
-        if (onClose) onClose(); // ✅ Close modal
+        handleClickResult(firstItem);
       } else {
         setIsDropdownVisible(false);
       }
     }
   };
 
-  // inside map result
   const handleClickResult = (item) => {
     if (item.thirdSubCatId) {
       router.push(`/ProductListing?thirdSubCatId=${item.thirdSubCatId}`);
@@ -64,8 +55,9 @@ const Search = ({ onClose } ) => {
     } else if (item.catId) {
       router.push(`/ProductListing?catId=${item.catId}`);
     }
+
     setIsDropdownVisible(false);
-    if (onClose) onClose(); // ✅ Close modal
+    if (onClose) onClose(); // ✅ Make sure modal closes
   };
 
   useEffect(() => {
@@ -118,16 +110,7 @@ const Search = ({ onClose } ) => {
               <li
                 key={item._id}
                 className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-indigo-50 transition-colors duration-150 rounded-lg"
-                onClick={() => {
-                  if (item.thirdSubCatId) {
-                    router.push(`/ProductListing?thirdSubCatId=${item.thirdSubCatId}`);
-                  } else if (item.subCatId) {
-                    router.push(`/ProductListing?subCatId=${item.subCatId}`);
-                  } else if (item.catId) {
-                    router.push(`/ProductListing?catId=${item.catId}`);
-                  }
-                  setIsDropdownVisible(false);
-                }}
+                onClick={() => handleClickResult(item)} // ✅ This now handles onClose as well
               >
                 {item.images && (
                   <Image

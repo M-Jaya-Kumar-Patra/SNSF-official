@@ -125,7 +125,7 @@ const BottomNav = () => {
 
             {/* Search Overlay */}
             {showSearch && (
-                <div className="fixed inset-0 z-[100] bg-white/80 backdrop-blur-sm flex flex-col">
+                <div className="fixed inset-0 z-[300] bg-white/80 backdrop-blur-sm flex flex-col">
                     {/* Top Bar */}
                     <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 backdrop-blur-sm bg-white/60 shadow-md">
                         <h2 className="text-xl font-semibold text-indigo-900 tracking-tight">Search Products</h2>
@@ -133,6 +133,7 @@ const BottomNav = () => {
                             onClick={() => {
                                 setShowSearch(false);
                                 setValue("home");
+
                             }}
                             className="text-gray-500 hover:text-indigo-600 transition p-2 rounded-full hover:bg-gray-100"
                             aria-label="Close search"
@@ -165,6 +166,7 @@ const BottomNav = () => {
                                         router.push(`/ProductListing?catId=${cat._id}`)
                                         setMobileMenuOpen(false);
                                         setValue('home');
+                                        setShowSearch(false)
                                     }
                                     }
                                     className="cursor-pointer font-semibold hover:text-indigo-800 transition"
@@ -187,16 +189,18 @@ const BottomNav = () => {
                                     {cat.children.map((subCat) => (
                                         <li key={subCat._id} className="space-y-2">
                                             <div className="flex justify-between items-center ">
-                                                <Link
-                                                    href={`/ProductListing?subCatId=${subCat._id}`}
+                                                <span
                                                     onClick={() => {
+                                                        router.push(`/ProductListing?subCatId=${subCat._id}`);
                                                         setMobileMenuOpen(false);
                                                         setValue('home');
+                                                        setShowSearch(false);
                                                     }}
                                                     className="cursor-pointer hover:text-indigo-900 transition"
                                                 >
                                                     {subCat.name}
-                                                </Link>
+                                                </span>
+
                                                 {subCat.children?.length > 0 && (
                                                     <span
                                                         onClick={(e) => {
@@ -215,20 +219,22 @@ const BottomNav = () => {
                                                 <ul className="pl-4 space-y-2 text-[16px] text-indigo-600 animate-fadeIn ">
                                                     {subCat.children.map((thirdSubCat) => (
                                                         <li key={thirdSubCat._id}>
-                                                            <Link
-                                                                href={`/ProductListing?thirdSubCatId=${thirdSubCat._id}`}
+                                                            <span
                                                                 onClick={() => {
+                                                                    router.push(`/ProductListing?thirdSubCatId=${thirdSubCat._id}`);
                                                                     setMobileMenuOpen(false);
                                                                     setValue('home');
+                                                                    setShowSearch(false);
                                                                 }}
-                                                                className="hover:text-indigo-800 transition"
+                                                                className="cursor-pointer hover:text-indigo-800 transition"
                                                             >
                                                                 {thirdSubCat.name}
-                                                            </Link>
+                                                            </span>
                                                         </li>
                                                     ))}
                                                 </ul>
                                             )}
+
                                         </li>
                                     ))}
                                 </ul>

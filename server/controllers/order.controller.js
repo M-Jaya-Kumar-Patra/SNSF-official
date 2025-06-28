@@ -38,7 +38,7 @@ export async function createOrder(req, res) {
       paymentId,
       payment_status,
       totalAmt,
-      payment_method
+      order_type
     } = req.body;
 
     console.log("order.............................................................................")
@@ -73,7 +73,7 @@ export async function createOrder(req, res) {
       payment_status,
       totalAmt,
       order_Status: "Pending",
-      payment_method
+      order_type
     });
 
     const savedOrder = await order.save();
@@ -170,7 +170,7 @@ export async function updateOrderStatus(req, res) {
     const email = user.email;
     const name = user.name;
     const totalAmt = order.totalAmt;
-    const paymentMethod = order.payment_method;
+    const paymentMethod = order.order_type;
     const orderProducts = order.products;
 
     // Create products list HTML for emails
@@ -281,7 +281,7 @@ export async function updatePaymentStatus(req, res) {
     const name = user.name;
     const orderIdStr = order.orderId;
     const totalAmt = order.totalAmt;
-    const paymentMethod = order.payment_method;
+    const paymentMethod = order.order_type;
     const orderProducts = order.products;
 
     // ✅ Create product list HTML for email

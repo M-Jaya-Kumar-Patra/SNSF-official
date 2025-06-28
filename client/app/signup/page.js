@@ -105,7 +105,7 @@ export default function Signup() {
   return (
     <div className="flex justify-center items-center w-full h-screen bg-gray-100">
       <div className="w-[300px] border rounded-md shadow overflow-hidden bg-white">
-        {isLoading && <Box><LinearProgress /></Box>}
+      
 
         <div className="w-full py-4 px-5 flex flex-col items-center">
           <Image

@@ -163,7 +163,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                         <CreditCard size={18} /> Payments
                       </Link> */}
                       <div className="pt-2">
-                        <LogoutBTN />
+                        <LogoutBTN onLogout={() => setMenuOpen(false)} />
                       </div>
                     </>
                   )}
@@ -259,7 +259,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
           {/* <Link href="/payments" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
             <CreditCard size={18} /> Payments
           </Link> */}
-          <div className="pt-2">
+          <div className="pt-0">
             <LogoutBTN />
           </div>
         </>
@@ -301,10 +301,10 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
       </div>
 
       {/* DESKTOP CATEGORY MENU */}
-       <ul className="hidden sm:flex w-full justify-evenly border border-b-slate-200 bg-white shadow-sm px-10 z-40">
+       <ul className="hidden sm:flex w-full justify-evenly border border-b-slate-200 bg-white shadow-xl  px-10 z-40">
         <li
           onClick={() => router.push("/")}
-          className="cursor-pointer flex items-center justify-center text-[18px] px-10 bg-slate-100 hover:bg-slate-200 text-[#131e30] hover:font-semibold py-1 transition-all duration-200"
+          className="cursor-pointer flex items-center justify-center text-[22px] px-10 bg-slate-100 hover:bg-slate-200 text-[#131e30] hover:font-semibold py-1 transition-all duration-200"
           title="Back to Home"
         >
           <IoMdHome />

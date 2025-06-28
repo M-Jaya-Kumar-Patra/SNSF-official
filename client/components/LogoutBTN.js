@@ -12,8 +12,9 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import { fetchDataFromApi } from "@/utils/api";
 import { handleLogout } from "@/utils/logoutHandler";
+import { useEffect } from "react";
 
-export default function LogoutBTN() {
+export default function LogoutBTN({ onLogout }) {
   const router = useRouter();
   const {  logout } = useAuth();
 
@@ -21,6 +22,12 @@ export default function LogoutBTN() {
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const handleLogoutClick = async () => {
+    await handleLogout({ logout, router });
+    if(onLogout) onLogout();
+  };
+
 
 //  const handleLogout = async () => {
 //   const token = localStorage.getItem("accessToken");
@@ -72,7 +79,7 @@ export default function LogoutBTN() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="inherit">Cancel</Button>
-          <Button onClick={() => handleLogout({ logout, router })} autoFocus color="error">
+          <Button onClick={handleLogoutClick} autoFocus color="error">
             Logout
           </Button>
         </DialogActions>

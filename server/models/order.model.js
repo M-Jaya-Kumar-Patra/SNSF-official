@@ -60,7 +60,7 @@
   type: String,
   default: "",
 },
-payment_method:{
+order_type:{
     type: String,
         
 }, 

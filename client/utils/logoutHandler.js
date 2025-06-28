@@ -1,7 +1,10 @@
+// utils/logoutHandler.js
+
 import { fetchDataFromApi } from "./api";
 
 export const handleLogout = async ({ logout, router }) => {
   const token = localStorage.getItem("accessToken");
+  console.log("Token on logout:", token);
 
   try {
     if (token) {
@@ -13,5 +16,5 @@ export const handleLogout = async ({ logout, router }) => {
 
   localStorage.clear();
   logout(); // your context's logout function
-  router.push("/"); // redirect to home or login
+  router.push("/"); // redirect to home or login page
 };

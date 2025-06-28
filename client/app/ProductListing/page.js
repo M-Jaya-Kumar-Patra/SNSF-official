@@ -277,7 +277,7 @@ const ProductListing = () => {
                                                                         }));
                                                                     }
                                                                 } else {
-                                                                    addToWishlist(prd, userData._id);
+                                                                    addToWishlist(e, prd, userData._id);
 
                                                                     // ✅ Update local userData context
                                                                     setUserData((prev) => ({

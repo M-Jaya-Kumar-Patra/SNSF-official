@@ -164,7 +164,7 @@ const Page = () => {
 
         {/* Wishlist Button */}
         <div
-          className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-4 right-3 cursor-pointer z-[1000]"
+          className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-4 right-3 cursor-pointer z-[500]"
           onClick={(e) => {
             if (!isLogin) {
               router.push("/login");
@@ -305,6 +305,14 @@ const Page = () => {
             </div>
 
 
+<div className="flex gap-4 mt-4">
+  <p className="text-sm text-gray-600 mt-2">
+  🛍️ <strong>Pickup available for all customers.</strong><br />
+  🚚 <strong>Home delivery available on request.</strong> Please <a href="tel:+919776501230" className="text-blue-600 underline">contact us</a> to confirm availability.
+</p>
+
+
+  </div>
 
 
   {/* Description */}

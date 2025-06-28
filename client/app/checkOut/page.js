@@ -114,6 +114,9 @@ const Page = () => {
   if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
 
+  const [localLoading, setLocalLoading] = useState(false)
+
+
 
 
 
@@ -495,7 +498,7 @@ const Page = () => {
           products: normalizedProducts,
           paymentId: paymentId,
           payment_status: "Completed",
-          payment_method: orderType,
+          order_type: orderType,
           delivery_address: selectedAddressId,
           totalAmt: totalAmount,
           date: new Date().toLocaleString("en-IN", {
@@ -553,7 +556,7 @@ const Page = () => {
 
   const [showPaymentOptions, setShowPaymentOptions] = useState(false)
 
-  const handleCOD = async (e, paymentMethod) => {
+  const handleCOD = async (e, order_Type) => {
     // Make backend call to create COD order
 
     const generateOrderId = () => {
@@ -592,7 +595,7 @@ const Page = () => {
       products: normalizedProducts,
       paymentId: "COD",
       payment_status: "Pending",
-      payment_method: orderType,
+      order_type: order_Type,
       delivery_address: selectedAddressId,
       totalAmt: totalAmount,
       date: new Date().toLocaleString("en-IN", {
@@ -612,24 +615,58 @@ const Page = () => {
             deleteData(`/api/cart/emptyCart/${payload.userId}`)
               .then(() => {
                 getCartItems();
-                router.replace("/orderSuccess");
+                if (orderType === "delivery") {
+                  setLocalLoading(false)
+                  router.push("/")
+                } else {
+
+                  setLocalLoading(false)
+                  router.replace("/orderSuccess");
+
+                }
               })
               .catch((err) => {
                 console.error("Failed to empty cart:", err);
-                router.replace("/orderSuccess"); // still go to orders
+                if (orderType === "delivery") {
+                  setLocalLoading(false)
+                  router.push("/")
+                } else {
+                  setLocalLoading(false)
+                  router.replace("/orderSuccess");
+                }
               });
           } else {
-            router.replace("/orderSuccess");
+            if (orderType === "delivery") {
+              setLocalLoading(false)
+              router.push("/")
+            } else {
+              setLocalLoading(false)
+              router.replace("/orderSuccess");
+            }
           }
         } else {
           console.error("Order creation failed:", res);
-          router.replace("/order-failed");
+          if (orderType === "delivery") {
+            setLocalLoading(false)
+            router.push("/")
+          } else {
+            setLocalLoading(false)
+            router.replace("/order-failed");
+
+          }
         }
       });
 
     } else {
       alert.alertBox({ type: "error", msg: "Please select atleast one item" })
-      router.replace("/order-failed");
+      if (orderType === "delivery") {
+        setLocalLoading(false)
+        router.push("/")
+      } else {
+        setLocalLoading(false)
+        router.replace("/order-failed");
+
+      }
 
     }
 
@@ -733,7 +770,7 @@ const Page = () => {
               )}
             </div>
 
-            <div className="p-2 sm:p-6 md:p-8 bg-white  shadow-slate-400 shadow-lg h-full">
+            <div className="p-2 sm:p-6 md:p-8 bg-white shadow-slate-400 shadow-lg h-full">
               <h2 className="text-[16px] sm:text-[28px] font-semibold sm:font-bold text-slate-800 mb-2 sm:mb-6 border-b pb-1 sm:pb-2 border-slate-100">
                 Order Summary
               </h2>
@@ -752,13 +789,13 @@ const Page = () => {
                             <Image
                               src={item?.image || item?.images?.[0]}
                               alt={item?.name || item?.productTitle}
-                              className="w-auto h-auto object-cover "
-                              width={100} height={100}
-
+                              className="w-auto h-auto object-cover"
+                              width={100}
+                              height={100}
                             />
                           </div>
 
-                          <div className="flex-1 ">
+                          <div className="flex-1">
                             <div className="flex justify-between items-start mb-2">
                               <div
                                 className="cursor-pointer"
@@ -775,7 +812,9 @@ const Page = () => {
 
                             <div className="flex justify-between items-center text-slate-700 text-xs pr-1 sm:pr-0 sm:text-sm">
                               <span>Qty: {item?.quantity}</span>
-                              <span className="font-semibold text-[16px] sm:text-lg">₹{item?.quantity * item?.price}</span>
+                              <span className="font-semibold text-[16px] sm:text-lg">
+                                ₹{item?.quantity * item?.price}
+                              </span>
                             </div>
                           </div>
                         </li>
@@ -798,119 +837,137 @@ const Page = () => {
                         key={index}
                         className="flex justify-between border-b pb-1 sm:pb-3 text-slate-700 font-medium"
                       >
-                        <span>{item?.productTitle || item?.name} × {item.quantity}</span>
+                        <span>
+                          {item?.productTitle || item?.name} × {item.quantity}
+                        </span>
                         <span>₹{item.quantity * item.price}</span>
                       </div>
                     ))}
 
-                    <div className="flex justify-between font-bold text-slate-800 text-lg sm:text-xl  sm:pt-1">
+                    <div className="flex justify-between font-bold text-slate-800 text-lg sm:text-xl sm:pt-1">
                       <span>Total Amount</span>
                       <span>
                         ₹
-                        {itemsToCheckout.reduce(
-                          (acc, item) => acc + item.quantity * item.price,
-                          0
-                        )}
+                        {itemsToCheckout.reduce((acc, item) => acc + item.quantity * item.price, 0)}
                       </span>
                     </div>
 
-                    <div className="pt-3 sm:pt-6 flex flex-col sm:flex-row gap-3">
-  {/* Book & Pickup */}
-  <Button
-    variant="contained"
-    className="w-full !text-sm sm:!text-normal !bg-gradient-to-r from-emerald-600 to-emerald-700"
-    onClick={(e) => {
-      if (!selectedAddressId) {
-        alert.alertBox({
-          type: "error",
-          msg: "Please select a delivery address",
-        });
-        return;
-      }
-      setOrderType("pickup"); // <-- Store type in state
-      setShowPaymentOptions(true);
-    }}
-  >
-    Book & Pickup
-  </Button>
+                    <div className="text-slate-700 font-semibold text-center mt-7 mb-3">
+                      Choose Delivery Method
+                    </div>
 
-  {/* Contact for Delivery */}
-  <Button
-    variant="contained"
-    className="w-full !text-sm sm:!text-normal !bg-gradient-to-r from-blue-600 to-blue-700"
-    onClick={(e) => {
-      if (!selectedAddressId) {
-        alert.alertBox({
-          type: "error",
-          msg: "Please select a delivery address",
-        });
-        return;
-      }
-      setOrderType("delivery"); // <-- Store type in state
-      setShowPaymentOptions(true);
-    }}
-  > 
-    Contact for Home Delivery
-  </Button>
+                    <div className="pt-1 sm:pt-1 flex flex-col sm:flex-row gap-3">
+                      {/* Book & Pickup */}
+                      <Button
+                        variant="contained"
+                        className="w-full !text-sm sm:!text-normal !bg-gradient-to-r from-emerald-600 to-emerald-700"
+                        onClick={(e) => {
+                          if (!selectedAddressId) {
+                            alert.alertBox({
+                              type: "error",
+                              msg: "Please select a delivery address",
+                            });
+                            return;
+                          }
+                          setOrderType("pickup");
+                          setShowPaymentOptions(true);
+                        }}
+                      >
+                        Proceed with Store Pickup
+                      </Button>
 
-  {/* Payment Options (COD / or maybe UPI later) */}
-  {showPaymentOptions && (
-  <div className="mt-2 sm:mt-4 space-y-2 sm:space-y-3">
-    <div className="font-semibold text-slate-700 text-center">
-      {orderType === "pickup"
-        ? "Confirm your booking for pickup"
-        : "Contact us to confirm delivery"}
-    </div>
+                      {/* Contact for Delivery */}
+                      <Button
+                        variant="contained"
+                        className="w-full !text-sm sm:!text-normal !bg-gradient-to-r from-blue-600 to-blue-700"
+                        onClick={(e) => {
+                          if (!selectedAddressId) {
+                            alert.alertBox({
+                              type: "error",
+                              msg: "Please select a delivery address",
+                            });
+                            return;
+                          }
+                          setOrderType("delivery");
+                          setShowPaymentOptions(true);
+                        }}
+                      >
+                        Request Home Delivery
+                      </Button>
+                    </div>
 
-    {orderType === "pickup" ? (
-      <Button
-        variant="outlined"
-        sx={{
-          color: "#1e293b",
-          borderColor: "#cbd5e1",
-          "&:hover": {
-            borderColor: "#1e293b",
-            backgroundColor: "#f1f5f9",
-          },
-          fontWeight: 600,
-          fontSize: "16px",
-        }}
-        fullWidth
-        className="!text-sm sm:!text-normal"
-        onClick={(e) => handleCOD(e, orderType)}
-      >
-        Place Booking (COD)
-      </Button>
-    ) : (
-      <a href="tel:+919776501230" className="block w-full">
-        <Button
-          variant="outlined"
-          sx={{
-            color: "#1e293b",
-            borderColor: "#cbd5e1",
-            "&:hover": {
-              borderColor: "#1e293b",
-              backgroundColor: "#f1f5f9",
-            },
-            fontWeight: 600,
-            fontSize: "16px",
-          }}
-          fullWidth
-          className="!text-sm sm:!text-normal"
-        >
-          Call to Confirm Delivery
-        </Button>
-      </a>
-    )}
-  </div>
-)}
+                    {/* Info Note */}
+                    <p className="text-xs text-gray-500 text-center mt-2">
+                      🛍️ Pickup available for all customers. <br />
+                      🚚 Home delivery available on request. Please call to confirm availability.
+                    </p>
 
-</div>
+                    {/* Payment Options */}
+                    {showPaymentOptions && (
+                      <div className="mt-2 sm:mt-4 space-y-2 sm:space-y-3">
+                        <div className="font-semibold text-slate-700 text-center">
+                          {orderType === "pickup"
+                            ? "Confirm your booking for pickup"
+                            : "Please call to check delivery availability"}
+                        </div>
 
+                        {orderType === "pickup" ? (
+                          <Button
+                            variant="outlined"
+                            sx={{
+                              color: "#1e293b",
+                              borderColor: "#cbd5e1",
+                              "&:hover": {
+                                borderColor: "#1e293b",
+                                backgroundColor: "#f1f5f9",
+                              },
+                              fontWeight: 600,
+                              fontSize: "16px",
+                            }}
+                            fullWidth
+                            className="!text-sm sm:!text-normal"
+                            onClick={(e) => {
+                              handleCOD(e, orderType)
+                              setLocalLoading(true)
+                            }}
+
+                          >
+
+                            {localLoading ? <CircularProgress size={18} thickness={5} color="inherit" /> : "Place Booking (COD)"}
+                          </Button>
+                        ) : (
+                          <a href="tel:+919776501230" className="block w-full">
+                            <Button
+                              variant="outlined"
+                              sx={{
+                                color: "#1e293b",
+                                borderColor: "#cbd5e1",
+                                "&:hover": {
+                                  borderColor: "#1e293b",
+                                  backgroundColor: "#f1f5f9",
+                                },
+                                fontWeight: 600,
+                                fontSize: "16px",
+                              }}
+                              fullWidth
+                              className="!text-sm sm:!text-normal"
+                              nClick={(e) => {
+                                handleCOD(e, orderType)
+                                setLocalLoading(true)
+                              }}
+                            >
+                              {localLoading ?<CircularProgress size={18} thickness={5} color="inherit" /> : "Call to Confirm Delivery"}
+                            
+                            </Button>
+                          </a>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
+
 
 
           </div>
