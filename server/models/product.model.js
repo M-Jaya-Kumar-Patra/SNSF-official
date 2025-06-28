@@ -106,6 +106,14 @@ ratingCount: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
   },
+  
+    delivery_days:{
+        type: String
+    },
+    callOnlyDelivery:{
+        type:Boolean,
+        default:false
+    },
 
   specifications: {
     material: { type: String, default: "" },
