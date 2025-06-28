@@ -5,6 +5,8 @@ import { Josefin_Sans } from "next/font/google";
 import { useCat } from "@/app/context/CategoryContext";
 import { useAuth } from "@/app/context/AuthContext";
 import Image from "next/image";
+import Loading from "./Loading";
+
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
@@ -12,15 +14,21 @@ const Shopbycat = () => {
   const { catData } = useCat();
   const { isCheckingToken } = useAuth(); // ✅ protect from premature render
   const [hydrated, setHydrated] = useState(false);
+    const [localLoading, setLocalLoading] = useState(false);
+    
 
   useEffect(() => {
-    console.log("shopbycat", isCheckingToken)
+    if(!catData){
+      setLocalLoading(false)
+    }
+    
     setHydrated(true);
   }, []);
 
   const catLength = catData?.length || 0;
 
-  if (!hydrated || isCheckingToken) return null; // ✅ early exit
+  if (!hydrated || isCheckingToken || localLoading) return <Loading/>;
+  
 
   return (
     <div className=" flex flex-col items-center bg-slate-100 w-full pb-4 sm:pb-8">

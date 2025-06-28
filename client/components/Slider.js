@@ -5,6 +5,8 @@ import { fetchDataFromApi } from "@/utils/api";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/app/context/AuthContext"; // ✅ Added
+import Loading from "./Loading";
+
 
 const Slider = () => {
   const { isCheckingToken } = useAuth(); // ✅ Get from context
@@ -50,7 +52,7 @@ const Slider = () => {
   };
 
   // ✅ Render nothing while loading or waiting for token
-  if (isCheckingToken || localLoading || !slides.length) return null;
+  if (isCheckingToken || localLoading || !slides.length) return <Loading/>;
 
   return (
     <div className="flex justify-center w-full ">

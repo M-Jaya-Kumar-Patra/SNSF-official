@@ -24,6 +24,8 @@ import { FaBell } from "react-icons/fa";
 import { useNotice } from "@/app/context/NotificationContext";
 import LogoutBTN from "./LogoutBTN";
 import { Package, User, CreditCard, Bell, Heart, MapPin  } from "lucide-react";
+import Loading from "./Loading";
+import NextImage from "next/image"; 
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -47,6 +49,26 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
   const dropdownRef = useRef(null);
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
+
+  const [localLoading, setLocalLoading] = useState(false)
+  
+  
+  useEffect(() => {
+  const img = new window.Image(); // ✅ Native Image
+  img.src = "/images/logo.png";
+
+  img.onload = () => {
+    setLocalLoading(false);
+  };
+
+  img.onerror = () => {
+    console.error("Logo image failed to load");
+    setLocalLoading(false);
+  };
+}, []);
+
+
+  if (localLoading) return <Loading />;
 
   useEffect(() => {
     getNotifications();
@@ -79,7 +101,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
       <div className="flex items-center gap-0 sm:gap-1 flex-shrink-0 h-[45px] w-[200px] sm:h-[50px] sm:w-[200px]">
   {/* Logo */}
   <img
-    src="/images/logo.png"
+    src="/images/logo.png "
     alt="Logo"
     width={100}
     height={100}

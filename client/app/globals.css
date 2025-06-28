@@ -93,3 +93,27 @@ body {
     transform: translateX(-100%);
   }
 }
+
+@keyframes mui-skeleton-wave {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.MuiSkeleton-wave::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: mui-skeleton-wave 1.6s linear 0.5s infinite;
+}
+  

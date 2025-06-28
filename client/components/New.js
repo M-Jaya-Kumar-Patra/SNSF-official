@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/app/context/CartContext";
 import { useAuth } from "@/app/context/AuthContext";
 import Image from "next/image";
+import Loading from "./Loading";
+
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
@@ -18,10 +20,15 @@ const New = () => {
   const scrollRef = useRef(null);
   const router = useRouter();
   const { setBuyNowItem } = useCart();
+          const [localLoading, setLocalLoading] = useState(false);
+  
 
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    if(!prdData){
+            setLocalLoading(false)
+        }
     setHydrated(true);
   }, []);
 
@@ -45,7 +52,8 @@ const New = () => {
   };
 
   // Optional early return while waiting
-  if (!hydrated || isCheckingToken) return null;
+  if (!hydrated || isCheckingToken || localLoading) return <Loading/>;
+  
 
   return (
     <div className="flex flex-col items-center mt-3 pb-5 sm:pb-8 bg-slate-100 w-full">

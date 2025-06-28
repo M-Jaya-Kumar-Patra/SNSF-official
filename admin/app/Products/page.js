@@ -71,6 +71,7 @@ const Products = () => {
   location: "",
   specifications: {
     material: "",
+    setOf:"",
     grade: "",
     fabric: "",
     fabricColor: "",
@@ -131,6 +132,7 @@ const Products = () => {
         location: "",
         specifications: {
             material: "",
+            setOf: "",
             grade: "",
             fabric: "",
             fabricColor: "",
@@ -297,6 +299,7 @@ const Products = () => {
     ...product,
     specifications: {
       material: "",
+      setOf: "",
       grade: "",
       fabric: "",
       fabricColor: "",
@@ -923,6 +926,13 @@ const handleSpecificationsChangeAdd = (e) => {
                                                     onChange={(e) => handleSpecificationsChange(e)}
                                                 />
                                                 <TextField
+                                                    label="Set of"
+                                                    size="small"
+                                                    name="setOf"
+                                                    value={editPrdObj?.specifications?.setOf || ""}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+                                                <TextField
                                                     label="Grade"
                                                     size="small"
                                                     name="grade"
@@ -1305,6 +1315,13 @@ const handleSpecificationsChangeAdd = (e) => {
                                             size="small"
                                             name="material"
                                             value={formFields.specifications?.material || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Set of"
+                                            size="small"
+                                            name="setOf"
+                                            value={formFields.specifications?.setOf || ""}
                                             onChange={handleSpecificationsChangeAdd}
                                         />
                                         <TextField

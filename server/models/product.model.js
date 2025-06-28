@@ -109,6 +109,7 @@ ratingCount: {
 
   specifications: {
     material: { type: String, default: "" },
+    setOf:{type:Number, default:1},
     grade: { type: String, default: "" },
     fabric: { type: String, default: "" },
     fabricColor: { type: String, default: "" },

@@ -10,6 +10,8 @@ import { useItem } from "@/app/context/ItemContext";
 import { useCart } from "@/app/context/CartContext";
 import { useAuth } from "@/app/context/AuthContext";
 import Image from "next/image";
+import Loading from "./Loading";
+
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
@@ -20,11 +22,16 @@ const Bestsellers = () => {
     const { item, setItem } = useItem();
     const { addToCart, buyNowItem, setBuyNowItem } = useCart();
     const { userData, setUserData, isLogin, setLoading, isCheckingToken } = useAuth();
+        const [localLoading, setLocalLoading] = useState(false);
+    
 
     const [quantity] = useState(1);
     const [hydrated, setHydrated] = useState(false);
 
     useEffect(() => {
+        if(!prdData){
+            setLocalLoading(false)
+        }
         setHydrated(true);
     }, []);
 
@@ -36,7 +43,8 @@ const Bestsellers = () => {
         }));
     };
 
-    if (!hydrated || isCheckingToken) return null;
+    if (!hydrated || isCheckingToken || localLoading) return <Loading/>;
+    
 
     return (
         <div className="flex flex-col items-center mt-2 sm:mt-5 w-full pb-4 sm:pb-8">

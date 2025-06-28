@@ -99,6 +99,7 @@ export async function createProduct(request, response) {
       size,
       specifications: {
         material: specifications?.material || "",
+        setOf: specifications?.setOf || "",
         grade: specifications?.grade || "",
         fabric: specifications?.fabric || "",
         fabricColor: specifications?.fabricColor || "",
@@ -806,6 +807,7 @@ export async function updateProduct(request, response) {
         size,
         specifications: {
           material: specifications?.material || "",
+          setOf: specifications?.setOf || "",
           grade: specifications?.grade || "",
           fabric: specifications?.fabric || "",
           fabricColor: specifications?.fabricColor || "",

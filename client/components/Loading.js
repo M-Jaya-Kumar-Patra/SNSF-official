@@ -9,12 +9,12 @@ export default function Loading() {
     <Backdrop
       sx={{
         zIndex: (theme) => theme.zIndex.drawer + 9999,
-        backgroundColor: 'ffffff',
+        backgroundColor: '#ffffff',
       }}
       open={true}
     >
       <div className="flex flex-col items-center justify-center animate-fade-in text-center">
-        <div className="w-32 h-32 mb-4">
+        <div className="w-40 h-40 p-0">
           <DotLottieReact
             src="https://lottie.host/f0d67ccf-00d6-4753-81f0-45de6e6de551/xon0h7LmyW.lottie"
             autoplay

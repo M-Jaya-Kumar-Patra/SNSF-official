@@ -10,8 +10,7 @@ import Reviews from "./Reviews";
 import Similar from "./Similar";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { MdFavorite } from "react-icons/md";
-import { MdFavoriteBorder } from "react-icons/md";
+import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 import Image from "next/image";
 import { useWishlist } from '@/app/context/WishlistContext';
 import Pincode from "./Pincode";
@@ -19,46 +18,40 @@ import ProductSpecs from "@/components/ProductSpecs";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-
-
-
-
-
+import Loading from "@/components/Loading";
 
 const Page = () => {
   const [productImages, setProductImages] = useState([]);
-
-  const { userData, setUserData, isLogin,isCheckingToken  } = useAuth()
-
-  const { cartData, addToCart, buyNowItem, setBuyNowItem } = useCart()
-      if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
-
-
+  const [openedProduct, setOpenedProduct] = useState(null);
+  const [selectedImage, setSelectedImage] = useState();
+  const [quantity, setQuantity] = useState(1);
+  
+  const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist()
+  const { userData, setUserData, isLogin, isCheckingToken } = useAuth();
+  const { cartData, addToCart, buyNowItem, setBuyNowItem } = useCart();
+  const params = useParams();
   const router = useRouter();
-
-  const handleAddToCart = () => {
-    addToCart(product);
-  };
-
-
-  const params = useParams()
   const prdId = params?.prd;
-
-  const [openedProduct, setOpenedProduct] = useState(null)
 
   useEffect(() => {
     fetchDataFromApi(`/api/product/${prdId}`, false).then((res) => {
-      setOpenedProduct(res?.product)
-      setProductImages(res?.product?.images)
-      setSelectedImage(res?.product?.images[0])
-    })
+      setOpenedProduct(res?.product);
+      setProductImages(res?.product?.images);
+      setSelectedImage(res?.product?.images[0]);
+    });
+  }, [prdId, userData]);
 
-  }, [prdId, userData])
+  const handleAddToCart = () => {
+    addToCart(openedProduct);
+  };
 
-  const [selectedImage, setSelectedImage] = useState();
+  if (isCheckingToken) {
+    return <div className="text-center mt-10">Checking session...</div>;
+  }
 
-  const [quantity, setQuantity] = useState(1)
-
+  if (!openedProduct || !productImages) {
+    return <Loading />;
+  }
 
   const addToCartFun = async (prd, userId, quantity) => {
     try {
@@ -76,7 +69,6 @@ const Page = () => {
   };
 
 
-  const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist()
 
 
 
@@ -306,8 +298,7 @@ const Page = () => {
 
 
 <div className="flex gap-4 mt-4">
-  <p className="text-sm text-gray-600 mt-2">
-  🛍️ <strong>Pickup available for all customers.</strong><br />
+  <p className="text-sm text-gray-600 mt-2">  
   🚚 <strong>Home delivery available on request.</strong> Please <a href="tel:+919776501230" className="text-blue-600 underline">contact us</a> to confirm availability.
 </p>
 

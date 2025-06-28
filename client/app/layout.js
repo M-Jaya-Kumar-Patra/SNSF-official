@@ -41,14 +41,23 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon-32x32.png" type="image/png" />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
+        <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <meta name="apple-mobile-web-app-title" content="SNSF" />
+
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#000000" />
+        <meta name="theme-color" content="#1e40af" />
       </head>
+
+
       <body className={`${inter.className} w-full`}>
-            <AuthProvider>
+        <AuthProvider>
           <AuthWrapper>
-        <AlertProvider>
+            <AlertProvider>
               <NoticeProviders>
                 <OrdersProvider>
                   <ItemProvider>
@@ -74,9 +83,9 @@ export default function RootLayout({ children }) {
                   </ItemProvider>
                 </OrdersProvider>
               </NoticeProviders>
-        </AlertProvider>
+            </AlertProvider>
           </AuthWrapper>
-            </AuthProvider>
+        </AuthProvider>
       </body>
     </html>
   );
