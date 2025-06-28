@@ -133,7 +133,7 @@ const Products = () => {
             size: [],
             location: "",
             delivery_days: "",
-            callOnlyDelivery: "",
+            callOnlyDelivery: false,
             specifications: {
                 material: "",
                 setOf: "",
@@ -1366,20 +1366,6 @@ const Products = () => {
                                             size="small"
                                             name="grade"
                                             value={formFields.specifications?.grade || ""}
-                                            onChange={handleSpecificationsChangeAdd}
-                                        />
-                                        <TextField
-                                            label="Delivery within"
-                                            size="small"
-                                            name="delivery_days"
-                                            value={formFields.specifications?.delivery_days || ""}
-                                            onChange={handleSpecificationsChangeAdd}
-                                        />
-                                        <TextField
-                                            label="Call only Booking"
-                                            size="small"
-                                            name="callOnlyDelivery"
-                                            value={formFields.specifications?.callOnlyDelivery || ""}
                                             onChange={handleSpecificationsChangeAdd}
                                         />
                                         <TextField
