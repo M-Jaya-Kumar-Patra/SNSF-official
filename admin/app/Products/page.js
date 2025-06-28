@@ -887,6 +887,22 @@ const Products = () => {
                                                 name='discount'
 
                                             />
+                                             <TextField
+                                                label="Delivery Within"
+                                                value={editPrdObj?.delivery_days || ""}
+                                                onChange={handleChangeEditInput}
+                                                size="small"
+                                                name='delivery_days'
+
+                                            />
+                                             <TextField
+                                                label="Call only Booking"
+                                                value={editPrdObj?.callOnlyDelivery || ""}
+                                                onChange={handleChangeEditInput}
+                                                size="small"
+                                                name='callOnlyDelivery'
+
+                                            />
                                             <TextField
                                                 label="Product size"
                                                 value={(editPrdObj.size && Array.isArray(editPrdObj.size)) ? editPrdObj.size.join(", ") : ""}
@@ -943,20 +959,7 @@ const Products = () => {
                                                     value={editPrdObj?.specifications?.grade || ""}
                                                     onChange={(e) => handleSpecificationsChange(e)}
                                                 />
-                                                <TextField
-                                                    label="Delivery within"
-                                                    size="small"
-                                                    name="delivery_days"
-                                                    value={editPrdObj?.specifications?.delivery_days || ""}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
-                                                />
-                                                <TextField
-                                                    label="Call only Booking"
-                                                    size="small"
-                                                    name="callOnlyDelivery"
-                                                    value={editPrdObj?.specifications?.callOnlyDelivery || false}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
-                                                />
+                                                
                                                 <TextField
                                                     label="Fabric"
                                                     size="small"
@@ -1290,6 +1293,22 @@ const Products = () => {
                                         onChange={handleChangeAdd}
                                         size="small"
                                         name='discount'
+
+                                    />
+                                    <TextField
+                                        label="Delivery Within"
+                                        value={formFields?.delivery_days || ""}
+                                        onChange={handleChangeAdd}
+                                        size="small"
+                                        name='delivery_days'
+
+                                    />
+                                    <TextField
+                                        label="Call only booking"
+                                        value={formFields?.callOnlyDelivery || ""}
+                                        onChange={handleChangeAdd}
+                                        size="small"
+                                        name='callOnlyDelivery'
 
                                     />
                                     <TextField
