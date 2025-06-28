@@ -912,37 +912,41 @@ const Page = () => {
                         </div>
 
                         {orderType === "pickup" ? (
-                          <Button
-                            variant="outlined"
-                            sx={{
-                              color: "#1e293b",
-                              borderColor: "#cbd5e1",
-                              "&:hover": {
-                                borderColor: "#1e293b",
-                                backgroundColor: "#f1f5f9",
-                              },
-                              fontWeight: 600,
-                              fontSize: "16px",
-                            }}
-                            fullWidth
-                            className="!text-sm sm:!text-normal"
-                            onClick={(e) => {
-                              handleCOD(e, orderType);
-                              setLocalLoading(true);
-                              if(itemsToCheckout?.some(item => item?.callOnlyDelivery)){
-                                window.location.href = "tel:+919776501230";
-                              }
-                            }}
-                          >
-                            {localLoading ? (
-                              <CircularProgress size={18} thickness={5} color="inherit" />
-                            ) : (
-                              // Conditional text
-                              itemsToCheckout?.some(item => item?.callOnlyDelivery)
-                                ? "Call to Confirm Booking"
-                                : "Place Booking (COD)"
-                            )}
-                          </Button>
+                         <Button
+  variant="outlined"
+  sx={{
+    color: "#1e293b",
+    borderColor: "#cbd5e1",
+    "&:hover": {
+      borderColor: "#1e293b",
+      backgroundColor: "#f1f5f9",
+    },
+    fontWeight: 600,
+    fontSize: "16px",
+  }}
+  fullWidth
+  className="!text-sm sm:!text-normal"
+  onClick={(e) => {
+    const requiresCall = itemsToCheckout?.some(item => item?.callOnlyDelivery);
+
+    if (requiresCall) {
+      window.location.href = "tel:+919776501230";
+    } else {
+      setLocalLoading(true);
+      handleCOD(e, orderType);
+    }
+  }}
+>
+  {console.log("................",itemsToCheckout?.[0].callOnlyDelivery)}
+  {localLoading ? (
+    <CircularProgress size={18} thickness={5} color="inherit" />
+  ) : itemsToCheckout?.some(item => item?.callOnlyDelivery) ? (
+    "Call to Confirm Booking"
+  ) : (
+    "Place Booking (COD)"
+  )}
+</Button>
+
 
                         ) : (
                           <a href="tel:+919776501230" className="block w-full">

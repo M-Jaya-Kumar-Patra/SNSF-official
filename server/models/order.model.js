@@ -15,6 +15,7 @@
     },
     callOnlyDelivery:{
         type:Boolean,
+        default:false
     },
         products:[
             {
