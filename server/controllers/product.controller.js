@@ -5,140 +5,144 @@ import CategoryModel from "../models/category.model.js";
 
 // Cloudinary Config
 cloudinary.config({
-  cloud_name: process.env.cloudinary_Config_Cloud_Name,
-  api_key: process.env.cloudinary_Config_API_Key,
-  api_secret: process.env.cloudinary_Config_API_Secret,
-  secure: true,
+    cloud_name: process.env.cloudinary_Config_Cloud_Name,
+    api_key: process.env.cloudinary_Config_API_Key,
+    api_secret: process.env.cloudinary_Config_API_Secret,
+    secure: true,
 });
 
 let imagesArr = [];
 
 // Upload Images Controller
 export async function uploadImages(request, response) {
-  try {
-    const image = request.files || [];
+    try {
+        const image = request.files || [];
 
-    if (!image.length) {
-      return response.status(400).json({
-        message: "No images uploaded",
-        error: true,
-        success: false,
-      });
+        if (!image.length) {
+            return response.status(400).json({
+                message: "No images uploaded",
+                error: true,
+                success: false,
+            });
+        }
+
+        const options = {
+            use_filename: true,
+            unique_filename: false,
+            overwrite: false,
+        };
+
+        for (let i = 0; i < image.length; i++) {
+            const result = await cloudinary.uploader.upload(image[i].path, options);
+            imagesArr.push(result.secure_url);
+            fs.unlinkSync(image[i].path);
+        }
+
+        return response.status(200).json({
+            images: imagesArr,
+            error: false,
+            success: true,
+        });
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false,
+        });
     }
-
-    const options = {
-      use_filename: true,
-      unique_filename: false,
-      overwrite: false,
-    };
-
-    for (let i = 0; i < image.length; i++) {
-      const result = await cloudinary.uploader.upload(image[i].path, options);
-      imagesArr.push(result.secure_url);
-      fs.unlinkSync(image[i].path);
-    }
-
-    return response.status(200).json({
-      images: imagesArr,
-      error: false,
-      success: true,
-    });
-  } catch (error) {
-    return response.status(500).json({
-      message: error.message || error,
-      error: true,
-      success: false,
-    });
-  }
 }
 
 // Create Product Controller
 export async function createProduct(request, response) {
-  try {
-    console.log("Images Array:", imagesArr);
-    console.log(request.body);
+    try {
+        console.log("Images Array:", imagesArr);
+        console.log(request.body);
 
-    const {
-      name,
-      description,
-      images,
-      brand,
-      price,
-      oldPrice,
-      catName,
-      catId,
-      subCat,
-      subCatId,
-      thirdSubCat,
-      thirdSubCatId,
-      countInStock,
-      rating,
-      isFeatured,
-      discount,
-      size,
-      specifications, // should be an object from the frontend
-    } = request.body;
+        const {
+            name,
+            description,
+            images,
+            brand,
+            price,
+            oldPrice,
+            catName,
+            catId,
+            subCat,
+            subCatId,
+            thirdSubCat,
+            thirdSubCatId,
+            countInStock,
+            rating,
+            isFeatured,
+            discount,
+            size,
+            delivery_days,
+            callOnlyDelivery,
+            specifications, // should be an object from the frontend
+        } = request.body;
 
-    const product = new ProductModel({
-      name,
-      description,
-      images: images || imagesArr, // fallback to uploaded images
-      brand,
-      price,
-      oldPrice,
-      catName,
-      catId,
-      subCat,
-      subCatId,
-      thirdSubCat,
-      thirdSubCatId,
-      countInStock,
-      rating,
-      isFeatured,
-      discount,
-      size,
-      specifications: {
-        material: specifications?.material || "",
-        setOf: specifications?.setOf || "",
-        grade: specifications?.grade || "",
-        fabric: specifications?.fabric || "",
-        fabricColor: specifications?.fabricColor || "",
-        size: specifications?.size || "",
-        weight: specifications?.weight || "",
-        height: specifications?.height || "",
-        warranty: specifications?.warranty || "",
-        thickness: specifications?.thickness || "",
-        length: specifications?.length || "",
-        width: specifications?.width || "",
-        polish: specifications?.polish || "",
-        frameMaterial: specifications?.frameMaterial || "",
-      },
-    });
+        const product = new ProductModel({
+            name,
+            description,
+            images: images || imagesArr, // fallback to uploaded images
+            brand,
+            price,
+            oldPrice,
+            catName,
+            catId,
+            subCat,
+            subCatId,
+            thirdSubCat,
+            thirdSubCatId,
+            countInStock,
+            rating,
+            isFeatured,
+            discount,
+            size,
+            delivery_days,
+            callOnlyDelivery,
+            specifications: {
+                material: specifications?.material || "",
+                setOf: specifications?.setOf || "",
+                grade: specifications?.grade || "",
+                fabric: specifications?.fabric || "",
+                fabricColor: specifications?.fabricColor || "",
+                size: specifications?.size || "",
+                weight: specifications?.weight || "",
+                height: specifications?.height || "",
+                warranty: specifications?.warranty || "",
+                thickness: specifications?.thickness || "",
+                length: specifications?.length || "",
+                width: specifications?.width || "",
+                polish: specifications?.polish || "",
+                frameMaterial: specifications?.frameMaterial || "",
+            },
+        });
 
-    await product.save();
+        await product.save();
 
-    if (!product) {
-      return response.status(500).json({
-        error: true,
-        success: false,
-        message: "Product not created",
-      });
+        if (!product) {
+            return response.status(500).json({
+                error: true,
+                success: false,
+                message: "Product not created",
+            });
+        }
+
+        imagesArr = [];
+
+        return response.status(200).json({
+            error: false,
+            success: true,
+            message: "Product created successfully",
+        });
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false,
+        });
     }
-
-    imagesArr = [];
-
-    return response.status(200).json({
-      error: false,
-      success: true,
-      message: "Product created successfully",
-    });
-  } catch (error) {
-    return response.status(500).json({
-      message: error.message || error,
-      error: true,
-      success: false,
-    });
-  }
 }
 
 // /api/product/getProducts.js
@@ -763,91 +767,95 @@ export async function removeImageFromCloudinary(request, response) {
     }
 }
 export async function updateProduct(request, response) {
-  try {
-    const {
-      name,
-      description,
-      images,
-      brand,
-      price,
-      oldPrice,
-      catName,
-      catId,
-      subCat,
-      subCatId,
-      thirdSubCat,
-      thirdSubCatId,
-      countInStock,
-      rating,
-      isFeatured,
-      discount,
-      size,
-      specifications,
-    } = request.body;
+    try {
+        const {
+            name,
+            description,
+            images,
+            brand,
+            price,
+            oldPrice,
+            catName,
+            catId,
+            subCat,
+            subCatId,
+            thirdSubCat,
+            thirdSubCatId,
+            countInStock,
+            rating,
+            isFeatured,
+            discount,
+            size,
+            delivery_days,
+            callOnlyDelivery,
+            specifications,
+        } = request.body;
 
-    const updatedProduct = await ProductModel.findByIdAndUpdate(
-      request.params.id,
-      {
-        name,
-        description,
-        images,
-        brand,
-        price,
-        oldPrice,
-        catName,
-        catId,
-        subCat,
-        subCatId,
-        thirdSubCat,
-        thirdSubCatId,
-        countInStock,
-        rating,
-        isFeatured,
-        discount,
-        size,
-        specifications: {
-          material: specifications?.material || "",
-          setOf: specifications?.setOf || "",
-          grade: specifications?.grade || "",
-          fabric: specifications?.fabric || "",
-          fabricColor: specifications?.fabricColor || "",
-          size: specifications?.size || "",
-          weight: specifications?.weight || "",
-          height: specifications?.height || "",
-          warranty: specifications?.warranty || "",
-          thickness: specifications?.thickness || "",
-          length: specifications?.length || "",
-          width: specifications?.width || "",
-          polish: specifications?.polish || "",
-          frameMaterial: specifications?.frameMaterial || "",
-        },
-      },
-      { new: true }
-    );
+        const updatedProduct = await ProductModel.findByIdAndUpdate(
+            request.params.id,
+            {
+                name,
+                description,
+                images,
+                brand,
+                price,
+                oldPrice,
+                catName,
+                catId,
+                subCat,
+                subCatId,
+                thirdSubCat,
+                thirdSubCatId,
+                countInStock,
+                rating,
+                isFeatured,
+                discount,
+                size,
+                delivery_days,
+            callOnlyDelivery,
+                specifications: {
+                    material: specifications?.material || "",
+                    setOf: specifications?.setOf || "",
+                    grade: specifications?.grade || "",
+                    fabric: specifications?.fabric || "",
+                    fabricColor: specifications?.fabricColor || "",
+                    size: specifications?.size || "",
+                    weight: specifications?.weight || "",
+                    height: specifications?.height || "",
+                    warranty: specifications?.warranty || "",
+                    thickness: specifications?.thickness || "",
+                    length: specifications?.length || "",
+                    width: specifications?.width || "",
+                    polish: specifications?.polish || "",
+                    frameMaterial: specifications?.frameMaterial || "",
+                },
+            },
+            { new: true }
+        );
 
-    if (!updatedProduct) {
-      return response.status(404).json({
-        success: false,
-        message: "The product could not be updated",
-        error: true,
-      });
+        if (!updatedProduct) {
+            return response.status(404).json({
+                success: false,
+                message: "The product could not be updated",
+                error: true,
+            });
+        }
+
+        imagesArr = [];
+
+        return response.status(200).json({
+            message: "The product has been updated successfully",
+            error: false,
+            success: true,
+            product: updatedProduct,
+        });
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false,
+        });
     }
-
-    imagesArr = [];
-
-    return response.status(200).json({
-      message: "The product has been updated successfully",
-      error: false,
-      success: true,
-      product: updatedProduct,
-    });
-  } catch (error) {
-    return response.status(500).json({
-      message: error.message || error,
-      error: true,
-      success: false,
-    });
-  }
 }
 
 export async function filters(request, response) {
@@ -973,44 +981,44 @@ export async function sortBy(request, response) {
 
 
 export async function SearchProductsController(request, response) {
-  try {
-    const query = request.query.q;
-    const page = parseInt(request.query.page) || 1;
-    const limit = parseInt(request.query.limit) || 10;
-    const skip = (page - 1) * limit;
+    try {
+        const query = request.query.q;
+        const page = parseInt(request.query.page) || 1;
+        const limit = parseInt(request.query.limit) || 10;
+        const skip = (page - 1) * limit;
 
-    if (!query) {
-      return response.status(400).json({
-        message: "Query is required",
-        error: true,
-        success: false
-      });
+        if (!query) {
+            return response.status(400).json({
+                message: "Query is required",
+                error: true,
+                success: false
+            });
+        }
+
+        const items = await ProductModel.find({
+            $or: [
+                { name: { $regex: query, $options: "i" } },
+                { brand: { $regex: query, $options: "i" } },
+                { catName: { $regex: query, $options: "i" } },
+                { subCat: { $regex: query, $options: "i" } },
+                { thirdSubCat: { $regex: query, $options: "i" } },
+            ]
+        })
+            .populate("category")
+            .skip(skip)
+            .limit(limit);
+
+        return response.status(200).json({
+            error: false,
+            success: true,
+            products: items,
+        });
+
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false,
+        });
     }
-
-    const items = await ProductModel.find({
-      $or: [
-        { name: { $regex: query, $options: "i" } },
-        { brand: { $regex: query, $options: "i" } },
-        { catName: { $regex: query, $options: "i" } },
-        { subCat: { $regex: query, $options: "i" } },
-        { thirdSubCat: { $regex: query, $options: "i" } },
-      ]
-    })
-    .populate("category")
-    .skip(skip)
-    .limit(limit);
-
-    return response.status(200).json({
-      error: false,
-      success: true,
-      products: items,
-    });
-
-  } catch (error) {
-    return response.status(500).json({
-      message: error.message || error,
-      error: true,
-      success: false,
-    });
-  }
 }
