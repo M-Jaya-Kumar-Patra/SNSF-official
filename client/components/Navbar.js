@@ -137,7 +137,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
             </IconButton>
 
             {menuOpen && (
-              <div className="absolute right-0 mt-2 w-[230px] bg-white text-[#1e293b] rounded-xl shadow-2xl z-50">
+              <div className="absolute right-0 mt-2 w-[230px] bg-white text-[#1e293b] rounded-xl shadow-2xl z-[1000]">
                 <div className="flex flex-col p-3 space-y-2 text-sm">
                   {!isLogin ? (
                     <>
@@ -257,7 +257,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
   </IconButton>
 
   {/* Hover Dropdown */}
-  <div className="absolute right-0 mt-2 w-[220px] bg-white text-[#1e293b] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[3000]">
+  <div className="absolute right-0 mt-2 w-[220px] bg-white text-[#1e293b] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[1000]">
     <div className="flex flex-col p-3 space-y-2 text-sm">
       {isLogin ? (
         <>

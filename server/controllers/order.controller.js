@@ -38,7 +38,9 @@ export async function createOrder(req, res) {
       paymentId,
       payment_status,
       totalAmt,
-      order_type
+      order_type,
+      delivery_days,
+      callOnlyDelivery
     } = req.body;
 
     console.log("order.............................................................................")
@@ -73,7 +75,9 @@ export async function createOrder(req, res) {
       payment_status,
       totalAmt,
       order_Status: "Pending",
-      order_type
+      order_type,
+      delivery_days,
+      callOnlyDelivery
     });
 
     const savedOrder = await order.save();
@@ -88,7 +92,7 @@ export async function createOrder(req, res) {
       user?.email,
       `Order Confirmed – ${orderId}`,
       ``,
-      orderConfirmationEmail(user?.name, orderId, totalAmt, "Delivery in 5–7 days")
+      orderConfirmationEmail(user?.name, orderId, totalAmt, `Delivery in ${delivery_days} days`)
     );
 
 

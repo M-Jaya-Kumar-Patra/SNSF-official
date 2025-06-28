@@ -927,14 +927,23 @@ const Page = () => {
                             fullWidth
                             className="!text-sm sm:!text-normal"
                             onClick={(e) => {
-                              handleCOD(e, orderType)
-                              setLocalLoading(true)
+                              handleCOD(e, orderType);
+                              setLocalLoading(true);
+                              if(itemsToCheckout?.some(item => item?.callOnlyDelivery)){
+                                window.location.href = "tel:+919776501230";
+                              }
                             }}
-
                           >
-
-                            {localLoading ? <CircularProgress size={18} thickness={5} color="inherit" /> : "Place Booking (COD)"}
+                            {localLoading ? (
+                              <CircularProgress size={18} thickness={5} color="inherit" />
+                            ) : (
+                              // Conditional text
+                              itemsToCheckout?.some(item => item?.callOnlyDelivery)
+                                ? "Call to Confirm Booking"
+                                : "Place Booking (COD)"
+                            )}
                           </Button>
+
                         ) : (
                           <a href="tel:+919776501230" className="block w-full">
                             <Button
@@ -956,8 +965,8 @@ const Page = () => {
                                 setLocalLoading(true)
                               }}
                             >
-                              {localLoading ?<CircularProgress size={18} thickness={5} color="inherit" /> : "Call to Confirm Delivery"}
-                            
+                              {localLoading ? <CircularProgress size={18} thickness={5} color="inherit" /> : "Call to Confirm Delivery"}
+
                             </Button>
                           </a>
                         )}

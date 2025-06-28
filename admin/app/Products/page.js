@@ -48,44 +48,46 @@ import { useEffect } from 'react';
 const Products = () => {
 
 
-   const [formFields, setFormFields] = useState({
-  name: "",
-  productId: "",
-  description: "",
-  images: [],
-  brand: "",
-  price: "",
-  oldPrice: "",
-  catName: "",
-  catId: "",
-  subCatId: "",
-  subCat: "",
-  thirdSubCat: "",
-  thirdSubCatId: "",
-  countInStock: "",
-  sales: "",
-  rating: "",
-  isFeatured: false,
-  discount: "",
-  size: [],
-  location: "",
-  specifications: {
-    material: "",
-    setOf:"",
-    grade: "",
-    fabric: "",
-    fabricColor: "",
-    size: "",
-    weight: "",
-    height: "",
-    warranty: "",
-    thickness: "",
-    length: "",
-    width: "",
-    polish: "",
-    frameMaterial: ""
-  }
-});
+    const [formFields, setFormFields] = useState({
+        name: "",
+        productId: "",
+        description: "",
+        images: [],
+        brand: "",
+        price: "",
+        oldPrice: "",
+        catName: "",
+        catId: "",
+        subCatId: "",
+        subCat: "",
+        thirdSubCat: "",
+        thirdSubCatId: "",
+        countInStock: "",
+        sales: "",
+        rating: "",
+        isFeatured: false,
+        discount: "",
+        size: [],
+        location: "",
+        delivery_days: "",
+        callOnlyDelivery: false,
+        specifications: {
+            material: "",
+            setOf: "",
+            grade: "",
+            fabric: "",
+            fabricColor: "",
+            size: "",
+            weight: "",
+            height: "",
+            warranty: "",
+            thickness: "",
+            length: "",
+            width: "",
+            polish: "",
+            frameMaterial: ""
+        }
+    });
 
 
     const [editProduct, setEditProduct] = useState(null);
@@ -108,48 +110,50 @@ const Products = () => {
 
     const [addProduct, setAddProduct] = useState(null);
     const [showAddModal, setShowAddModal] = useState(false);
-   const handleAddClick = () => {
-    setFormFields({
-        name: "",
-        productId: "",
-        description: "",
-        images: [],
-        brand: "",
-        price: "",
-        oldPrice: "",
-        catName: "",
-        catId: "",
-        subCatId: "",
-        subCat: "",
-        thirdSubCat: "",
-        thirdSubCatId: "",
-        countInStock: "",
-        sales: "",
-        rating: "",
-        isFeatured: false,
-        discount: "",
-        size: [],
-        location: "",
-        specifications: {
-            material: "",
-            setOf: "",
-            grade: "",
-            fabric: "",
-            fabricColor: "",
-            size: "",
-            weight: "",
-            height: "",
-            warranty: "",
-            thickness: "",
-            length: "",
-            width: "",
-            polish: "",
-            frameMaterial: ""
-        }
-    });
-    setPreviews([]);
-    setShowAddModal(true);
-};
+    const handleAddClick = () => {
+        setFormFields({
+            name: "",
+            productId: "",
+            description: "",
+            images: [],
+            brand: "",
+            price: "",
+            oldPrice: "",
+            catName: "",
+            catId: "",
+            subCatId: "",
+            subCat: "",
+            thirdSubCat: "",
+            thirdSubCatId: "",
+            countInStock: "",
+            sales: "",
+            rating: "",
+            isFeatured: false,
+            discount: "",
+            size: [],
+            location: "",
+            delivery_days: "",
+            callOnlyDelivery: false,
+            specifications: {
+                material: "",
+                setOf: "",
+                grade: "",
+                fabric: "",
+                fabricColor: "",
+                size: "",
+                weight: "",
+                height: "",
+                warranty: "",
+                thickness: "",
+                length: "",
+                width: "",
+                polish: "",
+                frameMaterial: ""
+            }
+        });
+        setPreviews([]);
+        setShowAddModal(true);
+    };
 
     const [previews, setPreviews] = useState([]);
 
@@ -209,7 +213,7 @@ const Products = () => {
 
     }
 
-    const handleSubmitAddForm =  (e) => {
+    const handleSubmitAddForm = (e) => {
         e.preventDefault();
         setIsLoading(true)
         if (!formFields.name || !formFields.catName || !formFields.subCat || !formFields.price) {
@@ -292,31 +296,31 @@ const Products = () => {
 
     const [editPrdObj, setEditPrdObj] = useState(null)
 
-  const handleClickEdit = (prdId, product) => {
-  setShowEditModal(true);
-  setEditProduct(prdId);
-  setEditPrdObj({
-    ...product,
-    specifications: {
-      material: "",
-      setOf: "",
-      grade: "",
-      fabric: "",
-      fabricColor: "",
-      size: "",
-      weight: "",
-      height: "",
-      warranty: "",
-      thickness: "",
-      length: "",
-      width: "",
-      polish: "",
-      frameMaterial: "",
-      ...(product.specifications || {})
-    }
-  });
-  setPreviews(product.images || []);
-};
+    const handleClickEdit = (prdId, product) => {
+        setShowEditModal(true);
+        setEditProduct(prdId);
+        setEditPrdObj({
+            ...product,
+            specifications: {
+                material: "",
+                setOf: "",
+                grade: "",
+                fabric: "",
+                fabricColor: "",
+                size: "",
+                weight: "",
+                height: "",
+                warranty: "",
+                thickness: "",
+                length: "",
+                width: "",
+                polish: "",
+                frameMaterial: "",
+                ...(product.specifications || {})
+            }
+        });
+        setPreviews(product.images || []);
+    };
 
 
 
@@ -327,15 +331,15 @@ const Products = () => {
         }));
     }
 
-    const handleSubmitEditForm =  (e) => {
+    const handleSubmitEditForm = (e) => {
         e.preventDefault();
         setIsLoading(true);
 
-       const payload = {
-  ...editPrdObj,
-  specifications: editPrdObj.specifications || {},
-  images: previews,
-};
+        const payload = {
+            ...editPrdObj,
+            specifications: editPrdObj.specifications || {},
+            images: previews,
+        };
 
 
         if (!editPrdObj.name || !editPrdObj.catName || !editPrdObj.subCat || !editPrdObj.price) {
@@ -454,16 +458,16 @@ const Products = () => {
 
 
 
-const handleSpecificationsChangeAdd = (e) => {
-    const { name, value } = e.target;
-    setFormFields(prev => ({
-        ...prev,
-        specifications: {
-            ...prev.specifications,
-            [name]: value,
-        }
-    }));
-};
+    const handleSpecificationsChangeAdd = (e) => {
+        const { name, value } = e.target;
+        setFormFields(prev => ({
+            ...prev,
+            specifications: {
+                ...prev.specifications,
+                [name]: value,
+            }
+        }));
+    };
 
 
 
@@ -940,6 +944,20 @@ const handleSpecificationsChangeAdd = (e) => {
                                                     onChange={(e) => handleSpecificationsChange(e)}
                                                 />
                                                 <TextField
+                                                    label="Delivery within"
+                                                    size="small"
+                                                    name="delivery_days"
+                                                    value={editPrdObj?.specifications?.delivery_days || ""}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+                                                <TextField
+                                                    label="Call only Booking"
+                                                    size="small"
+                                                    name="callOnlyDelivery"
+                                                    value={editPrdObj?.specifications?.callOnlyDelivery || false}
+                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                />
+                                                <TextField
                                                     label="Fabric"
                                                     size="small"
                                                     name="fabric"
@@ -1329,6 +1347,20 @@ const handleSpecificationsChangeAdd = (e) => {
                                             size="small"
                                             name="grade"
                                             value={formFields.specifications?.grade || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Delivery within"
+                                            size="small"
+                                            name="delivery_days"
+                                            value={formFields.specifications?.delivery_days || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Call only Booking"
+                                            size="small"
+                                            name="callOnlyDelivery"
+                                            value={formFields.specifications?.callOnlyDelivery || ""}
                                             onChange={handleSpecificationsChangeAdd}
                                         />
                                         <TextField

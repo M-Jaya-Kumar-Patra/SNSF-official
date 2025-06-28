@@ -263,7 +263,7 @@ const handleDownload = async (e, orderId) => {
 
 ) : (
   <div className="flex flex-col items-center justify-center text-center col-span-1 md:col-span-1">
-  <span className="text-sm text-gray-500 font-semibold">Estimated Delivery Date</span>
+  <span className="text-sm text-gray-500 font-semibold"> Delivery Date</span>
   <span className="text-black text-sm font-semibold">
     {(() => {
       if (openedOrder?.estimated_delivery_date) {
@@ -274,9 +274,9 @@ const handleDownload = async (e, orderId) => {
           day: "numeric",
         })}`;
       } else if (openedOrder?.createdAt) {
-        const deliveryDays = Math.floor(Math.random() * 3) + 5; // 5 to 7 days
+        const maxDelivery = openedOrder?.deliveryDays.split(" ")[2];
         const estimate = new Date(openedOrder.createdAt);
-        estimate.setDate(estimate.getDate() + deliveryDays);
+        estimate.setDate(estimate.getDate() + maxDelivery);
         return `${estimate.toLocaleDateString("en-IN", {
           year: "numeric",
           month: "long",

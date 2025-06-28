@@ -299,7 +299,7 @@ const Page = () => {
 
 <div className="flex gap-4 mt-4">
   <p className="text-sm text-gray-600 mt-2">  
-  🚚 <strong>Home delivery available on request.</strong> Please <a href="tel:+919776501230" className="text-blue-600 underline">contact us</a> to confirm availability.
+  {`Your order will be delivered within ${openedProduct?.delivery_days} days from the date it was placed.`}
 </p>
 
 

@@ -35,7 +35,7 @@ const Shopbycat = () => {
       <h1
         className={`text-2xl sm:text-3xl font-bold text-black mt-4 sm:mt-8 mb-4 sm:mb-8 ${joSan.className}`}
       >
-        Shop by category
+        Shop by Category
       </h1>
 
       <div className="flex flex-col items-center justify-center w-full">

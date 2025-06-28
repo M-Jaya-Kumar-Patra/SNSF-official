@@ -10,6 +10,12 @@
         required: [true, "Order ID is required"],
         unique: true
     },
+    delivery_days:{
+        type: String
+    },
+    callOnlyDelivery:{
+        type:Boolean,
+    },
         products:[
             {
                 productId: {

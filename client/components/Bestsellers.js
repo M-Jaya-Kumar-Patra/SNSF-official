@@ -51,7 +51,7 @@ const Bestsellers = () => {
             <h1
                 className={`text-2xl sm:text-3xl font-bold text-black mt-4 mb-4 sm:mt-8 sm:mb-8 ${joSan.className}`}
             >
-                Best sellers
+                Best Sellers
             </h1>
 
             <div className="flex justify-center items-center">
