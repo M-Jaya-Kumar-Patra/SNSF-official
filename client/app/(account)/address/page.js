@@ -74,8 +74,8 @@ const indianStates = [
 const Account = () => {
     const router = useRouter();
     const alert = useAlert();
-    const { isLogin, userData, setUserData, isLoading,isCheckingToken  } = useAuth()
-        if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
+    const { isLogin, userData, setUserData, isLoading, isCheckingToken } = useAuth()
+    if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
     const [showAddAddressForm, setShowAddAddressForm] = useState(false);
 
@@ -310,7 +310,7 @@ const Account = () => {
     return (
         <>
             <div className="flex w-full min-h-screen justify-center bg-slate-100">
-                <div className="w-full sm:w-[1020px] my-2  sm:my-3 mx-auto flex justify-between">
+                <div className="w-full sm:w-[1020px]  sm:my-3 mx-auto flex justify-between">
 
                     {/* Left Sidebar */}
                     <div className="hidden sm:block left h-full">
@@ -355,13 +355,13 @@ const Account = () => {
                                         </div>
                                     </Link>
                                 </li>
-                                <li>
+                                {/* <li>
                                     <Link href="/payments">
                                         <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
                                             <CreditCard size={18} /> Payments
                                         </div>
                                     </Link>
-                                </li>
+                                </li> */}
                                 <li>
                                     <Link href="/notifications">
                                         <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2  active:bg-slate-100">
@@ -386,13 +386,16 @@ const Account = () => {
                     </div>
 
                     {/* Right Profile Section */}
-                    <div className="right h-full w-full sm:w-[750px] bg-white shadow-lg p-2 sm:p-5">
-                        <div className="mb-3 sm:mb-6">
-                            <span className="text-black  font-sans text-[22px] sm:text-3xl font-extrabold">Manage addresses</span>
-                        </div>
+<div className="right h-full w-full sm:w-[750px] bg-slate-100 sm:bg-white shadow-xl sm:p-6">
+  <div className="mb-2 sm:border-b border-gray-200   py-2 pl-3 sm:py-0 sm:pl-0 sm:pb-4 bg-white">
+    <h2 className="text-[22px] sm:text-3xl font-extrabold text-gradient text-black ">
+      Manage Addresses
+    </h2>
+  </div>
 
 
-                        {!showAddAddressForm && (
+                        <div className="p-2 sm:px-0 bg-white">
+                                {!showAddAddressForm && (
                             <button
                                 onClick={() => setShowAddAddressForm(true)}
                                 className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md border border-indigo-900 bg-indigo-950 text-white text-sm font-medium shadow-sm hover:bg-indigo-900 hover:shadow-md transition duration-200"
@@ -466,6 +469,7 @@ const Account = () => {
 
 
                         }
+                        </div>
 
                         {showAddAddressForm && (
 

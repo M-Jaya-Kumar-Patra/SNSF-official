@@ -103,7 +103,7 @@ const ProductListing = () => {
 
 
 
-    const activeFilterCount = 2;
+    const [filterCount, setFilterCount] = useState(0)
 
     const [showFilterPannel, setShowFilterPannel] = useState(false)
 
@@ -144,6 +144,7 @@ const ProductListing = () => {
                                 setIsLoading={setIsLoading}
                                 setTotalPages={setTotalPages}
                                 setShowFilterPannel={setShowFilterPannel}
+                                setFilterCount={setFilterCount}
                             />
                         </div>
                     </div>
@@ -172,7 +173,7 @@ const ProductListing = () => {
                                     >
                                         <FaFilter className="text-slate-600" />
                                         <span className="text-sm font-medium !text-slate-600">
-                                            Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+                                            Filter{filterCount > 0 ? ` (${filterCount})` : ""}
                                         </span>
                                     </Button>
 
@@ -349,7 +350,7 @@ const ProductListing = () => {
 
                                                     <Button
                                                         variant="outlined"
-                                                        className="text-white bg-gray-600 rounded-md px-1 py-1 text-xs w-1/2 text-nowrap"
+                                                        className="!text-[#1e40af] !border-[#1e40af]  bg-gray-600 rounded-md px-1 py-1 text-xs w-1/2 text-nowrap"
                                                         onClick={() => {
                                                             if (isLogin) {
                                                                 if (cartItems?.some(item => item === String(prd._id))) {

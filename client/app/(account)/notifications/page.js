@@ -97,13 +97,13 @@ useEffect(() => {
                   </div>
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/payments">
                   <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
                     <CreditCard size={18} /> Payments
                   </div>
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link href="/notifications">
                   <div className="h-[40px] flex items-center pl-[12.5px] font-semibold border border-l-8 border-y-0 border-r-0 border-indigo-950 cursor-pointer text-indigo-950 bg-slate-100 active:bg-slate-100 gap-[9px]">
@@ -126,15 +126,15 @@ useEffect(() => {
         </div>
 
 {/* Right Notification Section */}
-<div className="right h-full w-full sm:w-[750px] bg-white shadow-xl p-3 sm:p-6">
-  <div className="mb-2 sm:mb-4 border-b border-gray-200 pb-2 sm:pb-4">
-    <h2 className="text-[22px] sm:text-3xl font-extrabold text-gradient text-black">
-      🔔 Notifications
+<div className="right h-full w-full sm:w-[750px] bg-slate-100 sm:bg-white shadow-xl sm:p-6">
+  <div className="mb-2 sm:border-b border-gray-200  py-2 pl-3 sm:py-0 sm:pl-0 sm:pb-4 bg-white">
+    <h2 className="text-[22px] sm:text-3xl font-extrabold text-gradient text-black ">
+      Notifications
     </h2>
   </div>
 
   {notices?.length > 0 ? (
-  <div className="space-y-2 sm:space-y-3 px-0 sm:px-0">
+  <div className="space-y-2 sm:space-y-3 p-2 sm:px-0 bg-white">
     {notices.map((notice, index) => (
       <div
         key={index}

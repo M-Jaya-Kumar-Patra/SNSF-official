@@ -159,9 +159,9 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                       <Link href="/address" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
                         <MapPin size={18} /> Manage Address
                       </Link>
-                      <Link href="/payments" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                      {/* <Link href="/payments" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
                         <CreditCard size={18} /> Payments
-                      </Link>
+                      </Link> */}
                       <div className="pt-2">
                         <LogoutBTN />
                       </div>
@@ -256,9 +256,9 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
           <Link href="/address" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
             <MapPin size={18} /> Manage Address
           </Link>
-          <Link href="/payments" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+          {/* <Link href="/payments" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
             <CreditCard size={18} /> Payments
-          </Link>
+          </Link> */}
           <div className="pt-2">
             <LogoutBTN />
           </div>
@@ -301,7 +301,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
       </div>
 
       {/* DESKTOP CATEGORY MENU */}
-      <ul className="hidden sm:flex w-full justify-evenly border border-b-slate-200 bg-white shadow-sm px-10 z-40">
+       <ul className="hidden sm:flex w-full justify-evenly border border-b-slate-200 bg-white shadow-sm px-10 z-40">
         <li
           onClick={() => router.push("/")}
           className="cursor-pointer flex items-center justify-center text-[18px] px-10 bg-slate-100 hover:bg-slate-200 text-[#131e30] hover:font-semibold py-1 transition-all duration-200"
@@ -316,7 +316,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
             onClick={() => router.push(`/ProductListing?catId=${cat._id}`)}
             className="relative group w-full text-center cursor-pointer transition-all duration-200"
           >
-            <span className="block text-[18px] font-semibold text-slate-800 transition duration-200 group-hover:text-[#131e30] hover:font-semibold py-1">
+            <span className="block text-[17px] font-medium text-slate-800 transition duration-200 group-hover:text-[#131e30] group-hover:font-semibold py-1">
               {cat.name}
             </span>
 
@@ -335,7 +335,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                     <div key={subIndex} className="min-w-[200px] transition-transform duration-300 hover:scale-[1.02]">
                       <a
                         href={`/ProductListing?subCatId=${subCat._id}`}
-                        className="block text-[17px] font-semibold mb-3 text-slate-800 hover:text-indigo-700"
+                        className="block text-[16px] font-semibold mb-3 text-slate-800 hover:text-indigo-700"
                       >
                         {subCat.name}
                       </a>
@@ -344,7 +344,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                           <li key={thirdIndex}>
                             <a
                               href={`/ProductListing?thirdSubCatId=${thirdSubCatId._id}`}
-                              className="block text-[16px] text-gray-600 font-semibold hover:text-[#131e30] transition-all duration-200"
+                              className="block text-[15px] text-gray-600 font-medium hover:text-[#131e30] transition-all duration-200"
                             >
                               {thirdSubCatId.name}
                             </a>
@@ -359,6 +359,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
           </li>
         ))}
       </ul>
+
 
       
 

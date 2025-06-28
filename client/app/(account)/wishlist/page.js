@@ -39,7 +39,7 @@ const Account = () => {
 
   return (
     <div className="flex w-full min-h-screen justify-center bg-slate-100">
-      <div className="w-full sm:w-[1020px] my-2 sm:my-3 mx-auto flex justify-between">
+      <div className="w-full sm:w-[1020px] sm:my-3 mx-auto flex justify-between">
         {/* Sidebar */}
         <div className="hidden sm:block left h-full">
           <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5 gap-3 flex flex-col justify-center items-center">
@@ -83,13 +83,13 @@ const Account = () => {
                   </div>
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/payments">
                   <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
                     <CreditCard size={18} /> Payments
                   </div>
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link href="/notifications">
                   <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
@@ -112,14 +112,14 @@ const Account = () => {
         </div>
 
         {/* Wishlist Section */}
-<div className="right h-full w-full sm:w-[750px] bg-white shadow-xl sm:rounded-xl p-2 sm:p-6">
-  <div className="mb-2 sm:mb-6">
-    <h2 className="text-[22px] sm:text-2xl font-extrabold text-gray-800 border-b pb-2">
-      My Wishlist
+<div className="right h-full w-full sm:w-[750px] bg-slate-100 sm:bg-white shadow-xl sm:p-6">
+  <div className="mb-2 sm:border-b border-gray-200 py-2 pl-3 sm:py-0 sm:pl-0 sm:pb-4 bg-white">
+    <h2 className="text-[22px] sm:text-3xl font-extrabold text-gradient text-black ">
+      My Wishlist 
     </h2>
   </div>
 
-  <div className="list-section space-y-2 sm:space-y-4">
+  <div className="list-section space-y-2 sm:space-y-4 p-2 sm:px-0 bg-white">
     {wishlistData?.length > 0 ? (
       wishlistData.map((item, index) => (
         <div

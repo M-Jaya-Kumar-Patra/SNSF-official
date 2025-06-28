@@ -89,7 +89,7 @@ const Bestsellers = () => {
                                 <div className="flex gap-2 w-full mt-2 opacity-100 sm:group-hover:opacity-100 transition-opacity duration-300">
                                     <Button
                                         variant="outlined"
-                                        className="text-white bg-gray-600 rounded-md px-1 py-1 text-xs w-1/2 text-nowrap"
+                                        className="!text-[#1e40af] !border-[#1e40af]  bg-gray-600 rounded-md px-1 py-1 text-xs w-1/2 text-nowrap"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             if (isLogin) {

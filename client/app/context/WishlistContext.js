@@ -38,7 +38,8 @@ const WishlistProvider = ({ children }) => {
 
 
 
-  const addToWishlist = (prd, userId) => {
+  const addToWishlist = (e, prd, userId) => {
+    e.preventDefault()
   if (!userId) {
     alert.alertBox({ type: "error", msg: "Please login first" });
     return;

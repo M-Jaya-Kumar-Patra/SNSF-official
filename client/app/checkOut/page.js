@@ -661,7 +661,7 @@ const Page = () => {
             {/* Shipping Information */}
             <div className="p-3 sm:p-5   bg-white  shadow-slate-400 shadow-lg">
               <div className="flex justify-between items-center">
-                <div className="text-[14px] sm:text-[25px] text-black font-semibold">
+                <div className="text-[16px] sm:text-[25px] text-black font-semibold">
                   Shipping Information
                 </div>
                 <Button
@@ -820,6 +820,13 @@ const Page = () => {
     variant="contained"
     className="w-full !text-sm sm:!text-normal !bg-gradient-to-r from-emerald-600 to-emerald-700"
     onClick={(e) => {
+      if (!selectedAddressId) {
+        alert.alertBox({
+          type: "error",
+          msg: "Please select a delivery address",
+        });
+        return;
+      }
       setOrderType("pickup"); // <-- Store type in state
       setShowPaymentOptions(true);
     }}

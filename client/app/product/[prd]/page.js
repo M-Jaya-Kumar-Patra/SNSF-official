@@ -87,7 +87,7 @@ const Page = () => {
         {/* Left: Image Section */}
         <div className="image sm:sticky top-[50px] w-full sm:w-[400px] sm:h-[350px] sm:p-[2px] sm:border sm:border-slate-400 sm:m-3 mr-4 flex gap-[2px] flex-col sm:flex-row">
   {/* Mobile Carousel */}
-  <div className="block sm:hidden w-full">
+  <div className="block sm:hidden w-full relative">
     <Swiper spaceBetween={10} slidesPerView={1} className="w-full h-[300px]">
       {productImages?.map((src, idx) => (
         <SwiperSlide key={idx}>
@@ -102,6 +102,31 @@ const Page = () => {
         </SwiperSlide>
       ))}
     </Swiper>
+
+     <div
+          className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-3 right-3 cursor-pointer z-[90]"
+          onClick={(e) => {
+            if (!isLogin) {
+              router.push("/login");
+            } else {
+              const isAlreadyInWishlist = userData?.wishlist?.some(item => item === String(openedProduct?._id));
+              if (isAlreadyInWishlist) {
+                const wishItem = wishlistData?.find(itemInWishData => itemInWishData.productId === openedProduct?._id);
+                const itemId = wishItem?._id;
+                if (itemId) removeFromWishlist(e, itemId, openedProduct?._id);
+              } else {
+                addToWishlist(e,openedProduct, userData?._id);
+              }
+            }
+          }}
+        >
+          {isLogin && userData?.wishlist?.some(item => item === String(openedProduct?._id)) ? (
+            <MdFavorite className="!text-rose-600 text-[22px] z-10" />
+          ) : (
+            <MdFavoriteBorder className="text-slate-600 text-[22px]" />
+          )}
+        </div>
+      
   </div>
 
   {/* Desktop Thumbnail + Main Image */}
@@ -139,7 +164,7 @@ const Page = () => {
 
         {/* Wishlist Button */}
         <div
-          className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-4 right-3 cursor-pointer"
+          className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-4 right-3 cursor-pointer z-[1000]"
           onClick={(e) => {
             if (!isLogin) {
               router.push("/login");
@@ -150,7 +175,7 @@ const Page = () => {
                 const itemId = wishItem?._id;
                 if (itemId) removeFromWishlist(e, itemId, openedProduct?._id);
               } else {
-                addToWishlist(openedProduct, userData?._id);
+                addToWishlist(e, openedProduct, userData?._id);
               }
             }
           }}
@@ -201,7 +226,7 @@ const Page = () => {
 </div>
 
         {/* Right: Product Details */}
-<div className="details sm:w-[600px] px-2 sm:p-4 sm:pt-6">
+<div className="details sm:w-[600px] px-3 sm:p-4 sm:pt-6">
   <h2 className="text-[22px] sm:text-[25px] font-medium mt-2 am:mt-0 mb-1 sm:mb-3 text-gray-800">
     {openedProduct?.name}
   </h2>

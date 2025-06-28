@@ -91,7 +91,7 @@ const Cart = () => {
             <div className='hidden sm:block w-full h-full border sm:rounded-lg bg-white shadow-xl p-1 sm:p-5'>
 
               <div className="w-full bg-white mb-2">
-                <h1 className="text-3xl font-sans font-bold bg-white text-gray-800 mb-0">🛒 My Cart</h1>
+                <h1 className="text-3xl font-sans font-bold bg-white text-gray-800 mb-0">My Cart</h1>
               </div>
 
               <ul>
@@ -189,9 +189,9 @@ const Cart = () => {
               </ul>
             </div>
 
-            <div className='block sm:hidden mt-0 w-full h-full border sm:rounded-lg bg-white shadow-xl p-1 sm:p-5'>
+            <div className='block sm:hidden mt-0 w-full h-full border sm:rounded-lg bg-white shadow-xl p-2 sm:p-5'>
               <div className="w-full bg-white mb-2">
-                <h1 className="text-xl font-sans sm:text-3xl font-semibold bg-white text-gray-800 mb-0">🛒 My Cart</h1>
+                <h1 className="text-xl font-sans sm:text-3xl font-bold bg-white text-gray-800 mb-0">My Cart</h1>
               </div>
               <ul>
 
