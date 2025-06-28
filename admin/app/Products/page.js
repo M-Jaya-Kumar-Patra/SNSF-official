@@ -1417,7 +1417,7 @@ const Products = () => {
                                             size="small"
                                             name="length"
                                             value={formFields.specifications?.length || ""}
-                                            onChange={handleSpecificationsChange}
+                                            onChange={handleSpecificationsChangeAdd}
                                         />
                                         <TextField
                                             label="Width"
