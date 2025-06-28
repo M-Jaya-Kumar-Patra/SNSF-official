@@ -133,7 +133,7 @@ const Products = () => {
             size: [],
             location: "",
             delivery_days: "",
-            callOnlyDelivery: false,
+            callOnlyDelivery: "",
             specifications: {
                 material: "",
                 setOf: "",
