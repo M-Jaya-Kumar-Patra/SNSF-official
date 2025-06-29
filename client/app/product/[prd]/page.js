@@ -38,6 +38,7 @@ const Page = () => {
       setOpenedProduct(res?.product);
       setProductImages(res?.product?.images);
       setSelectedImage(res?.product?.images[0]);
+      window.scrollTo(0, 0);
     });
   }, [prdId, userData]);
 

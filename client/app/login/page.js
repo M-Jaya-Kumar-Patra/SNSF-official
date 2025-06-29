@@ -142,8 +142,8 @@ export default function Login() {
   };
 
   return (
-    <div className="flex justify-center items-center w-full h-screen bg-gray-100">
-      <div className="w-[300px] border rounded-md shadow overflow-hidden bg-white">
+    <div className="relative flex justify-center items-center w-full h-screen bg-gray-100">
+      <div className="absolute top-[10%] sm:top-[20%] w-[300px] border rounded-md shadow overflow-hidden bg-white">
         
 
         <div className="w-full py-4 px-5 flex flex-col items-center">

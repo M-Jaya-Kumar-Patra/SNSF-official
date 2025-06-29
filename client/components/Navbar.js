@@ -93,7 +93,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
   }, [menuOpen]);
 
   return (
-    <nav className=" sticky top-0 sm:top-[-82px]   z-[100] bg-gradient-to-r from-indigo-950 via-indigo-900 to-[#1e40af]  text-white border-t border-[#1e293b] shadow-md">
+    <nav className=" sticky top-0 sm:top-[-82px]   z-[300] bg-gradient-to-r from-indigo-950 via-indigo-900 to-[#1e40af]  text-white border-t border-[#1e293b] shadow-md">
 
 
       <div>

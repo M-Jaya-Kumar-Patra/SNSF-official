@@ -66,7 +66,7 @@ const Products = () => {
         sales: "",
         rating: "",
         isFeatured: false,
-        discount: "",
+        discount: 100-(price/(oldPrice/100)),
         size: [],
         location: "",
         delivery_days: "",
@@ -129,7 +129,7 @@ const Products = () => {
             sales: "",
             rating: "",
             isFeatured: false,
-            discount: "",
+            discount: 100-(price/(oldPrice/100)),
             size: [],
             location: "",
             delivery_days: "",
@@ -568,8 +568,8 @@ const Products = () => {
                                             category.includes(searchQuery.toLowerCase()) ||
                                             subCategory.includes(searchQuery.toLowerCase())
                                         );
-                                    })
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).reverse()
+                                    }).reverse()
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((prd, index) => (
                                         <tr key={index} className="border-b border-slate-300">
                                             <td className="w-[55px]">

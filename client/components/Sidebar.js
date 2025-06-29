@@ -159,7 +159,7 @@ const Sidebar = (props) => {
   return (
     <aside
       ref={sidebarRef}
-      className='sidebar sticky sm:top-[54px] text-black flex flex-col h-full sm:h-auto pl-4 sm:pl-0'
+      className='sidebar   sticky sm:top-[54px] text-black flex flex-col h-full sm:h-auto pl-4 sm:pl-0'
     >
       {/* Top: Apply + Clear */}
       <div className='mb-4 w-full flex gap-2 sm:gap-4 sm:mb-6 px-1 sm:px-0'>

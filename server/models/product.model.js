@@ -14,7 +14,6 @@ const productSchema = mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
   },
   images: [
     {
@@ -60,7 +59,6 @@ const productSchema = mongoose.Schema({
   },
   countInStock: {
     type: Number,
-    required: true,
   },
   sales: {
     type: Number,
@@ -79,7 +77,6 @@ ratingCount: {
   },
   discount: {
     type: Number,
-    required: true,
   },
   size: [
     {

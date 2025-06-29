@@ -152,7 +152,8 @@ const ProductListing = () => {
 
 
                     {/* Main Product Content */}
-                    <div className='flex-grow w-full h-full bg-white  sm:p-5 shadow-lg text-black'>
+                    <div className="flex-grow w-full h-full bg-white sm:p-5 shadow-lg text-black overflow-x-hidden">
+
 
                         {/* Sort Header */}
                         <div className='w-full fixed sm:relative z-[200] sm:z-0 bg-slate-100 p-2 flex flex-col sm:flex-row sm:justify-between sm:items-center sm:rounded gap-2 sm:gap-0'>
@@ -229,8 +230,8 @@ const ProductListing = () => {
                         </div>
 
                         {/* Product Grid */}
-                        <div className="flex justify-center items-center mt-12 sm:mt-5 ">
-                            <div className="w-full  grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
+                        <div className="flex  justify-center items-center mt-12 sm:mt-5 ">
+       <div className="w-full max-w-[100vw] px-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
 
                                 {
                                     productsData?.length !== 0 && productsData?.map((prd, index) => (
@@ -247,7 +248,7 @@ const ProductListing = () => {
                                                         alt={prd?.name}
                                                         width={250} height={100}
                                                         className="h-[250px] w-auto object-cover"
-                                                        onClick={() => router.push(`/product/${prd?._id}`)}
+                                                        
                                                     />
                                                     <div
                                                         className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-4 right-3 cursor-pointer"
