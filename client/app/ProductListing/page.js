@@ -336,7 +336,9 @@ const ProductListing = () => {
                                                             {prd?.oldPrice && (
                                                                 <p className="text-[18px] line-through text-gray-400">₹{prd?.oldPrice}</p>
                                                             )}
-                                                            <p className="text-[18px] font-semibold text-green-700">{prd?.discount}%</p>
+
+                                                            {prd?.discount>0 && 
+                                                            <p className="text-[18px] font-semibold text-green-700">{prd?.discount}%</p>}
                                                         </div>
                                                     </div>
                                                 </div>

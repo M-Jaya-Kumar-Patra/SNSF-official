@@ -66,7 +66,7 @@ const Products = () => {
         sales: "",
         rating: "",
         isFeatured: false,
-        discount: 100-(price/(oldPrice/100)),
+        discount: 0,
         size: [],
         location: "",
         delivery_days: "",
@@ -129,7 +129,7 @@ const Products = () => {
             sales: "",
             rating: "",
             isFeatured: false,
-            discount: 100-(price/(oldPrice/100)),
+            discount: 0,
             size: [],
             location: "",
             delivery_days: "",
@@ -165,6 +165,19 @@ const Products = () => {
         }));
 
     }
+
+
+    useEffect(() => {
+    const { price, oldPrice } = formFields;
+
+    if (price && oldPrice && !isNaN(price) && !isNaN(oldPrice)) {
+        const calculatedDiscount = 100 - (price / (oldPrice / 100));
+        setFormFields((prev) => ({
+            ...prev,
+            discount: Math.round(calculatedDiscount)
+        }));
+    }
+}, [formFields.price, formFields.oldPrice]);
 
 
 
@@ -249,10 +262,9 @@ const Products = () => {
                         sales: "",
                         rating: "",
                         isFeatured: "",
-                        discount: "",
+                        discount: 0,
                         size: [],
                         location: "",
-                        countInStock: "",
                         delivery_days: "",
                         callOnlyDelivery: "",
                     })
@@ -885,7 +897,7 @@ const Products = () => {
                                             />
                                             <TextField
                                                 label="Product Discount"
-                                                value={editPrdObj?.discount || ""}
+                                                value={editPrdObj?.discount || 0}
                                                 onChange={handleChangeEditInput}
                                                 size="small"
                                                 name='discount'
@@ -1293,7 +1305,7 @@ const Products = () => {
                                     />
                                     <TextField
                                         label="Product Discount"
-                                        value={formFields?.discount || ""}
+                                        value={formFields?.discount || 0}
                                         onChange={handleChangeAdd}
                                         size="small"
                                         name='discount'
