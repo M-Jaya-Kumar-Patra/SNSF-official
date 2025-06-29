@@ -23,9 +23,9 @@ import Search from "./Search";
 import { FaBell } from "react-icons/fa";
 import { useNotice } from "@/app/context/NotificationContext";
 import LogoutBTN from "./LogoutBTN";
-import { Package, User, CreditCard, Bell, Heart, MapPin  } from "lucide-react";
+import { Package, User, CreditCard, Bell, Heart, MapPin } from "lucide-react";
 import Loading from "./Loading";
-import NextImage from "next/image"; 
+import NextImage from "next/image";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -41,7 +41,7 @@ const righteous = Righteous({ subsets: ["latin"], weight: "400" });
 const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
   const { catData, setCatData } = useCat();
   const router = useRouter();
-  const {setLoading, userData, isLogin } = useAuth();
+  const { setLoading, userData, isLogin } = useAuth();
   const { cartData } = useCart();
   const { getNotifications } = useNotice();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -51,21 +51,21 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
   const [localLoading, setLocalLoading] = useState(false)
-  
-  
+
+
   useEffect(() => {
-  const img = new window.Image(); // ✅ Native Image
-  img.src = "/images/logo.png";
+    const img = new window.Image(); // ✅ Native Image
+    img.src = "/images/logo.png";
 
-  img.onload = () => {
-    setLocalLoading(false);
-  };
+    img.onload = () => {
+      setLocalLoading(false);
+    };
 
-  img.onerror = () => {
-    console.error("Logo image failed to load");
-    setLocalLoading(false);
-  };
-}, []);
+    img.onerror = () => {
+      console.error("Logo image failed to load");
+      setLocalLoading(false);
+    };
+  }, []);
 
 
   if (localLoading) return <Loading />;
@@ -98,232 +98,242 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
 
       <div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between">
-      <div className="flex items-center gap-0 sm:gap-1 flex-shrink-0 h-[45px] w-[200px] sm:h-[50px] sm:w-[200px]">
-  {/* Logo */}
-  <img
-    src="/images/logo.png "
+
+<div className="flex items-center gap-0  sm:gap-1  flex-shrink-0 h-[45px] sm:h-[50px]">
+  {/* Logo Icon */}
+  <Image
+    src="/images/logo.png"
     alt="Logo"
-    width={100}
-    height={100}
-    className="rounded-full object-contain w-[45px] h-[45px] sm:w-[60px] sm:h-[60px]"
+    width={40}
+    height={40}
+    className="w-[45px] h-[45px] sm:w-[60px] sm:h-[60px] object-contain"
+    priority
+    quality={100}
   />
 
-  {/* Text image aligned by matching height */}
-  <img
+  {/* Logo Text */}
+  <Image
     src="/images/snsf-text.png"
     alt="SNSF"
-    className="object-contain  w-[120px] h-[45px] sm:w-[200px] sm:h-[60px]"
+    width={100}
+    height={30}
+    className="
+                w-[120px] h-[45px] sm:w-[160px] sm:h-[60px]
+
+      object-contain"
+    priority
+    quality={100}
   />
 </div>
 
-        <div className="hidden sm:flex sm:flex-grow  px-20">
-          <Search />
-        </div>
+          <div className="hidden sm:flex sm:flex-grow  px-20">
+            <Search />
+          </div>
 
 
-        <div className="w-auto sm:hidden flex">
+          <div className="w-auto sm:hidden flex">
 
-          
-<div className="w-auto sm:hidden flex">
-          <div className="relative block sm:hidden" ref={dropdownRef}>
-            <IconButton aria-label="Account" onClick={toggleMenu} className="text-slate-200">
-              <Image
-                src={userData?.avatar || "/images/emptyAccount.png"}
-                alt="Account"
-                width={32}
-                height={32}
-                className="!w-[30px] !h-[30px] rounded-full border-2 border-slate-200 cursor-pointer object-cover"
-              />
-            </IconButton>
 
-            {menuOpen && (
-              <div className="absolute right-0 mt-2 w-[230px] bg-white text-[#1e293b] rounded-xl shadow-2xl z-[1000]">
-                <div className="flex flex-col p-3 space-y-2 text-sm">
-                  {!isLogin ? (
-                    <>
-                      <div className="font-semibold text-gray-900">Welcome, Guest!</div>
-                      <hr className="border-gray-200" />
-                      <button
-                        onClick={() => {
-                          router.push("/login");
-                          setMenuOpen(false);
-                        }}
-                        className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition font-medium"
-                      >
-                        Login
-                      </button>
-                      <button
-                        onClick={() => {
-                          router.push("/signup");
-                          setMenuOpen(false);
-                        }}
-                        className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition font-medium"
-                      >
-                        Register
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <div className="font-semibold text-gray-900 px-3">{userData?.name || "User"}</div>
-                      <hr className="border-gray-200" />
-                      <Link href="/profile" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
-                        <User size={18} /> Profile
-                      </Link>
-                      <Link href="/orders" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
-                        <Package size={18} /> My Orders
-                      </Link>
-                      <Link href="/wishlist" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
-                        <Heart size={18} /> Wishlist
-                      </Link>
-                      <Link href="/notifications" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
-                        <Bell size={18} /> Notifications
-                      </Link>
-                      <Link href="/address" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
-                        <MapPin size={18} /> Manage Address
-                      </Link>
-                      {/* <Link href="/payments" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+            <div className="w-auto sm:hidden flex">
+              <div className="relative block sm:hidden" ref={dropdownRef}>
+                <IconButton aria-label="Account" onClick={toggleMenu} className="text-slate-200">
+                  <Image
+                    src={userData?.avatar || "/images/emptyAccount.png"}
+                    alt="Account"
+                    width={32}
+                    height={32}
+                    className="!w-[30px] !h-[30px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
+                  />
+                </IconButton>
+
+                {menuOpen && (
+                  <div className="absolute right-0 mt-2 w-[230px] bg-white text-[#1e293b] rounded-xl shadow-2xl z-[1000]">
+                    <div className="flex flex-col p-3 space-y-2 text-sm">
+                      {!isLogin ? (
+                        <>
+                          <div className="font-semibold text-gray-900">Welcome, Guest!</div>
+                          <hr className="border-gray-200" />
+                          <button
+                            onClick={() => {
+                              router.push("/login");
+                              setMenuOpen(false);
+                            }}
+                            className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition font-medium"
+                          >
+                            Login
+                          </button>
+                          <button
+                            onClick={() => {
+                              router.push("/signup");
+                              setMenuOpen(false);
+                            }}
+                            className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition font-medium"
+                          >
+                            Register
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <div className="font-semibold text-gray-900 px-3">{userData?.name || "User"}</div>
+                          <hr className="border-gray-200" />
+                          <Link href="/profile" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                            <User size={18} /> Profile
+                          </Link>
+                          <Link href="/orders" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                            <Package size={18} /> My Orders
+                          </Link>
+                          <Link href="/wishlist" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                            <Heart size={18} /> Wishlist
+                          </Link>
+                          <Link href="/notifications" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                            <Bell size={18} /> Notifications
+                          </Link>
+                          <Link href="/address" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                            <MapPin size={18} /> Manage Address
+                          </Link>
+                          {/* <Link href="/payments" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
                         <CreditCard size={18} /> Payments
                       </Link> */}
-                      <div className="pt-2">
-                        <LogoutBTN onLogout={() => setMenuOpen(false)} />
-                      </div>
-                    </>
-                  )}
-                </div>
+                          <div className="pt-2">
+                            <LogoutBTN onLogout={() => setMenuOpen(false)} />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+
+              <IconButton aria-label="Cart" onClick={() => router.push(isLogin ? "/cart" : "/login")}>
+                <StyledBadge badgeContent={userData && cartData?.length} color="secondary">
+                  <FaCartPlus className="!text-[30px] text-white" />
+                </StyledBadge>
+              </IconButton>
+            </div>
+
+
+
           </div>
 
-          <IconButton aria-label="Cart" onClick={() => router.push(isLogin ? "/cart" : "/login")}>
-            <StyledBadge badgeContent={userData && cartData?.length} color="secondary">
-              <FaCartPlus className="!text-[30px] text-white" />
-            </StyledBadge>
-          </IconButton>
-        </div>
 
 
 
-        </div>
-
-        
+          <div className="hidden sm:flex items-center gap-3">
 
 
-<div className="hidden sm:flex items-center gap-3">
-
-
-          <div className="sm:hidden">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-white focus:outline-none"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
+            <div className="sm:hidden">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-white focus:outline-none"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d={mobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
-                />
-              </svg>
-            </button>
-          </div>
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d={mobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
+                  />
+                </svg>
+              </button>
+            </div>
 
 
 
-         <div className="hidden sm:flex items-center gap-3">
-  <IconButton aria-label="Notification" onClick={() => router.push("/notifications")}>
-    <FaBell className="text-[28px] text-white" />
-  </IconButton>
-  <IconButton aria-label="Call" onClick={() => window.location.href = 'tel:+919776501230'}>
-    <MdCall className="text-[34px] text-white" />
-  </IconButton>
+            <div className="hidden sm:flex items-center gap-3">
+              <IconButton aria-label="Notification" onClick={() => router.push("/notifications")}>
+                <FaBell className="text-[28px] text-white" />
+              </IconButton>
+              <IconButton aria-label="Call" onClick={() => window.location.href = 'tel:+919776501230'}>
+                <MdCall className="text-[34px] text-white" />
+              </IconButton>
 
-  
-<div className="relative group hidden sm:block">
-  <IconButton
-    aria-label="Account"
-    onClick={() => router.push(isLogin ? "/profile" : "/login")}
-    className="text-slate-200"
-  >
-    <img
-      src={userData?.avatar || "/images/emptyAccount.png"}
-      alt="Account"
-      className="w-[32px] h-[32px] rounded-full border-2 border-slate-200 cursor-pointer object-cover"
-    />
-  </IconButton>
 
-  {/* Hover Dropdown */}
-  <div className="absolute right-0 mt-2 w-[220px] bg-white text-[#1e293b] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[1000]">
-    <div className="flex flex-col p-3 space-y-2 text-sm">
-      {isLogin ? (
-        <>
-          <div className="font-semibold text-gray-900">{userData?.name || "User"}</div>
-          <hr className="border-gray-200" />
-          <Link href="/profile" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
-            <User size={18} /> Profile
-          </Link>
-          <Link href="/orders" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
-            <Package size={18} /> My Orders
-          </Link>
-          <Link href="/wishlist" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
-            <Heart size={18} /> Wishlist
-          </Link>
-          <Link href="/notifications" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
-            <Bell size={18} /> Notifications
-          </Link>
-          <Link href="/address" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
-            <MapPin size={18} /> Manage Address
-          </Link>
-          {/* <Link href="/payments" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+              <div className="relative group hidden sm:block">
+                <IconButton
+                  aria-label="Account"
+                  onClick={() => router.push(isLogin ? "/profile" : "/login")}
+                  className="text-slate-200"
+                >
+                  <img
+                    src={userData?.avatar || "/images/emptyAccount.png"}
+                    alt="Account"
+                    className="w-[32px] h-[32px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
+                  />
+                </IconButton>
+
+                {/* Hover Dropdown */}
+                <div className="absolute right-0 mt-2 w-[220px] bg-white text-[#1e293b] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[1000]">
+                  <div className="flex flex-col p-3 space-y-2 text-sm">
+                    {isLogin ? (
+                      <>
+                        <div className="font-semibold text-gray-900">{userData?.name || "User"}</div>
+                        <hr className="border-gray-200" />
+                        <Link href="/profile" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                          <User size={18} /> Profile
+                        </Link>
+                        <Link href="/orders" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                          <Package size={18} /> My Orders
+                        </Link>
+                        <Link href="/wishlist" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                          <Heart size={18} /> Wishlist
+                        </Link>
+                        <Link href="/notifications" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                          <Bell size={18} /> Notifications
+                        </Link>
+                        <Link href="/address" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                          <MapPin size={18} /> Manage Address
+                        </Link>
+                        {/* <Link href="/payments" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
             <CreditCard size={18} /> Payments
           </Link> */}
-          <div className="pt-0">
-            <LogoutBTN />
+                        <div className="pt-0">
+                          <LogoutBTN />
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="font-semibold text-gray-900">Welcome, Guest!</div>
+                        <hr className="border-gray-200" />
+                        <button
+                          onClick={() => router.push("/login")}
+                          className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition font-medium"
+                        >
+                          Login
+                        </button>
+                        <button
+                          onClick={() => router.push("/signup")}
+                          className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition font-medium"
+                        >
+                          Register
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+
+
+
+              <IconButton aria-label="Cart" onClick={() => router.push(isLogin ? "/cart" : "/login")}>
+                <StyledBadge badgeContent={userData && cartData?.length} color="secondary">
+                  <FaCartPlus className="text-[32px] text-white" />
+                </StyledBadge>
+              </IconButton>
+            </div>
+
           </div>
-        </>
-      ) : (
-        <>
-          <div className="font-semibold text-gray-900">Welcome, Guest!</div>
-          <hr className="border-gray-200" />
-          <button
-            onClick={() => router.push("/login")}
-            className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition font-medium"
-          >
-            Login
-          </button>
-          <button
-            onClick={() => router.push("/signup")}
-            className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition font-medium"
-          >
-            Register
-          </button>
-        </>
-      )}
-    </div>
-  </div>
-</div>
-
-
-
-
-  <IconButton aria-label="Cart" onClick={() => router.push(isLogin ? "/cart" : "/login")}>
-    <StyledBadge badgeContent={userData && cartData?.length} color="secondary">
-      <FaCartPlus className="text-[32px] text-white" />
-    </StyledBadge>
-  </IconButton>
-</div>
-
         </div>
-      </div>
 
       </div>
 
       {/* DESKTOP CATEGORY MENU */}
-       <ul className="hidden sm:flex w-full justify-evenly border border-b-slate-200 bg-white shadow-xl  px-10 z-40">
+      <ul className="hidden sm:flex w-full justify-evenly border border-b-slate-200 bg-white shadow-xl  px-10 z-40">
         <li
           onClick={() => router.push("/")}
           className="cursor-pointer flex items-center justify-center text-[22px] px-10 bg-slate-100 hover:bg-slate-200 text-[#131e30] hover:font-semibold py-1 transition-all duration-200"
@@ -383,7 +393,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
       </ul>
 
 
-      
+
 
 
       {mobileMenuOpen && (

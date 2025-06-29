@@ -247,7 +247,7 @@ const ProductListing = () => {
                                                         src={prd?.images[0] || prd?.images}
                                                         alt={prd?.name}
                                                         width={250} height={100}
-                                                        className="h-[250px] w-auto object-cover"
+                                                        className="h-[250px] w-auto object-contain"
                                                         
                                                     />
                                                     <div
