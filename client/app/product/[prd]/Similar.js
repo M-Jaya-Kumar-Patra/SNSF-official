@@ -73,41 +73,37 @@ const New = (props) => {
               similarProducts?.slice(0, 10).reverse().map((prd, index) => (
                 <div
                   key={index}
-                  className="min-w-[256px] min-h-[320px] p-3 bg-white rounded-md shadow-md 
-                  flex flex-col items-center justify-start gap-3 
-                   transition-transform duration-300 group cursor-pointer"
+                  className="min-w-[256px] sm:min-w-[240px] bg-white rounded-xl shadow-md flex flex-col p-3 gap-3 transition-transform duration-300 group cursor-pointer hover:scale-[1.02]"
                   onClick={() => router.push(`/product/${prd?._id}`)}
-
                 >
                   {/* Product Image */}
-                  <div className="w-full h-[220px] overflow-hidden rounded-md">
-                    <div className="w-full aspect-[4/3] relative overflow-hidden rounded-md">
-                      <Image
-                        src={prd?.images[0] || prd?.images}
-                        alt={prd?.name}
-                        fill
-                        unoptimized
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
-                    </div>
-
+                  <div className="w-full aspect-[4/3] relative overflow-hidden rounded-md">
+                    <Image
+                      src={prd?.images?.[0] || "/images/placeholder.png"}
+                      alt={prd?.name}
+                      fill
+                      unoptimized
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
                   </div>
 
                   {/* Product Details */}
-                  <div className="flex flex-col items-center text-center gap-1 px-2">
-                    <h2 className="text-sm font-semibold text-gray-800 truncate w-full">{prd?.name}</h2>
-
+                  <div className="flex flex-col items-center text-center gap-1 px-2 flex-grow">
+                    <h2 className="text-sm font-semibold text-gray-800 line-clamp-2 leading-snug">
+                      {prd?.name}
+                    </h2>
                   </div>
 
                   {/* Book Now Button */}
                   <Button
                     size="small"
                     variant="contained"
-                    className="!bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-1 text-xs mt-auto"
+                    className="!bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-1 text-xs"
                   >
                     Book Now
                   </Button>
                 </div>
+
               ))}
           </div>
         </div>

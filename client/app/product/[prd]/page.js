@@ -81,7 +81,7 @@ const Page = () => {
         <div className="image sm:sticky top-[50px] w-full sm:w-[400px] sm:h-[350px] sm:p-[2px] sm:border sm:border-slate-400 sm:m-3 mr-4 flex gap-[2px] flex-col sm:flex-row">
   {/* Mobile Carousel */}
   <div className="block sm:hidden w-full relative">
-    <Swiper spaceBetween={10} slidesPerView={1} className="w-full h-[300px]">
+    <Swiper spaceBetween={10} slidesPerView={1} className="w-full h-auto">
       {productImages?.map((src, idx) => (
         <SwiperSlide key={idx}>
           <Image
@@ -308,12 +308,14 @@ const Page = () => {
 
 
   {/* Description */}
+  {openedProduct?.description && 
   <div className="flex gap-4 mt-4">
     <h1 className="text-gray-500 font-semibold">Description</h1>
     <p className="text-black">
       {openedProduct?.description}
     </p>
   </div>
+  }
   {/* Warranty Info */}
   <div className="flex gap-4 mt-4">
      <h1 className="text-gray-500 font-semibold">Warranty </h1>

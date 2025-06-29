@@ -302,7 +302,7 @@ const ProductListing = () => {
 
 
                                                     <div className='w-full '>
-                                                        <h1 className="text-black sm:text-[18px] text-[25px] mt-3 font-medium font-sans">
+                                                        <h1 className="text-black sm:text-[19px] text-[23px] mt-3 font-medium font-sans">
                                                             {prd?.name}
                                                         </h1>
                                                     </div>
@@ -335,13 +335,13 @@ const ProductListing = () => {
                                                         </div>
 
                                                         <div className="flex justify-start items-center   gap-2 mt-1">
-                                                            <p className="text-[18px] font-semibold text-violet-900">₹{prd?.price}</p>
+                                                            <p className="text-[19px] font-semibold text-violet-900">₹{prd?.price}</p>
                                                             {prd?.oldPrice && (
-                                                                <p className="text-[14px] line-through text-gray-400">₹{prd?.oldPrice}</p>
+                                                                <p className="text-[15px] line-through text-gray-400">₹{prd?.oldPrice}</p>
                                                             )}
 
                                                             {prd?.discount>0 && 
-                                                            <p className="text-[14px] font-medium text-green-700">{prd?.discount}%</p>}
+                                                            <p className="text-[15px] font-medium text-green-700">{prd?.discount}%</p>}
                                                         </div>
                                                     </div>
                                                 </div>

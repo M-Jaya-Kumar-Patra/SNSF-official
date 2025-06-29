@@ -62,51 +62,48 @@ const Bestsellers = () => {
                         .map((prd, index) => (
                             <div
                                 key={prd?._id || index}
-                                className="group w-[290px] h-[370px] sm:w-[260px] sm:min-h-[416px] flex flex-col items-center justify-between p-3 gap-2 transition duration-300 hover:scale-105 hover:shadow-xl border sm:border-none"
+                                className="group w-[290px] sm:w-[260px] bg-white h-auto flex flex-col justify-between p-4 border hover:shadow-lg transition-transform duration-300 hover:scale-[1.03]"
                             >
-                                <div className="w-full flex flex-col items-center cursor-pointer"
+                                {/* Product Clickable Section */}
+                                <div
+                                    className="w-full cursor-pointer"
                                     onClick={() => router.push(`/product/${prd?._id}`)}
                                 >
-                                    {/* Image Container with fixed height */}
-                                    <div className="w-full h-[200px] sm:h-[220px] md:h-[240px] lg:h-[250px] relative overflow-hidden">
-                                        <div className="w-full aspect-[4/3] relative overflow-hidden rounded-md">
-                                            <Image
-                                                src={prd?.images?.[0] || "/images/placeholder.png"}
-                                                alt={prd?.name}
-                                                fill
-                                                className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-                                                priority
-                                            />
-                                        </div>
-
+                                    {/* Image */}
+                                    <div className="w-full aspect-[4/3] relative overflow-hidden rounded-md">
+                                        <Image
+                                            src={prd?.images?.[0] || "/images/placeholder.png"}
+                                            alt={prd?.name}
+                                            fill
+                                            className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                                            priority
+                                        />
                                     </div>
 
-                                    <h1 className="text-black text-[19px] mt-3 font-medium font-sans text-center">
-                                        {prd?.name}
-                                    </h1>
-                                    <h1 className="text-gray-500 text-[16px] mt-1 font-sans text-center">
-                                        {prd?.brand}
-                                    </h1>
-                                    <div className="flex items-center gap-2 mt-1">
-                                        {prd?.oldPrice && (
-                                            <p className="text-sm line-through text-gray-400">₹{prd?.oldPrice}</p>
-                                        )}
-                                        <p className="text-sm font-semibold text-black">₹{prd?.price}</p>
+                                    {/* Text Info */}
+                                    <div className="mt-3 text-center">
+                                        <h2 className="text-black text-lg font-medium truncate">{prd?.name}</h2>
+                                        <p className="text-gray-500 text-sm mt-1 truncate">{prd?.brand}</p>
+
+                                        <div className="flex items-center justify-center gap-2 mt-1">
+                                            {prd?.oldPrice && (
+                                                <span className="text-sm line-through text-gray-400">₹{prd.oldPrice}</span>
+                                            )}
+                                            <span className="text-sm font-semibold text-black">₹{prd.price}</span>
+                                        </div>
                                     </div>
                                 </div>
 
-
-                                <div className="flex gap-2 w-full mt-2 opacity-100 sm:group-hover:opacity-100 transition-opacity duration-300">
+                                {/* Buttons */}
+                                <div className="flex gap-2 w-full mt-4 opacity-100 sm:group-hover:opacity-100 transition-opacity duration-300">
                                     <Button
                                         variant="outlined"
-                                        className="!text-[#1e40af] !border-[#1e40af]  bg-gray-600 rounded-md px-1 py-1 text-xs w-1/2 text-nowrap"
+                                        className="!text-[#1e40af] !border-[#1e40af] bg-white text-nowrap rounded-md px-2 py-2 text-xs w-1/2"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             if (isLogin) {
-                                                if (
-                                                    userData?.shopping_cart?.includes(String(prd._id))
-                                                ) {
-                                                    router.push("/cart")
+                                                if (userData?.shopping_cart?.includes(String(prd._id))) {
+                                                    router.push("/cart");
                                                 } else {
                                                     addToCartFun(prd, userData._id, quantity);
                                                 }
@@ -115,15 +112,14 @@ const Bestsellers = () => {
                                             }
                                         }}
                                     >
-                                        {isLogin &&
-                                            userData?.shopping_cart?.includes(String(prd._id))
+                                        {isLogin && userData?.shopping_cart?.includes(String(prd._id))
                                             ? "Go to cart"
                                             : "Add to cart"}
                                     </Button>
 
                                     <Button
                                         variant="contained"
-                                        className="!bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-0 py-2 w-1/2 text-xs text-nowrap"
+                                        className="!bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-2 py-2 text-xs w-1/2"
                                         onClick={() => {
                                             setBuyNowItem({ ...prd, quantity: 1 });
                                             router.push("/checkOut");
@@ -133,6 +129,7 @@ const Bestsellers = () => {
                                     </Button>
                                 </div>
                             </div>
+
                         ))}
                 </div>
             </div>

@@ -719,7 +719,7 @@ const Page = () => {
                       addressArray.map((address, index) => (
                         <li
                           key={index}
-                          className={`relative w-[250px] sm:w-[400px] border sm:border-2 rounded-sm sm:rounded-md text-black  p-2 sm:p-4 flex-shrink-0 text-xs sm:text-lg ${selectedAddressId === address ? `border-blue-400  bg-indigo-50  shadow-sm scale-100` : `border-slate-300`}`}
+                          className={`relative w-[250px] sm:w-[400px] border sm:border-2 rounded-md text-black  p-2 sm:p-4 flex-shrink-0 text-xs sm:text-lg ${selectedAddressId === address ? `border-blue-400  bg-indigo-50  shadow-sm scale-100` : `border-slate-300`}`}
                           onClick={(e) => handleSetShippingAddress(e, address)}
                         >
                           <h3 className="text-sm sm:text-lg font-semibold sm:font-bold mb-1">{address?.name}</h3>
