@@ -243,13 +243,16 @@ const ProductListing = () => {
                                                 className="w-full min-h-[260px] shadow-md   flex flex-col items-center justify-between p-3 bg-white hover:shadow-[rgba(0,0,0,0.3)] hover:shadow-xl transition duration-300 "
                                             >
                                                 <div className="w-full flex flex-col items-center" >
-                                                    <Image
-                                                        src={prd?.images[0] || prd?.images}
-                                                        alt={prd?.name}
-                                                        width={250} height={100}
-                                                        className="h-[250px] w-auto object-contain"
-                                                        
-                                                    />
+                                                   <div className="w-full aspect-[4/3] relative overflow-hidden rounded-md">
+  <Image
+    src={prd?.images[0] || prd?.images}
+    alt={prd?.name}
+    fill
+    unoptimized
+    className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+  />
+</div>
+
                                                     <div
                                                         className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-4 right-3 cursor-pointer"
                                                         onClick={(e) => {
@@ -299,7 +302,7 @@ const ProductListing = () => {
 
 
                                                     <div className='w-full '>
-                                                        <h1 className="text-black text-[25px] mt-3 font-medium font-sans">
+                                                        <h1 className="text-black sm:text-[18px] text-[25px] mt-3 font-medium font-sans">
                                                             {prd?.name}
                                                         </h1>
                                                     </div>
@@ -332,13 +335,13 @@ const ProductListing = () => {
                                                         </div>
 
                                                         <div className="flex justify-start items-center   gap-2 mt-1">
-                                                            <p className="text-[22px] font-semibold text-violet-900">₹{prd?.price}</p>
+                                                            <p className="text-[18px] font-semibold text-violet-900">₹{prd?.price}</p>
                                                             {prd?.oldPrice && (
-                                                                <p className="text-[18px] line-through text-gray-400">₹{prd?.oldPrice}</p>
+                                                                <p className="text-[14px] line-through text-gray-400">₹{prd?.oldPrice}</p>
                                                             )}
 
                                                             {prd?.discount>0 && 
-                                                            <p className="text-[18px] font-semibold text-green-700">{prd?.discount}%</p>}
+                                                            <p className="text-[14px] font-medium text-green-700">{prd?.discount}%</p>}
                                                         </div>
                                                     </div>
                                                 </div>

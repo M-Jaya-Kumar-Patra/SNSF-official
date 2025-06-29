@@ -13,6 +13,10 @@ import { Toaster } from "react-hot-toast";
 export default function Home() {
   const { isCheckingToken } = useAuth();
 
+  useEffect(()=>{
+    window.scrollTo(0, 0)
+  })
+
   if (isCheckingToken) return <Loading />; // or your preferred loader
 
   return (

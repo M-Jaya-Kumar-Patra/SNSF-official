@@ -69,54 +69,56 @@ const New = () => {
           <ChevronLeft />
         </button>
 
+      <div
+  ref={scrollRef}
+  className="overflow-x-auto whitespace-nowrap scroll-smooth scrollbar-hide py-5"
+>
+  <div className="inline-flex gap-4">
+    {Array.isArray(prdData) && prdData.length > 0 &&
+      prdData.slice(0, 10).reverse().map((prd, index) => (
         <div
-          ref={scrollRef}
-          className="overflow-x-auto whitespace-nowrap scroll-smooth scrollbar-hide py-5"
+          key={index}
+          className="min-w-[256px] max-w-[256px] p-3 bg-white rounded-md shadow-md flex flex-col items-center justify-start gap-3 transition-transform duration-300 group"
         >
-          <div className="inline-flex gap-4">
-            {Array.isArray(prdData) && prdData.length > 0 &&
-              prdData.slice(0, 10).reverse().map((prd, index) => (
-                <div
-                  key={index}
-                  className="min-w-[256px] min-h-[320px] p-3 bg-white rounded-md shadow-md flex flex-col items-center justify-start gap-3 transition-transform duration-300 group"
-                >
-                  <div
-                    className="w-full h-[220px] overflow-hidden rounded-md cursor-pointer"
-                    onClick={() => router.push(`/product/${prd?._id}`)}
-                  >
-                    <Image
-                      src={prd?.images[0]}
-                      alt={prd?.name}
-                      width={500} // or use actual dimensions
-                      height={500}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-
-                  <div
-                    className="flex flex-col items-center text-center gap-1 px-2 cursor-pointer"
-                    onClick={() => router.push(`/product/${prd?._id}`)}
-                  >
-                    <h2 className="text-sm font-semibold text-gray-800 truncate w-full">
-                      {prd?.name}
-                    </h2>
-                  </div>
-
-                  <Button
-                    size="small"
-                    variant="contained"
-                    className="!bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-1 text-xs mt-auto"
-                    onClick={() => {
-                      setBuyNowItem({ ...prd, quantity: 1 });
-                      router.push("/checkOut");
-                    }}
-                  >
-                    Book Now
-                  </Button>
-                </div>
-              ))}
+          {/* Maintain 4:3 aspect ratio */}
+          <div
+            className="w-full relative rounded-md overflow-hidden cursor-pointer"
+            style={{ aspectRatio: '4 / 3' }}
+            onClick={() => router.push(`/product/${prd?._id}`)}
+          >
+            <Image
+              src={prd?.images[0]}
+              alt={prd?.name}
+              fill
+              className="object-cover"
+            />
           </div>
+
+          <div
+            className="flex flex-col items-center text-center gap-1 px-2 cursor-pointer"
+            onClick={() => router.push(`/product/${prd?._id}`)}
+          >
+            <h2 className="text-sm font-semibold text-gray-800 truncate w-full">
+              {prd?.name}
+            </h2>
+          </div>
+
+          <Button
+            size="small"
+            variant="contained"
+            className="!bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-1 text-xs mt-auto"
+            onClick={() => {
+              setBuyNowItem({ ...prd, quantity: 1 });
+              router.push("/checkOut");
+            }}
+          >
+            Book Now
+          </Button>
         </div>
+      ))}
+  </div>
+</div>
+
 
         <button
           onClick={() => scroll("right")}

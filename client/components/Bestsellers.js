@@ -22,14 +22,14 @@ const Bestsellers = () => {
     const { item, setItem } = useItem();
     const { addToCart, buyNowItem, setBuyNowItem } = useCart();
     const { userData, setUserData, isLogin, setLoading, isCheckingToken } = useAuth();
-        const [localLoading, setLocalLoading] = useState(false);
-    
+    const [localLoading, setLocalLoading] = useState(false);
+
 
     const [quantity] = useState(1);
     const [hydrated, setHydrated] = useState(false);
 
     useEffect(() => {
-        if(!prdData){
+        if (!prdData) {
             setLocalLoading(false)
         }
         setHydrated(true);
@@ -43,8 +43,8 @@ const Bestsellers = () => {
         }));
     };
 
-    if (!hydrated || isCheckingToken || localLoading) return <Loading/>;
-    
+    if (!hydrated || isCheckingToken || localLoading) return <Loading />;
+
 
     return (
         <div className="flex flex-col items-center mt-2 sm:mt-5 w-full pb-4 sm:pb-8">
@@ -69,14 +69,16 @@ const Bestsellers = () => {
                                 >
                                     {/* Image Container with fixed height */}
                                     <div className="w-full h-[200px] sm:h-[220px] md:h-[240px] lg:h-[250px] relative overflow-hidden">
-                                        <Image
-                                            src={prd?.images?.[0] || "/images/placeholder.png"}
-                                            alt={prd?.name}
-                                            width={400}
-                                            height={400}
-                                            className="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-                                            priority
-                                        />
+                                        <div className="w-full aspect-[4/3] relative overflow-hidden rounded-md">
+                                            <Image
+                                                src={prd?.images?.[0] || "/images/placeholder.png"}
+                                                alt={prd?.name}
+                                                fill
+                                                className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                                                priority
+                                            />
+                                        </div>
+
                                     </div>
 
                                     <h1 className="text-black text-[19px] mt-3 font-medium font-sans text-center">
@@ -130,7 +132,7 @@ const Bestsellers = () => {
                                         Book Now
                                     </Button>
                                 </div>
-                            </div> 
+                            </div>
                         ))}
                 </div>
             </div>

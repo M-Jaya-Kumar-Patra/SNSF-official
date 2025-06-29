@@ -20,9 +20,9 @@ const New = (props) => {
   const { prdData } = usePrd();
   const scrollRef = useRef(null);
   const router = useRouter()
-  const {isCheckingToken} = useAuth()
-   if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
-  
+  const { isCheckingToken } = useAuth()
+  if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
+
 
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -39,13 +39,13 @@ const New = (props) => {
 
 
   useEffect(() => {
-  if (!props.prdId) return;
+    if (!props.prdId) return;
 
-  fetchDataFromApi(`/api/user/getCategoriesByProductId?productId=${props.prdId}`)
-    .then((res) => {
-      setSimilarProducts(res?.products);
-    });
-}, [props.prdId]);
+    fetchDataFromApi(`/api/user/getCategoriesByProductId?productId=${props.prdId}`)
+      .then((res) => {
+        setSimilarProducts(res?.products);
+      });
+  }, [props.prdId]);
 
   return (
     <div className="flex flex-col items-center mt-3 pb-10 bg-slate-100 w-full">
@@ -81,14 +81,16 @@ const New = (props) => {
                 >
                   {/* Product Image */}
                   <div className="w-full h-[220px] overflow-hidden rounded-md">
-                    <Image
-                      src={prd?.images[0]||prd?.images}
-                      alt={prd?.name}
-                      unoptimized
-                      className="w-full h-full object-cover transition-transform duration-300 "
-                                width={100} height={100}
+                    <div className="w-full aspect-[4/3] relative overflow-hidden rounded-md">
+                      <Image
+                        src={prd?.images[0] || prd?.images}
+                        alt={prd?.name}
+                        fill
+                        unoptimized
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
 
-                    />
                   </div>
 
                   {/* Product Details */}

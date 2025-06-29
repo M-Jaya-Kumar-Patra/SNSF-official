@@ -22,15 +22,15 @@ import Loading from '@/components/Loading';
 
 const ProductListing = () => {
     const { prdData, productsData, setProductsData, getProductsData } = usePrd()
-    const { userData, isLogin, setIsLogin, setUserData, loading, setLoading, login, logout,isCheckingToken  } = useAuth()
+    const { userData, isLogin, setIsLogin, setUserData, loading, setLoading, login, logout, isCheckingToken } = useAuth()
     const { addToCart, buyNowItem, setBuyNowItem } = useCart()
     const router = useRouter()
-        if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
-    
-        useEffect(() => {   
-            setLoading(false)
-            getProductsData()
-        }, [isLogin, userData, getProductsData])
+    if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
+
+    useEffect(() => {
+        setLoading(false)
+        getProductsData()
+    }, [isLogin, userData, getProductsData])
 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -76,7 +76,7 @@ const ProductListing = () => {
     const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist()
 
     return (
-        <div className='w-full bg-slate-100 '>  
+        <div className='w-full bg-slate-100 '>
 
             <div className='flex w-full min-h-screen justify-center bg-slate-100'>
                 <div className="container w-full sm:w-[90%]  sm:my-4 mx-auto ">
@@ -120,15 +120,16 @@ const ProductListing = () => {
                                             <div className="w-full min-h-[260px] shadow-md flex flex-col items-center justify-between p-3 bg-white hover:shadow-[rgba(0,0,0,0.3)] sm:hover:shadow-xl transition duration-300">
                                                 <div className="w-full flex flex-col items-center">
                                                     {prd?.images?.length > 0 && prd.images[0] && (
-                                                        <Image
-                                                            src={prd.images[0]}
-                                                            alt={prd?.name || 'Product'}
-                                                            width={100}
-                                                            height={100}
-                                                            unoptimized 
-                                                            className="h-[250px] w-auto object-cover"
-                                                            onClick={() => router.push(`/product/${prd?._id}`)}
-                                                        />
+                                                        <div className="w-full aspect-[4/3] relative overflow-hidden cursor-pointer rounded-md" onClick={() => router.push(`/product/${prd?._id}`)}>
+                                                            <Image
+                                                                src={prd.images[0]}
+                                                                alt={prd?.name || 'Product'}
+                                                                fill
+                                                                unoptimized
+                                                                className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                                                            />
+                                                        </div>
+
                                                     )}
 
                                                     <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-4 right-3 cursor-pointer"
@@ -163,7 +164,7 @@ const ProductListing = () => {
                                                     </div>
 
                                                     <div className='w-full '>
-                                                        <h1 className="text-black text-[22px] mt-3 font-medium font-sans">
+                                                        <h1 className="text-black sm:text-[20px] text-[22px] mt-3 font-medium font-sans">
                                                             {prd?.name}
                                                         </h1>
                                                     </div>
@@ -197,7 +198,7 @@ const ProductListing = () => {
                                                             {prd?.oldPrice && (
                                                                 <p className="text-[18px] line-through text-gray-400">₹{prd?.oldPrice}</p>
                                                             )}
-                                                            <p className="text-[20px] font-semibold text-green-700">{prd?.discount}%</p>
+                                                            <p className="text-[18px] font-medium text-green-700">{prd?.discount}%</p>
                                                         </div>
                                                     </div>
                                                 </div>
