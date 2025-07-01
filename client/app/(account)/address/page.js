@@ -74,7 +74,7 @@ const indianStates = [
 const Account = () => {
     const router = useRouter();
     const alert = useAlert();
-    const { isLogin, userData, setUserData, isLoading, isCheckingToken } = useAuth()
+    const { isLogin, userData, setUserData, isLoading, isCheckingToken, setIsCheckingToken } = useAuth()
     if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
     const [showAddAddressForm, setShowAddAddressForm] = useState(false);
@@ -100,14 +100,17 @@ const Account = () => {
         altPhone: "", // default country if you're only shipping within India
         addressType: "Home", // default value: Home / Work / Other
     });
-    useEffect(() => {
-        const id = localStorage.getItem("userId");
-        if (id && id !== "undefined" && id !== "null") {
-            fetchAddresses();
-        } else {
-            console.warn("Invalid or missing userId in localStorage");
-        }
-    }, []);
+    
+          useEffect(() => {
+              if (!isLogin) {
+                setIsCheckingToken(false)
+                router.push("/login");
+              } else {
+                fetchAddresses();
+              }
+            }, [isLogin, router]);
+          
+    
     const [addressArray, setaddressArray] = useState([
         {
             name: userData?.address_details?.name,

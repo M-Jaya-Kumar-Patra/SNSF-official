@@ -168,16 +168,16 @@ const Products = () => {
 
 
     useEffect(() => {
-    const { price, oldPrice } = formFields;
+        const { price, oldPrice } = formFields;
 
-    if (price && oldPrice && !isNaN(price) && !isNaN(oldPrice)) {
-        const calculatedDiscount = 100 - (price / (oldPrice / 100));
-        setFormFields((prev) => ({
-            ...prev,
-            discount: Math.round(calculatedDiscount)
-        }));
-    }
-}, [formFields.price, formFields.oldPrice]);
+        if (price && oldPrice && !isNaN(price) && !isNaN(oldPrice)) {
+            const calculatedDiscount = 100 - (price / (oldPrice / 100));
+            setFormFields((prev) => ({
+                ...prev,
+                discount: Math.round(calculatedDiscount)
+            }));
+        }
+    }, [formFields.price, formFields.oldPrice]);
 
 
 
@@ -1063,10 +1063,19 @@ const Products = () => {
                                 </Box>
 
                                 <div className="relative w-full flex gap-2 right-0  justify-end ">
-                                    <button className=' bg-white border border-black py-1  w-[90px] text-lg rounded-full hover:bg-red-500 hover:border-none hover:text-white font-medium' onClick={() => {
-                                        setShowEditModal(false)
-                                        setPreviews([])
-                                    }}>Cancel</button>
+                                    <button
+                                        className='bg-white border border-black py-1 w-[90px] text-lg rounded-full hover:bg-red-500 hover:border-none hover:text-white font-medium'
+                                        onClick={() => {
+                                            setEditPrdObj(prev => ({
+                                                ...prev,
+                                                images: [], // ✅ Clear the product images
+                                            }));
+                                            setPreviews([]); // ✅ Clear preview UI
+                                            setShowEditModal(false);
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
                                     <button className=' bg-blue-700  py-1  w-[90px] text-lg rounded-full hover:bg-blue-500 hover:border-none text-white  font-medium' type='submit'>Save</button>
                                 </div>
                             </div>
@@ -1471,8 +1480,32 @@ const Products = () => {
 
                             <div className="relative w-full flex gap-2 right-0  justify-end mt-4">
                                 <button className=' bg-white border  py-1  w-[90px] text-lg rounded-full text-red-600 border-red-600 hover:shadow-md inset font-medium' onClick={() => {
-                                    setShowAddModal(false)
-                                    setPreviews([])
+                                    setFormFields({
+                                        name: "",
+                                        productId: "",
+                                        description: "",
+                                        images: [],
+                                        brand: "",
+                                        price: "",
+                                        oldPrice: "",
+                                        catName: "",
+                                        catId: "",
+                                        subCatId: "",
+                                        subCat: "",
+                                        thirdSubCat: "",
+                                        thirdSubCatId: "",
+                                        countInStock: "",
+                                        sales: "",
+                                        rating: "",
+                                        isFeatured: "",
+                                        discount: 0,
+                                        size: [],
+                                        location: "",
+                                        delivery_days: "",
+                                        callOnlyDelivery: "",
+                                    });
+                                    setPreviews([]);
+                                    setShowAddModal(false);
                                 }
                                 }>Cancel</button>
                                 <button className=' bg-green-700  py-1  w-[90px] text-lg rounded-full hover:bg-green-600 hover:shadow-md hover:border-none text-white  font-medium' type='submit'>Save</button>
