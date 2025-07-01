@@ -47,14 +47,22 @@ const Home = () => {
       if (event?.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) return;
       setState({ ...state, [anchor]: open });
     };
-    let totalVisit = 0;
+    const [totalVisit, setTotalVisit] = useState(0);
 
-    useEffect(()=>{
-      const res = fetchDataFromApi(`api/visit/getVisit`, false)
-      if(!res.error){
-        totalVisit = res?.count
+useEffect(() => {
+  const fetchVisitCount = async () => {
+    try {
+      const res = await fetchDataFromApi("/api/visit/getVisit", false);
+      if (res?.success) {
+        setTotalVisit(res.count || 0);
       }
-    }, [])
+    } catch (err) {
+      console.error("Failed to fetch visit count:", err);
+    }
+  };
+
+  fetchVisitCount();
+}, []);
 
     
 

@@ -5,6 +5,6 @@ import { addVisitCount, getVisitCount } from "../controllers/visitCount.controll
 const visitRouter = Router()
 
 visitRouter.post('/new' , addVisitCount)   
-visitRouter.post('/getVisit' , getVisitCount)   
+visitRouter.get('/getVisit' , getVisitCount)   
 
 export default visitRouter          
