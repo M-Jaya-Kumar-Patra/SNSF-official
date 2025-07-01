@@ -25,6 +25,7 @@ import { AiFillProduct } from "react-icons/ai";
 import { usePrd } from './context/ProductContext';
 import Orders from './Orders/page';
 import { useOrders } from './context/OrdersContext';
+import { fetchDataFromApi } from '@/utils/api';
 
 
 
@@ -46,7 +47,14 @@ const Home = () => {
       if (event?.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) return;
       setState({ ...state, [anchor]: open });
     };
+    let totalVisit = 0;
 
+    useEffect(()=>{
+      const res = fetchDataFromApi(`api/visit/getVisit`, false)
+      if(!res.error){
+        totalVisit = res?.count
+      }
+    }, [])
 
     
 
@@ -90,13 +98,13 @@ const Home = () => {
 
           {/* Colored Boxes */}
           <ul className='text-black rounded-sm my-3 text-[18px] flex h-[100px] gap-3 justify-between'>
-            <li className='w-1/4 h-full bg-red-600 rounded-md  text-white flex justify-center items-center gap-1 p-3 '>
+            <li className='w-1/4 h-full bg-blue-600 rounded-md  text-white flex justify-center items-center gap-1 p-3 '>
             <div className='w-[20%]  flex justify-center items-center'>
                 <BsPCircle className="w-8 h-8 font-extrabold " />
               </div>
                <div className='w-[60%] '> 
-                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">Total Products</div>
-                <div className='font-bold font-sans text-2xl' >{prdData?.length}</div>
+                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">Total Visits</div>
+                <div className='font-bold font-sans text-2xl' >{totalVisit}</div>
 
               </div>
                <div className='w-[20%]  flex justify-center items-center'>
@@ -105,7 +113,7 @@ const Home = () => {
               </div></li>
 
 
-            <li className='w-1/4 h-full bg-yellow-500 rounded-md  text-white flex justify-center items-center gap-1 p-3 '>
+            <li className='w-1/4 h-full bg-orange-500 rounded-md  text-white flex justify-center items-center gap-1 p-3 '>
             <div className='w-[20%]  flex justify-center items-center'>
                 <BsPCircle className="w-8 h-8 font-extrabold " />
               </div>

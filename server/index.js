@@ -15,6 +15,7 @@ import sliderRouter from './route/homeSlider.route.js';
 import wishRouter from './route/wishlist.route.js'
 import orderRouter from './route/order.route.js'
 import noticeRouter from './route/notification.route.js';
+import visitRouter from './route/visitCount.js';
 
 const app = express();
 
@@ -46,6 +47,8 @@ app.use('/api/homeSlider', sliderRouter);
 app.use('/api/wishlist', wishRouter);
 app.use('/api/order', orderRouter);
 app.use('/api/notice', noticeRouter);
+app.use('/api/visit', visitRouter);
+
 
 
 

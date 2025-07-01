@@ -9,6 +9,7 @@ import Bestsellers from "@/components/Bestsellers";
 import New from "@/components/New";
 import Link from "next/link";
 import { Toaster } from "react-hot-toast";
+import { postData  } from "@/utils/api";
 
 export default function Home() {
   const { isCheckingToken } = useAuth();
@@ -16,6 +17,9 @@ export default function Home() {
   useEffect(()=>{
     window.scrollTo(0, 0)
   })
+  useEffect(() => {
+  postData("/api/visit/new", {}, false); // no auth required
+}, []);
 
   if (isCheckingToken) return <Loading />; // or your preferred loader
 
