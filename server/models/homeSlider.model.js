@@ -6,6 +6,10 @@ const homeSliderSchema = new mongoose.Schema({
         default: [],
         required: true     // optional: add if you want images to be mandatory
     },
+    url:{
+        type:String,
+        default:""
+    },
     dateCreated: {
         type: Date,
         default: Date.now

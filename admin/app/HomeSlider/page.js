@@ -49,7 +49,8 @@ const Slider = () => {
 
     const [formFields, setFormFields] = useState(
         {
-            images: []
+            images: [],
+            url:""
         }
     )
     const alert = useAlert();
@@ -117,6 +118,14 @@ const Slider = () => {
     ///
 
 
+const handleURL = (e) => {
+    const value = e.target.value;
+    setFormFields((prev) => ({
+        ...prev,
+        url: value
+    }));
+};
+
     const handleSubmitAddForm = async (e) => {
         e.preventDefault();
 
@@ -129,7 +138,8 @@ const Slider = () => {
                 if (!response.error) {
                     alert.alertBox({ type: "success", msg: "slide Created" });
                     setFormFields({
-                        images: []
+                        images: [],
+                        url:""
                     })
                     setPreviews([])
                     setShowAddModal(false)
@@ -234,7 +244,8 @@ const Slider = () => {
                     <table className='w-full text-center border-collapse border border-slate-200 rounded-md shadow-lg mt-4'>
                         <thead className='h-12 bg-blue-100 border-b border-slate-300'>
                             <tr>
-                                <th className='text-black w-[80%] '>Image</th>
+                                <th className='text-black w-[60%] '>Image</th>
+                                <th className='text-black w-[20%] '>URL</th>
                                 <th className='text-black w-[20%]'>Actions</th>
                             </tr>
                         </thead>
@@ -268,6 +279,9 @@ const Slider = () => {
                                                         No Image
                                                     </div>
                                                 )}
+                                            </td>
+                                            <td className='text-black font-sans font-semibold text-xl'>
+                                                {prd?.url}
                                             </td>
                                             <td width={50} height={50} className="text-black text-center">
                                                 <DeleteOutlineIcon sx={{ width: '100%', height: '100%' }}
@@ -362,6 +376,16 @@ const Slider = () => {
                                     url="/api/homeSlider/uploadImages"
                                     setPreviewsFun={setPreviewsFun}
                                 />
+                            </div>
+                            
+                            <div>
+                                 <TextField
+                                                                                    label="URL"
+                                                                                    size="small"
+                                                                                    name="url"
+                                                                                    value={formFields?.url || ""}
+                                                                                    onChange={(e) => handleURL(e)}
+                                                                                />
                             </div>
 
 

@@ -16,6 +16,7 @@ export async function createSlide(request, response) {
     try {
         const slide = new HomeSliderModel({
             images: request.body.images,
+            url: request.body.url
         });
         await slide.save()
 

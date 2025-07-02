@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/app/context/AuthContext"; // ✅ Added
 import Loading from "./Loading";
+import { Router } from "next/navigation";
 
 
 const Slider = () => {
@@ -13,6 +14,7 @@ const Slider = () => {
   const [slides, setSlides] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [localLoading, setLocalLoading] = useState(false);
+  const router = useRouter()
 
   useEffect(() => {
     console.log("Slider", isCheckingToken)
@@ -73,6 +75,7 @@ const Slider = () => {
           fill
           className="object-cover transition-opacity duration-500 ease-in-out"
           priority
+          onClick={router.push(slides[currentIndex].url)}
         />
 
         {/* Right Arrow */}
