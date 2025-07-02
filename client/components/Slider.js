@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/app/context/AuthContext"; // ✅ Added
 import Loading from "./Loading";
-import { Router } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 
 const Slider = () => {

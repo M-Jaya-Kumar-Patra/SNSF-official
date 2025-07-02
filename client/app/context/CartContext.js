@@ -16,18 +16,11 @@ const CartProvider = ({ children }) => {
   const [buyNowItem, setBuyNowItem] = useState([]);
 
 
-  useEffect(()=>{
-    console.log("cart")
-  },[])
-
   
   
 
 
   const addToCart = (prd, userId, quantity) => {
-    // setCartItems((prev) => [...prev, product]);
-    console.log("efrtrtythg                  ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddhgh" , prd, userId, quantity)
-    
     if (userId === undefined || userId === null) {
       alert.alertBox({ type: "error", msg: "Please login first" })
       return false
@@ -48,7 +41,6 @@ const CartProvider = ({ children }) => {
     }
     
     postData(`/api/cart/add`, data, true).then((res) => {
-      console.log(prd, userId, "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
       if (!res.error) {
         alert.alertBox({ type: "success", msg: res?.message });
         getCartItems();
@@ -66,7 +58,6 @@ const CartProvider = ({ children }) => {
       setCartData(res?.data);
       const ids = res?.data?.map((item) => item.productId);
       setCartItems(ids || []);
-      console.log("--------------------------------------", res?.data);
     }
   });
 }, []); // 👈 add dependencies if needed (e.g., token, userId, etc.)
@@ -74,7 +65,6 @@ const CartProvider = ({ children }) => {
 
 useEffect(() => {
   getCartItems();
-  console.log("CartContext mounted & fetched cart");
 }, [getCartItems]); // ✅ Proper dependency
 
 

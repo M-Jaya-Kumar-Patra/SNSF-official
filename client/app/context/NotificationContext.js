@@ -13,10 +13,6 @@ const NoticeProviders = ({ children }) => {
   const { isLogin, setIsCheckingToken } = useAuth();
 
   // Fetch notifications only if user is logged in
-   useEffect(()=>{
-    console.log("Notification")
-  },[])
-
   useEffect(() => {
     if (isLogin) {
       setIsCheckingToken(false)
@@ -29,7 +25,6 @@ const NoticeProviders = ({ children }) => {
       const res = await fetchDataFromApi(`/api/notice/get`);
       if (!res.error) {
         setNotices(res.data);  // Assuming API returns { data: [...] }
-        console.log("Fetched Notices:", res.data);
       } else {
         console.log(res.message || "Failed to fetch notifications");
       }

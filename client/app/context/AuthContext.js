@@ -31,18 +31,15 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await fetchDataFromApi("/api/user/user-details");
       if (!response.error) {
-        console.log("✅ Fetched user details:", response);
         setUserData(response.data);
         setIsLogin(true);
       } else {
-        console.error("❌ API error:", response.message);
         if (response.message === "Something is wrong") {
           alert("Your session is closed, please login again");
         }
         logout();
       }
     } catch (error) {
-      console.error("❌ Failed to fetch user details", error);
       logout();
     } finally {
       setLoading(false);
@@ -56,13 +53,8 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("email", data.email || "");
       setUserData(data);
       setIsLogin(true);
-      console.log("✅ Login successful");
     }
   }, []);
-   useEffect(()=>{
-    console.log("auth")
-  },[])
-
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -87,7 +79,6 @@ export const AuthProvider = ({ children }) => {
         fetchUserDetails().finally(() => setIsCheckingToken(false));
       }
     } catch (err) {
-      console.error("❌ Invalid token", err);
       logout();
       setIsCheckingToken(false);
     }

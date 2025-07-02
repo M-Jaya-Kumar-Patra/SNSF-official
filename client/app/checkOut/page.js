@@ -150,9 +150,6 @@ const Page = () => {
 
 
 
-  useEffect(() => {
-    console.log("Updated itemsToCheckout:", itemsToCheckout); // updates after setState
-  }, [itemsToCheckout]);
 
 
 
@@ -205,8 +202,6 @@ const Page = () => {
     try {
       const id = localStorage.getItem("userId")
       const response = await getUserAddress(`/api/user/getAddress/${id}`,);
-      console.log(response);
-      console.log(response.address_details);
       setaddressArray(response.address_details);
     } catch (error) {
       console.error("Failed to fetch addresses:", error);
@@ -252,7 +247,6 @@ const Page = () => {
 
 
     const userId = userData._id; // or however you get the logged-in user ID  
-    console.log("Sending address data:", { ...address, userId });
     const response = await postData("/api/user/addAddress", {
       ...address,
       userId,
@@ -508,13 +502,11 @@ const Page = () => {
           })
         };
 
-        console.log("payload", payload);
 
         if (normalizedProducts?.length > 0) {
           setIsPlacingOrder(true); // Start loading UI
 
           postData(`/api/order/create`, payload).then((res) => {
-            console.log("Order response:", res);
 
             if (res?.error === false) {
               if (fromCart) {
@@ -524,14 +516,12 @@ const Page = () => {
                     router.replace("/orderSuccess");
                   })
                   .catch((err) => {
-                    console.error("Failed to empty cart:", err);
                     router.replace("/orderSuccess"); // Still redirect
                   });
               } else {
                 router.replace("/orderSuccess");
               }
             } else {
-              console.error("Order creation failed:", res);
               router.replace("/order-failed");
             }
           });
@@ -608,7 +598,6 @@ const Page = () => {
     if (normalizedProducts?.length > 0) {
 
       postData(`/api/order/create`, payload).then((res) => {
-        console.log("Order response:", res);
 
         if (res?.error === false) {
           if (fromCart) {
@@ -626,7 +615,6 @@ const Page = () => {
                 }
               })
               .catch((err) => {
-                console.error("Failed to empty cart:", err);
                 if (orderType === "delivery") {
                   setLocalLoading(false)
                   router.push("/")
@@ -645,7 +633,6 @@ const Page = () => {
             }
           }
         } else {
-          console.error("Order creation failed:", res);
           if (orderType === "delivery") {
             setLocalLoading(false)
             router.push("/")
@@ -779,7 +766,6 @@ const Page = () => {
                 {/* Items List */}
                 <div className="w-full lg:w-2/3">
                   <ul>
-                    {console.log(itemsToCheckout)}
                     {itemsToCheckout.length > 0 ? (
                       itemsToCheckout.map((item, index) => (
                         <li
@@ -938,7 +924,6 @@ const Page = () => {
     }
   }}
 >
-  {console.log("................",itemsToCheckout?.[0].callOnlyDelivery)}
   {localLoading ? (
     <CircularProgress size={18} thickness={5} color="inherit" />
   ) : itemsToCheckout?.some(item => item?.callOnlyDelivery) ? (

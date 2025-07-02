@@ -7,7 +7,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import Navbar from "@/components/Navbar";
 import LogoutBTN from "@/components/LogoutBTN";
 
 import { useAuth } from "@/app/context/AuthContext";
@@ -25,8 +24,6 @@ import {
     LogOut,
 } from "lucide-react";
 import Empty from "@/app/(ack)/Empty";
-import { MdDelete } from "react-icons/md";
-
 
 
 

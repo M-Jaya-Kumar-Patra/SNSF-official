@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -16,7 +15,6 @@ import LogoutBTN from "@/components/LogoutBTN";
 import { useAuth } from "@/app/context/AuthContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import { MdDelete } from "react-icons/md";
-import Empty from "@/app/(ack)/Empty";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 

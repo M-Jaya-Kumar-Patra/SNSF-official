@@ -74,7 +74,6 @@ const Account = () => {
         alert.alertBox({ type: "error", msg: "Invalid image format" });
       }
     } catch (error) {
-      console.error(error);
       alert.alertBox({ type: "error", msg: "Something went wrong" });
     } finally {
       setUploading(false);

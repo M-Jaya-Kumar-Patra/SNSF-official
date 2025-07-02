@@ -1,19 +1,14 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { User, Package, CreditCard, Bell, Heart, LogOut } from "lucide-react";
-import { useRef } from "react";
 import LogoutBTN from "@/components/LogoutBTN";
 import { useAuth } from "@/app/context/AuthContext";
 import { useAlert } from "@/app/context/AlertContext";
 import { IoMdAdd } from "react-icons/io";
-import { IoIosArrowBack } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
-import InputAdornment from '@mui/material/InputAdornment';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -28,10 +23,6 @@ import { deleteUserAddress, getUserAddress, postData, updateUserAddress } from "
 import { CircularProgress } from "@mui/material";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-
-import Alert from '@mui/material/Alert';
-import CheckIcon from '@mui/icons-material/Check';
-import FilledAlerts from '/components/FilledAlerts.js'
 import Image from "next/image";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -40,11 +31,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-
-
-
-
-
 
 
 
@@ -135,29 +121,17 @@ const Account = () => {
         try {
             const id = localStorage.getItem("userId")
             const response = await getUserAddress(`/api/user/getAddress/${id}`,);
-            console.log(response);
-            console.log(response.address_details);
             setaddressArray(response.address_details);
         } catch (error) {
             console.error("Failed to fetch addresses:", error);
         }
     };
-    // useEffect(() => {
-
-    //     fetchAddresses(); // Call the async function
-    // }, []); // Add dependencies if needed
-
-
 
 
 
     const handleChangeSelectInput = (event) => {
         setState(event.target.value);
     };
-
-
-
-
 
 
     const toggleEditDel = (index) => {
@@ -207,13 +181,6 @@ const Account = () => {
             alert.alertBox({ type: "error", msg: "Failed to save address.Please retry or reload the page" })
         }
 
-        // const newAddress = { ...address, id: uuidv4() };
-        // if (newAddress !== null) {
-        //     const updatedAddressArray = [...addressArray, newAddress];
-
-        //     setaddressArray(updatedAddressArray);
-        //     localStorage.setItem("addresses", JSON.stringify(updatedAddressArray));
-        //     setShowAddressForm(false)
     }
 
 
@@ -778,67 +745,3 @@ export default Account;
 
 
 
-
-
-
-
-{/* <div className="address">
-                            {addressArray.length === 0 ? (
-                                <div>
-                                    <h1>No address to show</h1>
-                                </div>
-                            ) : (
-                                addressArray.map((item, index) => (
-                                    <div key={index} className="flex border border-slate-300 my-2">
-                                        <div className="p-3 text-[#131e30] font-sans w-[90%]">
-                                            {editIndex === index ? (
-                                                <>
-                                                    <input value={editAddress.cName} name="cName" onChange={handleEditChange} />
-                                                    <input value={editAddress.phone} name="phone" onChange={handleEditChange} />
-                                                    <input value={editAddress.locality} name="locality" onChange={handleEditChange} />
-                                                    <input value={editAddress.city} name="city" onChange={handleEditChange} />
-                                                    <input value={editAddress.state} name="state" onChange={handleEditChange} />
-                                                    <input value={editAddress.pincode} name="pincode" onChange={handleEditChange} />
-                                                    <button onClick={saveEditedAddress}>Save</button>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <p>{item.cName}</p>
-                                                    <p>{item.phone}</p>
-                                                    <p>{item.locality}, {item.address}, {item.area}</p>
-                                                    <p>{item.city} - {item.pincode}</p>
-                                                    <p>{item.state}</p>
-                                                </>
-                                            )}
-                                        </div>
-
-                                        {!showEditDelAddr[index] ? (
-                                            <div className="p-3">
-                                                <Image
-                                                    onClick={() => toggleEditDel(index)}
-                                                    className="w-[30px]  cursor-pointer"
-                                                    src="/images/menu.png"
-                                                    alt="Menu"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div ref={menuRef} className="p-3 text-black font-normal text-sm font-sans h-full">
-                                                <ul className="shadow-md">
-                                                    <li
-                                                        className="h-[50%] bt-0 border-gray-400 px-2 py-1 text-center bg-white hover:bg-gray-100 cursor-pointer   "
-                                                        onClick={() => handleEdit(index)}>
-                                                        Edit
-                                                    </li>
-                                                    <li
-                                                        onClick={() => deleteAddress(item.id)}
-                                                        className="h-[50%] border-gray-400 border-t-0 px-2 py-1 text-center bg-white cursor-pointer hover:bg-gray-100"
-                                                    >
-                                                        Delete
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        )}
-                                    </div>
-                                ))
-                            )}
-                        </div> */}

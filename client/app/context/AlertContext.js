@@ -8,9 +8,6 @@ export const AlertContext = createContext();
 
 export const AlertProvider = ({ children }) => {
 
-   useEffect(()=>{
-      console.log("alert")
-    },[])
   
   const alertBox = ({ type, msg }) => {
     if (type === 'success') toast.success(msg);
