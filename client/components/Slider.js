@@ -75,7 +75,7 @@ const Slider = () => {
           fill
           className="object-cover transition-opacity duration-500 ease-in-out"
           priority
-          onClick={router.push(slides[currentIndex].url)}
+          onClick={()=>router.push(slides[currentIndex].url)}
         />
 
         {/* Right Arrow */}
