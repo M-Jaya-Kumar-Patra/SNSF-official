@@ -1,7 +1,9 @@
-import { withPWA } from 'next-pwa';
+import pkg from 'next-pwa'; // ✅ default import for CommonJS
+const { withPWA } = pkg;
 
 const isDev = process.env.NODE_ENV === 'development';
 
+/** @type {import('next').NextConfig} */
 const nextConfig = withPWA({
   dest: 'public',
   disable: isDev,
