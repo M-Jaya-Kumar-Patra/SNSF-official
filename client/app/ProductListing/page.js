@@ -23,7 +23,8 @@ import Loading from '@/components/Loading';
 import SidebarWrapper from '@/components/SidebarWrapper';
 import { FaFilter, FaSortAmountDown } from "react-icons/fa"; // Import icons
 
-
+import WhatsappIcon from "@/components/WhatsappIcon";
+import { IoCall } from "react-icons/io5";
 
 
 const ProductListing = () => {
@@ -120,117 +121,17 @@ const ProductListing = () => {
                     {/* Sidebar */}
 
 
-                    {/* Filter Panel */}
-                    <div
-                        className={`fixed top-0 left-0 h-full w-[280px] z-50 bg-white shadow-lg pr-1 pt-1  sm:p-5 text-black transition-transform duration-300 ease-in-out
-    ${showFilterPannel ? 'translate-x-0' : '-translate-x-full'} sm:relative sm:translate-x-0 sm:block  z-[300] sm:z-0`}
-                    >
-                        {/* Close Button for Mobile */}
-                        <div className="sm:hidden flex justify-end mb-4 mr-3">
-                            <button
-                                onClick={() => setShowFilterPannel(false)}
-                                className="text-xl text-gray-500 hover:text-red-600 font-bold"
-                            >
-                                &times;
-                            </button>
-                        </div>
-
-                        {/* Scrollable content for mobile */}
-                        <div className="h-[calc(100%-40px)] overflow-y-auto pr-2 sm:overflow-visible sm:h-auto">
-                            <SidebarWrapper
-                                productsData={productsData}
-                                setProductsData={setProductsData}
-                                isLoading={isLoading}
-                                setIsLoading={setIsLoading}
-                                setTotalPages={setTotalPages}
-                                setShowFilterPannel={setShowFilterPannel}
-                                setFilterCount={setFilterCount}
-                            />
-                        </div>
-                    </div>
-
+                
 
 
                     {/* Main Product Content */}
-                    <div className="flex-grow w-full h-full bg-white sm:p-5 shadow-lg text-black overflow-x-hidden">
+                    <div className="flex-grow w-full h-full bg-white sm:p-1 shadow-lg text-black overflow-x-hidden">
 
 
-                        {/* Sort Header */}
-                        <div className='w-full fixed sm:relative z-[200] sm:z-0 bg-slate-100 p-2 flex flex-col sm:flex-row sm:justify-between sm:items-center sm:rounded gap-2 sm:gap-0'>
-                            {/* Product Count - visible only on sm and up */}
-                            <p className='hidden sm:block sm:pl-3 text-gray-600 text-base'>
-                                {`${productsData?.length} Products found`}
-                            </p>
-
-                            {/* Sort Section */}
-                            <div className='w-full sm:w-auto flex flex-col sm:flex-row items-center justify-between sm:justify-end gap-2'>
-
-                                {/* Mobile Filter & Sort Buttons */}
-                                <div className="flex w-full sm:hidden gap-2">
-                                    {/* FILTER BUTTON */}
-                                    <Button
-                                        onClick={() => setShowFilterPannel(!showFilterPannel)}
-                                        className={`w-1/2 !bg-white text-black px-3 py-2 rounded flex items-center justify-center gap-1 shadow-sm active:!text-[#1e40af]`}
-                                    >
-                                        <FaFilter className="text-slate-600" />
-                                        <span className="text-sm font-medium !text-slate-600">
-                                            Filter{filterCount > 0 ? ` (${filterCount})` : ""}
-                                        </span>
-                                    </Button>
-
-                                    {/* SORT BUTTON */}
-                                    <Button
-                                        onClick={handleClick}
-                                        className={`w-1/2 !bg-white text-black px-3 py-2 rounded flex items-center justify-center gap-1 shadow-sm active:!text-[#1e40af]`}
-                                    >
-                                        <FaSortAmountDown className="text-slate-600" />
-                                        <span className="text-sm font-medium !text-slate-600">
-                                            Sort
-                                        </span>
-                                    </Button>
-                                </div>
-
-                                {/* Desktop Sort Label and Button */}
-                                <div className='hidden sm:flex items-center gap-2'>
-                                    <h1 className='text-gray-600 font-medium text-[18px] '>Sort By</h1>
-                                    <Button
-                                        id="basic-button"
-                                        aria-controls={open ? 'basic-menu' : undefined}
-                                        aria-haspopup="true"
-                                        aria-expanded={open ? 'true' : undefined}
-                                        onClick={handleClick}
-                                        className='!bg-white px-2 py-1 rounded !text-black hover:shadow-md uppercase font-medium font-sans text-sm'
-                                    >
-                                        {selectedSortVal}
-                                    </Button>
-                                </div>
-                            </div>
-
-                            {/* Sort Menu */}
-                            <Menu
-                                id="basic-menu"
-                                anchorEl={anchorEl}
-                                open={open}
-                                onClose={handleClose}
-                                slotProps={{ list: { 'aria-labelledby': 'basic-button' } }}
-                            >
-                                <MenuItem onClick={() => handleSortBy('name', 'asc', productsData, 'Name, A to Z')}>
-                                    Name, A to Z
-                                </MenuItem>
-                                <MenuItem onClick={() => handleSortBy('name', 'desc', productsData, 'Name, Z to A')}>
-                                    Name, Z to A
-                                </MenuItem>
-                                <MenuItem onClick={() => handleSortBy('price', 'asc', productsData, 'Price, low to high')}>
-                                    Price, Low to High
-                                </MenuItem>
-                                <MenuItem onClick={() => handleSortBy('price', 'desc', productsData, 'Price, high to low')}>
-                                    Price, High to Low
-                                </MenuItem>
-                            </Menu>
-                        </div>
+                   
 
                         {/* Product Grid */}
-                        <div className="flex  justify-center items-center mt-12 sm:mt-5 ">
+                        <div className="flex  justify-center items-center mt-12 sm:mt-3 ">
        <div className="w-full max-w-[100vw] px-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
 
                                 {
@@ -313,36 +214,10 @@ const ProductListing = () => {
                                                                 {prd?.brand}
                                                             </h1>
 
-                                                            <div className='mt-2'>
-
-                                                                <div
-                                                                    className={`flex justify-center items-center gap-[2px] text-white text-sm font-semibold px-[6px] rounded ${prd?.rating > 4.5
-                                                                        ? 'bg-green-600'
-                                                                        : prd?.rating > 3.5
-                                                                            ? 'bg-green-500'
-                                                                            : prd?.rating > 2.5
-                                                                                ? 'bg-amber-500'
-                                                                                : prd?.rating > 1.5
-                                                                                    ? 'bg-orange-500'
-                                                                                    : 'bg-red-500'
-                                                                        }`}
-                                                                >
-                                                                    {parseFloat(prd?.rating).toFixed(1)} <IoMdStar />
-
-                                                                </div>
-
-                                                            </div>
+                                                            
                                                         </div>
 
-                                                        <div className="flex justify-start items-center   gap-2 mt-1">
-                                                            <p className="text-[19px] font-semibold text-violet-900">₹{prd?.price}</p>
-                                                            {prd?.oldPrice && (
-                                                                <p className="text-[15px] line-through text-gray-400">₹{prd?.oldPrice}</p>
-                                                            )}
-
-                                                            {prd?.discount>0 && 
-                                                            <p className="text-[15px] font-medium text-green-700">{prd?.discount}%</p>}
-                                                        </div>
+                                                       
                                                     </div>
                                                 </div>
                                             </div>
@@ -354,44 +229,37 @@ const ProductListing = () => {
 
                                                 <div className="bg-white  sm:shadow-lg p-2 flex gap-2 justify-center">
 
-                                                    <Button
-                                                        variant="outlined"
-                                                        className="!text-[#1e40af] !border-[#1e40af]  bg-gray-600 rounded-md px-1 py-1 text-xs w-1/2 text-nowrap"
-                                                        onClick={() => {
-                                                            if (isLogin) {
-                                                                if (cartItems?.some(item => item === String(prd._id))) {
-                                                                    router.push("/cart");
-                                                                } else {
-                                                                    addToCartFun(prd, userData._id, quantity);
-                                                                }
-                                                            } else {
-                                                                router.push("/login");
-                                                            }
-                                                        }}
-                                                    >
-                                                        {isLogin
-                                                            ? cartItems?.includes(String(prd._id))
-                                                                ? 'Go to cart'
-                                                                : 'Add to cart'
-                                                            : 'Add to cart'}
-                                                    </Button>
+                                                     <Button
+              variant="outlined"
+              className="!capitalize !text-[#1e40af] !border-[#1e40af] bg-gray-600 rounded-md px-1 py-1 text-xs !w-1/2 !text-nowrap flex items-center gap-2"
+              onClick={() => {
+                if (!isLogin) {
+                  router.push("/login");
+                } else {
+                  const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in ${openedProduct?.name}`;
+                  window.open(whatsappURL, "_blank");
+                }
+              }}
+            >
+              <WhatsappIcon />
+              <span>Get Price on WhatsApp</span>
+            </Button>
 
 
-
-
-
-                                                    <Button
-                                                        variant="contained"
-
-                                                        className="!bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-2 py-1 text-xs w-1/2 text-nowrap"
-                                                        onClick={() => {
-                                                            setBuyNowItem({ ...prd, quantity: 1 });
-                                                            router.push("/checkOut");
-                                                        }}
-
-                                                    >
-                                                        Book Now
-                                                    </Button>
+            <Button
+              variant="contained"
+              className="!capitalize !bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-2 py-1 text-xs w-1/2 text-nowrap"
+              onClick={() => {
+                if (!isLogin) {
+                  router.push("/login"); // Redirect to login if not logged in
+                } else {
+                  window.open("tel:+919776501230"); // Open phone dialer
+                }
+              }}
+            >
+              <IoCall className="w-6 h-6 mx-2" />
+              Call to Get Best Price
+            </Button>
                                                 </div>
                                             </div>
                                         </div>

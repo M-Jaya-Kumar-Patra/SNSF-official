@@ -21,8 +21,9 @@ const nextConfig = withPWA({
     GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
   },
   experimental: {
-    legacyBrowsers: false, // ✅ Disables old JS fallback for modern browsers
+    optimizeCss: true,
   },
 });
 
 export default nextConfig;
+

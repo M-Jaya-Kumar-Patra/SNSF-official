@@ -40,10 +40,10 @@ const Page = () => {
     Continue Shopping
   </Link>
   <Link
-    href="/orders"
+    href="/enquires"
     className="font-semibold text-black text-sm sm:text-base px-6 py-2 rounded-full shadow-md transition duration-300"
   >
-    My Orders
+    My Enquries
   </Link>
 </div>
 

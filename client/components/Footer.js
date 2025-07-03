@@ -63,7 +63,14 @@ const Footer = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Image src="/images/youtube.png" width={30} height={30} alt="YouTube" />
+              <Image
+                src="/images/youtube.png"
+                alt="YouTube"
+                width={30}
+                height={30}
+                priority
+              />
+
             </a>
             <a
               href="https://wa.me/919776501230"

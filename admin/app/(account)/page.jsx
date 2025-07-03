@@ -53,8 +53,8 @@ const Account = () => {
               </Link>
             </li>
             <li>
-              <Link href="/orders">
-                <div className="menu-item"><Package size={18} /> My Orders</div>
+              <Link href="/enquires">
+                <div className="menu-item"><Package size={18} /> My Enquries</div>
               </Link>
             </li>
             <li>

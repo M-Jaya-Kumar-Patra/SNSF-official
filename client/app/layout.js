@@ -20,7 +20,11 @@ import BottomNav from "@/components/BottomNav";
 
 import { useEffect } from "react";
 
-const inter = Inter({ subsets: ["latin"], weight: ["400", "700"] });
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap", // ✅ Add this
+});
 
 export default function RootLayout({ children }) {
   // ✅ Register Service Worker
@@ -43,6 +47,8 @@ export default function RootLayout({ children }) {
   <title>S N Steel Fabrication – Premium Steel Furniture</title>
    <meta name="description" content="S N Steel Fabrication offers durable, modern, and customizable steel furniture for homes and businesses. Premium quality at affordable prices." />
   <link rel="manifest" href="/manifest.json" />
+  
+
   <meta name="theme-color" content="#000000" />
   <link rel="icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />

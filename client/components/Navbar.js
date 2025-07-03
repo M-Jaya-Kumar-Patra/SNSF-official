@@ -108,7 +108,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
     height={40}
     className="w-[45px] h-[45px] sm:w-[60px] sm:h-[60px] object-contain"
     priority
-    quality={100}
+    quality={75}
   />
 
   {/* Logo Text */}
@@ -122,7 +122,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
 
       object-contain"
     priority
-    quality={100}
+    quality={75}
   />
 </div>
 
@@ -179,8 +179,8 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                           <Link href="/profile" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
                             <User size={18} /> Profile
                           </Link>
-                          <Link href="/orders" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
-                            <Package size={18} /> My Orders
+                          <Link href="/enquires" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                            <Package size={18} /> My Enquries
                           </Link>
                           <Link href="/wishlist" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
                             <Heart size={18} /> Wishlist
@@ -259,11 +259,14 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                   onClick={() => router.push(isLogin ? "/profile" : "/login")}
                   className="text-slate-200"
                 >
-                  <img
-                    src={userData?.avatar || "/images/emptyAccount.png"}
-                    alt="Account"
-                    className="w-[32px] h-[32px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
-                  />
+                  <Image
+  src={userData?.avatar || "/images/emptyAccount.png"}
+  alt="Account"
+  width={32}
+  height={32}
+  className="w-[32px] h-[32px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
+/>
+
                 </IconButton>
 
                 {/* Hover Dropdown */}
@@ -276,8 +279,8 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                         <Link href="/profile" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
                           <User size={18} /> Profile
                         </Link>
-                        <Link href="/orders" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
-                          <Package size={18} /> My Orders
+                        <Link href="/enquires" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                          <Package size={18} /> My Enquries
                         </Link>
                         <Link href="/wishlist" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
                           <Heart size={18} /> Wishlist

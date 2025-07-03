@@ -47,7 +47,7 @@ const refundCompletedEmail = (
 
       <div style="text-align: center; margin-top: 24px;">
         <a href="https://snsteelfabrication.com/orders" target="_blank" style="background-color: #059669; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">
-          🔍 View My Orders
+          🔍 View My Enquries
         </a>
       </div>
     </div>

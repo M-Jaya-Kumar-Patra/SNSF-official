@@ -81,9 +81,9 @@ useEffect(() => {
           <div className="leftlower mt-3 w-[256px] bg-white shadow-lg">
             <ul className="text-gray-600 font-sans">
               <li>
-                <Link href="/orders">
+                <Link href="/enquires">
                   <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                    <Package size={18} /> My Orders
+                    <Package size={18} /> My Enquries
                   </div>
                 </Link>
               </li>

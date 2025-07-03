@@ -53,6 +53,7 @@ const Shopbycat = () => {
                   height={100}
                   className="rounded-full object-cover"
                   alt="Category"
+                  priority
                 />
               )}
             </a>

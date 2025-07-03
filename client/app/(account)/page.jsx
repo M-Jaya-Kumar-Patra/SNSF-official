@@ -50,7 +50,7 @@ const Account = () => {
 
         <ul className="font-sans text-gray-600 space-y-1 px-4">
           <li><Link href="/profile"><div className="menu-item"><User size={18} className="mr-2" /> Profile Information</div></Link></li>
-          <li><Link href="/orders"><div className="menu-item"><Package size={18} className="mr-2" /> My Orders</div></Link></li>
+          <li><Link href="/enquires"><div className="menu-item"><Package size={18} className="mr-2" /> My Enquries</div></Link></li>
           <li><Link href="/account/address"><div className="menu-item"><MapPin size={18} className="mr-2" /> Manage Address</div></Link></li>
           <li><Link href="/account/wishfav"><div className="menu-item"><Heart size={18} className="mr-2" /> Wishlist & Favorites</div></Link></li>
           <li><Link href="/account/retref"><div className="menu-item"><RefreshCcw size={18} className="mr-2" /> Returns and Refunds</div></Link></li>
