@@ -1,10 +1,8 @@
 import createPWA from 'next-pwa';
 
-const withPWA = createPWA.default ?? createPWA; // ✅ fix for CommonJS+ESM
-
+const withPWA = createPWA.default ?? createPWA; // ✅ handles both ESM & CommonJS
 const isDev = process.env.NODE_ENV === 'development';
 
-/** @type {import('next').NextConfig} */
 const nextConfig = withPWA({
   dest: 'public',
   disable: isDev,
@@ -21,6 +19,9 @@ const nextConfig = withPWA({
   },
   env: {
     GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+  },
+  experimental: {
+    legacyBrowsers: false, // ✅ Disables old JS fallback for modern browsers
   },
 });
 
