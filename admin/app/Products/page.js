@@ -998,7 +998,7 @@ const Products = () => {
                                                     onChange={(e) => handleSpecificationsChange(e)}
                                                 />
                                                 <TextField
-                                                    label="Weight"
+                                                    label="Net Weight"
                                                     size="small"
                                                     name="weight"
                                                     value={editPrdObj?.specifications?.weight || ""}

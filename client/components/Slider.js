@@ -73,7 +73,7 @@ const Slider = () => {
           src={slides[currentIndex].images[0]}
           alt={`Slide ${currentIndex + 1}`}
           fill
-          className="object-cover transition-opacity duration-500 ease-in-out"
+          className="object-cover transition-opacity duration-500 ease-in-out cursor-pointer"
           priority
           onClick={()=>router.push(slides[currentIndex].url)}
         />

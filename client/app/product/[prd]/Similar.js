@@ -16,7 +16,7 @@ import { useAuth } from "@/app/context/AuthContext";
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
-const New = (props) => {
+const Similar = (props) => {
   const { prdData } = usePrd();
   const scrollRef = useRef(null);
   const router = useRouter()
@@ -56,12 +56,14 @@ const New = (props) => {
       {/* Slider Container */}
       <div className="relative w-full max-w-[1100px] mx-auto px-4">
         {/* Left Arrow */}
+        {!props.hideArrows && (
         <button
           onClick={() => scroll("left")}
           className="absolute left-0 top-1/2 -translate-y-1/2 z-10 text-gray-400 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 bg-opacity-90"
         >
           <ChevronLeft />
         </button>
+        )}
 
         {/* Scrollable Product List */}
         <div
@@ -109,15 +111,17 @@ const New = (props) => {
         </div>
 
         {/* Right Arrow */}
+        {!props.hideArrows && (
         <button
           onClick={() => scroll("right")}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 text-gray-400 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 bg-opacity-90"
+          className=" absolute right-0 top-1/2 -translate-y-1/2 z-10 text-gray-400 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 bg-opacity-90"
         >
           <ChevronRight />
         </button>
+        )}
       </div>
     </div>
   );
 };
 
-export default New;
+export default Similar;

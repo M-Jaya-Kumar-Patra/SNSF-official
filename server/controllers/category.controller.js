@@ -52,26 +52,19 @@ export async function uploadImages(request, response) {
 }
 export async function createCategory(request, response) {
     try {
-        const { name, parentId, parentCatName } = request.body;
+        const { name, parentIds } = request.body;
 
-        const category = new CategoryModel({
-            name,
-            images: imagesArr,
-            parentId: parentId || null,
-            parentCatName: parentCatName || ""
-        });
+const category = new CategoryModel({
+    name,
+    images: imagesArr,
+    parentIds: parentIds || []  // Accept multiple parent categories
+});
 
         const savedCategory = await category.save();
         imagesArr = []; // Clear after use
 
         // ✅ If it has a parent, push this into the parent's children
-        if (parentId) {
-            await CategoryModel.findByIdAndUpdate(
-                parentId,
-                { $push: { children: savedCategory } }, // embedded object
-                { new: true }
-            );
-        }
+
 
         return response.status(200).json({
             message: "Category created successfully",
@@ -101,11 +94,16 @@ export async function getCategories(request, response) {
         const rootCategories = [];
 
         categories.forEach(cat => {
-            if (cat.parentId) {
-                categoryMap[cat.parentId]?.children.push(categoryMap[cat._id]);
-            } else {
-                rootCategories.push(categoryMap[cat._id]);
-            }
+            if (cat.parentIds?.length) {
+    cat.parentIds.forEach(pid => {
+        if (categoryMap[pid]) {
+            categoryMap[pid].children.push(categoryMap[cat._id]);
+        }
+    });
+} else {
+    rootCategories.push(categoryMap[cat._id]);
+}
+
         });
 
         return response.status(200).json({
@@ -125,7 +123,7 @@ export async function getCategories(request, response) {
 
 export async function getCategoriesCount(request, response) {
     try {
-        const categoryCount = await CategoryModel.countDocuments({ parentId: null });
+        const categoryCount = await CategoryModel.countDocuments({ parentIds: { $eq: [] } }) 
 
         return response.status(200).json({
             categoryCount,
@@ -143,7 +141,7 @@ export async function getCategoriesCount(request, response) {
 
 export async function getSubCategoriesCount(request, response) {
     try {
-        const subCategoriesCount = await CategoryModel.countDocuments({ parentId: { $ne: null } });
+        const subCategoriesCount = await CategoryModel.countDocuments({ parentIds: { $ne: [] } }) 
 
         return response.status(200).json({
             getSubCategoriesCount: subCategoriesCount,
@@ -260,7 +258,8 @@ export async function deleteCategory(request, response) {
         }
 
         // Delete subcategories and their children
-        const subCategories = await CategoryModel.find({ parentId: request.params.id });
+        const subCategories = await CategoryModel.find({ parentIds: request.params.id });
+
 
         for (const subCat of subCategories) {
             const thirdSubCategories = await CategoryModel.find({ parentId: subCat._id });
@@ -318,8 +317,7 @@ export async function updatedCategory(request, response) {
 
         const updateData = {
             name: request.body.name,
-            parentId: request.body.parentId || null,
-            parentCatName: request.body.parentCatName || null,
+            parentIds: request.body.parentIds || [],
             images: Array.isArray(request.body.images) && request.body.images.length > 0
                 ? request.body.images
                 : uploadedImages

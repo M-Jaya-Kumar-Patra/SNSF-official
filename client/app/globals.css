@@ -117,3 +117,10 @@ body {
   animation: mui-skeleton-wave 1.6s linear 0.5s infinite;
 }
   
+
+@media (max-width: 768px) {
+  .swiper-button-next,
+  .swiper-button-prev {
+    display: none !important;
+  }
+}
