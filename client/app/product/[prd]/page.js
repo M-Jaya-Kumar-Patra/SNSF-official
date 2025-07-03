@@ -103,7 +103,7 @@ const [hideArrows, setHideArrows] = useState(null)
   {/* Mobile Carousel */}
   {/* Mobile Carousel */}
 <div className="block sm:hidden w-full relative">
-  <Swiper spaceBetween={10} slidesPerView={1} className="w-full h-auto">
+  <Swiper cssMode={true} spaceBetween={10} slidesPerView={1} className="w-full h-auto">
     {productImages?.map((src, idx) => (
       <SwiperSlide key={idx}>
         <Image
@@ -150,7 +150,10 @@ const [hideArrows, setHideArrows] = useState(null)
 
 {/* Fullscreen Modal for Mobile Large View */}
 {showLarge && (
-  <div className="fixed inset-0 bg-slate-100 bg-opacity-80 z-[999] flex flex-col items-center justify-center px-4">
+  <div
+  className="fixed inset-0 bg-slate-100 bg-opacity-80 z-[999] flex flex-col items-center justify-center px-4"
+  style={{ touchAction: "pinch-zoom", overflow: "auto" }}
+>
     <div className="w-full flex justify-end">
       <button
         onClick={() => {setShowLarge(null)
@@ -179,7 +182,7 @@ const [hideArrows, setHideArrows] = useState(null)
               alt={`Slide ${idx + 1}`}
               width={500}
               height={500}
-              className="object-contain w-full h-full"
+              className="object-contain w-full h-full touch-auto"
               unoptimized
             />
           </SwiperSlide>

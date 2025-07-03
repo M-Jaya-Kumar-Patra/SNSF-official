@@ -64,7 +64,10 @@ const New = () => {
       <div className="relative w-full max-w-[1100px] mx-auto px-4">
         <button
           onClick={() => scroll("left")}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 bg-opacity-90"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10  bg-white/60 hover:bg-white text-gray-800 p-1 rounded-full   bg-opacity-90     
+          
+              sm:p-2  shadow transition text-base sm:text-xl"
+          
         >
           <ChevronLeft />
         </button>
@@ -122,7 +125,9 @@ const New = () => {
 
         <button
           onClick={() => scroll("right")}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 bg-opacity-90"
+          className="absolute right-0  bg-white   bg-opacity-90 
+          
+         top-1/2 -translate-y-1/2 z-10 bg-white/60 hover:bg-white text-gray-800 p-1 sm:p-2 rounded-full shadow transition text-base sm:text-xl"
         >
           <ChevronRight />
         </button>
