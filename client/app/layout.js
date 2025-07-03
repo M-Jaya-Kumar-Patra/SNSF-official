@@ -1,6 +1,5 @@
 "use client";
 
-import "./globals.css";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import AuthWrapper from "@/components/AuthWrapper";
@@ -17,7 +16,6 @@ import { OrdersProvider } from "./context/OrdersContext";
 import { NoticeProviders } from "./context/NotificationContext";
 import GlobalLoader from "@/components/GlobalLoader";
 import BottomNav from "@/components/BottomNav";
-
 import { useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "700"] });
@@ -40,17 +38,48 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        {/* ⚡ Non-blocking preload for global CSS */}
+        <link
+          rel="preload"
+          href="/css/33127abe362e3d00.css"
+          as="style"
+          onload="this.onload=null;this.rel='stylesheet'"
+        />
+        <noscript>
+          <link rel="stylesheet" href="/css/33127abe362e3d00.css" />
+        </noscript>
+
+        {/* Standard metadata and icons */}
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#000000" />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="96x96"
+          href="/favicon-96x96.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          href="/apple-touch-icon.png"
+          sizes="180x180"
+        />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="default"
+        />
         <meta name="apple-mobile-web-app-title" content="SNSF" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
-
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes"
+        />
       </head>
 
       <body className={`${inter.className} w-full`}>
