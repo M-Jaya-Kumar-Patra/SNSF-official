@@ -1,5 +1,6 @@
-import pkg from 'next-pwa'; // ✅ default import for CommonJS
-const { withPWA } = pkg;
+import createPWA from 'next-pwa';
+
+const withPWA = createPWA.default ?? createPWA; // ✅ fix for CommonJS+ESM
 
 const isDev = process.env.NODE_ENV === 'development';
 
