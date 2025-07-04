@@ -125,7 +125,28 @@ const Account = () => {
     {loading ? (
       <p className="text-center text-gray-600">Loading enquiries...</p>
     ) : enquiries.length === 0 ? (
-      <Empty message="You have not made any enquiries yet." />
+      <>
+  <div className="flex flex-col items-center justify-center mt-16 sm:mt-20 text-center px-4">
+    
+    <h2 className="text-lg sm:text-2xl font-semibold text-gray-700">
+      No Enquiries Yet
+    </h2>
+
+    <p className="text-gray-500 mt-2 text-sm sm:text-base max-w-sm">
+      You haven't received any customer enquiries yet. Once someone contacts you, you'll see it here.
+    </p>
+
+    <Link
+      href="/"
+      className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-5 sm:px-6 py-2 rounded-full text-sm sm:text-base transition shadow-md"
+    >
+      Back to Home
+    </Link>
+
+  </div>
+
+      
+      </>
     ) : (
       <div className="flex flex-col gap-2  sm:gap-3">
         {enquiries

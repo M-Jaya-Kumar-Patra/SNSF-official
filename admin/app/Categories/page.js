@@ -86,6 +86,7 @@ const Categories = () => {
         setEditCategs(product);
         setEditCatObj(product);
         setPreviews(product.images || []); // <-- This line ensures previews are pre-filled
+         setShowCategEditModal(true); 
         
     }
     const [age, setAge] = React.useState('');
