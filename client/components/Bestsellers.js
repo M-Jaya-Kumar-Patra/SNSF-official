@@ -76,7 +76,7 @@ const Bestsellers = () => {
 
                                     {/* Text Info */}
                                     <div className="mt-3 text-center">
-                                        <h2 className="text-black text-lg font-medium truncate">{prd?.name}</h2>
+                                        <h2 className="text-black text-lg font-semibold truncate">{prd?.name}</h2>
                                         <p className="text-gray-500 text-sm mt-1 truncate">{prd?.brand}</p>
 
                                       

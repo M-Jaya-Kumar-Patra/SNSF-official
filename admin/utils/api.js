@@ -217,8 +217,6 @@ export const deleteProduct = async (url, id)=>{
       id:{id}
       
     })
-    console.log("id", id)
-    console.log("iuughfiduf")
 
     return response.data
   }catch(error){

@@ -75,6 +75,10 @@ ratingCount: {
     type: Boolean,
     default: false,
   },
+  isAllinOne: {
+    type: Boolean,
+    default: false,
+  },
   discount: {
     type: Number,
   },
@@ -109,7 +113,7 @@ ratingCount: {
     },
     callOnlyDelivery:{
         type:Boolean,
-        default:false
+        default:true
     },
 
   specifications: {

@@ -45,12 +45,6 @@ const Footer = () => {
             <li>
               <Link href="/privacy" className="hover:text-white">Privacy Policy</Link>
             </li>
-            <li>
-              <Link href="/warranty" className="hover:text-white">Warranty & Guarantee</Link>
-            </li>
-            <li>
-              <Link href="/return-policy" className="hover:text-white">Return & Refund Policy</Link>
-            </li>
           </ul>
         </div>
 

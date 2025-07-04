@@ -66,11 +66,12 @@ const Products = () => {
         sales: "",
         rating: "",
         isFeatured: false,
+        isAllinOne: false,
         discount: 0,
         size: [],
         location: "",
         delivery_days: "",
-        callOnlyDelivery: "",
+        callOnlyDelivery: true,
         specifications: {
             material: "",
             setOf: "",
@@ -129,11 +130,12 @@ const Products = () => {
             sales: "",
             rating: "",
             isFeatured: false,
+            isAllinOne: false,
             discount: 0,
             size: [],
             location: "",
             delivery_days: "",
-            callOnlyDelivery: "",
+            callOnlyDelivery: true,
             specifications: {
                 material: "",
                 setOf: "",
@@ -229,7 +231,7 @@ const Products = () => {
     const handleSubmitAddForm = (e) => {
         e.preventDefault();
         setIsLoading(true)
-        if (!formFields.name || !formFields.catName || !formFields.subCat || !formFields.price) {
+        if (!formFields.name || !formFields.catName) {
             alert.alertBox({ type: "error", msg: "Please fill all the required fields" });
             setIsLoading(false);
             return;
@@ -262,6 +264,7 @@ const Products = () => {
                         sales: "",
                         rating: "",
                         isFeatured: "",
+                        isAllinOne: "",
                         discount: 0,
                         size: [],
                         location: "",
@@ -358,7 +361,7 @@ const Products = () => {
         };
 
 
-        if (!editPrdObj.name || !editPrdObj.catName || !editPrdObj.subCat || !editPrdObj.price) {
+        if (!editPrdObj.name || !editPrdObj.catName) {
             alert.alertBox({ type: "error", msg: "Please fill all the required fields" });
             setIsLoading(false);
             return;
@@ -855,7 +858,7 @@ const Products = () => {
                                         <div className="grid grid-cols-2 gap-4">
 
                                             <TextField
-                                                required
+                                                disabled={true}
                                                 label="Price"
                                                 value={editPrdObj?.price || ""}
                                                 onChange={handleChangeEditInput}
@@ -864,6 +867,7 @@ const Products = () => {
 
                                             />
                                             <TextField
+                                                disabled={true}
                                                 label="Old Price"
                                                 value={editPrdObj?.oldPrice || ""}
                                                 onChange={handleChangeEditInput}
@@ -880,6 +884,15 @@ const Products = () => {
 
                                             />
                                             <TextField
+                                                label="Is in All in One"
+                                                value={editPrdObj?.isAllinOne || ""}
+                                                onChange={handleChangeEditInput}
+                                                size="small"
+                                                name='isAllinOne'
+
+                                            />
+                                            <TextField
+                                                disabled={true}
                                                 label="Product stock"
                                                 value={editPrdObj?.countInStock || ""}
                                                 onChange={handleChangeEditInput}
@@ -896,6 +909,7 @@ const Products = () => {
 
                                             />
                                             <TextField
+                                                disabled={true}
                                                 label="Product Discount"
                                                 value={editPrdObj?.discount || 0}
                                                 onChange={handleChangeEditInput}
@@ -904,6 +918,7 @@ const Products = () => {
 
                                             />
                                             <TextField
+                                                disabled={true}
                                                 label="Delivery Within"
                                                 value={editPrdObj?.delivery_days || ""}
                                                 onChange={handleChangeEditInput}
@@ -912,6 +927,7 @@ const Products = () => {
 
                                             />
                                             <TextField
+                                                disabled={true}
                                                 label="Call only Booking"
                                                 value={editPrdObj?.callOnlyDelivery || ""}
                                                 onChange={handleChangeEditInput}
@@ -920,6 +936,7 @@ const Products = () => {
 
                                             />
                                             <TextField
+                                                disabled={true}
                                                 label="Product size"
                                                 value={(editPrdObj.size && Array.isArray(editPrdObj.size)) ? editPrdObj.size.join(", ") : ""}
                                                 onChange={(e) =>
@@ -939,6 +956,8 @@ const Products = () => {
                                             <Box sx={{ '& > legend': {} }} className="flex gap-10  items-center border border-[#c4c4c4] hover:border-slate-600 rounded-[4px] px-3 ">
                                                 <Typography component="legend" className='text-slate-500'>Rating</Typography>
                                                 <Rating
+
+                                                    disabled={true}
                                                     name="rating"
                                                     value={editPrdObj?.rating || 0}
                                                     onChange={(event, newValue) => {
@@ -1272,7 +1291,7 @@ const Products = () => {
                                 <div className="grid grid-cols-2 gap-4">
 
                                     <TextField
-                                        required
+                                        disabled={true}
                                         label="Price"
                                         value={formFields?.price || ""}
                                         onChange={handleChangeAdd}
@@ -1281,6 +1300,7 @@ const Products = () => {
 
                                     />
                                     <TextField
+                                        disabled={true}
                                         label="Old Price"
                                         value={formFields?.oldPrice || ""}
                                         onChange={handleChangeAdd}
@@ -1297,6 +1317,15 @@ const Products = () => {
 
                                     />
                                     <TextField
+                                        label="Is in All in One"
+                                        value={formFields?.isAllinOne || ""}
+                                        onChange={handleChangeAdd}
+                                        size="small"
+                                        name='isAllinOne'
+
+                                    />
+                                    <TextField
+                                        disabled={true}
                                         label="Product stock"
                                         value={formFields?.countInStock || ""}
                                         onChange={handleChangeAdd}
@@ -1313,6 +1342,7 @@ const Products = () => {
 
                                     />
                                     <TextField
+                                        disabled={true}
                                         label="Product Discount"
                                         value={formFields?.discount || 0}
                                         onChange={handleChangeAdd}
@@ -1321,6 +1351,7 @@ const Products = () => {
 
                                     />
                                     <TextField
+                                        disabled={true}
                                         label="Delivery Within"
                                         value={formFields?.delivery_days || ""}
                                         onChange={handleChangeAdd}
@@ -1329,14 +1360,16 @@ const Products = () => {
 
                                     />
                                     <TextField
+                                        disabled={true}
                                         label="Call only booking"
-                                        value={formFields?.callOnlyDelivery || ""}
+                                        defaultValue={true}
                                         onChange={handleChangeAdd}
                                         size="small"
                                         name='callOnlyDelivery'
 
                                     />
                                     <TextField
+                                        disabled={true}
                                         label="Product size"
                                         value={(formFields.size && Array.isArray(formFields.size)) ? formFields.size.join(", ") : ""}
                                         onChange={(e) =>
@@ -1355,6 +1388,7 @@ const Products = () => {
                                     <Box sx={{ '& > legend': {} }} className="flex gap-10  items-center border border-[#c4c4c4] hover:border-slate-600 rounded-[4px] px-3 ">
                                         <Typography component="legend" className='text-slate-500'>Rating</Typography>
                                         <Rating
+                                            disabled={true}
                                             name="rating"
                                             value={formFields.rating || 0}
                                             onChange={(event, newValue) => {
@@ -1498,6 +1532,7 @@ const Products = () => {
                                         sales: "",
                                         rating: "",
                                         isFeatured: "",
+                                        isAllinOne: "",
                                         discount: 0,
                                         size: [],
                                         location: "",

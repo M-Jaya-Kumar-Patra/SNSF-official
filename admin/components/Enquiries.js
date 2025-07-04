@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { getData, deleteData, fetchDataFromApi } from "@/utils/api"; // Adjust to your API util
+import { deleteProduct, fetchDataFromApi } from "@/utils/api";
 
 const Enquiries = () => {
   const [enquiries, setEnquiries] = useState([]);
@@ -25,7 +25,7 @@ const Enquiries = () => {
   const fetchEnquiries = async () => {
     setLoading(true);
     try {
-      const res = await fetchDataFromApi("/api/enquiries/admin"); // Replace with your actual endpoint
+      const res = await fetchDataFromApi("/api/enquiries/admin");
       if (res?.success) {
         setEnquiries(res.data);
       }
@@ -40,7 +40,7 @@ const Enquiries = () => {
     if (!confirm("Are you sure you want to delete this enquiry?")) return;
 
     try {
-      const res = await deleteData(`/api/enquiries/${id}`);
+      const res = await deleteProduct(`/api/enquiries/${id}`);
       if (res?.success) {
         setEnquiries((prev) => prev.filter((e) => e._id !== id));
       }
@@ -72,22 +72,45 @@ const Enquiries = () => {
           <Table size="small" aria-label="enquiries table">
             <TableHead>
               <TableRow>
-                <TableCell><strong>Customer</strong></TableCell>
-                <TableCell><strong>Email</strong></TableCell>
-                <TableCell><strong>Phone</strong></TableCell>
+                <TableCell><strong>ID</strong></TableCell>
+                <TableCell><strong>Image</strong></TableCell>
                 <TableCell><strong>Product</strong></TableCell>
+                <TableCell><strong>Customer</strong></TableCell>
+                <TableCell><strong>Phone & Email</strong></TableCell>
                 <TableCell><strong>Message</strong></TableCell>
-                <TableCell><strong>Date</strong></TableCell>
+                <TableCell><strong>Date & Time</strong></TableCell>
                 <TableCell align="center"><strong>Actions</strong></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {enquiries.map((enq) => (
+              {enquiries.slice().reverse().map((enq) => (
                 <TableRow key={enq._id}>
-                  <TableCell>{enq.contactInfo?.name || "-"}</TableCell>
-                  <TableCell>{enq.contactInfo?.email || "-"}</TableCell>
-                  <TableCell>{enq.contactInfo?.phone || "-"}</TableCell>
+
+
+                  <TableCell>{enq.productId?._id}</TableCell>
+
+                  <TableCell>
+                    {enq?.image ? (
+                      <img
+                        src={enq.image}
+                        alt="Product"
+                        className="w-40 h-[30] object-cover rounded-md"
+                      />
+                    ) : (
+                      <span className="text-gray-400 italic">No image</span>
+                    )}
+                  </TableCell>
                   <TableCell>{enq.productId?.name || "-"}</TableCell>
+                  <TableCell>{enq.contactInfo?.name || "-"}</TableCell>
+
+
+
+                  <TableCell><div className="!flex !flex-col !gap-5">
+                    <div>{enq.contactInfo?.email || "-"} </div> 
+                    <div>{enq.contactInfo?.phone || "-"}</div>
+                    </div>
+                  </TableCell>
+
                   <TableCell>{enq.message?.slice(0, 40)}...</TableCell>
                   <TableCell>
                     {new Date(enq.createdAt).toLocaleString()}
@@ -102,7 +125,6 @@ const Enquiries = () => {
                         <VisibilityIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
-
                     <Tooltip title="Delete Enquiry">
                       <IconButton
                         color="error"

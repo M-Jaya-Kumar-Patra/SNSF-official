@@ -49,7 +49,7 @@ const ProductListing = () => {
 
     const [quantity, setQuantity] = useState(1)
 
-   
+
 
     const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist()
 
@@ -60,7 +60,7 @@ const ProductListing = () => {
                 <div className="container w-full sm:w-[90%]  sm:my-4 mx-auto ">
                     <div className='flex-grow h-full bg-white p-2  sm:p-3 shadow-lg text-black'>
 
-                        
+
 
                         <div className="flex justify-center items-center sm:mt-3">
                             <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
@@ -126,73 +126,81 @@ const ProductListing = () => {
                                                                 {prd?.brand}
                                                             </h1>
 
-                                                            
+
                                                         </div>
 
-                                                       
+
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div className="absolute left-0 top-full w-full z-50  pointer-events-none opacity-0 sm:group-hover:opacity-100 
           sm:group-hover:pointer-events-auto transition-opacity duration-300 sm:group-hover:shadow-[rgba(0,0,0,0.3)] sm:group-hover:shadow-xl">
-                                                                                              <div className="bg-white sm:shadow-lg p-2 flex gap-2 justify-center sm:justify-between flex-wrap">
-                                                  {/* WhatsApp Button */}
-                                                  <Button
-                                                    variant="outlined"
-                                                    className="!capitalize !text-[#1e40af] !border-[#1e40af] bg-gray-600 rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
-                                                    onClick={async () => {
-                                                      if (!isLogin) {
-                                                        router.push("/login");
-                                                      } else {
-                                                        try {
-                                                          await postData("/api/enquiries/", {
-                                                            userId: userData?._id,
-                                                            productId: prd?._id,
-                                                            message: `Customer opened WhatsApp for "${prd?.name}"`,
-                                                            userMsg: `Enquiry for ${prd?.name} via WhatsApp`,
-                                                            image: prd?.images[0],
-                                                          });
-                                                
-                                                          const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${prd?.name}*.\nHere's the product image:\n${prd?.images[0]}`;
-                                                          window.open(whatsappURL, "_blank");
-                                                        } catch (err) {
-                                                          console.error("Enquiry failed:", err);
-                                                        }
-                                                      }
-                                                    }}
-                                                  >
-                                                    <WhatsappIcon className="w-5 h-5" />
-                                                    <span className="hidden sm:inline">WhatsApp</span>
-                                                  </Button>
-                                                
-                                                  {/* Call Button */}
-                                                  <Button
-                                                    variant="contained"
-                                                    className="!capitalize !bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
-                                                    onClick={async () => {
-                                                      if (!isLogin) {
-                                                        router.push("/login");
-                                                      } else {
-                                                        try {
-                                                          await postData("/api/enquiries/", {
-                                                            userId: userData?._id,
-                                                            productId: prd?._id,
-                                                            message: `Direct call initiated for "${prd?.name}"`,
-                                                            userMsg: `Enquiry for ${prd?.name} via Call`,
-                                                            image: prd?.images[0],
-                                                          });
-                                                
-                                                          window.open("tel:+919776501230");
-                                                        } catch (err) {
-                                                          console.error("Enquiry failed:", err);
-                                                        }
-                                                      }
-                                                    }}
-                                                  >
-                                                    <IoCall className="w-5 h-5" />
-                                                    <span className="hidden sm:inline">Call</span>
-                                                  </Button>
+                                                <div className="bg-white sm:shadow-lg p-2 flex gap-2 justify-center sm:justify-between flex-wrap">
+                                                    {/* WhatsApp Button */}
+                                                    <Button
+                                                        variant="outlined"
+                                                        className="!capitalize !text-[#1e40af] !border-[#1e40af] bg-gray-600 rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
+                                                        onClick={async () => {
+                                                            if (!isLogin) {
+                                                                router.push("/login");
+                                                            } else {
+                                                                try {
+                                                                    await postData("/api/enquiries/", {
+                                                                        userId: userData?._id,
+                                                                        contactInfo: {
+                                                                            name: userData?.name,
+                                                                            email: userData?.email,
+                                                                            phone: userData?.phone,
+                                                                        },
+                                                                        productId: prd?._id,
+                                                                        message: `Customer opened WhatsApp for "${prd?.name}"`,
+                                                                        userMsg: `Enquiry for ${prd?.name} via WhatsApp`,
+                                                                        image: prd?.images[0],
+                                                                    });
+
+                                                                    const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${prd?.name}*.\nHere's the product image:\n${prd?.images[0]}`;
+                                                                    window.open(whatsappURL, "_blank");
+                                                                } catch (err) {
+                                                                    console.error("Enquiry failed:", err);
+                                                                }
+                                                            }
+                                                        }}
+                                                    >
+                                                        <WhatsappIcon className="w-5 h-5" />
+                                                        <span className="hidden sm:inline">WhatsApp</span>
+                                                    </Button>
+
+                                                    {/* Call Button */}
+                                                    <Button
+                                                        variant="contained"
+                                                        className="!capitalize !bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
+                                                        onClick={async () => {
+                                                            if (!isLogin) {
+                                                                router.push("/login");
+                                                            } else {
+                                                                try {
+                                                                    await postData("/api/enquiries/", {
+                                                                        userId: userData?._id,
+                                                                        name: userData?.name,
+                                                                        email: userData?.email,
+                                                                        phone: userData?.phone,
+                                                                        productId: prd?._id,
+                                                                        message: `Direct call initiated for "${prd?.name}"`,
+                                                                        userMsg: `Enquiry for ${prd?.name} via Call`,
+                                                                        image: prd?.images[0],
+                                                                    });
+
+                                                                    window.open("tel:+919776501230");
+                                                                } catch (err) {
+                                                                    console.error("Enquiry failed:", err);
+                                                                }
+                                                            }
+                                                        }}
+                                                    >
+                                                        <IoCall className="w-5 h-5" />
+                                                        <span className="hidden sm:inline">Call</span>
+                                                    </Button>
                                                 </div>
                                             </div>
                                         </div>

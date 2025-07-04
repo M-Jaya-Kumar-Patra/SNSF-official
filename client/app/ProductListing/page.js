@@ -138,11 +138,11 @@ const ProductListing = () => {
                     <div className="flex-grow w-full h-full bg-white p-2 sm:p-3  shadow-lg text-black overflow-x-hidden">
 
 
-                        
+
 
                         {/* Product Grid */}
                         <div className="flex  justify-center items-center mt-0 sm:mt-1 ">
-       <div className="w-full max-w-[100vw] sm:px-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
+                            <div className="w-full max-w-[100vw] sm:px-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
 
                                 {
                                     productsData?.length !== 0 && productsData?.map((prd, index) => (
@@ -154,15 +154,15 @@ const ProductListing = () => {
                                                 className="w-full min-h-[260px] shadow-md   flex flex-col items-center justify-between p-3 bg-white hover:shadow-[rgba(0,0,0,0.3)] hover:shadow-xl transition duration-300 "
                                             >
                                                 <div className="w-full flex flex-col items-center" >
-                                                   <div className="w-full aspect-[4/3] relative overflow-hidden rounded-md">
-  <Image
-    src={prd?.images[0] || prd?.images}
-    alt={prd?.name}
-    fill
-    unoptimized
-    className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-  />
-</div>
+                                                    <div className="w-full aspect-[4/3] relative overflow-hidden rounded-md">
+                                                        <Image
+                                                            src={prd?.images[0] || prd?.images}
+                                                            alt={prd?.name}
+                                                            fill
+                                                            unoptimized
+                                                            className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                                                        />
+                                                    </div>
 
                                                     <div
                                                         className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-4 right-3 cursor-pointer"
@@ -224,10 +224,10 @@ const ProductListing = () => {
                                                                 {prd?.brand}
                                                             </h1>
 
-                                                           
+
                                                         </div>
 
-                                                       
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -237,64 +237,72 @@ const ProductListing = () => {
           sm:group-hover:pointer-events-auto transition-opacity duration-300 sm:group-hover:shadow-[rgba(0,0,0,0.3)] sm:group-hover:shadow-xl">
 
 
-                                               <div className="bg-white sm:shadow-lg p-2 flex gap-2 justify-center sm:justify-between flex-wrap">
-  {/* WhatsApp Button */}
-  <Button
-    variant="outlined"
-    className="!capitalize !text-[#1e40af] !border-[#1e40af] bg-gray-600 rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
-    onClick={async () => {
-      if (!isLogin) {
-        router.push("/login");
-      } else {
-        try {
-          await postData("/api/enquiries/", {
-            userId: userData?._id,
-            productId: prd?._id,
-            message: `Customer opened WhatsApp for "${prd?.name}"`,
-            userMsg: `Enquiry for ${prd?.name} via WhatsApp`,
-            image: prd?.images[0],
-          });
+                                                <div className="bg-white sm:shadow-lg p-2 flex gap-2 justify-center sm:justify-between flex-wrap">
+                                                    {/* WhatsApp Button */}
+                                                    <Button
+                                                        variant="outlined"
+                                                        className="!capitalize !text-[#1e40af] !border-[#1e40af] bg-gray-600 rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
+                                                        onClick={async () => {
+                                                            if (!isLogin) {
+                                                                router.push("/login");
+                                                            } else {
+                                                                try {
+                                                                    await postData("/api/enquiries/", {
+                                                                        userId: userData?._id,
+                                                                        name: userData?.name,
+                                                                        email: userData?.email,
+                                                                        phone: userData?.phone,
+                                                                        productId: prd?._id,
+                                                                        message: `Customer opened WhatsApp for "${prd?.name}"`,
+                                                                        userMsg: `Enquiry for ${prd?.name} via WhatsApp`,
+                                                                        image: prd?.images[0],
+                                                                    });
 
-          const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${prd?.name}*.\nHere's the product image:\n${prd?.images[0]}`;
-          window.open(whatsappURL, "_blank");
-        } catch (err) {
-          console.error("Enquiry failed:", err);
-        }
-      }
-    }}
-  >
-    <WhatsappIcon className="w-5 h-5" />
-    <span className="hidden sm:inline">WhatsApp</span>
-  </Button>
+                                                                    const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${prd?.name}*.\nHere's the product image:\n${prd?.images[0]}`;
+                                                                    window.open(whatsappURL, "_blank");
+                                                                } catch (err) {
+                                                                    console.error("Enquiry failed:", err);
+                                                                }
+                                                            }
+                                                        }}
+                                                    >
+                                                        <WhatsappIcon className="w-5 h-5" />
+                                                        <span className="hidden sm:inline">WhatsApp</span>
+                                                    </Button>
 
-  {/* Call Button */}
-  <Button
-    variant="contained"
-    className="!capitalize !bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
-    onClick={async () => {
-      if (!isLogin) {
-        router.push("/login");
-      } else {
-        try {
-          await postData("/api/enquiries/", {
-            userId: userData?._id,
-            productId: prd?._id,
-            message: `Direct call initiated for "${prd?.name}"`,
-            userMsg: `Enquiry for ${prd?.name} via Call`,
-            image: prd?.images[0],
-          });
+                                                    {/* Call Button */}
+                                                    <Button
+                                                        variant="contained"
+                                                        className="!capitalize !bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
+                                                        onClick={async () => {
+                                                            if (!isLogin) {
+                                                                router.push("/login");
+                                                            } else {
+                                                                try {
+                                                                    await postData("/api/enquiries/", {
+                                                                        userId: userData?._id,
+                                                                        contactInfo: {
+                                                                            name: userData?.name,
+                                                                            email: userData?.email,
+                                                                            phone: userData?.phone,
+                                                                        },
+                                                                        productId: prd?._id,
+                                                                        message: `Direct call initiated for "${prd?.name}"`,
+                                                                        userMsg: `Enquiry for ${prd?.name} via Call`,
+                                                                        image: prd?.images[0],
+                                                                    });
 
-          window.open("tel:+919776501230");
-        } catch (err) {
-          console.error("Enquiry failed:", err);
-        }
-      }
-    }}
-  >
-    <IoCall className="w-5 h-5" />
-    <span className="hidden sm:inline">Call</span>
-  </Button>
-</div>
+                                                                    window.open("tel:+919776501230");
+                                                                } catch (err) {
+                                                                    console.error("Enquiry failed:", err);
+                                                                }
+                                                            }
+                                                        }}
+                                                    >
+                                                        <IoCall className="w-5 h-5" />
+                                                        <span className="hidden sm:inline">Call</span>
+                                                    </Button>
+                                                </div>
 
 
                                             </div>

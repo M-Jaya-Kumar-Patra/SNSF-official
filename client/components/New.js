@@ -81,7 +81,7 @@ const New = () => {
       prdData.slice(0, 10).reverse().map((prd, index) => (
         <div
           key={index}
-          className="min-w-[256px] max-w-[256px] p-2 bg-white rounded-md shadow-md flex flex-col items-center justify-start gap-3 transition-transform duration-300 group"
+          className="min-w-[256px] max-w-[256px] p-2 bg-white  shadow-md flex flex-col items-center justify-start gap-3 transition-transform duration-300 group"
         >
           {/* Maintain 4:3 aspect ratio */}
           <div
@@ -101,7 +101,7 @@ const New = () => {
             className="flex flex-col items-center text-center gap-1 px-2 cursor-pointer"
             onClick={() => router.push(`/product/${prd?._id}`)}
           >
-            <h2 className="text-sm font-semibold text-gray-800 truncate w-full">
+            <h2 className="text-lg font-semibold text-gray-800 truncate w-full">
               {prd?.name}
             </h2>
           </div>

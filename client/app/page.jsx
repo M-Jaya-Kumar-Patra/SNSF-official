@@ -10,6 +10,7 @@ import New from "@/components/New";
 import Link from "next/link";
 import { Toaster } from "react-hot-toast";
 import { postData  } from "@/utils/api";
+import AllinOne from "@/components/AllinOne";
 
 export default function Home() {
   const { isCheckingToken } = useAuth();
@@ -29,6 +30,7 @@ export default function Home() {
       <section className="flex justify-center"><Slider /></section>
       <section className="flex justify-center"><Shopbycat /></section>
       <section className="flex justify-center"><Bestsellers /></section>
+      <section className="flex justify-center"><AllinOne /></section>
       <section className="flex justify-center"><New /></section>
     </>
   );

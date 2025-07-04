@@ -42,7 +42,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-  <title>S N Steel Fabrication – Premium Steel Furniture</title>
+  <title>S N Steel Fabrication – Steel Furniture, Customized for Comfort and Class</title>
    <meta name="description" content="S N Steel Fabrication offers durable, modern, and customizable steel furniture for homes and businesses. Premium quality at affordable prices." />
   <link rel="manifest" href="/manifest.json" />
   

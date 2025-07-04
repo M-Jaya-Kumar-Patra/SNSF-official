@@ -313,62 +313,72 @@ const Page = () => {
 
 
 
-           <Button
-  variant="outlined"
-  className="!capitalize !text-[#1e40af] !border-[#1e40af] bg-gray-600 rounded-md px-1 py-1 text-sm sm:text-base w-auto sm:!w-1/2 !text-nowrap flex items-center gap-2"
-  onClick={async () => {
-    if (!isLogin) {
-      router.push("/login");
-    } else {
-      try {
-        await postData("/api/enquiries/", {
-          userId: userData?._id,
-          productId: openedProduct?._id,
-          message: `Customer opened WhatsApp for "${openedProduct?.name}"`,
-          userMsg: `Enquiry for ${openedProduct?.name} via WhatsApp`,
-          image: openedProduct?.images[0]
-        });
+            <Button
+              variant="outlined"
+              className="!capitalize !text-[#1e40af] !border-[#1e40af] bg-gray-600 rounded-md px-1 py-1 text-base w-auto sm:!w-1/2 !text-nowrap flex items-center gap-2"
+              onClick={async () => {
+                if (!isLogin) {
+                  router.push("/login");
+                } else {
+                  try {
+                    await postData("/api/enquiries/", {
+                      userId: userData?._id,
+                      contactInfo: {
+                        name: userData?.name,
+                        email: userData?.email,
+                        phone: userData?.phone,
+                      },
+                      productId: openedProduct?._id,
+                      message: `Customer opened WhatsApp for "${openedProduct?.name}"`,
+                      userMsg: `Enquiry for ${openedProduct?.name} via WhatsApp`,
+                      image: openedProduct?.images?.[0],
+                    });
 
-        const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${openedProduct?.name}*.\nHere's the product image:\n${openedProduct?.images[0]}`;
-        window.open(whatsappURL, "_blank");
-      } catch (err) {
-        console.error("Enquiry failed:", err);
-      }
-    }
-  }}
->
-  <WhatsappIcon className="!w-5 !h-5"/>
-  <span className="hidden sm:block">Get Price on WhatsApp</span>
-</Button>
+                    const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${openedProduct?.name}*.\nHere's the product image:\n${openedProduct?.images[0]}`;
+                    window.open(whatsappURL, "_blank");
+                  } catch (err) {
+                    console.error("Enquiry failed:", err);
+                  }
+                }
+              }}
+            >
+              <WhatsappIcon className="!w-5 !h-5" />
+              <span className="hidden sm:block">Get Price on WhatsApp</span>
+            </Button>
 
-<Button
-  variant="contained"
-  className="!capitalize !bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-2 py-1 text-sm sm:text-base w-full
+            <Button
+              variant="contained"
+              className="!capitalize !bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-2 py-1 text-base w-full
    sm:w-1/2 text-nowrap flex items-center gap-2"
-  onClick={async () => {
-    if (!isLogin) {
-      router.push("/login");
-    } else {
-      try {
-        await postData("/api/enquiries/", {
-          userId: userData?._id,
-          productId: openedProduct?._id,
-          message: `Direct call initiated for "${openedProduct?.name}"`,
-          userMsg: `Enquiry for ${openedProduct?.name} via Call`,
-          image: openedProduct?.images[0]
-        });
+              onClick={async () => {
+                if (!isLogin) {
+                  router.push("/login");
+                } else {
+                  try {
+                    await postData("/api/enquiries/", {
+                      userId: userData?._id,
+                     contactInfo: {
+                        name: userData?.name,
+                        email: userData?.email,
+                        phone: userData?.phone,
+                      },
+                      productId: openedProduct?._id,
+                      message: `Direct call initiated for "${openedProduct?.name}"`,
+                      userMsg: `Enquiry for ${openedProduct?.name} via Call`,
+                      image: openedProduct?.images[0]
+                    });
 
-        window.open("tel:+919776501230");
-      } catch (err) {
-        console.error("Call log failed:", err);
-      }
-    }
-  }}
->
-  <IoCall className="w-6 h-6 mx-2" />
-  <span >Call to Get Best Price</span>
+                    window.open("tel:+919776501230");
+                  } catch (err) {
+                    console.error("Call log failed:", err);
+                  }
+                }
+              }}
+            >
+              <IoCall className="w-6 h-6 mx-2" />
+              <span  >Call to Get Best Price</span>
 
-</Button> 
+            </Button>
 
           </div>
 
@@ -388,12 +398,6 @@ const Page = () => {
               </p>
             </div>
           }
-          {/* Warranty Info */}
-          <div className="flex gap-4 mt-4">
-            <h1 className="text-gray-500 font-semibold">Warranty </h1>
-            <p className="text-black text-sm"><Link href="/warranty" className="text-blue-600 underline">View warranty policy</Link>
-            </p>
-          </div>
 
           {/* Product Specs */}
           <ProductSpecs specs={openedProduct?.specifications} />
