@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import LogoutBTN from "@/components/LogoutBTN";
 import { useAuth } from "@/app/context/AuthContext";
 import { useNotice } from "@/app/context/NotificationContext";
+import { MdOutlineMessage } from "react-icons/md";
 import {
   User,
   Package,
@@ -83,7 +84,7 @@ useEffect(() => {
               <li>
                 <Link href="/enquires">
                   <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                    <Package size={18} /> My Enquries
+                    <MdOutlineMessage size={18} /> My Enquries
                   </div>
                 </Link>
               </li>
@@ -175,9 +176,7 @@ useEffect(() => {
   </div>
 ) : (
   <div className="flex flex-col items-center justify-center mt-16 sm:mt-20 text-center px-4">
-    <div className="w-[180px] sm:w-[260px] mb-4">
-      <Empty />
-    </div>
+    
     <h2 className="text-lg sm:text-2xl font-semibold text-gray-700">
       No Notifications Yet
     </h2>

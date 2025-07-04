@@ -13,7 +13,6 @@ import Rating from '@mui/material/Rating';
 import { IoMdStar } from "react-icons/io";
 import { fetchDataFromApi, postData } from '@/utils/api';
 import { useAuth } from '@/app/context/AuthContext';
-import { useCart } from '@/app/context/CartContext';
 import { useRouter } from 'next/navigation';
 import { MdFavorite } from "react-icons/md";
 import { MdFavoriteBorder } from "react-icons/md";
@@ -22,15 +21,15 @@ import Image from 'next/image';
 import Loading from '@/components/Loading';
 import SidebarWrapper from '@/components/SidebarWrapper';
 import { FaFilter, FaSortAmountDown } from "react-icons/fa"; // Import icons
-
 import WhatsappIcon from "@/components/WhatsappIcon";
 import { IoCall } from "react-icons/io5";
+
+
 
 
 const ProductListing = () => {
     const { prdData, productsData, setProductsData, getProductsData } = usePrd()
     const { userData, isLogin, setIsLogin, setUserData, loading, setLoading, login, logout, isCheckingToken } = useAuth()
-    const { addToCart, buyNowItem, setBuyNowItem, cartItems, getCartItems } = useCart()
     const router = useRouter()
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -74,7 +73,7 @@ const ProductListing = () => {
 
     useEffect(() => {
         setIsLoading(true);
-        Promise.all([getCartItems(), getProductsData()]).finally(() => setIsLoading(false));
+        Promise.all([getProductsData()]).finally(() => setIsLoading(false));
     }, []);
 
 
@@ -84,23 +83,6 @@ const ProductListing = () => {
 
     const [quantity, setQuantity] = useState(1)
 
-
-
-
-    const addToCartFun = async (prd, userId, quantity) => {
-        try {
-            const added = await addToCart(prd, userId, quantity);
-            if (added?.success || true) { // Optional: check your `addToCart` return type
-                // Manually update userData.shopping_cart
-                setUserData(prev => ({
-                    ...prev,
-                    shopping_cart: [...(prev?.shopping_cart || []), String(prd._id)]
-                }));
-            }
-        } catch (err) {
-            console.error("Error adding to cart", err);
-        }
-    };
 
 
 
@@ -121,18 +103,46 @@ const ProductListing = () => {
                     {/* Sidebar */}
 
 
-                
+                    {/* Filter Panel */}
+                    <div
+                        className={`sm:hidden fixed top-0 left-0 h-full w-[280px] z-50 bg-white shadow-lg pr-1 pt-1  sm:p-5 text-black transition-transform duration-300 ease-in-out
+    ${showFilterPannel ? 'translate-x-0' : '-translate-x-full'} sm:relative sm:translate-x-0 sm:block  z-[300] sm:z-0`}
+                    >
+                        {/* Close Button for Mobile */}
+                        <div className="sm:hidden flex justify-end mb-4 mr-3">
+                            <button
+                                onClick={() => setShowFilterPannel(false)}
+                                className="text-xl text-gray-500 hover:text-red-600 font-bold"
+                            >
+                                &times;
+                            </button>
+                        </div>
+
+                        {/* Scrollable content for mobile */}
+                        <div className="h-[calc(100%-40px)] overflow-y-auto pr-2 sm:overflow-visible sm:h-auto">
+                            <SidebarWrapper
+                                productsData={productsData}
+                                setProductsData={setProductsData}
+                                isLoading={isLoading}
+                                setIsLoading={setIsLoading}
+                                setTotalPages={setTotalPages}
+                                setShowFilterPannel={setShowFilterPannel}
+                                setFilterCount={setFilterCount}
+                            />
+                        </div>
+                    </div>
+
 
 
                     {/* Main Product Content */}
-                    <div className="flex-grow w-full h-full bg-white sm:p-1 shadow-lg text-black overflow-x-hidden">
+                    <div className="flex-grow w-full h-full bg-white p-2 sm:p-3  shadow-lg text-black overflow-x-hidden">
 
 
-                   
+                        
 
                         {/* Product Grid */}
-                        <div className="flex  justify-center items-center mt-12 sm:mt-3 ">
-       <div className="w-full max-w-[100vw] px-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
+                        <div className="flex  justify-center items-center mt-0 sm:mt-1 ">
+       <div className="w-full max-w-[100vw] sm:px-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
 
                                 {
                                     productsData?.length !== 0 && productsData?.map((prd, index) => (
@@ -214,7 +224,7 @@ const ProductListing = () => {
                                                                 {prd?.brand}
                                                             </h1>
 
-                                                            
+                                                           
                                                         </div>
 
                                                        
@@ -223,44 +233,70 @@ const ProductListing = () => {
                                             </div>
 
                                             {/* Hover Dropdown Buttons */}
-                                            <div className="absolute left-0 top-full w-full z-50 opacity-0 pointer-events-none sm:group-hover:opacity-100 
+                                            <div className="absolute left-0 top-full w-full z-50  pointer-events-none opacity-0 sm:group-hover:opacity-100 
           sm:group-hover:pointer-events-auto transition-opacity duration-300 sm:group-hover:shadow-[rgba(0,0,0,0.3)] sm:group-hover:shadow-xl">
 
 
-                                                <div className="bg-white  sm:shadow-lg p-2 flex gap-2 justify-center">
+                                               <div className="bg-white sm:shadow-lg p-2 flex gap-2 justify-center sm:justify-between flex-wrap">
+  {/* WhatsApp Button */}
+  <Button
+    variant="outlined"
+    className="!capitalize !text-[#1e40af] !border-[#1e40af] bg-gray-600 rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
+    onClick={async () => {
+      if (!isLogin) {
+        router.push("/login");
+      } else {
+        try {
+          await postData("/api/enquiries/", {
+            userId: userData?._id,
+            productId: prd?._id,
+            message: `Customer opened WhatsApp for "${prd?.name}"`,
+            userMsg: `Enquiry for ${prd?.name} via WhatsApp`,
+            image: prd?.images[0],
+          });
 
-                                                     <Button
-              variant="outlined"
-              className="!capitalize !text-[#1e40af] !border-[#1e40af] bg-gray-600 rounded-md px-1 py-1 text-xs !w-1/2 !text-nowrap flex items-center gap-2"
-              onClick={() => {
-                if (!isLogin) {
-                  router.push("/login");
-                } else {
-                  const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in ${openedProduct?.name}`;
-                  window.open(whatsappURL, "_blank");
-                }
-              }}
-            >
-              <WhatsappIcon />
-              <span>Get Price on WhatsApp</span>
-            </Button>
+          const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${prd?.name}*.\nHere's the product image:\n${prd?.images[0]}`;
+          window.open(whatsappURL, "_blank");
+        } catch (err) {
+          console.error("Enquiry failed:", err);
+        }
+      }
+    }}
+  >
+    <WhatsappIcon className="w-5 h-5" />
+    <span className="hidden sm:inline">WhatsApp</span>
+  </Button>
+
+  {/* Call Button */}
+  <Button
+    variant="contained"
+    className="!capitalize !bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
+    onClick={async () => {
+      if (!isLogin) {
+        router.push("/login");
+      } else {
+        try {
+          await postData("/api/enquiries/", {
+            userId: userData?._id,
+            productId: prd?._id,
+            message: `Direct call initiated for "${prd?.name}"`,
+            userMsg: `Enquiry for ${prd?.name} via Call`,
+            image: prd?.images[0],
+          });
+
+          window.open("tel:+919776501230");
+        } catch (err) {
+          console.error("Enquiry failed:", err);
+        }
+      }
+    }}
+  >
+    <IoCall className="w-5 h-5" />
+    <span className="hidden sm:inline">Call</span>
+  </Button>
+</div>
 
 
-            <Button
-              variant="contained"
-              className="!capitalize !bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-2 py-1 text-xs w-1/2 text-nowrap"
-              onClick={() => {
-                if (!isLogin) {
-                  router.push("/login"); // Redirect to login if not logged in
-                } else {
-                  window.open("tel:+919776501230"); // Open phone dialer
-                }
-              }}
-            >
-              <IoCall className="w-6 h-6 mx-2" />
-              Call to Get Best Price
-            </Button>
-                                                </div>
                                             </div>
                                         </div>
                                     ))

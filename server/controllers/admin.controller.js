@@ -8,8 +8,6 @@ import generatedAccessToken from '../utils/generatedAccessToken.js';
 import generatedRefreshToken from '../utils/generatedRefreshToken.js';
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
-import { error } from "console";
-import { hash } from "crypto";
 
 cloudinary.config({
     cloud_name: process.env.cloudinary_Config_Cloud_Name,
@@ -19,12 +17,12 @@ cloudinary.config({
 });
 
 const destEmail = process.env.DESTINATION_EMAIL
+
 var imagesArr = [];
 
 export async function registerAdminController(request, response) {
     try {
         const { name, email, password } = request.body;
-        console.log("registerAdminController triggered")
 
         if (!name || !email || !password) {
             return response.status(400).json({
@@ -35,6 +33,7 @@ export async function registerAdminController(request, response) {
         }
 
         const existingAdmin = await AdminModel.findOne({ email });
+        
         if (existingAdmin) {
             return response.json({
                 message: "Admin already registered with this email",

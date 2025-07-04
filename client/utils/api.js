@@ -219,42 +219,36 @@ export const deleteItem = async (url, body) => {
   }
 };
 
-export const deleteData = async (url) => {
+export const getUserEnquiries = async () => {
   try {
     const token = localStorage.getItem("accessToken");
+    console.log("🔐 Token:", token);
 
-    const response = await axios.delete(apiUrl + url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      }, // ✅ this is how axios sends a body with DELETE
-    });
+    if (!token) {
+      return { error: true, message: "Access token is missing or expired" };
+    }
 
-    return response;
-  } catch (error) {
-    console.error("deleteItem error:", error);
-    throw error;
-  }
-};
-
-
-export const updateQty = async (url, body) => {
-  try {
-    const token = localStorage.getItem("accessToken");
-
-    const response = await axios.post(apiUrl + url, {
+    const response = await axios.get(`${apiUrl}/api/enquiries/user`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      data: body, // ✅ this is how axios sends a body with DELETE
     });
 
     return response.data;
   } catch (error) {
-    console.error("deleteItem error:", error);
-    throw error;
+    console.error("❌ Error fetching user enquiries:", error);
+
+    // Axios-specific error handling
+    if (error.response) {
+      // Server responded with a status other than 2xx
+      return {
+        error: true,
+        message: error.response.data?.message || "Server error",
+        status: error.response.status,
+      };
+    }
+
+    return { error: true, message: error.message };
   }
 };
-
-

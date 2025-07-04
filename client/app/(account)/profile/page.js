@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { User, Package, CreditCard, Bell, Heart } from "lucide-react";
+import { MdOutlineMessage } from "react-icons/md";
 import LogoutBTN from "@/components/LogoutBTN";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
@@ -230,7 +231,7 @@ const Account = () => {
                                 <li>
                                     <Link href="/enquires">
                                         <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                                            <Package size={18} /> My Enquries
+                                            <MdOutlineMessage size={18} /> My Enquries
                                         </div>
                                     </Link>
                                 </li>

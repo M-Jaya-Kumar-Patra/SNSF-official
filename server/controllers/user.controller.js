@@ -11,7 +11,6 @@ import fs from 'fs';
 import { error } from "console";
 import { hash } from "crypto";
 import AddressModel from "../models/address.model.js";
-import ReviewModel from "../models/reviews.model.js";
 import welcomeEmail from "../utils/EmailTemplates/welcomeEmailTemplate.js";
 import forgotPasswordEmail from "../utils/EmailTemplates/forgotPasswordTemplate.js";
 import passwordResetSuccessEmail from "../utils/EmailTemplates/passwordResetSuccessEmail.js";
@@ -1269,97 +1268,10 @@ export async function resendOTP(request, response) {
 
 
 
-//review controller
 
-export async function addReview(request, response) {
-  try {
-    const { userName, review, rating, productId, orderId } = request.body;
-
-    if (!rating || !productId || !userName || !review) {
-      return response.status(400).json({
-        error: true,
-        success: false,
-        message: "Missing required fields",
-      });
-    }
-
-    // Step 1: Save the review
-    const userReview = new ReviewModel({
-      userName,
-      review,
-      rating,
-      productId,
-      orderId,
-    });
-
-    await userReview.save();
-
-    // Step 2: Update product rating
-    const product = await ProductModel.findById(productId);
-    if (!product) {
-      return response.status(404).json({
-        error: true,
-        success: false,
-        message: "Product not found",
-      });
-    }
-
-    const currentTotalRating = product.rating * product.ratingCount;
-    const newRatingCount = product.ratingCount + 1;
-    const newAverageRating = (currentTotalRating + rating) / newRatingCount;
-
-    product.rating = newAverageRating;
-    product.ratingCount = newRatingCount;
-
-    await product.save();
-
-    return response.status(200).json({
-      message: "Review added successfully and rating updated",
-      error: false,
-      success: true,
-    });
-  } catch (error) {
-    return response.status(500).json({
-      message: error.message || "Server Error",
-      error: true,
-      success: false,
-    });
-  }
-}
-export async function getReviews(request, response) {
-    try {
-
-        const productId = request.query.productId;
-
-        const reviews = await ReviewModel.find({ productId: productId })
-
-        console.log(reviews, "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp")
-        if (!reviews) {
-            return response.status(400).json({
-                error: true,
-                success: false,
-                message: "No reviews found"
-            })
-        }
-
-        return response.status(200).json({
-            error: false,
-            success: true,
-            reviews: reviews
-        })
-
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || "Server Error",
-            error: true,
-            success: false
-        });
-    }
-}
 
 
 import ProductModel from "../models/product.model.js";
-import CategoryModel from "../models/category.model.js";
 
 export async function getRelatedProductsByCategory(req, res) {
     try {
@@ -1418,7 +1330,7 @@ export async function getRelatedProductsByCategory(req, res) {
 
 export async function getAllUsers(req, res) {
     try {
-        const users = await UserModel.find().select("-password").populate("address_details").populate("orders"); // exclude password
+        const users = await UserModel.find().select("-password").populate("address_details");// exclude password
 
         return res.status(200).json({
             success: true,

@@ -9,13 +9,12 @@ import connectDB from './config/connectDb.js';
 import userRouter from './route/user.route.js';
 import categoryRouter from './route/category.route.js';
 import productRouter from './route/product.route.js';
-import cartRouter from './route/cart.route.js';
 import adminRouter from './route/admin.route.js'
 import sliderRouter from './route/homeSlider.route.js';
 import wishRouter from './route/wishlist.route.js'
-import orderRouter from './route/order.route.js'
 import noticeRouter from './route/notification.route.js';
 import visitRouter from './route/visitCount.js';
+import enquiryRouter from './route/enquiry.route.js';
 
 const app = express();
 
@@ -41,13 +40,14 @@ app.get("/", (req, res) => {
 app.use("/api/user", userRouter);
 app.use('/api/category', categoryRouter);
 app.use('/api/product', productRouter);
-app.use('/api/cart', cartRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/homeSlider', sliderRouter);
 app.use('/api/wishlist', wishRouter);
-app.use('/api/order', orderRouter);
 app.use('/api/notice', noticeRouter);
 app.use('/api/visit', visitRouter);
+app.use('/api/enquiries', enquiryRouter);
+
+
 
 
 

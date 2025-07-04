@@ -213,7 +213,7 @@ const Admins = () => {
                               <p><b>OTP expires: </b>{selectedUser?.otpExpires}</p>  
                               <p><b>Email verified: </b>{selectedUser?.verify_email}</p>  
                               <p><b>Updated at: </b>{selectedUser?.updatedAt}</p> 
-                              <p><b>Order: </b>{selectedUser?.orders.length}</p>  
+                              <p><b>Order: </b>{selectedUser}</p>  
                               <p><b>Cart: </b>{selectedUser?.shopping_cart.length}</p>  
                               <p><b>Wishlist: </b>{selectedUser?.wishlist.length}</p>  
 

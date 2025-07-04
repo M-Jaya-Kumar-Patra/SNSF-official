@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 const WhatsappIcon = () => {
   return (
-    <div className="w-6 h-6 mx-2 relative">
+    <div className="!w-5 !h-5 mx-0 relative">
       <Image
         src="/images/whatsapp.png"
         alt="WhatsApp Icon"

@@ -12,7 +12,6 @@ import Rating from '@mui/material/Rating';
 import { IoMdStar } from "react-icons/io";
 import { fetchDataFromApi, postData } from '@/utils/api';
 import { useAuth } from '@/app/context/AuthContext';
-import { useCart } from '@/app/context/CartContext';
 import { useRouter } from 'next/navigation';
 import { useWishlist } from '../context/WishlistContext';
 import { MdFavorite } from "react-icons/md";
@@ -20,10 +19,12 @@ import { MdFavoriteBorder } from "react-icons/md";
 import Image from "next/image";
 import Loading from '@/components/Loading';
 
+import WhatsappIcon from "@/components/WhatsappIcon";
+import { IoCall } from "react-icons/io5";
+
 const ProductListing = () => {
     const { prdData, productsData, setProductsData, getProductsData } = usePrd()
     const { userData, isLogin, setIsLogin, setUserData, loading, setLoading, login, logout, isCheckingToken } = useAuth()
-    const { addToCart, buyNowItem, setBuyNowItem } = useCart()
     const router = useRouter()
     if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
@@ -45,33 +46,10 @@ const ProductListing = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [selectedSortVal, setSelectedSortVal] = useState("Name, A to Z")
 
-    const handleSortBy = (name, order, products, value) => {
-        setSelectedSortVal(value);
-        postData(`/api/product/sortBy`, {
-            products: products,
-            sortBy: name,
-            order: order
-        }, false).then((res) => {
-            setProductsData(res?.products);
-            setAnchorEl(null)
-        })
-    }
 
     const [quantity, setQuantity] = useState(1)
 
-    const addToCartFun = async (prd, userId, quantity) => {
-        try {
-            const added = await addToCart(prd, userId, quantity);
-            if (added?.success || true) {
-                setUserData(prev => ({
-                    ...prev,
-                    shopping_cart: [...(prev?.shopping_cart || []), String(prd._id)]
-                }));
-            }
-        } catch (err) {
-            console.error("Error adding to cart", err);
-        }
-    };
+   
 
     const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist()
 
@@ -80,38 +58,11 @@ const ProductListing = () => {
 
             <div className='flex w-full min-h-screen justify-center bg-slate-100'>
                 <div className="container w-full sm:w-[90%]  sm:my-4 mx-auto ">
-                    <div className='flex-grow h-full bg-white  sm:p-5 shadow-lg text-black'>
+                    <div className='flex-grow h-full bg-white p-2  sm:p-3 shadow-lg text-black'>
 
-                        <div className='hidden sm:flex w-full bg-slate-100 p-2  justify-between items-center rounded'>
-                            <p className='pl-3 text-gray-600 text-base'>{`${prdData?.length} Products found`}</p>
-                            <div className='flex items-center gap-2'>
-                                <h1 className='text-gray-600 font-medium text-[18px]'>Sort By</h1>
-                                <Button
-                                    id="basic-button"
-                                    aria-controls={open ? 'basic-menu' : undefined}
-                                    aria-haspopup="true"
-                                    aria-expanded={open ? 'true' : undefined}
-                                    onClick={handleClick}
-                                    className='!bg-white px-2 py-1 rounded !text-black   hover:shadow-md uppercase font-medium font-sans text-sm'
-                                >
-                                    {selectedSortVal}
-                                </Button>
-                                <Menu
-                                    id="basic-menu"
-                                    anchorEl={anchorEl}
-                                    open={open}
-                                    onClose={handleClose}
-                                    slotProps={{ list: { 'aria-labelledby': 'basic-button' } }}
-                                >
-                                    <MenuItem onClick={() => handleSortBy('name', 'asc', prdData, 'Name, A to Z')}>Name, A to Z</MenuItem>
-                                    <MenuItem onClick={() => handleSortBy('name', 'desc', prdData, 'Name, Z to A')}>Name, Z to A</MenuItem>
-                                    <MenuItem onClick={() => handleSortBy('price', 'asc', prdData, 'Price, low to high')}>Price, Low to High</MenuItem>
-                                    <MenuItem onClick={() => handleSortBy('price', 'desc', prdData, 'Price, high to low')}>Price, High to Low</MenuItem>
-                                </Menu>
-                            </div>
-                        </div>
+                        
 
-                        <div className="flex justify-center items-center sm:mt-5">
+                        <div className="flex justify-center items-center sm:mt-3">
                             <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
                                 {prdData
                                     ?.filter(prd => prd?.isFeatured)
@@ -175,69 +126,73 @@ const ProductListing = () => {
                                                                 {prd?.brand}
                                                             </h1>
 
-                                                            <div className='mt-2'>
-                                                                <div
-                                                                    className={`flex justify-center items-center gap-[2px] text-white text-sm font-semibold px-[6px] rounded ${prd?.rating > 4.5
-                                                                        ? 'bg-green-600'
-                                                                        : prd?.rating > 3.5
-                                                                            ? 'bg-green-500'
-                                                                            : prd?.rating > 2.5
-                                                                                ? 'bg-amber-500'
-                                                                                : prd?.rating > 1.5
-                                                                                    ? 'bg-orange-500'
-                                                                                    : 'bg-red-500'
-                                                                        }`}
-                                                                >
-                                                                    {parseFloat(prd?.rating).toFixed(1)} <IoMdStar />
-                                                                </div>
-                                                            </div>
+                                                            
                                                         </div>
 
-                                                        <div className="flex justify-start items-center gap-2 mt-1">
-                                                            <p className="text-[20px] font-semibold text-violet-900">₹{prd?.price}</p>
-                                                            {prd?.oldPrice && (
-                                                                <p className="text-[18px] line-through text-gray-400">₹{prd?.oldPrice}</p>
-                                                            )}
-                                                            <p className="text-[18px] font-medium text-green-700">{prd?.discount}%</p>
-                                                        </div>
+                                                       
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div className="hidden sm:blobk absolute left-0 top-full w-full z-50 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity duration-300 group-hover:shadow-[rgba(0,0,0,0.3)] group-hover:shadow-xl">
-                                                <div className="bg-white shadow-lg p-2 flex gap-2 justify-center">
-                                                    <Button
-                                                        variant="outlined"
-                                                        className="!text-[#1e40af] !border-[#1e40af]  bg-gray-600 rounded-md px-1 py-1 text-xs w-1/2 text-nowrap"
-                                                        onClick={() => {
-                                                            if (isLogin) {
-                                                                if (userData?.shopping_cart?.some(item => item === String(prd._id))) {
-                                                                    router.push("/cart");
-                                                                } else {
-                                                                    addToCartFun(prd, userData?._id, quantity);
-                                                                }
-                                                            } else {
-                                                                router.push("/login");
-                                                            }
-                                                        }}
-                                                    >
-                                                        {isLogin
-                                                            ? userData?.shopping_cart?.some(item => item === String(prd._id))
-                                                                ? 'Go to cart'
-                                                                : 'Add to cart'
-                                                            : 'Add to cart'}
-                                                    </Button>
-
-                                                    <Button
-                                                        variant="contained"
-                                                        className="!bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-2 py-1 text-xs w-1/2 text-nowrap"
-                                                        onClick={() => {
-                                                            setBuyNowItem({ ...prd, quantity: 1 });
-                                                            router.push("/checkOut");
-                                                        }}
-                                                    >
-                                                        Book Now
-                                                    </Button>
+                                            <div className="absolute left-0 top-full w-full z-50  pointer-events-none opacity-0 sm:group-hover:opacity-100 
+          sm:group-hover:pointer-events-auto transition-opacity duration-300 sm:group-hover:shadow-[rgba(0,0,0,0.3)] sm:group-hover:shadow-xl">
+                                                                                              <div className="bg-white sm:shadow-lg p-2 flex gap-2 justify-center sm:justify-between flex-wrap">
+                                                  {/* WhatsApp Button */}
+                                                  <Button
+                                                    variant="outlined"
+                                                    className="!capitalize !text-[#1e40af] !border-[#1e40af] bg-gray-600 rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
+                                                    onClick={async () => {
+                                                      if (!isLogin) {
+                                                        router.push("/login");
+                                                      } else {
+                                                        try {
+                                                          await postData("/api/enquiries/", {
+                                                            userId: userData?._id,
+                                                            productId: prd?._id,
+                                                            message: `Customer opened WhatsApp for "${prd?.name}"`,
+                                                            userMsg: `Enquiry for ${prd?.name} via WhatsApp`,
+                                                            image: prd?.images[0],
+                                                          });
+                                                
+                                                          const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${prd?.name}*.\nHere's the product image:\n${prd?.images[0]}`;
+                                                          window.open(whatsappURL, "_blank");
+                                                        } catch (err) {
+                                                          console.error("Enquiry failed:", err);
+                                                        }
+                                                      }
+                                                    }}
+                                                  >
+                                                    <WhatsappIcon className="w-5 h-5" />
+                                                    <span className="hidden sm:inline">WhatsApp</span>
+                                                  </Button>
+                                                
+                                                  {/* Call Button */}
+                                                  <Button
+                                                    variant="contained"
+                                                    className="!capitalize !bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
+                                                    onClick={async () => {
+                                                      if (!isLogin) {
+                                                        router.push("/login");
+                                                      } else {
+                                                        try {
+                                                          await postData("/api/enquiries/", {
+                                                            userId: userData?._id,
+                                                            productId: prd?._id,
+                                                            message: `Direct call initiated for "${prd?.name}"`,
+                                                            userMsg: `Enquiry for ${prd?.name} via Call`,
+                                                            image: prd?.images[0],
+                                                          });
+                                                
+                                                          window.open("tel:+919776501230");
+                                                        } catch (err) {
+                                                          console.error("Enquiry failed:", err);
+                                                        }
+                                                      }
+                                                    }}
+                                                  >
+                                                    <IoCall className="w-5 h-5" />
+                                                    <span className="hidden sm:inline">Call</span>
+                                                  </Button>
                                                 </div>
                                             </div>
                                         </div>

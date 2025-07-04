@@ -7,10 +7,12 @@ import Button from "@mui/material/Button";
 import { useRouter } from "next/navigation";
 import { useAlert } from "@/app/context/AlertContext";
 import { useItem } from "@/app/context/ItemContext";
-import { useCart } from "@/app/context/CartContext";
 import { useAuth } from "@/app/context/AuthContext";
 import Image from "next/image";
 import Loading from "./Loading";
+import WhatsappIcon from "@/components/WhatsappIcon";
+import { IoCall } from "react-icons/io5";
+
 
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
@@ -20,7 +22,6 @@ const Bestsellers = () => {
     const router = useRouter();
     const alert = useAlert();
     const { item, setItem } = useItem();
-    const { addToCart, buyNowItem, setBuyNowItem } = useCart();
     const { userData, setUserData, isLogin, setLoading, isCheckingToken } = useAuth();
     const [localLoading, setLocalLoading] = useState(false);
 
@@ -35,13 +36,6 @@ const Bestsellers = () => {
         setHydrated(true);
     }, []);
 
-    const addToCartFun = (prd, userId, quantity) => {
-        addToCart(prd, userId, quantity);
-        setUserData((prev) => ({
-            ...prev,
-            shopping_cart: [...(prev?.shopping_cart || []), String(prd._id)],
-        }));
-    };
 
     if (!hydrated || isCheckingToken || localLoading) return <Loading />;
 
@@ -62,7 +56,7 @@ const Bestsellers = () => {
                         .map((prd, index) => (
                             <div
                                 key={prd?._id || index}
-                                className="group w-[290px] sm:w-[260px] bg-white h-auto flex flex-col justify-between p-4 border hover:shadow-lg transition-transform duration-300 hover:scale-[1.03]"
+                                className="group w-[290px] sm:w-[290px] bg-white h-auto flex flex-col justify-between p-2 border hover:shadow-lg transition-transform duration-300 hover:scale-[1.03]"
                             >
                                 {/* Product Clickable Section */}
                                 <div
@@ -85,49 +79,12 @@ const Bestsellers = () => {
                                         <h2 className="text-black text-lg font-medium truncate">{prd?.name}</h2>
                                         <p className="text-gray-500 text-sm mt-1 truncate">{prd?.brand}</p>
 
-                                        <div className="flex items-center justify-center gap-2 mt-1">
-                                            {prd?.oldPrice && (
-                                                <span className="text-sm line-through text-gray-400">₹{prd.oldPrice}</span>
-                                            )}
-                                            <span className="text-sm font-semibold text-black">₹{prd.price}</span>
-                                        </div>
+                                      
                                     </div>
                                 </div>
 
                                 {/* Buttons */}
-                                <div className="flex gap-2 w-full mt-4 opacity-100 sm:group-hover:opacity-100 transition-opacity duration-300">
-                                    <Button
-                                        variant="outlined"
-                                        className="!text-[#1e40af] !border-[#1e40af] bg-white text-nowrap rounded-md px-2 py-2 text-xs w-1/2"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (isLogin) {
-                                                if (userData?.shopping_cart?.includes(String(prd._id))) {
-                                                    router.push("/cart");
-                                                } else {
-                                                    addToCartFun(prd, userData._id, quantity);
-                                                }
-                                            } else {
-                                                router.push("/login");
-                                            }
-                                        }}
-                                    >
-                                        {isLogin && userData?.shopping_cart?.includes(String(prd._id))
-                                            ? "Go to cart"
-                                            : "Add to cart"}
-                                    </Button>
-
-                                    <Button
-                                        variant="contained"
-                                        className="!bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-2 py-2 text-xs w-1/2"
-                                        onClick={() => {
-                                            setBuyNowItem({ ...prd, quantity: 1 });
-                                            router.push("/checkOut");
-                                        }}
-                                    >
-                                        Book Now
-                                    </Button>
-                                </div>
+                                            
                             </div>
 
                         ))}

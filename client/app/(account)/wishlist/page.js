@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { MdOutlineMessage } from "react-icons/md";
 import {
   User,
   Package,
@@ -11,6 +12,7 @@ import {
   Bell,
   Heart,
 } from "lucide-react";
+
 import LogoutBTN from "@/components/LogoutBTN";
 import { useAuth } from "@/app/context/AuthContext";
 import { useWishlist } from "@/app/context/WishlistContext";
@@ -58,7 +60,7 @@ const Account = () => {
               <li>
                 <Link href="/enquires">
                   <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                    <Package size={18} /> My Enquries
+                    <MdOutlineMessage size={18} /> My Enquries
                   </div>
                 </Link>
               </li>
@@ -148,9 +150,7 @@ const Account = () => {
                 {item?.productTitle}
               </h3>
               <p className="text-gray-500 text-sm">{item?.brand}</p>
-              <p className="text-black font-bold text-lg mt-2">
-                ₹{item?.price}
-              </p>
+              
             </div>
           </div>
 

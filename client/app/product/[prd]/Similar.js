@@ -77,7 +77,7 @@ const Similar = (props) => {
               similarProducts?.slice(0, 10).reverse().map((prd, index) => (
                 <div
                   key={index}
-                  className="min-w-[256px] sm:min-w-[240px] bg-white rounded-xl shadow-md flex flex-col p-3 gap-3 transition-transform duration-300 group cursor-pointer hover:scale-[1.02]"
+                  className="min-w-[256px] sm:min-w-[240px] bg-white rounded-xl shadow-md flex flex-col p-2 gap-3 transition-transform duration-300 group cursor-pointer hover:scale-[1.02]"
                   onClick={() => router.push(`/product/${prd?._id}`)}
                 >
                   {/* Product Image */}
@@ -97,15 +97,7 @@ const Similar = (props) => {
                       {prd?.name}
                     </h2>
                   </div>
-
-                  {/* Book Now Button */}
-                  <Button
-                    size="small"
-                    variant="contained"
-                    className="!bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-1 text-xs"
-                  >
-                    Book Now
-                  </Button>
+                
                 </div>
 
               ))}

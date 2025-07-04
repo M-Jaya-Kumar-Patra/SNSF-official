@@ -933,9 +933,6 @@ export async function filters(request, response) {
 }
 
 
-
-
-
 // Sort function
 const sortItems = (products, sortBy, order) => {
     return products.sort((a, b) => {

@@ -155,12 +155,12 @@ const BottomNav = () => {
             {mobileMenuOpen && (
                 <div
                     ref={menuRef}
-                    className="fixed top-48 bottom-14 left-[10%] transform -translate-x-1/2 w-3/5 px-6 sm:hidden z-[999] overflow-y-auto rounded-xl backdrop-blur-xl bg-white/70 shadow-2xl border border-slate-200 p-5 space-y-4 animate-slideIn no-scrollbar"
+                    className="fixed top-48 bottom-14 left-[10%] transform -translate-x-1/2 w-4/5 px-6 sm:hidden z-[999] overflow-y-auto rounded-xl backdrop-blur-xl bg-white/70 shadow-2xl border border-slate-200 p-5 space-y-4 animate-slideIn no-scrollbar"
                 >
                     {catData?.map((cat) => (
                         <div key={cat._id} className="space-y-2 border-b border-gray-200 pb-3">
                             {/* Main Category Row */}
-                            <div className="flex justify-between items-center text-slate-800 text-[17px]  ">
+                            <div className="flex justify-between items-center text-slate-800 text-[17px]   ">
                                 <span
                                     onClick={() => {
                                         router.push(`/ProductListing?catId=${cat._id}`)
@@ -169,7 +169,7 @@ const BottomNav = () => {
                                         setShowSearch(false)
                                     }
                                     }
-                                    className="cursor-pointer font-semibold hover:text-indigo-800 transition"
+                                    className="cursor-pointer font-semibold hover:text-indigo-800 transition w-full"
                                 >
                                     {cat.name}
                                 </span>
@@ -196,7 +196,7 @@ const BottomNav = () => {
                                                         setValue('home');
                                                         setShowSearch(false);
                                                     }}
-                                                    className="cursor-pointer hover:text-indigo-900 transition"
+                                                    className="cursor-pointer hover:text-indigo-900 transition w-full"
                                                 >
                                                     {subCat.name}
                                                 </span>
@@ -226,7 +226,7 @@ const BottomNav = () => {
                                                                     setValue('home');
                                                                     setShowSearch(false);
                                                                 }}
-                                                                className="cursor-pointer hover:text-indigo-800 transition"
+                                                                className="cursor-pointer hover:text-indigo-800 transition w-full"
                                                             >
                                                                 {thirdSubCat.name}
                                                             </span>

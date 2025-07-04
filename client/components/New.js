@@ -6,10 +6,11 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { usePrd } from "@/app/context/ProductContext";
 import { Button } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useCart } from "@/app/context/CartContext";
 import { useAuth } from "@/app/context/AuthContext";
 import Image from "next/image";
 import Loading from "./Loading";
+import WhatsappIcon from "@/components/WhatsappIcon";
+import { IoCall } from "react-icons/io5";
 
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
@@ -19,7 +20,6 @@ const New = () => {
   const { setLoading, isCheckingToken } = useAuth(); // ✅ use isCheckingToken
   const scrollRef = useRef(null);
   const router = useRouter();
-  const { setBuyNowItem } = useCart();
           const [localLoading, setLocalLoading] = useState(false);
   
 
@@ -81,7 +81,7 @@ const New = () => {
       prdData.slice(0, 10).reverse().map((prd, index) => (
         <div
           key={index}
-          className="min-w-[256px] max-w-[256px] p-3 bg-white rounded-md shadow-md flex flex-col items-center justify-start gap-3 transition-transform duration-300 group"
+          className="min-w-[256px] max-w-[256px] p-2 bg-white rounded-md shadow-md flex flex-col items-center justify-start gap-3 transition-transform duration-300 group"
         >
           {/* Maintain 4:3 aspect ratio */}
           <div
@@ -106,17 +106,6 @@ const New = () => {
             </h2>
           </div>
 
-          <Button
-            size="small"
-            variant="contained"
-            className="!bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-1 text-xs mt-auto"
-            onClick={() => {
-              setBuyNowItem({ ...prd, quantity: 1 });
-              router.push("/checkOut");
-            }}
-          >
-            Book Now
-          </Button>
         </div>
       ))}
   </div>

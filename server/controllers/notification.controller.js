@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
-import OrderModel from "../models/order.model.js";
 import UserModel from "../models/user.model.js";
-import AddressModel from "../models/address.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import NotificationModel from "../models/notification.model.js";
 

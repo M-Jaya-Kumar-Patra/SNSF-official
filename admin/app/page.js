@@ -23,9 +23,8 @@ import { useRouter } from 'next/navigation';
 import { BsPCircle } from "react-icons/bs";
 import { AiFillProduct } from "react-icons/ai";
 import { usePrd } from './context/ProductContext';
-import Orders from './Orders/page';
-import { useOrders } from './context/OrdersContext';
 import { fetchDataFromApi } from '@/utils/api';
+import Enquiries from '@/components/Enquiries';
 
 
 
@@ -39,7 +38,6 @@ const Home = () => {
    const [state, setState] = useState({ right: false });
     const [selectedText, setSelectedText] = useState("Dashboard");
     const anchor = 'right';
-    const {ordersData} = useOrders()
 
     const router = useRouter()
   
@@ -89,11 +87,6 @@ useEffect(() => {
       };
 
 
-      const countPendingOrders = () => {
-  return ordersData?.filter(order => order?.order_Status === "Pending").length || 0;
-};
-
-
 
   return (
     <>
@@ -126,8 +119,14 @@ useEffect(() => {
                 <BsPCircle className="w-8 h-8 font-extrabold " />
               </div>
                <div className='w-[60%] '> 
-                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">Pending Orders</div>
-                <div className='font-bold font-sans text-2xl' >{countPendingOrders()}</div>
+                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">
+
+
+                </div>
+                <div className='font-bold font-sans text-2xl' >
+
+
+                </div>
 
               </div>
                <div className='w-[20%]  flex justify-center items-center'>
@@ -141,8 +140,12 @@ useEffect(() => {
                 <BsPCircle className="w-8 h-8 font-extrabold " />
               </div>
                <div className='w-[60%] '> 
-                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">Total Orders</div>
-                <div className='font-bold font-sans text-2xl' >{ordersData?.length}</div>
+                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">
+
+                </div>
+                <div className='font-bold font-sans text-2xl' >
+
+                </div>
 
               </div>
                <div className='w-[20%]  flex justify-center items-center'>
@@ -167,9 +170,6 @@ useEffect(() => {
             </li>
           </ul>
 
-          {/* Orders Table */}
-
-          <Orders/>
           
         </div>
       </div>
@@ -177,6 +177,7 @@ useEffect(() => {
 
 
     </div>}
+      <Enquiries/>
     </>
   );
 }

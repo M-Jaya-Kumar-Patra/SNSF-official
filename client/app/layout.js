@@ -4,7 +4,6 @@ import "./globals.css";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import AuthWrapper from "@/components/AuthWrapper";
-import { CartProvider } from "./context/CartContext";
 import { AlertProvider } from "./context/AlertContext";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast";
@@ -13,7 +12,6 @@ import { CatProvider } from "./context/CategoryContext";
 import { PrdProvider } from "./context/ProductContext";
 import { ItemProvider } from "./context/ItemContext";
 import { WishlistProvider } from "./context/WishlistContext";
-import { OrdersProvider } from "./context/OrdersContext";
 import { NoticeProviders } from "./context/NotificationContext";
 import GlobalLoader from "@/components/GlobalLoader";
 import BottomNav from "@/components/BottomNav";
@@ -54,7 +52,8 @@ export default function RootLayout({ children }) {
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
+ <meta name="mobile-web-app-capable" content="yes" />
+
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="SNSF" />
   <meta
@@ -69,12 +68,10 @@ export default function RootLayout({ children }) {
           <AuthWrapper>
             <AlertProvider>
               <NoticeProviders>
-                <OrdersProvider>
                   <ItemProvider>
                     <CatProvider>
                       <WishlistProvider>
                         <PrdProvider>
-                          <CartProvider>
                             <Navbar />
                             <GlobalLoader />
                             <main className="min-h-screen flex flex-col">
@@ -83,12 +80,10 @@ export default function RootLayout({ children }) {
                             <BottomNav />
                             <Footer />
                             <Toaster position="top-right" />
-                          </CartProvider>
                         </PrdProvider>
                       </WishlistProvider>
                     </CatProvider>
                   </ItemProvider>
-                </OrdersProvider>
               </NoticeProviders>
             </AlertProvider>
           </AuthWrapper>

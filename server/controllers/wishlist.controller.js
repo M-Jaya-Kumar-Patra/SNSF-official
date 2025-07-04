@@ -1,5 +1,4 @@
 import { request } from "express";
-import cartproductModel from "../models/cartproduct.model.js";
 import UserModel from "../models/user.model.js";
 import AddressModel from "../models/address.model.js";
 import mongoose from "mongoose";
@@ -138,7 +137,6 @@ export const deleteWishlistItemContoller = async (request, response) => {
             (id) => id.toString() !== productId
         );
 
-        console.log("Saving updated shopping_cart:.....................................................................", user.shopping_cart);
         await user.save();
         console.log("Saved successfully");
 

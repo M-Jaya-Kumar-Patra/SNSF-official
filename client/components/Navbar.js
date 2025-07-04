@@ -16,7 +16,6 @@ import { IoMdHome } from "react-icons/io";
 import { fetchDataFromApi } from "@/utils/api";
 import { useCat } from "@/app/context/CategoryContext";
 import { usePrd } from "@/app/context/ProductContext";
-import { useCart } from "@/app/context/CartContext";
 import { FaCartPlus } from "react-icons/fa6";
 import { MdAccountCircle } from "react-icons/md";
 import Search from "./Search";
@@ -24,6 +23,7 @@ import { FaBell } from "react-icons/fa";
 import { useNotice } from "@/app/context/NotificationContext";
 import LogoutBTN from "./LogoutBTN";
 import { Package, User, CreditCard, Bell, Heart, MapPin } from "lucide-react";
+import { MdOutlineMessage } from "react-icons/md";
 import Loading from "./Loading";
 import NextImage from "next/image";
 
@@ -42,7 +42,6 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
   const { catData, setCatData } = useCat();
   const router = useRouter();
   const { setLoading, userData, isLogin } = useAuth();
-  const { cartData } = useCart();
   const { getNotifications } = useNotice();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -180,7 +179,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                             <User size={18} /> Profile
                           </Link>
                           <Link href="/enquires" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
-                            <Package size={18} /> My Enquries
+                            <MdOutlineMessage size={18} /> My Enquries
                           </Link>
                           <Link href="/wishlist" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
                             <Heart size={18} /> Wishlist
@@ -204,11 +203,8 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                 )}
               </div>
 
-              <IconButton aria-label="Cart" onClick={() => router.push(isLogin ? "/cart" : "/login")}>
-                <StyledBadge badgeContent={userData && cartData?.length} color="secondary">
-                  <FaCartPlus className="!text-[30px] text-white" />
-                </StyledBadge>
-              </IconButton>
+
+
             </div>
 
 
@@ -280,7 +276,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                           <User size={18} /> Profile
                         </Link>
                         <Link href="/enquires" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
-                          <Package size={18} /> My Enquries
+                          <MdOutlineMessage size={18} /> My Enquries
                         </Link>
                         <Link href="/wishlist" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
                           <Heart size={18} /> Wishlist
@@ -322,12 +318,6 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
 
 
 
-
-              <IconButton aria-label="Cart" onClick={() => router.push(isLogin ? "/cart" : "/login")}>
-                <StyledBadge badgeContent={userData && cartData?.length} color="secondary">
-                  <FaCartPlus className="text-[32px] text-white" />
-                </StyledBadge>
-              </IconButton>
             </div>
 
           </div>

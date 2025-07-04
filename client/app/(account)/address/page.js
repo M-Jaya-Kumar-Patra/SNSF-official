@@ -31,6 +31,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { MdOutlineMessage } from "react-icons/md";
 
 
 
@@ -302,7 +303,7 @@ const Account = () => {
                                 <li>
                                     <Link href="/enquires">
                                         <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                                            <Package size={18} /> My Enquries
+                                            <MdOutlineMessage size={18} /> My Enquries
                                         </div>
                                     </Link>
                                 </li>
