@@ -11,6 +11,7 @@ import Image from "next/image";
 import Loading from "./Loading";
 import WhatsappIcon from "@/components/WhatsappIcon";
 import { IoCall } from "react-icons/io5";
+import Skeleton from "@mui/material/Skeleton";
 
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
@@ -51,8 +52,6 @@ const New = () => {
     }
   };
 
-  // Optional early return while waiting
-  if (!hydrated || isCheckingToken || localLoading) return <Loading/>;
   
 
   return (
@@ -78,41 +77,82 @@ const New = () => {
 >
   <div className="inline-flex gap-4 overflow-x-auto py-4 px-2">
   {Array.isArray(prdData) && prdData.length > 0 ? (
-    [...prdData]
-      .sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)) // Newest first
-      .slice(0, 10) // Limit to 10
-      .map((prd, index) => (
+  [...prdData]
+    .sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated))
+    .slice(0, 10)
+    .map((prd, index) => (
+      <div
+        key={index}
+        className="min-w-[256px] max-w-[256px] p-2 bg-white shadow-md flex flex-col items-center justify-start gap-3 transition-transform duration-300 group "
+      >
+        {/* Image */}
         <div
-          key={index}
-          className="min-w-[256px] max-w-[256px] p-2 bg-white shadow-md flex flex-col items-center justify-start gap-3 transition-transform duration-300 group rounded-lg"
+          className="w-full relative rounded-md overflow-hidden cursor-pointer"
+          style={{ aspectRatio: '4 / 3' }}
+          onClick={() => router.push(`/product/${prd?._id}`)}
         >
-          {/* Maintain 4:3 aspect ratio */}
-          <div
-            className="w-full relative rounded-md overflow-hidden cursor-pointer"
-            style={{ aspectRatio: '4 / 3' }}
-            onClick={() => router.push(`/product/${prd?._id}`)}
-          >
-            <Image
-              src={prd?.images?.[0] || '/placeholder.png'}
-              alt={prd?.name || 'Product Image'}
-              fill
-              className="object-cover"
-            />
-          </div>
-
-          <div
-            className="flex flex-col items-center text-center gap-1 px-2 cursor-pointer"
-            onClick={() => router.push(`/product/${prd?._id}`)}
-          >
-            <h2 className="text-sm font-semibold text-gray-800 truncate w-full">
-              {prd?.name || 'Unnamed Product'}
-            </h2>
-          </div>
+          <Image
+            src={prd?.images?.[0] || '/placeholder.png'}
+            alt={prd?.name || 'Product Image'}
+            fill
+            className="object-cover"
+          />
         </div>
-      ))
-  ) : (
-    <p className="text-gray-500 text-sm">No products available</p>
-  )}
+
+        {/* Title */}
+        <div
+          className="flex flex-col items-center text-center gap-1 px-2 cursor-pointer"
+          onClick={() => router.push(`/product/${prd?._id}`)}
+        >
+          <h2 className="text-sm font-semibold text-gray-800 truncate w-full">
+            {prd?.name || 'Unnamed Product'}
+          </h2>
+        </div>
+      </div>
+    ))
+) : (localLoading || isCheckingToken || !prdData || !hydrated) ? (
+  Array.from({ length: 6 }).map((_, idx) => (
+    <div
+      key={idx}
+      className="min-w-[256px] max-w-[256px] p-2 bg-white shadow-md flex flex-col items-center justify-start gap-3 "
+    >
+      {/* Skeleton Image */}
+      <div
+        className="w-full relative rounded-md overflow-hidden"
+        style={{ aspectRatio: '4 / 3' }}
+      >
+        <Skeleton
+          variant="rectangular"
+          animation="wave"
+          width="100%"
+          height="100%"
+          sx={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            height: "100%",
+            width: "100%",
+            borderRadius: "8px",
+            bgcolor: 'rgba(203,213,225,0.5)', // match slate-100 tone
+          }}
+        />
+      </div>
+
+      {/* Skeleton Title */}
+      <Skeleton
+        variant="text"
+        animation="wave"
+        width="80%"
+        height={20}
+        sx={{ bgcolor: 'rgba(203,213,225,0.5)', borderRadius: '4px' }}
+      />
+    </div>
+  ))
+) : (
+  <p className="text-gray-500 text-sm">No products available</p>
+)}
+
+
 </div>
 
 </div>

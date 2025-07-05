@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useAuth } from "@/app/context/AuthContext"; // ✅ Added
 import Loading from "./Loading";
 import { useRouter } from "next/navigation";
+import Skeleton from "@mui/material/Skeleton";
 
 
 const Slider = () => {
@@ -54,8 +55,28 @@ const Slider = () => {
   };
 
   // ✅ Render nothing while loading or waiting for token
-  if (isCheckingToken || localLoading || !slides.length) return <Loading/>;
-
+   if (isCheckingToken || localLoading || !slides.length) {
+    return (
+      <div className="flex justify-center w-full">
+        <div className="relative w-full aspect-[16/9] max-w-[1000px] mx-auto overflow-hidden shadow-md ">
+          <Skeleton
+            variant="rectangular"
+            animation="wave"
+            width="100%"
+            height="100%"
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              height: "100%",
+              width: "100%",
+              bgcolor: "rgba(203,213,225,0.5)",
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="flex justify-center w-full ">
       <div className="relative w-full aspect-[16/9] max-w-[1000px] mx-auto  overflow-hidden shadow-md">
@@ -70,7 +91,7 @@ const Slider = () => {
 
         {/* Slide Image */}
         <Image
-          src={slides[currentIndex].images[0]}
+          src={slides[currentIndex]?.images[0] || "/"}
           alt={`Slide ${currentIndex + 1}`}
           fill
           className="object-cover transition-opacity duration-500 ease-in-out cursor-pointer"

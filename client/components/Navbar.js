@@ -26,6 +26,7 @@ import { Package, User, CreditCard, Bell, Heart, MapPin } from "lucide-react";
 import { MdOutlineMessage } from "react-icons/md";
 import Loading from "./Loading";
 import NextImage from "next/image";
+import Skeleton from "@mui/material/Skeleton";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   '& .MuiBadge-badge': {
@@ -41,7 +42,7 @@ const righteous = Righteous({ subsets: ["latin"], weight: "400" });
 const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
   const { catData, setCatData } = useCat();
   const router = useRouter();
-  const { setLoading, userData, isLogin } = useAuth();
+  const { setLoading, userData, isLogin, isCheckingToken } = useAuth();
   const { getNotifications } = useNotice();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -250,20 +251,30 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
 
 
               <div className="relative group hidden sm:block">
-                <IconButton
-                  aria-label="Account"
-                  onClick={() => router.push(isLogin ? "/profile" : "/login")}
-                  className="text-slate-200"
-                >
-                  <Image
-  src={userData?.avatar || "/images/emptyAccount.png"}
-  alt="Account"
-  width={32}
-  height={32}
-  className="w-[32px] h-[32px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
-/>
-
-                </IconButton>
+               <IconButton
+  aria-label="Account"
+  onClick={() => router.push(isLogin ? "/profile" : "/login")}
+  className="text-slate-200"
+>
+  {isCheckingToken ? (
+    <Skeleton
+      variant="circular"
+      animation="wave"
+      width={32}
+      height={32}
+      sx={{ bgcolor: "rgba(203,213,225,0.5)" }}
+      className="w-[32px] h-[32px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
+    />
+  ) : (
+    <Image
+      src={userData?.avatar || "/images/emptyAccount.png"}
+      alt="Account"
+      width={32}
+      height={32}
+      className="w-[32px] h-[32px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
+    />
+  )}
+</IconButton>
 
                 {/* Hover Dropdown */}
                 <div className="absolute right-0 mt-2 w-[220px] bg-white text-[#1e293b] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[1000]">
@@ -326,64 +337,90 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
       </div>
 
       {/* DESKTOP CATEGORY MENU */}
-      <ul className="hidden sm:flex w-full justify-evenly border border-b-slate-200 bg-white shadow-xl  px-10 z-40">
-        <li
-          onClick={() => router.push("/")}
-          className="cursor-pointer flex items-center justify-center text-[22px] px-10 bg-slate-100 hover:bg-slate-200 text-[#131e30] hover:font-semibold py-1 transition-all duration-200"
-          title="Back to Home"
-        >
-          <IoMdHome />
+      <ul className="hidden sm:flex w-full justify-evenly border border-b-slate-200 bg-white shadow-xl px-10 z-40">
+  {/* Home Button */}
+  <li
+    onClick={() => router.push("/")}
+    className="cursor-pointer flex items-center justify-center text-[20px] px-10  hover:bg-slate-50 text-[#131e30] hover:font-semibold py-1 transition-all duration-200"
+    title="Back to Home"
+  >
+    {
+      (!catData || catData?.length === 0)?
+
+      <Skeleton
+        variant="text"
+        animation="wave"
+        width={80}
+        height={24}
+        sx={{ bgcolor: "rgba(203,213,225,0.5)" }}
+      />
+      :
+      <IoMdHome />
+    }
+  </li>
+
+  {/* Category Skeleton Loader or Actual Categories */}
+  {(!catData || catData?.length === 0)
+    ? Array.from({ length: 7 }).map((_, index) => (
+        <li key={`skeleton-${index}`} className="w-full px-6 py-1">
+          <Skeleton
+            variant="text"
+            animation="wave"
+            width={80}
+            height={24}
+            sx={{ bgcolor: "rgba(203,213,225,0.5)" }}
+          />
         </li>
+      ))
+    : catData?.map((cat, index) => (
+        <li
+          key={index}
+          onClick={() => router.push(`/ProductListing?catId=${cat._id}`)}
+          className="relative group w-full text-center cursor-pointer transition-all duration-200"
+        >
+          <span className="block text-[15px] font-medium text-slate-800 transition duration-200  group-hover:text-[#131e30] group-hover:font-semibold py-1">
+            {cat.name}
+          </span>
 
-        {catData?.map((cat, index) => (
-          <li
-            key={index}
-            onClick={() => router.push(`/ProductListing?catId=${cat._id}`)}
-            className="relative group w-full text-center cursor-pointer transition-all duration-200"
-          >
-            <span className="block text-[17px] font-medium text-slate-800 transition duration-200 group-hover:text-[#131e30] group-hover:font-semibold py-1">
-              {cat.name}
-            </span>
-
-            {cat.children?.length > 0 && (
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className={`absolute top-full left-0 text-left ${index > catData.length - 3 ? "right-0 left-auto" : ""}
-              bg-white shadow-2xl border border-gray-200 rounded-lg px-6 py-5
-              opacity-0 invisible group-hover:opacity-100 group-hover:visible
-              group-hover:translate-y-2 transition-all duration-300 ease-in-out
-              z-[300] overflow-auto scrollbar-hide`}
-                style={{ maxWidth: "100vw", whiteSpace: "nowrap" }}
-              >
-                <div className="flex gap-4" style={{ width: `${cat.children.length * 220}px` }}>
-                  {cat.children.map((subCat, subIndex) => (
-                    <div key={subIndex} className="min-w-[200px] transition-transform duration-300 hover:scale-[1.02]">
-                      <a
-                        href={`/ProductListing?subCatId=${subCat._id}`}
-                        className="block text-[16px] font-semibold mb-3 text-slate-800 hover:text-indigo-700"
-                      >
-                        {subCat.name}
-                      </a>
-                      <ul className="space-y-1">
-                        {subCat.children?.map((thirdSubCatId, thirdIndex) => (
-                          <li key={thirdIndex}>
-                            <a
-                              href={`/ProductListing?thirdSubCatId=${thirdSubCatId._id}`}
-                              className="block text-[15px] text-gray-600 font-medium hover:text-[#131e30] transition-all duration-200"
-                            >
-                              {thirdSubCatId.name}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </div>
+          {cat.children?.length > 0 && (
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className={`absolute top-full left-0 text-left ${index > catData.length - 3 ? "right-0 left-auto" : ""}
+                bg-white shadow-2xl border border-gray-200 rounded-lg px-6 py-5
+                opacity-0 invisible group-hover:opacity-100 group-hover:visible
+                group-hover:translate-y-2 transition-all duration-300 ease-in-out
+                z-[300] overflow-auto scrollbar-hide`}
+              style={{ maxWidth: "100vw", whiteSpace: "nowrap" }}
+            >
+              <div className="flex gap-4" style={{ width: `${cat.children.length * 220}px` }}>
+                {cat.children.map((subCat, subIndex) => (
+                  <div key={subIndex} className="min-w-[200px] transition-transform duration-300 hover:scale-[1.02]">
+                    <a
+                      href={`/ProductListing?subCatId=${subCat._id}`}
+                      className="block text-[16px] font-semibold mb-3 text-slate-800 hover:text-indigo-700"
+                    >
+                      {subCat.name}
+                    </a>
+                    <ul className="space-y-1">
+                      {subCat.children?.map((thirdSubCatId, thirdIndex) => (
+                        <li key={thirdIndex}>
+                          <a
+                            href={`/ProductListing?thirdSubCatId=${thirdSubCatId._id}`}
+                            className="block text-[15px] text-gray-600 font-medium hover:text-[#131e30] transition-all duration-200"
+                          >
+                            {thirdSubCatId.name}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
               </div>
-            )}
-          </li>
-        ))}
-      </ul>
+            </div>
+          )}
+        </li>
+      ))}
+</ul>
 
 
 

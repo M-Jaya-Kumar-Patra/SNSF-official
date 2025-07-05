@@ -15,6 +15,8 @@ import { WishlistProvider } from "./context/WishlistContext";
 import { NoticeProviders } from "./context/NotificationContext";
 import GlobalLoader from "@/components/GlobalLoader";
 import BottomNav from "@/components/BottomNav";
+import useInternetCheck from "@/hooks/useInternetCheck";
+import NoInternet from "@/components/noInternet"; // import directly
 
 import { useEffect } from "react";
 
@@ -25,6 +27,11 @@ const inter = Inter({
 });
 
 export default function RootLayout({ children }) {
+
+
+  const isOnline = useInternetCheck();
+
+
   // ✅ Register Service Worker
   useEffect(() => {
     if ("serviceWorker" in navigator) {
@@ -64,30 +71,34 @@ export default function RootLayout({ children }) {
 
 
       <body className={`${inter.className} w-full`}>
-        <AuthProvider>
-          <AuthWrapper>
-            <AlertProvider>
-              <NoticeProviders>
+        {!isOnline ? (
+          <NoInternet />
+        ) : (
+          <AuthProvider>
+            <AuthWrapper>
+              <AlertProvider>
+                <NoticeProviders>
                   <ItemProvider>
                     <CatProvider>
                       <WishlistProvider>
                         <PrdProvider>
-                            <Navbar />
-                            <GlobalLoader />
-                            <main className="min-h-screen flex flex-col">
-                              {children}
-                            </main>
-                            <BottomNav />
-                            <Footer />
-                            <Toaster position="top-right" />
+                          <Navbar />
+                          <GlobalLoader />
+                          <main className="min-h-screen flex flex-col">
+                            {children}
+                          </main>
+                          <BottomNav />
+                          <Footer />
+                          <Toaster position="top-right" />
                         </PrdProvider>
                       </WishlistProvider>
                     </CatProvider>
                   </ItemProvider>
-              </NoticeProviders>
-            </AlertProvider>
-          </AuthWrapper>
-        </AuthProvider>
+                </NoticeProviders>
+              </AlertProvider>
+            </AuthWrapper>
+          </AuthProvider>
+        )}
       </body>
     </html>
   );
