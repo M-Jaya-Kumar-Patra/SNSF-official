@@ -17,13 +17,16 @@ const PrdProvider = ({ children }) => {
   },[])
 
 
-   const getProductsData = () =>{
-    fetchDataFromApi("/api/product/gaps", false).then((response) => {
-        if (!response.error) {
-          setPrdData(response?.data)
-        }
-      })
-   }
+   const getProductsData = () => {
+  if (prdData && prdData.length > 0 || productsData && productsData.length > 0) return; // ✅ Already fetched
+  fetchDataFromApi("/api/product/gaps", false).then((response) => {
+    if (!response.error) {
+      setPrdData(response?.data);
+      setProductsData(response?.data);
+    }
+  });
+};
+
    useEffect(() => {
       getProductsData()
     }, [])

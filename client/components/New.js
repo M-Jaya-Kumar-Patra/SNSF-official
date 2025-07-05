@@ -76,12 +76,15 @@ const New = () => {
   ref={scrollRef}
   className="overflow-x-auto whitespace-nowrap scroll-smooth scrollbar-hide py-5"
 >
-  <div className="inline-flex gap-4">
-    {Array.isArray(prdData) && prdData.length > 0 &&
-      prdData.slice(0, 10).reverse().map((prd, index) => (
+  <div className="inline-flex gap-4 overflow-x-auto py-4 px-2">
+  {Array.isArray(prdData) && prdData.length > 0 ? (
+    [...prdData]
+      .sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)) // Newest first
+      .slice(0, 10) // Limit to 10
+      .map((prd, index) => (
         <div
           key={index}
-          className="min-w-[256px] max-w-[256px] p-2 bg-white  shadow-md flex flex-col items-center justify-start gap-3 transition-transform duration-300 group"
+          className="min-w-[256px] max-w-[256px] p-2 bg-white shadow-md flex flex-col items-center justify-start gap-3 transition-transform duration-300 group rounded-lg"
         >
           {/* Maintain 4:3 aspect ratio */}
           <div
@@ -90,8 +93,8 @@ const New = () => {
             onClick={() => router.push(`/product/${prd?._id}`)}
           >
             <Image
-              src={prd?.images[0]}
-              alt={prd?.name}
+              src={prd?.images?.[0] || '/placeholder.png'}
+              alt={prd?.name || 'Product Image'}
               fill
               className="object-cover"
             />
@@ -101,14 +104,17 @@ const New = () => {
             className="flex flex-col items-center text-center gap-1 px-2 cursor-pointer"
             onClick={() => router.push(`/product/${prd?._id}`)}
           >
-            <h2 className="text-lg font-semibold text-gray-800 truncate w-full">
-              {prd?.name}
+            <h2 className="text-sm font-semibold text-gray-800 truncate w-full">
+              {prd?.name || 'Unnamed Product'}
             </h2>
           </div>
-
         </div>
-      ))}
-  </div>
+      ))
+  ) : (
+    <p className="text-gray-500 text-sm">No products available</p>
+  )}
+</div>
+
 </div>
 
 

@@ -296,11 +296,11 @@ const Page = () => {
 
         {/* Right: Product Details */}
         <div className="details sm:w-[600px] px-3 sm:p-4 sm:pt-6">
-          <h2 className="text-[22px] sm:text-[25px] font-medium mt-2 am:mt-0 mb-1 sm:mb-3 text-gray-800">
+          <h2 className="text-[18px] sm:text-[23px] font-medium mt-2 am:mt-0 mb-1 sm:mb-3 text-gray-800">
             {openedProduct?.name}
           </h2>
 
-          <h2 className="text-[18px] sm:text-[20px] font-medium mb-2 sm:mb-3 text-gray-500">
+          <h2 className="text-[14px] sm:text-[18px] font-medium mb-2 sm:mb-3 text-gray-500">
             {openedProduct?.brand}
           </h2>
 

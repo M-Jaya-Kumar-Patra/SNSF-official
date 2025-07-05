@@ -52,6 +52,7 @@ const Bestsellers = () => {
                 <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 place-items-center gap-5 mb-5">
                     {prdData
                         ?.filter((prd) => prd?.isFeatured)
+                        .reverse()
                         .slice(0, 6)
                         .map((prd, index) => (
                             <div
@@ -76,7 +77,7 @@ const Bestsellers = () => {
 
                                     {/* Text Info */}
                                     <div className="mt-3 text-center">
-                                        <h2 className="text-black text-lg font-semibold truncate">{prd?.name}</h2>
+                                        <h2 className="text-black text-base font-semibold truncate">{prd?.name}</h2>
                                         <p className="text-gray-500 text-sm mt-1 truncate">{prd?.brand}</p>
 
                                       

@@ -168,15 +168,20 @@ export async function getAllProducts(request, response) {
 }
 
 
-export async function getAllProductsByCatId(request, response) {
-    try {
-        const page = parseInt(request.query.page) || 1;
-        const perPage = parseInt(request.query.perPage) || 10;
 
-        const totalPosts = await ProductModel.countDocuments();
+
+
+// controllers/productController.js
+import { getPaginationParams } from "../utils/getPagination.js";
+
+async function handleProductFetch(queryObj, request, response) {
+    try {
+        const { page, perPage } = getPaginationParams(request.query);
+
+        const totalPosts = await ProductModel.countDocuments(queryObj);
         const totalPages = Math.ceil(totalPosts / perPage);
 
-        if (page > totalPages) {
+        if (page > totalPages && totalPosts > 0) {
             return response.status(404).json({
                 message: "Page not found",
                 success: false,
@@ -184,228 +189,19 @@ export async function getAllProductsByCatId(request, response) {
             });
         }
 
-        const products = await ProductModel.find({ catId: request.params.Id })
-            .populate("category").skip((page - 1) * perPage)
-            .limit(perPage).exec();
-        if (!products) {
-            response.status(500).json({
-                error: true,
-                success: false
-            })
+        const products = await ProductModel.find(queryObj)
+            .populate("category")
+            .skip((page - 1) * perPage)
+            .limit(perPage)
+            .exec();
 
-
-        }
-        return response.status(200).json({
-            error: false,
-            success: true,
-            data: products
-        });
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        });
-    }
-}
-
-export async function getAllProductsByCatName(request, response) {
-    try {
-        const page = parseInt(request.query.page) || 1;
-        const perPage = parseInt(request.query.perPage) || 10;
-
-        const totalPosts = await ProductModel.countDocuments();
-        const totalPages = Math.ceil(totalPosts / perPage);
-
-        if (page > totalPages) {
-            return response.status(404).json({
-                message: "Page not found",
-                success: false,
-                error: true
-            });
-        }
-
-        const products = await ProductModel.find({ catName: request.query.catName })
-            .populate("category").skip((page - 1) * perPage)
-            .limit(perPage).exec();
-        if (!products) {
-            response.status(500).json({
-                error: true,
-                success: false
-            })
-
-
-        }
-        return response.status(200).json({
-            error: false,
-            success: true,
-            data: products
-        });
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        });
-    }
-}
-
-export async function getAllProductsBySubCatId(request, response) {
-    try {
-        const page = parseInt(request.query.page) || 1;
-        const perPage = parseInt(request.query.perPage) || 10;
-
-        const totalPosts = await ProductModel.countDocuments();
-        const totalPages = Math.ceil(totalPosts / perPage);
-
-        if (page > totalPages) {
-            return response.status(404).json({
-                message: "Page not found",
-                success: false,
-                error: true
-            });
-        }
-
-        const products = await ProductModel.find({ subCatId: request.params.Id })
-            .populate("category").skip((page - 1) * perPage)
-            .limit(perPage).exec();
-        if (!products) {
-            response.status(500).json({
-                error: true,
-                success: false
-            })
-
-
-        }
-        return response.status(200).json({
-            error: false,
-            success: true,
-            data: products
-        });
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        });
-    }
-}
-
-export async function getAllProductsBySubCatName(request, response) {
-    try {
-        const page = parseInt(request.query.page) || 1;
-        const perPage = parseInt(request.query.perPage) || 10;
-
-        const totalPosts = await ProductModel.countDocuments();
-        const totalPages = Math.ceil(totalPosts / perPage);
-
-        if (page > totalPages) {
-            return response.status(404).json({
-                message: "Page not found",
-                success: false,
-                error: true
-            });
-        }
-
-        const products = await ProductModel.find({ subCat: request.query.catName })
-            .populate("category").skip((page - 1) * perPage)
-            .limit(perPage).exec();
-        if (!products) {
-            response.status(500).json({
-                error: true,
-                success: false
-            })
-
-
-        }
-        return response.status(200).json({
-            error: false,
-            success: true,
-            data: products
-        });
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        });
-    }
-}
-
-export async function getAllProductsByThirdCatId(request, response) {
-    try {
-        const page = parseInt(request.query.page) || 1;
-        const perPage = parseInt(request.query.perPage) || 10;
-
-        const totalPosts = await ProductModel.countDocuments();
-        const totalPages = Math.ceil(totalPosts / perPage);
-
-        if (page > totalPages) {
-            return response.status(404).json({
-                message: "Page not found",
-                success: false,
-                error: true
-            });
-        }
-
-        const products = await ProductModel.find({ thirdSubCatId: request.params.thirdSubCatId })
-            .populate("category").skip((page - 1) * perPage)
-            .limit(perPage).exec();
-        if (!products) {
-            response.status(500).json({
-                error: true,
-                success: false
-            })
-
-
-        }
-        return response.status(200).json({
-            error: false,
-            success: true,
-            data: products
-        });
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        });
-    }
-}
-
-export async function getAllProductsByThirdCatName(request, response) {
-    try {
-        const page = parseInt(request.query.page) || 1;
-        const perPage = parseInt(request.query.perPage) || 10;
-
-        const totalPosts = await ProductModel.countDocuments();
-        const totalPages = Math.ceil(totalPosts / perPage);
-
-        if (page > totalPages) {
-            return response.status(404).json({
-                message: "Page not found",
-                success: false,
-                error: true
-            });
-        }
-
-        const products = await ProductModel.find({ thirdSubCat: request.query.thirdSubCat })
-            .populate("category").skip((page - 1) * perPage)
-            .limit(perPage).exec();
-        if (!products) {
-            response.status(500).json({
-                error: true,
-                success: false
-            })
-
-
-        }
         return response.status(200).json({
             error: false,
             success: true,
             data: products,
-            totalPages: totalPages,
-            page: page
+            totalPages,
+            totalPosts,
+            page
         });
     } catch (error) {
         return response.status(500).json({
@@ -415,6 +211,32 @@ export async function getAllProductsByThirdCatName(request, response) {
         });
     }
 }
+
+export const getAllProductsByCatId = (req, res) =>
+    handleProductFetch({ catId: req.params.Id }, req, res);
+
+export const getAllProductsByCatName = (req, res) =>
+    handleProductFetch({ catName: req.query.catName }, req, res);
+
+export const getAllProductsBySubCatId = (req, res) =>
+    handleProductFetch({ subCatId: req.params.Id }, req, res);
+
+export const getAllProductsBySubCatName = (req, res) =>
+    handleProductFetch({ subCat: req.query.catName }, req, res);
+
+export const getAllProductsByThirdCatId = (req, res) =>
+    handleProductFetch({ thirdSubCatId: req.params.thirdSubCatId }, req, res);
+
+export const getAllProductsByThirdCatName = (req, res) =>
+    handleProductFetch({ thirdSubCat: req.query.thirdSubCat }, req, res);
+
+
+
+
+
+
+
+
 
 export async function getAllProductsByPrice(request, response) {
     try {

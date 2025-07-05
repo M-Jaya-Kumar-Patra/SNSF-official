@@ -66,6 +66,8 @@ const ProductListing = () => {
                             <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
                                 {prdData
                                     ?.filter(prd => prd?.isFeatured)
+                                    .reverse()
+                                    
                                     .map((prd, index) => (
                                         <div key={prd?._id || index} className="relative group w-full">
                                             <div className="w-full min-h-[260px] shadow-md flex flex-col items-center justify-between p-3 bg-white hover:shadow-[rgba(0,0,0,0.3)] sm:hover:shadow-xl transition duration-300">
@@ -115,14 +117,14 @@ const ProductListing = () => {
                                                     </div>
 
                                                     <div className='w-full '>
-                                                        <h1 className="text-black sm:text-[20px] text-[22px] mt-3 font-medium font-sans">
+                                                        <h1 className="text-black sm:text-[18px] text-[18px] mt-3 font-medium font-sans">
                                                             {prd?.name}
                                                         </h1>
                                                     </div>
 
                                                     <div className='w-full justify-between items-center'>
                                                         <div className='w-full flex flex-col items-start'>
-                                                            <h1 className="text-gray-500 text-[18px] mt-1 font-sans">
+                                                            <h1 className="text-gray-500 text-[16px] mt-1 font-sans">
                                                                 {prd?.brand}
                                                             </h1>
 

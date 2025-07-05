@@ -12,12 +12,17 @@ const productRouter = Router();
 productRouter.post('/uploadImages', auth, upload.array('images'), uploadImages)
 productRouter.post('/create', auth,  createProduct)
 productRouter.get('/gaps',  getAllProducts)
-productRouter.get('/gapsByCatId', getAllProductsByCatId)
-productRouter.get('/gapsByCatName', getAllProductsByCatName)
-productRouter.get('/gapsBySubCatId', getAllProductsBySubCatId)
-productRouter.get('/gapsBySubCatName', getAllProductsBySubCatName)
-productRouter.get('/gapsByThirdCatId', getAllProductsByThirdCatId)
-productRouter.get('/gapsByThirdCatName', getAllProductsByThirdCatName)
+
+
+
+productRouter.get('/gapsByCatId/:Id', getAllProductsByCatId);
+productRouter.get('/gapsByCatName', getAllProductsByCatName);
+productRouter.get('/gapsBySubCatId/:Id', getAllProductsBySubCatId);
+productRouter.get('/gapsBySubCatName', getAllProductsBySubCatName);
+productRouter.get('/gapsByThirdCatId/:thirdSubCatId', getAllProductsByThirdCatId);
+productRouter.get('/gapsByThirdCatName', getAllProductsByThirdCatName);
+
+
 productRouter.get('/gapsByPrice', getAllProductsByPrice)
 productRouter.get('/gapsByRating', getAllProductsByRating)
 productRouter.get('/getAllProductsCount', getProductsCount)
