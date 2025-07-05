@@ -23,6 +23,8 @@ import { Navigation, Pagination, A11y } from 'swiper/modules';
 import WhatsappIcon from "@/components/WhatsappIcon";
 import { IoCall } from "react-icons/io5";
 
+import Skeleton from "@mui/material/Skeleton";
+
 
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -60,13 +62,34 @@ const Page = () => {
   }, []);
 
 
-  if (isCheckingToken) {
-    return <div className="text-center mt-10">Checking session...</div>;
-  }
+  if (isCheckingToken||!  openedProduct || !productImages) {
+  return (
+    <div className="flex flex-col w-full min-h-screen  sm:py-4   items-center bg-slate-100">
+      <div className="w-full sm:w-[1020px] min-h-screen  p-4 sm:flex justify-between bg-white">
+        {/* Left Skeleton: Image */}
+        <div className="w-full flex gap-2 sm:w-[420px] p-1">
+          <div className="flex flex-col gap-1 ">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} variant="rectangular" width={64} height={74} />
+            ))}
+          </div>
+            <Skeleton variant="rectangular" width="100%" height={310} />
+        </div>
 
-  if (!openedProduct || !productImages) {
-    return <Loading />;
-  }
+        {/* Right Skeleton: Details */}
+        <div className="sm:w-[600px] p-5 pl-6  ">
+          <Skeleton variant="text" width="80%" height={40} className="!mb-3"/>
+          <Skeleton variant="text" width="60%" height={25} className="!mb-8"/>
+          <div className="flex gap-[8px]">
+          <Skeleton variant="rectangular" width="50%" height={35} className="!mb-8"/>
+          <Skeleton variant="rectangular" width="50%" height={35} className="!mb-8"/>
+          </div>
+          <Skeleton variant="rectangular" width="100%" height={200} className="!mb-8"/>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 
 
@@ -296,11 +319,11 @@ const Page = () => {
 
         {/* Right: Product Details */}
         <div className="details sm:w-[600px] px-3 sm:p-4 sm:pt-6">
-          <h2 className="text-[18px] sm:text-[23px] font-medium mt-2 am:mt-0 mb-1 sm:mb-3 text-gray-800">
+          <h2 className="text-[18px] sm:text-[20px] font-medium mt-2 am:mt-0 mb-1 sm:mb-3 text-gray-800">
             {openedProduct?.name}
           </h2>
 
-          <h2 className="text-[14px] sm:text-[18px] font-medium mb-2 sm:mb-3 text-gray-500">
+          <h2 className="text-[14px] sm:text-[16px] font-medium mb-2 sm:mb-3 text-gray-500">
             {openedProduct?.brand}
           </h2>
 

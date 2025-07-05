@@ -11,6 +11,7 @@ import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 import WhatsappIcon from "@/components/WhatsappIcon";
 import { IoCall } from "react-icons/io5";
 import Loading from "@/components/Loading";
+import Skeleton from "@mui/material/Skeleton";
 
 const ProductListing = () => {
   const searchParams = useSearchParams();
@@ -69,9 +70,19 @@ const ProductListing = () => {
   return (
     <div className="w-full bg-slate-100 min-h-screen flex justify-center">
       <div className="container w-full sm:w-[90%]  sm:my-4 mx-auto">
-        <div className="bg-white p-2 sm:p-3 shadow-lg text-black">
-          <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0">
-            {products.length > 0 && products.slice().reverse().map((prd, index) => (
+        <div className="bg-white min-h-screen p-2 sm:p-3 shadow-lg text-black">
+          <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 l g:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0">
+           
+
+            {(  isCheckingToken || loadingProducts)
+  ? Array.from({ length: 8 }).map((_, idx) => (
+      <div key={idx} className="w-full min-h-[260px] shadow-md flex flex-col items-start justify-between p-3 bg-white ">
+        <Skeleton variant="rectangular" width="100%" height={260}  className="rounded-md !bg-slate-300/50"/>
+        <Skeleton variant="text" width="90%" height={25} sx={{ mt: 2 }} className=" !bg-slate-300/50" />
+        <Skeleton variant="text" width="60%" height={20} className=" !bg-slate-300/50" />
+      </div>
+    ))
+  : products.length > 0 && products.slice().reverse().map((prd, index) => (
                 <div key={prd?._id || index} className="relative group w-full">
                 <div className="w-full min-h-[260px] shadow-md flex flex-col items-center justify-between p-3 bg-white hover:shadow-xl transition duration-300">
                   <div className="w-full flex flex-col items-center">

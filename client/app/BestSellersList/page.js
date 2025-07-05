@@ -18,6 +18,8 @@ import { MdFavorite } from "react-icons/md";
 import { MdFavoriteBorder } from "react-icons/md";
 import Image from "next/image";
 import Loading from '@/components/Loading';
+import Skeleton from '@mui/material/Skeleton';
+
 
 import WhatsappIcon from "@/components/WhatsappIcon";
 import { IoCall } from "react-icons/io5";
@@ -26,7 +28,7 @@ const ProductListing = () => {
     const { prdData, productsData, setProductsData, getProductsData } = usePrd()
     const { userData, isLogin, setIsLogin, setUserData, loading, setLoading, login, logout, isCheckingToken } = useAuth()
     const router = useRouter()
-    if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
+   
 
     useEffect(() => {
         setLoading(false)
@@ -61,14 +63,19 @@ const ProductListing = () => {
                     <div className='flex-grow h-full bg-white p-2  sm:p-3 shadow-lg text-black'>
 
 
-
-                        <div className="flex justify-center items-center sm:mt-3">
-                            <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
-                                {prdData
-                                    ?.filter(prd => prd?.isFeatured)
-                                    .reverse()
-                                    
-                                    .map((prd, index) => (
+<div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
+  {(isCheckingToken || loading || !prdData)
+    ? Array.from({ length: 8 }).map((_, idx) => (
+        <div key={idx} className="w-full min-h-[260px] shadow-md flex flex-col items-start justify-between p-3 bg-white ">
+          <Skeleton variant="rectangular" width="100%" height={260} className=" !bg-slate-300/50" />
+          <Skeleton variant="text" width="90%" height={25} sx={{ mt: 2 }} className=" !bg-slate-300/50" />
+          <Skeleton variant="text" width="60%" height={20} className=" !bg-slate-300/50" />
+        </div>
+      ))
+    : prdData
+        ?.filter(prd => prd?.isFeatured)
+        .reverse()
+        .map((prd, index) => (
                                         <div key={prd?._id || index} className="relative group w-full">
                                             <div className="w-full min-h-[260px] shadow-md flex flex-col items-center justify-between p-3 bg-white hover:shadow-[rgba(0,0,0,0.3)] sm:hover:shadow-xl transition duration-300">
                                                 <div className="w-full flex flex-col items-center">
@@ -207,8 +214,10 @@ const ProductListing = () => {
                                             </div>
                                         </div>
                                     ))}
-                            </div>
-                        </div>
+</div>
+
+
+                        
 
                     </div>
                 </div>
