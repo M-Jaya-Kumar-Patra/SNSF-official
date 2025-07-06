@@ -153,96 +153,107 @@ const BottomNav = () => {
 
             {/* Mobile Category Menu with toggle sub-category and third-sub-category */}
             {mobileMenuOpen && (
-                <div
-                    ref={menuRef}
-                    className="fixed top-48 bottom-14 left-[10%] transform -translate-x-1/2 w-4/5 px-6 sm:hidden z-[999] overflow-y-auto rounded-xl backdrop-blur-xl bg-white/70 shadow-2xl border border-slate-200 p-5 space-y-4 animate-slideIn no-scrollbar"
-                >
-                    {catData?.map((cat) => (
-                        <div key={cat._id} className="space-y-2 border-b border-gray-200 pb-3">
-                            {/* Main Category Row */}
-                            <div className="flex justify-between items-center text-slate-800 text-[17px]   ">
-                                <span
-                                    onClick={() => {
-                                        router.push(`/ProductListing?catId=${cat._id}`)
-                                        setMobileMenuOpen(false);
-                                        setValue('home');
-                                        setShowSearch(false)
-                                    }
-                                    }
-                                    className="cursor-pointer font-semibold hover:text-indigo-800 transition w-full"
-                                >
-                                    {cat.name}
-                                </span>
-                                {cat.children?.length > 0 && (
-                                    <span
-                                        onClick={() => toggleCat(cat._id)}
-                                        className="cursor-pointer text-[17px] hover:text-indigo-800"
-                                    >
-                                        {expandedCat === cat._id ? '−' : '+'}
-                                    </span>
-                                )}
-                            </div>
-
-                            {/* Subcategories */}
-                            {expandedCat === cat._id && cat.children?.length > 0 && (
-                                <ul className="pl-3 mt-4 space-y-2 text-[16px] text-indigo-900 animate-fadeIn">
-                                    {cat.children.map((subCat) => (
-                                        <li key={subCat._id} className="space-y-2">
-                                            <div className="flex justify-between items-center ">
-                                                <span
-                                                    onClick={() => {
-                                                        router.push(`/ProductListing?subCatId=${subCat._id}`);
-                                                        setMobileMenuOpen(false);
-                                                        setValue('home');
-                                                        setShowSearch(false);
-                                                    }}
-                                                    className="cursor-pointer hover:text-indigo-900 transition w-full"
-                                                >
-                                                    {subCat.name}
-                                                </span>
-
-                                                {subCat.children?.length > 0 && (
-                                                    <span
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            toggleSubCat(subCat._id);
-                                                        }}
-                                                        className="cursor-pointer text-[16px] hover:text-indigo-900"
-                                                    >
-                                                        {expandedSubCat === subCat._id ? '−' : '+'}
-                                                    </span>
-                                                )}
-                                            </div>
-
-                                            {/* Third Subcategories */}
-                                            {expandedSubCat === subCat._id && subCat.children?.length > 0 && (
-                                                <ul className="pl-4 space-y-2 text-[16px] text-indigo-600 animate-fadeIn ">
-                                                    {subCat.children.map((thirdSubCat) => (
-                                                        <li key={thirdSubCat._id}>
-                                                            <span
-                                                                onClick={() => {
-                                                                    router.push(`/ProductListing?thirdSubCatId=${thirdSubCat._id}`);
-                                                                    setMobileMenuOpen(false);
-                                                                    setValue('home');
-                                                                    setShowSearch(false);
-                                                                }}
-                                                                className="cursor-pointer hover:text-indigo-800 transition w-full"
-                                                            >
-                                                                {thirdSubCat.name}
-                                                            </span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            )}
-
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-                    ))}
-                </div>
+  <div
+    ref={menuRef}
+    className="fixed top-48 bottom-14 left-[10%] transform -translate-x-1/2 w-4/5 px-6 sm:hidden z-[999] overflow-y-auto rounded-xl backdrop-blur-xl bg-white/70 shadow-2xl border border-slate-200 p-5 space-y-4 animate-slideIn no-scrollbar"
+  >
+    {(catData || [])
+      .slice()
+      .sort((a, b) => a.sln - b.sln)
+      .map((cat) => (
+        <div key={cat._id} className="space-y-2 border-b border-gray-200 pb-3">
+          {/* Main Category Row */}
+          <div className="flex justify-between items-center text-slate-800 text-[17px]">
+            <span
+              onClick={() => {
+                router.push(`/ProductListing?catId=${cat._id}`);
+                setMobileMenuOpen(false);
+                setValue("home");
+                setShowSearch(false);
+              }}
+              className="cursor-pointer font-semibold hover:text-indigo-800 transition w-full"
+            >
+              {cat.name}
+            </span>
+            {cat.children?.length > 0 && (
+              <span
+                onClick={() => toggleCat(cat._id)}
+                className="cursor-pointer text-[17px] hover:text-indigo-800"
+              >
+                {expandedCat === cat._id ? "−" : "+"}
+              </span>
             )}
+          </div>
+
+          {/* Subcategories */}
+          {expandedCat === cat._id && cat.children?.length > 0 && (
+            <ul className="pl-3 mt-4 space-y-2 text-[16px] text-indigo-900 animate-fadeIn">
+              {cat.children
+                .slice()
+                .sort((a, b) => a.sln - b.sln)
+                .map((subCat) => (
+                  <li key={subCat._id} className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span
+                        onClick={() => {
+                          router.push(`/ProductListing?subCatId=${subCat._id}`);
+                          setMobileMenuOpen(false);
+                          setValue("home");
+                          setShowSearch(false);
+                        }}
+                        className="cursor-pointer hover:text-indigo-900 transition w-full"
+                      >
+                        {subCat.name}
+                      </span>
+
+                      {subCat.children?.length > 0 && (
+                        <span
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleSubCat(subCat._id);
+                          }}
+                          className="cursor-pointer text-[16px] hover:text-indigo-900"
+                        >
+                          {expandedSubCat === subCat._id ? "−" : "+"}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Third Subcategories */}
+                    {expandedSubCat === subCat._id &&
+                      subCat.children?.length > 0 && (
+                        <ul className="pl-4 space-y-2 text-[16px] text-indigo-600 animate-fadeIn">
+                          {subCat.children
+                            .slice()
+                            .sort((a, b) => a.sln - b.sln)
+                            .map((thirdSubCat) => (
+                              <li key={thirdSubCat._id}>
+                                <span
+                                  onClick={() => {
+                                    router.push(
+                                      `/ProductListing?thirdSubCatId=${thirdSubCat._id}`
+                                    );
+                                    setMobileMenuOpen(false);
+                                    setValue("home");
+                                    setShowSearch(false);
+                                  }}
+                                  className="cursor-pointer hover:text-indigo-800 transition w-full"
+                                >
+                                  {thirdSubCat.name}
+                                </span>
+                              </li>
+                            ))}
+                        </ul>
+                      )}
+                  </li>
+                ))}
+            </ul>
+          )}
+        </div>
+      ))}
+  </div>
+)}
+
 
         </>
     );
