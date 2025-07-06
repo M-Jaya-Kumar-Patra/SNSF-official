@@ -62,7 +62,7 @@ const Page = () => {
   }, []);
 
 
-  if (!isCheckingToken||!  openedProduct || !productImages) {
+  if (isCheckingToken||!  openedProduct || !productImages) {
   return (
     <div className="flex flex-col w-full min-h-screen  sm:py-4   items-center bg-slate-100">
       <div className="w-full sm:w-[1020px] min-h-screen  p-4 sm:flex justify-between bg-white">
