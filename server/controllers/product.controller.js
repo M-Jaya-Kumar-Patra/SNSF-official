@@ -172,36 +172,17 @@ export async function getAllProducts(request, response) {
 
 
 // controllers/productController.js
-import { getPaginationParams } from "../utils/getPagination.js";
-
 async function handleProductFetch(queryObj, request, response) {
     try {
-        const { page, perPage } = getPaginationParams(request.query);
-
-        const totalPosts = await ProductModel.countDocuments(queryObj);
-        const totalPages = Math.ceil(totalPosts / perPage);
-
-        if (page > totalPages && totalPosts > 0) {
-            return response.status(404).json({
-                message: "Page not found",
-                success: false,
-                error: true
-            });
-        }
-
         const products = await ProductModel.find(queryObj)
             .populate("category")
-            .skip((page - 1) * perPage)
-            .limit(perPage)
             .exec();
 
         return response.status(200).json({
             error: false,
             success: true,
             data: products,
-            totalPages,
-            totalPosts,
-            page
+            total: products.length
         });
     } catch (error) {
         return response.status(500).json({
@@ -212,6 +193,7 @@ async function handleProductFetch(queryObj, request, response) {
     }
 }
 
+export default handleProductFetch;
 export const getAllProductsByCatId = (req, res) =>
     handleProductFetch({ catId: req.params.Id }, req, res);
 
