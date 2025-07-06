@@ -71,7 +71,7 @@ const ProductListing = () => {
     <div className="w-full bg-slate-100 min-h-screen flex justify-center">
       <div className="container w-full sm:w-[90%]  sm:my-4 mx-auto">
         <div className="bg-white min-h-screen p-2 sm:p-3 shadow-lg text-black">
-          <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 l g:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0">
+          <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
            
 
             {(  isCheckingToken || loadingProducts)

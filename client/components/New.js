@@ -95,7 +95,9 @@ const New = () => {
             src={prd?.images?.[0] || '/placeholder.png'}
             alt={prd?.name || 'Product Image'}
             fill
+            sizes="(max-width: 768px) 100vw, 256px"
             className="object-cover"
+            unoptimized
           />
         </div>
 

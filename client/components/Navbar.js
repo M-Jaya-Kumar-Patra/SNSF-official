@@ -361,24 +361,26 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
 
   {/* Category Skeleton Loader or Actual Categories */}
   {(!catData || catData?.length === 0)
-    ? Array.from({ length: 7 }).map((_, index) => (
-        <li key={`skeleton-${index}`} className="w-full px-6 py-1">
-          <Skeleton
-            variant="text"
-            animation="wave"
-            width={80}
-            height={24}
-            sx={{ bgcolor: "rgba(203,213,225,0.5)" }}
-          />
-        </li>
-      ))
-    : catData?.map((cat, index) => (
+  ? Array.from({ length: 7 }).map((_, index) => (
+      <li key={`skeleton-${index}`} className="w-full px-6 py-1">
+        <Skeleton
+          variant="text"
+          animation="wave"
+          width={80}
+          height={24}
+          sx={{ bgcolor: "rgba(203,213,225,0.5)" }}
+        />
+      </li>
+    ))
+  : [...catData]
+      .sort((a, b) => a.sln - b.sln)
+      .map((cat, index) => (
         <li
           key={index}
           onClick={() => router.push(`/ProductListing?catId=${cat._id}`)}
           className="relative group w-full text-center cursor-pointer transition-all duration-200"
         >
-          <span className="block text-[15px] font-medium text-slate-800 transition duration-200  group-hover:text-[#131e30] group-hover:font-semibold py-1">
+          <span className="block text-[15px] font-medium text-slate-800 transition duration-200 group-hover:text-[#131e30] group-hover:font-semibold py-1">
             {cat.name}
           </span>
 
@@ -394,7 +396,10 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
             >
               <div className="flex gap-4" style={{ width: `${cat.children.length * 220}px` }}>
                 {cat.children.map((subCat, subIndex) => (
-                  <div key={subIndex} className="min-w-[200px] transition-transform duration-300 hover:scale-[1.02]">
+                  <div
+                    key={subIndex}
+                    className="min-w-[200px] transition-transform duration-300 hover:scale-[1.02]"
+                  >
                     <a
                       href={`/ProductListing?subCatId=${subCat._id}`}
                       className="block text-[16px] font-semibold mb-3 text-slate-800 hover:text-indigo-700"
@@ -420,6 +425,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
           )}
         </li>
       ))}
+
 </ul>
 
 
@@ -427,42 +433,50 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
 
 
       {mobileMenuOpen && (
-        <div className="sm:hidden bg-white text-[#131e30] border-t border-b py-2 px-4 space-y-2">
-          <div onClick={() => {
-            router.push("/");
-            setMobileMenuOpen(false);
-          }} className="cursor-pointer hover:font-semibold flex items-center gap-2">
-            <IoMdHome /> Home
+  <div className="sm:hidden bg-white text-[#131e30] border-t border-b py-2 px-4 space-y-2">
+    <div
+      onClick={() => {
+        router.push("/");
+        setMobileMenuOpen(false);
+      }}
+      className="cursor-pointer hover:font-semibold flex items-center gap-2"
+    >
+      <IoMdHome /> Home
+    </div>
+
+    {[...(catData || [])]
+      .sort((a, b) => a.sln - b.sln)
+      .map((cat) => (
+        <div key={cat._id}>
+          <div
+            onClick={() => {
+              router.push(`/ProductListing?catId=${cat._id}`);
+              setMobileMenuOpen(false);
+            }}
+            className="cursor-pointer font-medium hover:text-indigo-600"
+          >
+            {cat.name}
           </div>
-          {catData?.map((cat) => (
-            <div key={cat._id}>
-              <div
-                onClick={() => {
-                  router.push(`/ProductListing?catId=${cat._id}`);
-                  setMobileMenuOpen(false);
-                }}
-                className="cursor-pointer font-medium hover:text-indigo-600"
-              >
-                {cat.name}
-              </div>
-              {cat.children?.length > 0 && (
-                <ul className="pl-4 mt-1 space-y-1 text-sm text-gray-600">
-                  {cat.children.map((subCat) => (
-                    <li key={subCat._id}>
-                      <Link
-                        href={`/ProductListing?subCatId=${subCat._id}`}
-                        className="hover:text-indigo-600"
-                      >
-                        {subCat.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
+
+          {cat.children?.length > 0 && (
+            <ul className="pl-4 mt-1 space-y-1 text-sm text-gray-600">
+              {cat.children.map((subCat) => (
+                <li key={subCat._id}>
+                  <Link
+                    href={`/ProductListing?subCatId=${subCat._id}`}
+                    className="hover:text-indigo-600"
+                  >
+                    {subCat.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-      )}
+      ))}
+  </div>
+)}
+
     </nav>
   );
 };

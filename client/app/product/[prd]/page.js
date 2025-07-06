@@ -62,13 +62,13 @@ const Page = () => {
   }, []);
 
 
-  if (isCheckingToken||!  openedProduct || !productImages) {
+  if (!isCheckingToken||!  openedProduct || !productImages) {
   return (
     <div className="flex flex-col w-full min-h-screen  sm:py-4   items-center bg-slate-100">
       <div className="w-full sm:w-[1020px] min-h-screen  p-4 sm:flex justify-between bg-white">
         {/* Left Skeleton: Image */}
-        <div className="w-full flex gap-2 sm:w-[420px] p-1">
-          <div className="flex flex-col gap-1 ">
+        <div className="w-full flex gap-2  sm:w-[420px] p-1">
+          <div className="hidden sm:flex flex-col gap-1 ">
             {Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} variant="rectangular" width={64} height={74} />
             ))}
@@ -77,9 +77,9 @@ const Page = () => {
         </div>
 
         {/* Right Skeleton: Details */}
-        <div className="sm:w-[600px] p-5 pl-6  ">
-          <Skeleton variant="text" width="80%" height={40} className="!mb-3"/>
-          <Skeleton variant="text" width="60%" height={25} className="!mb-8"/>
+        <div className="sm:w-[600px] sm:p-5 sm:pl-6  ">
+          <Skeleton variant="text" width="80%" height={40} className="sm:!mb-3"/>
+          <Skeleton variant="text" width="60%" height={25} className=" !mb-4 sm:!mb-8"/>
           <div className="flex gap-[8px]">
           <Skeleton variant="rectangular" width="50%" height={35} className="!mb-8"/>
           <Skeleton variant="rectangular" width="50%" height={35} className="!mb-8"/>
