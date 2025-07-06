@@ -37,8 +37,17 @@ const BottomNav = () => {
                 setShowSearch(true);
                 break;
             case 'category':
-                setMobileMenuOpen(!mobileMenuOpen);
-                break;
+    if (mobileMenuOpen) {
+        // Closing the menu
+        setMobileMenuOpen(false);
+        setExpandedCat(null);
+        setExpandedSubCat(null);
+    } else {
+        // Opening the menu
+        setMobileMenuOpen(true);
+        setShowSearch(false); // Optional: hide search if open
+    }
+    break;
             case 'home':
                 router.push('/');
                 break;
