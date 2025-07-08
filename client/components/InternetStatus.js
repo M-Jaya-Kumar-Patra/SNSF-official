@@ -7,7 +7,7 @@ export default function InternetStatus() {
   const isOnline = useInternetCheck();
 
   if (!isOnline) {
-    return <NoInternet />;
+    return null;
   }
 
   return null; // Don't render anything when online
