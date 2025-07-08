@@ -40,7 +40,7 @@ const AllinOne = () => {
       <div className="relative w-full max-w-[1100px] mx-auto px-4">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-5">
           {filteredProducts && filteredProducts.length > 0 ? (
-  filteredProducts.map((prd, index) => (
+  filteredProducts.reverse().map((prd, index) => (
     <div
       key={prd?._id || index}
       className="group bg-white border p-1 sm:p-2 shadow-sm hover:shadow-md transition-all duration-200"

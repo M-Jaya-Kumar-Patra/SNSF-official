@@ -84,9 +84,9 @@ const Slider = () => {
         <button
           onClick={handlePrev}
           aria-label="Previous Slide"
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/60 hover:bg-white text-gray-800 p-1 sm:p-2 rounded-full shadow transition text-base sm:text-xl"
+          className="absolute sm:left-2 top-1/2 -translate-y-1/2 z-10 opacity-25 sm:opacity-100 bg-white/60 hover:bg-white text-gray-800 p-1 sm:p-2 rounded  rounded-l-none sm:rounded-full shadow transition text-base sm:text-xl"
         >
-          <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" />
+          <ChevronLeft className="w-6 h-6" />
         </button>
 
         {/* Slide Image */}
@@ -103,9 +103,9 @@ const Slider = () => {
         <button
           onClick={handleNext}
           aria-label="Next Slide"
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/60 hover:bg-white text-gray-800 p-1 sm:p-2 rounded-full shadow transition text-base sm:text-xl"
+          className="absolute right-0  sm:right-2 top-1/2 -translate-y-1/2 z-10 opacity-25 sm:opacity-100 bg-white/60 hover:bg-white text-gray-800 p-1 sm:p-2 rounded  rounded-r-none sm:rounded-full shadow transition text-base sm:text-xl"
         >
-          <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
+          <ChevronRight className="w-6  h-6" />
         </button>
 
         {/* Dots */}
