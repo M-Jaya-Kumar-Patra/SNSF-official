@@ -1,4 +1,7 @@
 User-agent: *
+Disallow:
+
+User-agent: facebookexternalhit
 Allow: /
 
 Sitemap: https://snsteelfabrication.com/sitemap.xml
