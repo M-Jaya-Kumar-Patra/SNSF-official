@@ -14,7 +14,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useAlert } from "@/app/context/AlertContext";
 import { uploadImage, editData, postData } from "@/utils/api";
 import { useAuth } from "@/app/context/AuthContext";
-import Button from "@mui/material/Button";
 import { MdModeEdit } from "react-icons/md";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";

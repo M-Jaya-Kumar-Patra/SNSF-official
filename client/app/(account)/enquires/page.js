@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import LogoutBTN from "@/components/LogoutBTN";
 import { useAuth } from "@/app/context/AuthContext";
 import { getUserEnquiries } from "@/utils/api"; // ✅ import the API function
-import Empty from "@/app/(ack)/Empty";
 import { MdOutlineMessage } from "react-icons/md";
 
 import {

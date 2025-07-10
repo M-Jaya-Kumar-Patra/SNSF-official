@@ -2,7 +2,6 @@
 
 import { createContext, useContext } from 'react';
 import toast from 'react-hot-toast';
-import { useEffect } from 'react';
 
 export const AlertContext = createContext();
 

@@ -3,11 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { Josefin_Sans } from "next/font/google";
 import { usePrd } from "@/app/context/ProductContext";
-import Button from "@mui/material/Button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import Image from "next/image";
-import Loading from "./Loading";
 import Skeleton from "@mui/material/Skeleton";
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });

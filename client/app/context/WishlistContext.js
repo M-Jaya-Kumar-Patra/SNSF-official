@@ -1,6 +1,5 @@
 // context/WishlistContext.js
 "use client";
-import { Club } from "lucide-react";
 import { createContext, useContext, useState, useEffect } from "react";
 import { useAlert } from "./AlertContext";
 import { fetchDataFromApi, postData, deleteItem  } from "@/utils/api";

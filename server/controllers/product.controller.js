@@ -79,13 +79,17 @@ export async function createProduct(request, response) {
             size,
             delivery_days,
             callOnlyDelivery,
-            specifications, // should be an object from the frontend
+            specifications,
+            location,
+            category, // ObjectId from Category collection
         } = request.body;
 
         const product = new ProductModel({
             name,
+            productId: new mongoose.Types.ObjectId(), // generating unique product ID
+            checked: false,
             description,
-            images: images || imagesArr, // fallback to uploaded images
+            images: images || imagesArr,
             brand,
             price,
             oldPrice,
@@ -96,26 +100,37 @@ export async function createProduct(request, response) {
             thirdSubCat,
             thirdSubCatId,
             countInStock,
-            rating,
+            sales: 0,
+            rating: rating || 0,
+            ratingCount: 0,
             isFeatured,
             isAllinOne,
             discount,
-            size,
+            size: size || [],
+            location: location || [],
+            dateCreated: Date.now(),
             delivery_days,
-            callOnlyDelivery,
+            callOnlyDelivery: callOnlyDelivery ?? true,
+            category: category || null, // category ObjectId (if present)
+
             specifications: {
                 material: specifications?.material || "",
-                setOf: specifications?.setOf || "",
+                setOf: specifications?.setOf || 1,
                 grade: specifications?.grade || "",
                 fabric: specifications?.fabric || "",
                 fabricColor: specifications?.fabricColor || "",
                 size: specifications?.size || "",
+                capacity: specifications?.capacity || "",
                 weight: specifications?.weight || "",
+                width: specifications?.width || "",
+                depth: specifications?.depth || "",
+                seatHeight: specifications?.seatHeight || "",
+                length: specifications?.length || "",
                 height: specifications?.height || "",
+                minHeight: specifications?.minHeight || "",
+                maxHeight: specifications?.maxHeight || "",
                 warranty: specifications?.warranty || "",
                 thickness: specifications?.thickness || "",
-                length: specifications?.length || "",
-                width: specifications?.width || "",
                 polish: specifications?.polish || "",
                 frameMaterial: specifications?.frameMaterial || "",
             },
@@ -137,6 +152,7 @@ export async function createProduct(request, response) {
             error: false,
             success: true,
             message: "Product created successfully",
+            product,
         });
     } catch (error) {
         return response.status(500).json({
@@ -146,7 +162,6 @@ export async function createProduct(request, response) {
         });
     }
 }
-
 // /api/product/getProducts.js
 
 export async function getAllProducts(request, response) {
@@ -595,6 +610,8 @@ export async function updateProduct(request, response) {
             size,
             delivery_days,
             callOnlyDelivery,
+            location,
+            category,
             specifications,
         } = request.body;
 
@@ -618,22 +635,29 @@ export async function updateProduct(request, response) {
                 isFeatured,
                 isAllinOne,
                 discount,
-                size,
+                size: size || [],
                 delivery_days,
-            callOnlyDelivery,
+                callOnlyDelivery: callOnlyDelivery ?? true,
+                location: location || [],
+                category: category || null,
                 specifications: {
                     material: specifications?.material || "",
-                    setOf: specifications?.setOf || "",
+                    setOf: specifications?.setOf || 1,
                     grade: specifications?.grade || "",
                     fabric: specifications?.fabric || "",
                     fabricColor: specifications?.fabricColor || "",
                     size: specifications?.size || "",
+                    capacity: specifications?.capacity || "",
                     weight: specifications?.weight || "",
+                    width: specifications?.width || "",
+                    depth: specifications?.depth || "",
+                    seatHeight: specifications?.seatHeight || "",
+                    length: specifications?.length || "",
                     height: specifications?.height || "",
+                    minHeight: specifications?.minHeight || "",
+                    maxHeight: specifications?.maxHeight || "",
                     warranty: specifications?.warranty || "",
                     thickness: specifications?.thickness || "",
-                    length: specifications?.length || "",
-                    width: specifications?.width || "",
                     polish: specifications?.polish || "",
                     frameMaterial: specifications?.frameMaterial || "",
                 },
@@ -665,7 +689,6 @@ export async function updateProduct(request, response) {
         });
     }
 }
-
 export async function filters(request, response) {
     const {
         catId = [],

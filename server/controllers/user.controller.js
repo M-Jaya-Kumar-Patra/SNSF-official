@@ -1277,6 +1277,8 @@ export async function getRelatedProductsByCategory(req, res) {
     try {
         const { productId } = req.query;
 
+        console.log("-----------------------------------------")
+
         if (!productId) {
             return res.status(400).json({
                 success: false,

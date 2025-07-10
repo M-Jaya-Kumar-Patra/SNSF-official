@@ -12,11 +12,6 @@ const PrdProvider = ({ children }) => {
    const [productsData, setProductsData] = useState([]);
 
 
-    useEffect(()=>{
-    console.log("Product")
-  },[])
-
-
    const getProductsData = () => {
   if (prdData && prdData.length > 0 || productsData && productsData.length > 0) return; // ✅ Already fetched
   fetchDataFromApi("/api/product/gaps", false).then((response) => {

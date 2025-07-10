@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
 import LogoutBTN from "@/components/LogoutBTN";
 import { useAuth } from '../../context/AuthContext';
 import { User, Package, MapPin, Heart, RefreshCcw, Bell, LifeBuoy, Menu } from "lucide-react";

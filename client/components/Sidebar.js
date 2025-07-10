@@ -9,7 +9,6 @@ import { postData } from '@/utils/api';
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 import Image from 'next/image';
 import Button from '@mui/material/Button';
-import Rating from '@mui/material/Rating';
 import Loading from '@/components/Loading';
 import { useWishlist } from '@/app/context/WishlistContext';
 import { IoCall } from "react-icons/io5";

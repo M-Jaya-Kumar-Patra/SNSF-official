@@ -5,7 +5,6 @@ import { fetchDataFromApi } from "@/utils/api";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/app/context/AuthContext"; // ✅ Added
-import Loading from "./Loading";
 import { useRouter } from "next/navigation";
 import Skeleton from "@mui/material/Skeleton";
 

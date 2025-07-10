@@ -65,30 +65,38 @@ const Products = () => {
         countInStock: "",
         sales: "",
         rating: "",
+        ratingCount: "",
         isFeatured: false,
         isAllinOne: false,
         discount: 0,
         size: [],
-        location: "",
+        location: [], // Should be an array of objects: [{ value: "", label: "" }]
         delivery_days: "",
         callOnlyDelivery: true,
+        category: "", // For category ObjectId reference
         specifications: {
             material: "",
-            setOf: "",
+            setOf: 1,
             grade: "",
             fabric: "",
             fabricColor: "",
             size: "",
+            capacity: "",
             weight: "",
+            width: "",
+            depth: "",
+            seatHeight: "",
+            length: "",
             height: "",
+            minHeight: "",
+            maxHeight: "",
             warranty: "",
             thickness: "",
-            length: "",
-            width: "",
             polish: "",
             frameMaterial: ""
         }
     });
+
 
 
     const [editProduct, setEditProduct] = useState(null);
@@ -129,26 +137,33 @@ const Products = () => {
             countInStock: "",
             sales: "",
             rating: "",
+            ratingCount: "",
             isFeatured: false,
             isAllinOne: false,
             discount: 0,
             size: [],
-            location: "",
+            location: [], // array of { value, label }
             delivery_days: "",
             callOnlyDelivery: true,
+            category: "", // category ObjectId (if used separately)
             specifications: {
                 material: "",
-                setOf: "",
+                setOf: 1,
                 grade: "",
                 fabric: "",
                 fabricColor: "",
                 size: "",
+                capacity: "",
                 weight: "",
+                width: "",
+                depth: "",
+                seatHeight: "",
+                length: "",
                 height: "",
+                minHeight: "",
+                maxHeight: "",
                 warranty: "",
                 thickness: "",
-                length: "",
-                width: "",
                 polish: "",
                 frameMaterial: ""
             }
@@ -156,6 +171,7 @@ const Products = () => {
         setPreviews([]);
         setShowAddModal(true);
     };
+
 
     const [previews, setPreviews] = useState([]);
 
@@ -320,26 +336,30 @@ const Products = () => {
             ...product,
             specifications: {
                 material: "",
-                setOf: "",
+                setOf: 1,
                 grade: "",
                 fabric: "",
                 fabricColor: "",
                 size: "",
+                capacity: "",
                 weight: "",
+                width: "",
+                depth: "",
+                seatHeight: "",
+                length: "",
                 height: "",
+                minHeight: "",
+                maxHeight: "",
                 warranty: "",
                 thickness: "",
-                length: "",
-                width: "",
                 polish: "",
                 frameMaterial: "",
-                delivery_days: "",
-                callOnlyDelivery: "",
-                ...(product.specifications || {})
-            }
+                ...(product.specifications || {}),
+            },
         });
         setPreviews(product.images || []);
     };
+
 
 
 
@@ -972,109 +992,143 @@ const Products = () => {
                                         <div className="my-6">
                                             <h3 className="text-lg font-semibold mb-3">Product Specifications</h3>
                                             <div className="grid grid-cols-2 gap-4">
-
                                                 <TextField
                                                     label="Material"
                                                     size="small"
                                                     name="material"
                                                     value={editPrdObj?.specifications?.material || ""}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                    onChange={handleSpecificationsChange}
                                                 />
                                                 <TextField
-                                                    label="Set of"
+                                                    label="Set Of"
                                                     size="small"
                                                     name="setOf"
+                                                    type="number"
                                                     value={editPrdObj?.specifications?.setOf || ""}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                    onChange={handleSpecificationsChange}
                                                 />
                                                 <TextField
                                                     label="Grade"
                                                     size="small"
                                                     name="grade"
                                                     value={editPrdObj?.specifications?.grade || ""}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                    onChange={handleSpecificationsChange}
                                                 />
-
                                                 <TextField
                                                     label="Fabric"
                                                     size="small"
                                                     name="fabric"
                                                     value={editPrdObj?.specifications?.fabric || ""}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                    onChange={handleSpecificationsChange}
                                                 />
                                                 <TextField
                                                     label="Fabric Color"
                                                     size="small"
                                                     name="fabricColor"
                                                     value={editPrdObj?.specifications?.fabricColor || ""}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                    onChange={handleSpecificationsChange}
                                                 />
                                                 <TextField
                                                     label="Size"
                                                     size="small"
                                                     name="size"
                                                     value={editPrdObj?.specifications?.size || ""}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                    onChange={handleSpecificationsChange}
+                                                />
+                                                <TextField
+                                                    label="Capacity"
+                                                    size="small"
+                                                    name="capacity"
+                                                    value={editPrdObj?.specifications?.capacity || ""}
+                                                    onChange={handleSpecificationsChange}
                                                 />
                                                 <TextField
                                                     label="Net Weight"
                                                     size="small"
                                                     name="weight"
                                                     value={editPrdObj?.specifications?.weight || ""}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
-                                                />
-                                                <TextField
-                                                    label="Height"
-                                                    size="small"
-                                                    name="height"
-                                                    value={editPrdObj?.specifications?.height || ""}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
-                                                />
-                                                <TextField
-                                                    label="Warranty"
-                                                    size="small"
-                                                    name="warranty"
-                                                    value={editPrdObj?.specifications?.warranty || ""}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
-                                                />
-                                                <TextField
-                                                    label="Thickness"
-                                                    size="small"
-                                                    name="thickness"
-                                                    value={editPrdObj?.specifications?.thickness || ""}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
-                                                />
-                                                <TextField
-                                                    label="Length"
-                                                    size="small"
-                                                    name="length"
-                                                    value={editPrdObj?.specifications?.length || ""}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                    onChange={handleSpecificationsChange}
                                                 />
                                                 <TextField
                                                     label="Width"
                                                     size="small"
                                                     name="width"
                                                     value={editPrdObj?.specifications?.width || ""}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                    onChange={handleSpecificationsChange}
+                                                />
+                                                <TextField
+                                                    label="Depth"
+                                                    size="small"
+                                                    name="depth"
+                                                    value={editPrdObj?.specifications?.depth || ""}
+                                                    onChange={handleSpecificationsChange}
+                                                />
+                                                <TextField
+                                                    label="Seat Height"
+                                                    size="small"
+                                                    name="seatHeight"
+                                                    value={editPrdObj?.specifications?.seatHeight || ""}
+                                                    onChange={handleSpecificationsChange}
+                                                />
+                                                <TextField
+                                                    label="Length"
+                                                    size="small"
+                                                    name="length"
+                                                    value={editPrdObj?.specifications?.length || ""}
+                                                    onChange={handleSpecificationsChange}
+                                                />
+                                                <TextField
+                                                    label="Height"
+                                                    size="small"
+                                                    name="height"
+                                                    value={editPrdObj?.specifications?.height || ""}
+                                                    onChange={handleSpecificationsChange}
+                                                />
+                                                <TextField
+                                                    label="Min Height"
+                                                    size="small"
+                                                    name="minHeight"
+                                                    value={editPrdObj?.specifications?.minHeight || ""}
+                                                    onChange={handleSpecificationsChange}
+                                                />
+                                                <TextField
+                                                    label="Max Height"
+                                                    size="small"
+                                                    name="maxHeight"
+                                                    value={editPrdObj?.specifications?.maxHeight || ""}
+                                                    onChange={handleSpecificationsChange}
+                                                />
+                                                <TextField
+                                                    label="Warranty"
+                                                    size="small"
+                                                    name="warranty"
+                                                    value={editPrdObj?.specifications?.warranty || ""}
+                                                    onChange={handleSpecificationsChange}
+                                                />
+                                                <TextField
+                                                    label="Thickness"
+                                                    size="small"
+                                                    name="thickness"
+                                                    value={editPrdObj?.specifications?.thickness || ""}
+                                                    onChange={handleSpecificationsChange}
                                                 />
                                                 <TextField
                                                     label="Polish"
                                                     size="small"
                                                     name="polish"
                                                     value={editPrdObj?.specifications?.polish || ""}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                    onChange={handleSpecificationsChange}
                                                 />
                                                 <TextField
                                                     label="Frame Material"
                                                     size="small"
                                                     name="frameMaterial"
                                                     value={editPrdObj?.specifications?.frameMaterial || ""}
-                                                    onChange={(e) => handleSpecificationsChange(e)}
+                                                    onChange={handleSpecificationsChange}
                                                 />
-
                                             </div>
                                         </div>
+
 
 
                                     </div>
@@ -1405,7 +1459,6 @@ const Products = () => {
                                 <div className="my-6">
                                     <h3 className="text-lg font-semibold mb-3">Product Specifications</h3>
                                     <div className="grid grid-cols-2 gap-4">
-
                                         <TextField
                                             label="Material"
                                             size="small"
@@ -1414,10 +1467,11 @@ const Products = () => {
                                             onChange={handleSpecificationsChangeAdd}
                                         />
                                         <TextField
-                                            label="Set of"
+                                            label="Set Of"
                                             size="small"
                                             name="setOf"
-                                            value={formFields.specifications?.setOf || ""}
+                                            type="number"
+                                            value={formFields.specifications?.setOf || 1}
                                             onChange={handleSpecificationsChangeAdd}
                                         />
                                         <TextField
@@ -1449,6 +1503,13 @@ const Products = () => {
                                             onChange={handleSpecificationsChangeAdd}
                                         />
                                         <TextField
+                                            label="Capacity"
+                                            size="small"
+                                            name="capacity"
+                                            value={formFields.specifications?.capacity || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
                                             label="Weight"
                                             size="small"
                                             name="weight"
@@ -1456,10 +1517,52 @@ const Products = () => {
                                             onChange={handleSpecificationsChangeAdd}
                                         />
                                         <TextField
+                                            label="Width"
+                                            size="small"
+                                            name="width"
+                                            value={formFields.specifications?.width || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Depth"
+                                            size="small"
+                                            name="depth"
+                                            value={formFields.specifications?.depth || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Seat Height"
+                                            size="small"
+                                            name="seatHeight"
+                                            value={formFields.specifications?.seatHeight || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Length"
+                                            size="small"
+                                            name="length"
+                                            value={formFields.specifications?.length || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
                                             label="Height"
                                             size="small"
                                             name="height"
                                             value={formFields.specifications?.height || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Min Height"
+                                            size="small"
+                                            name="minHeight"
+                                            value={formFields.specifications?.minHeight || ""}
+                                            onChange={handleSpecificationsChangeAdd}
+                                        />
+                                        <TextField
+                                            label="Max Height"
+                                            size="small"
+                                            name="maxHeight"
+                                            value={formFields.specifications?.maxHeight || ""}
                                             onChange={handleSpecificationsChangeAdd}
                                         />
                                         <TextField
@@ -1477,20 +1580,6 @@ const Products = () => {
                                             onChange={handleSpecificationsChangeAdd}
                                         />
                                         <TextField
-                                            label="Length"
-                                            size="small"
-                                            name="length"
-                                            value={formFields.specifications?.length || ""}
-                                            onChange={handleSpecificationsChangeAdd}
-                                        />
-                                        <TextField
-                                            label="Width"
-                                            size="small"
-                                            name="width"
-                                            value={formFields.specifications?.width || ""}
-                                            onChange={handleSpecificationsChangeAdd}
-                                        />
-                                        <TextField
                                             label="Polish"
                                             size="small"
                                             name="polish"
@@ -1504,9 +1593,9 @@ const Products = () => {
                                             value={formFields.specifications?.frameMaterial || ""}
                                             onChange={handleSpecificationsChangeAdd}
                                         />
-
                                     </div>
                                 </div>
+
 
 
                             </div>

@@ -28,8 +28,9 @@ const Admins = () => {
 
   useEffect(() => {
     fetchDataFromApi(`/api/user/getAllUsers`).then((res) => {
-      if (!res.error) {
-        setUsers(res.users);
+      console.log(res)
+      if (!res?.error) {
+        setUsers(res?.users);
       } else {
         alert("No users found");
       }
@@ -84,7 +85,6 @@ const Admins = () => {
               <th className="px-3 py-2 text-left">Email</th>
               <th className="px-3 py-2 text-left">Phone</th>
               <th className="px-3 py-2 text-left">Last Login</th>
-              <th className="px-3 py-2 text-center">Cart</th>
               <th className="px-3 py-2 text-center">Wishlist</th>
               <th className="px-3 py-2 text-left">Address</th>
               <th className="px-3 py-2 text-left">Status</th>
@@ -120,7 +120,6 @@ const Admins = () => {
                     </>
                   )}
                 </td>
-                <td className="px-3 py-3 text-center text-blue-700 font-semibold">{user.shopping_cart.length}</td>
                 <td className="px-3 py-3 text-center text-blue-700 font-semibold">{user.wishlist.length}</td>
                 <td className="px-3 py-3 text-slate-600 whitespace-nowrap">
                   {user?.address_details?.[0]?.address}, {user?.address_details?.[0]?.city}

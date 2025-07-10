@@ -113,7 +113,8 @@ ratingCount: {
     },
     callOnlyDelivery:{
         type:Boolean,
-        default:true
+        default:true,
+        
     },
 
   specifications: {
@@ -123,12 +124,17 @@ ratingCount: {
     fabric: { type: String, default: "" },
     fabricColor: { type: String, default: "" },
     size: { type: String, default: "" }, // use `specifications.size` if you want detailed size string
+    capacity: { type: String, default: "" },
     weight: { type: String, default: "" },
+    width: { type: String, default: "" },
+    depth: { type: String, default: "" },
+    seatHeight: { type: String, default: "" },
+    length: { type: String, default: "" },
     height: { type: String, default: "" },
+    minHeight: { type: String, default: "" },
+    maxHeight: { type: String, default: "" },
     warranty: { type: String, default: "" },
     thickness: { type: String, default: "" },
-    length: { type: String, default: "" },
-    width: { type: String, default: "" },
     polish: { type: String, default: "" },  // optional
     frameMaterial: { type: String, default: "" }, // optional
   }

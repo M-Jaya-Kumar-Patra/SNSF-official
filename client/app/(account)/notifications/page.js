@@ -16,7 +16,6 @@ import {
   Heart,
   Bell,
 } from "lucide-react";
-import Empty from "@/app/(ack)/Empty";
 
 const Account = () => {
   const router = useRouter();
