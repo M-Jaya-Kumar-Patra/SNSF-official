@@ -65,6 +65,12 @@ const ProductListing = () => {
     fetchProducts();
   }, [catId, subCatId, thirdSubCatId]);
 
+
+  const getOptimizedCloudinaryUrl = (url) => {
+    if (!url?.includes("res.cloudinary.com")) return url;
+    return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
+  };
+
   if (isCheckingToken || loadingProducts) return <Loading />;
 
   return (
@@ -92,7 +98,7 @@ const ProductListing = () => {
                         onClick={() => router.push(`/product/${prd?._id}`)}
                       >
                         <Image
-                          src={prd.images[0]}
+                          src={getOptimizedCloudinaryUrl(prd.images[0])}
                           alt={prd.name || "Product"}
                           fill
                           unoptimized

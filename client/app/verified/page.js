@@ -12,13 +12,18 @@ const SuccessPage = () => {
     setIsClient(true);
   }, []);
 
+  const getOptimizedCloudinaryUrl = (url) => {
+    if (!url?.includes("res.cloudinary.com")) return url;
+    return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
+  };
+
   if (!isClient) return null;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
       <div className="bg-white shadow-md rounded-lg p-8 text-center max-w-sm">
         <Image
-          src="/images/check.png" // Replace with your image path or use a public URL
+          src={getOptimizedCloudinaryUrl("/images/check.png")}
           alt="Success"
           width={80}
           height={80}

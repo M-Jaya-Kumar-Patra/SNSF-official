@@ -25,6 +25,11 @@ const AllinOne = () => {
     ?.filter((prd) => prd?.isAllinOne)
     .slice(0, 20);
 
+    const getOptimizedCloudinaryUrl = (url) => {
+    if (!url?.includes("res.cloudinary.com")) return url;
+    return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
+  };
+
 
   return (
    <div className="flex flex-col items-center mt-2 sm:mt-5 w-full pb-4 sm:pb-8 bg-gradient-to-b from-slate-200 to-white">
@@ -49,7 +54,7 @@ const AllinOne = () => {
       >
         <div className="relative aspect-[4/3] rounded-md overflow-hidden">
           <Image
-            src={prd.images?.[0] || "/images/placeholder.png"}
+            src={getOptimizedCloudinaryUrl(prd.images?.[0] || "/images/placeholder.png")}
             alt={prd.name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"

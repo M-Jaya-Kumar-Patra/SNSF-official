@@ -48,6 +48,13 @@ useEffect(() => {
   handleReadOnLoad();
 }, []);
 
+
+const getOptimizedCloudinaryUrl = (url) => {
+  if (!url?.includes("res.cloudinary.com")) return url; // Don't touch local images
+  return url.replace("/upload/", "/upload/w_800,h_800,c_fill,f_auto,q_90/");
+};
+
+
      const getStatusIcon = (message = "") => {
   if (message.includes("confirmed")) return "✅";
   if (message.includes("processing")) return "🔄";
@@ -67,12 +74,13 @@ useEffect(() => {
         <div className="hidden sm:block left h-fit sticky top-8">
           <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5 gap-3 flex flex-col justify-center items-center">
             <Image
-              className="h-[140px] w-full sm:w-[140px] rounded-full object-cover"
-              src={userData?.avatar || "/images/account.png"}
-              alt="User Profile"
-              width={140}
-              height={140}
-            />
+  className="h-[140px] w-full sm:w-[140px] rounded-full object-cover"
+  src={getOptimizedCloudinaryUrl(userData?.avatar) || "/images/account.png"}
+  alt="User Profile"
+  width={140}
+  height={140}
+  loading="lazy"
+/>
             <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide">
               {userData?.name}
             </h1>

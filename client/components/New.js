@@ -79,6 +79,11 @@ const New = () => {
   };
 
 
+  const getOptimizedCloudinaryUrl = (url) => {
+    if (!url?.includes("res.cloudinary.com")) return url;
+    return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
+  };
+
 
 
   return (
@@ -117,7 +122,7 @@ const New = () => {
                       onClick={() => router.push(`/product/${prd?._id}`)}
                     >
                       <Image
-                        src={prd?.images?.[0] || '/placeholder.png'}
+                        src={getOptimizedCloudinaryUrl(prd?.images?.[0] || '/placeholder.png')}
                         alt={prd?.name || 'Product Image'}
                         fill
                         sizes="(max-width: 768px) 100vw, 256px"

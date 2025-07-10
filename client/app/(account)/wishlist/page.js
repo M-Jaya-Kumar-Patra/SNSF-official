@@ -37,19 +37,28 @@ const Account = () => {
     }
   }, [isLogin, router]);
 
+
+  const getOptimizedCloudinaryUrl = (url) => {
+  if (!url?.includes("res.cloudinary.com")) return url; // Don't touch local images
+  return url.replace("/upload/", "/upload/w_800,h_800,c_fill,f_auto,q_90/");
+};
+
+
   return (
     <div className="flex w-full min-h-screen justify-center bg-slate-100">
       <div className="w-full sm:w-[1020px] sm:my-3 mx-auto flex justify-between">
         {/* Sidebar */}
         <div className="hidden sm:block left h-full">
           <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5 gap-3 flex flex-col justify-center items-center">
-            <Image
-              className="h-[140px] w-[140px] rounded-full object-cover"
-              src={userData?.avatar || "/images/account.png"}
-              alt="User Profile"
-              width={100}
-              height={100}
-            />
+           <Image
+  className="h-[140px] w-[140px] rounded-full object-cover"
+  src={getOptimizedCloudinaryUrl(userData?.avatar) || "/images/account.png"}
+  alt="User Profile"
+  width={140}
+  height={140}
+  loading="lazy"
+/>
+
             <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide">
               {userData?.name}
             </h1>
@@ -132,12 +141,14 @@ const Account = () => {
             onClick={() => router.push(`/product/${item?.productId}`)}
           >
             <Image
-              src={item.image}
-              alt={item.title || "Product"}
-              width={100}
-              height={100}
-              className="object-contain max-h-full max-w-full"
-            />
+  src={getOptimizedCloudinaryUrl(item.image)}
+  alt={item.title || "Product"}
+  width={100}
+  height={100}
+  className="object-contain max-h-full max-w-full"
+  loading="lazy"
+/>
+
           </div>
 
           {/* Product Info */}

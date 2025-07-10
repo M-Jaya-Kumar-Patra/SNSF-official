@@ -12,7 +12,7 @@ const nextConfig = withPWA({
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
+        protocol: 'https',  
         hostname: 'res.cloudinary.com',
       },
       
@@ -27,6 +27,7 @@ const nextConfig = withPWA({
   },
   experimental: {
     optimizeCss: true,
+    legacyBrowsers: false,
   },
 });
 

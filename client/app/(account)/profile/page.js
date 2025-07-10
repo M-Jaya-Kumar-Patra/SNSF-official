@@ -172,6 +172,11 @@ const Account = () => {
     }
   };
 
+  const getOptimizedCloudinaryUrl = (url) => {
+  if (!url?.includes("res.cloudinary.com")) return url; // Don't touch local images
+  return url.replace("/upload/", "/upload/w_800,h_800,c_fill,f_auto,q_90/");
+};
+
   const [showTopForm, setShowTopForm] = useState(false)
 
   if (!isLogin) return <div className="text-center mt-10">Loading...</div>;
@@ -193,12 +198,13 @@ const Account = () => {
             <div className="mt-2 mr-2 w-[90px] h-[90px] sm:w-[140px] sm:h-[140px] relative group overflow-hidden border   rounded-full border-gray-300 shadow">
             {!uploading && (
               <Image
-                src={userData?.avatar || "/images/account.png"}
-                alt="avatar"
-                width={50}
-                height={50}
-                className="w-full h-full object-cover"
-              />
+  src={getOptimizedCloudinaryUrl(userData?.avatar) || "/images/account.png"}
+  alt="avatar"
+  width={50}
+  height={50}
+  className="w-full h-full object-cover"
+/>
+
             )}
             <div
               className={`absolute inset-0 z-50 flex items-center justify-center transition-all duration-300 ${uploading

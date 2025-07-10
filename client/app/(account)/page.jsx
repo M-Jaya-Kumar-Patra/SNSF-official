@@ -22,6 +22,13 @@ const Account = () => {
     }
   }, [isLogin]);
   
+
+   const getOptimizedCloudinaryUrl = (url) => {
+  if (!url?.includes("/upload/")) return url;
+  return url.replace("/upload/", "/upload/w_140,h_140,c_fill,f_auto,q_90/");
+};
+
+
   if (isCheckingToken) return <Loading/>;
 
   return (
@@ -37,13 +44,16 @@ const Account = () => {
       {/* Sidebar */}
       <div className={`sm:block ${sidebarOpen ? 'block' : 'hidden'} w-full sm:w-[250px] border-r shadow-md sm:min-h-screen bg-white`}>
         <div className="p-4 flex flex-col items-center gap-3">
-          <Image
-            className="h-[100px] w-[100px] rounded-full object-cover"
-            src={userData?.avatar || "/images/account.png"}
-            alt="User Profile"
-            width={100}
-            height={100}
-          />
+         <Image
+  className="h-[100px] w-[100px] rounded-full object-cover"
+  src={getOptimizedCloudinaryUrl(userData?.avatar) || "/images/account.png"}
+  alt="User Profile"
+  width={100}
+  height={100}
+  loading="lazy"
+/>
+
+
           <h2 className="text-gray-700 text-base font-semibold text-center break-words">{userData?.name}</h2>
         </div>
 

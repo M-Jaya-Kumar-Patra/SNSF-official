@@ -92,6 +92,11 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
     };
   }, [menuOpen]);
 
+  const getOptimizedCloudinaryUrl = (url) => {
+    if (!url?.includes("res.cloudinary.com")) return url;
+    return url.replace("/upload/", "/upload/w_300,h_300,c_fit,fl_lossless,f_auto,q_100/");
+  };
+
   return (
     <nav className=" sticky top-0 sm:top-[-82px]   z-[300] bg-gradient-to-r from-indigo-950 via-indigo-900 to-[#1e40af]  text-white border-t border-[#1e293b] shadow-md">
 
@@ -102,18 +107,18 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
 <div className="flex items-center gap-0  sm:gap-1  flex-shrink-0 h-[45px] sm:h-[50px]">
   {/* Logo Icon */}
   <Image
-    src="/images/logo.png"
+    src={getOptimizedCloudinaryUrl("/images/logo.png")}
     alt="Logo"
     width={40}
     height={40}
     className="w-[45px] h-[45px] sm:w-[60px] sm:h-[60px] object-contain"
     priority
-    quality={75}
+    quality={90}
   />
 
   {/* Logo Text */}
   <Image
-    src="/images/snsf-text.png"
+    src={getOptimizedCloudinaryUrl("/images/snsf-text.png")}
     alt="SNSF"
     width={100}
     height={30}
@@ -121,8 +126,10 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                 w-[120px] h-[45px] sm:w-[160px] sm:h-[60px]
 
       object-contain"
-    priority
-    quality={75}
+    
+  priority // ✅ preloads the image
+  fetchPriority="high" // ✅ hints browser it's high-priority for LCP
+    quality={90}
   />
 </div>
 
@@ -138,7 +145,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
               <div className="relative block sm:hidden" ref={dropdownRef}>
                 <IconButton aria-label="Account" onClick={toggleMenu} className="text-slate-200">
                   <Image
-                    src={userData?.avatar || "/images/emptyAccount.png"}
+                    src={(userData?.avatar) || "/images/emptyAccount.png"}
                     alt="Account"
                     width={32}
                     height={32}
@@ -267,7 +274,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
     />
   ) : (
     <Image
-      src={userData?.avatar || "/images/emptyAccount.png"}
+      src={(userData?.avatar) || "/images/emptyAccount.png"}
       alt="Account"
       width={32}
       height={32}

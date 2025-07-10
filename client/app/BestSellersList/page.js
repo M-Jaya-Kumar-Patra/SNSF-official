@@ -34,6 +34,12 @@ const ProductListing = () => {
     };
     const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist()
 
+    const getOptimizedCloudinaryUrl = (url) => {
+  if (!url?.includes("res.cloudinary.com")) return url;
+  return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
+};
+
+
     return (
         <div className='w-full bg-slate-100 '>
 
@@ -61,12 +67,11 @@ const ProductListing = () => {
                                                     {prd?.images?.length > 0 && prd.images[0] && (
                                                         <div className="w-full aspect-[4/3] relative overflow-hidden cursor-pointer rounded-md" onClick={() => router.push(`/product/${prd?._id}`)}>
                                                             <Image
-                                                                src={prd.images[0]}
-                                                                alt={prd?.name || 'Product'}
-                                                                fill
-                                                                unoptimized
-                                                                className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-                                                            />
+  src={getOptimizedCloudinaryUrl(prd.images[0])}
+  alt={prd?.name || "Product"}
+  fill
+  className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+/>
                                                         </div>
 
                                                     )}

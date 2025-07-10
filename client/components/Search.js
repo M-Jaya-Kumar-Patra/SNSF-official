@@ -70,6 +70,11 @@ const Search = ({ onClose }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const getOptimizedCloudinaryUrl = (url) => {
+    if (!url?.includes("res.cloudinary.com")) return url;
+    return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
+  };
+
   return (
     <div
       ref={containerRef}
@@ -83,7 +88,7 @@ const Search = ({ onClose }) => {
                    transition duration-300"
       >
         <Image
-          src="/images/search.png"
+          src={getOptimizedCloudinaryUrl("/images/search.png")}
           alt="Search"
           width={20}
           height={20}
@@ -114,7 +119,7 @@ const Search = ({ onClose }) => {
               >
                 {item.images && (
                   <Image
-                    src={item.images[0] || item.images}
+                    src={getOptimizedCloudinaryUrl(item.images[0] || item.images)}
                     alt={item.name}
                     height={40}
                     width={40}

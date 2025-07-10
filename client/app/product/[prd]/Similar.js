@@ -77,6 +77,11 @@ const Similar = (props) => {
     return () => container.removeEventListener("scroll", checkScrollLimits);
   }, [similarProducts]);
 
+  const getOptimizedCloudinaryUrl = (url) => {
+    if (!url?.includes("res.cloudinary.com")) return url;
+    return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
+  };
+
   return (
     <div className="flex flex-col items-center mt-3 pb-5 sm:pb-8 bg-slate-100 w-full">
       <h1 className={`text-2xl sm:text-3xl font-bold text-black mt-4 mb-4 sm:mt-8 sm:mb-8 ${joSan.className}`}>
@@ -144,7 +149,7 @@ const Similar = (props) => {
                   >
                     <div className="w-full relative rounded-md overflow-hidden" style={{ aspectRatio: "4 / 3" }}>
                       <Image
-                        src={prd.images?.[0] || "/images/placeholder.png"}
+                        src={getOptimizedCloudinaryUrl(prd.images?.[0] || "/images/placeholder.png")}
                         alt={prd.name || "Product Image"}
                         fill
                         sizes="(max-width: 768px) 100vw, 256px"

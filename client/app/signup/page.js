@@ -102,6 +102,11 @@ export default function Signup() {
 };
 
 
+const getOptimizedCloudinaryUrl = (url) => {
+    if (!url?.includes("res.cloudinary.com")) return url;
+    return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
+  };
+
   return (
     <div className="flex justify-center items-center w-full h-screen bg-gray-100">
       <div className="w-[300px] border rounded-md shadow overflow-hidden bg-white">
@@ -110,7 +115,7 @@ export default function Signup() {
         <div className="w-full py-4 px-5 flex flex-col items-center">
           <Image
             className="w-16 h-16 rounded-full mt-4"
-            src="/images/logo.png"
+            src={getOptimizedCloudinaryUrl("/images/logo.png")}
             alt="SNSF Logo"
             width={64}
             height={64}

@@ -27,6 +27,10 @@ const ImageUploader = () => {
     setSelectedImages(validFiles);
     setPreviewUrls(validFiles.map(file => URL.createObjectURL(file)));
   };
+  const getOptimizedCloudinaryUrl = (url) => {
+    if (!url?.includes("res.cloudinary.com")) return url;
+    return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
+  };
 
 
   return (
@@ -57,7 +61,7 @@ const ImageUploader = () => {
         {previewUrls.map((url, idx) => (
           <Image
             key={idx}
-            src={url}
+            src={getOptimizedCloudinaryUrl(url)}
             alt={`Preview ${idx}`}
             className="w-28 h-28 rounded border"
             width={100}

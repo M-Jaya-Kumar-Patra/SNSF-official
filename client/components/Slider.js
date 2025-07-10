@@ -53,6 +53,15 @@ const Slider = () => {
     setCurrentIndex((prev) => (prev + 1) % slides.length);
   };
 
+
+  const getOptimizedCloudinaryUrl = (url) => {
+  if (!url?.includes("/upload/")) return url;
+
+  return url.replace(
+    "/upload/",
+    "/upload/w_1920,h_1080,c_fill,f_auto,q_80/"
+  );
+};
   // ✅ Render nothing while loading or waiting for token
    if (isCheckingToken || localLoading || !slides.length) {
     return (
@@ -90,7 +99,7 @@ const Slider = () => {
 
         {/* Slide Image */}
         <Image
-          src={slides[currentIndex]?.images[0] || "/"}
+  src={getOptimizedCloudinaryUrl(slides[currentIndex]?.images[0]) || "/"}
           alt={`Slide ${currentIndex + 1}`}
           fill
           className="object-cover transition-opacity duration-500 ease-in-out cursor-pointer"

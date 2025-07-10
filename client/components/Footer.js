@@ -12,6 +12,12 @@ const Footer = () => {
     window.location.href = "tel:+919776501230";
   };
 
+  const getOptimizedCloudinaryUrl = (url) => {
+    if (!url?.includes("res.cloudinary.com")) return url;
+    return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
+  };
+
+
   return (
     <footer className="bg-black text-white px-6 md:px-16 pt-10 pb-6 font-sans">
       {/* Main Grid */}
@@ -58,7 +64,7 @@ const Footer = () => {
               rel="noopener noreferrer"
             >
               <Image
-                src="/images/youtube.png"
+                src={getOptimizedCloudinaryUrl("/images/youtube.png")}
                 alt="YouTube"
                 width={30}
                 height={30}
@@ -71,7 +77,12 @@ const Footer = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Image src="/images/whatsapp.png" width={30} height={30} alt="WhatsApp" />
+              <Image
+                src={getOptimizedCloudinaryUrl("/images/whatsapp.png")}
+                width={30}
+                height={30}
+                alt="WhatsApp"
+              />
             </a>
           </div>
         </div>

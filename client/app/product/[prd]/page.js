@@ -3,7 +3,10 @@
 import ProductPageClient from './ProductPageClient';
 
 export async function generateMetadata({ params }) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/product/${params.prd}`, {
+  const prdId =  params?.prd; // ✅ safe access
+
+
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/product/${prdId}`, {
     cache: "no-store",
   });
 
@@ -31,7 +34,7 @@ export async function generateMetadata({ params }) {
 
   const productImage = images?.[0] || "/snsf-banner.jpg";
   const productDescription = description || `Buy ${name} at SNSF. Durable steel furniture with features like ${specifications.material || 'top-grade materials'}, ${specifications.fabric || 'premium fabrics'}.`;
-  const productUrl = `https://snsteelfabrication.com/product/${params.prd}`;
+  const productUrl = `https://snsteelfabrication.com/product/${prdId}`;
 
   return {
     title: `${name} – ${brand || "SNSF"} | Buy Steel Furniture Online`,
@@ -60,7 +63,7 @@ export async function generateMetadata({ params }) {
           alt: `${name} - ${brand}`,
         },
       ],
-      type: "product",
+      type: "website",
     },
     twitter: {
       card: "summary_large_image",
@@ -72,6 +75,10 @@ export async function generateMetadata({ params }) {
 }
 
 
-export default function Page({ params }) {
-  return <ProductPageClient prdId={params.prd} />;
+
+
+
+export default async function Page({ params }) {
+  const prdId =  params?.prd; // ✅ safe access
+  return <ProductPageClient prdId={prdId} />;
 }
