@@ -59,7 +59,7 @@ const Slider = () => {
 
   return url.replace(
     "/upload/",
-    "/upload/w_1920,h_1080,c_fill,f_auto,q_90/"
+    "/upload/w_1920,h_1080,c_fit,f_auto,q_90/"
   );
 };
   // ✅ Render nothing while loading or waiting for token

@@ -27,7 +27,7 @@ const AllinOne = () => {
 
     const getOptimizedCloudinaryUrl = (url) => {
     if (!url?.includes("res.cloudinary.com")) return url;
-    return url.replace("/upload/", "/upload/w_800,h_800,c_fill,f_auto,q_90/");
+    return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
   };
 
 
