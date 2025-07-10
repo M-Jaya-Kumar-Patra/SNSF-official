@@ -1,4 +1,5 @@
 // app/layout.tsx or layout.js
+"use client"
 import "./globals.css";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
@@ -34,8 +35,8 @@ export const metadata = {
     images: [
       {
         url: "https://snsteelfabrication.com/images/logo.png",
-        width: 1200,
-        height: 630,
+        width: 500,
+        height: 500,
         alt: "S N Steel Fabrication Logo",
       },
     ],
