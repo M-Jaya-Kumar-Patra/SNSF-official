@@ -1,5 +1,3 @@
-// app/layout.tsx or layout.js
-"use client"
 import "./globals.css";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
@@ -15,7 +13,8 @@ import { WishlistProvider } from "./context/WishlistContext";
 import { NoticeProviders } from "./context/NotificationContext";
 import GlobalLoader from "@/components/GlobalLoader";
 import BottomNav from "@/components/BottomNav";
-import { useEffect } from "react";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister"; 
+
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,7 +22,6 @@ const inter = Inter({
   display: "swap",
 });
 
-// ✅ ✅ TOP-LEVEL export for SEO
 export const metadata = {
   title: "S N Steel Fabrication – Steel Furniture, Customized for Comfort and Class",
   description: "S N Steel Fabrication offers durable, modern, and customizable steel furniture for homes and businesses. Premium quality at affordable prices.",
@@ -53,10 +51,7 @@ export const metadata = {
     shortcut: "/favicon-32x32.png",
     apple: "/apple-touch-icon.png",
   },
-  themeColor: "#000000",
   manifest: "/manifest.json",
-  viewport:
-    "width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes",
   appleWebApp: {
     capable: true,
     title: "SNSF",
@@ -64,23 +59,20 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
-  useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("/sw.js")
-        .then((registration) => {
-          console.log("✅ Service Worker registered:", registration);
-        })
-        .catch((error) => {
-          console.error("❌ Service Worker registration failed:", error);
-        });
-    }
-  }, []);
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
 
+export const themeColor = "#000000";
+
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${inter.className} w-full`}>
+        <ServiceWorkerRegister /> {/* ✅ Mounts only on client */}
         <AuthProvider>
           <AuthWrapper>
             <AlertProvider>
