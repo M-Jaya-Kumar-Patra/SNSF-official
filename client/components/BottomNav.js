@@ -192,7 +192,7 @@ const BottomNav = () => {
             .map((cat) => (
               <div key={cat._id} className="space-y-2 border-b border-gray-200 pb-3">
                 {/* Main Category Row */}
-                <div className="flex justify-between items-center text-slate-800 text-[17px]">
+                <div className="flex justify-between items-center text-slate-800 text-[18px]">
                   <span
                     onClick={() => {
                       router.push(`/ProductListing?catId=${cat._id}`);
@@ -207,7 +207,7 @@ const BottomNav = () => {
                   {cat.children?.length > 0 && (
                     <span
                       onClick={() => toggleCat(cat._id)}
-                      className="cursor-pointer text-[17px] hover:text-indigo-800"
+                      className="cursor-pointer text-[18px] hover:text-indigo-800"
                     >
                       {expandedCat === cat._id ? "−" : "+"}
                     </span>
@@ -216,7 +216,7 @@ const BottomNav = () => {
 
                 {/* Subcategories */}
                 {expandedCat === cat._id && cat.children?.length > 0 && (
-                  <ul className="pl-3 mt-4 space-y-2 text-[16px] text-indigo-900 animate-fadeIn">
+                  <ul className="pl-3 mt-4 space-y-2 text-[17px] text-indigo-900 animate-fadeIn">
                     {cat.children
                       .slice()
                       .sort((a, b) => a.sln - b.sln)
@@ -241,7 +241,7 @@ const BottomNav = () => {
                                   e.stopPropagation();
                                   toggleSubCat(subCat._id);
                                 }}
-                                className="cursor-pointer text-[16px] hover:text-indigo-900"
+                                className="cursor-pointer text-[17px] hover:text-indigo-900"
                               >
                                 {expandedSubCat === subCat._id ? "−" : "+"}
                               </span>
@@ -251,7 +251,7 @@ const BottomNav = () => {
                           {/* Third Subcategories */}
                           {expandedSubCat === subCat._id &&
                             subCat.children?.length > 0 && (
-                              <ul className="pl-4 space-y-2 text-[16px] text-indigo-600 animate-fadeIn">
+                              <ul className="pl-4 space-y-2 text-[17px] text-indigo-600 animate-fadeIn">
                                 {subCat.children
                                   .slice()
                                   .sort((a, b) => a.sln - b.sln)
