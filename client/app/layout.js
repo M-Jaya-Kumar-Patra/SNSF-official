@@ -22,6 +22,10 @@ const inter = Inter({
   display: "swap",
 });
 
+
+export const metadataBase = new URL("https://snsteelfabrication.com");
+
+
 export const metadata = {
   title: "S N Steel Fabrication – Steel Furniture, Customized for Comfort and Class",
   description: "S N Steel Fabrication offers durable, modern, and customizable steel furniture for homes and businesses. Premium quality at affordable prices.",
@@ -44,7 +48,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "S N Steel Fabrication",
     description: "Modern & customizable steel furniture.",
-    images: ["https://snsteelfabrication.com/images/logo.png"],
+    images: ["https://snsteelfabrication.com/snsf-banner.jpg"],
   },
   icons: {
     icon: "/favicon.ico",
