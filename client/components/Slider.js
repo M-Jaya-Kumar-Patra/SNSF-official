@@ -59,7 +59,7 @@ const Slider = () => {
 
   return url.replace(
     "/upload/",
-    "/upload/w_1920,h_1080,c_fill,f_auto,q_80/"
+    "/upload/w_1920,h_1080,c_fill,f_auto,q_90/"
   );
 };
   // ✅ Render nothing while loading or waiting for token
@@ -104,6 +104,7 @@ const Slider = () => {
           fill
           className="object-cover transition-opacity duration-500 ease-in-out cursor-pointer"
           priority
+          fetchPriority="high"
           onClick={()=>router.push(slides[currentIndex].url)}
         />
 
