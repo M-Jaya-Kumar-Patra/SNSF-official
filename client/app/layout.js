@@ -51,6 +51,7 @@ export const metadata = {
     description: "Modern & customizable steel furniture.",
     images: ["https://snsteelfabrication.com/snsf-banner.jpg"],
   },
+  keywords: ["steel furniture", "custom steel", "qww65er4", "76tyty66", "999845ufhy", "SNSF", "modern fabrication", "durable furniture"],
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon-32x32.png",
