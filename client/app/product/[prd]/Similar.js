@@ -86,6 +86,9 @@ const Similar = (props) => {
       <div className="relative w-full max-w-[1100px] mx-auto px-4">
         {/* Left Arrow */}
         {!hideArrows && (
+          <>
+          
+          
           <button
             onClick={() => scroll("left")}
             disabled={isAtStart}
@@ -97,9 +100,7 @@ const Similar = (props) => {
           >
             <ChevronLeft />
           </button>
-        )}
 
-        {/* Scrollable product container */}
         <div
           ref={scrollRef}
           className="overflow-x-auto whitespace-nowrap scroll-smooth scrollbar-hide py-5"
@@ -163,8 +164,6 @@ const Similar = (props) => {
           </div>
         </div>
 
-        {/* Right Arrow */}
-        {!hideArrows && (
           <button
             onClick={() => scroll("right")}
             disabled={isAtEnd}
@@ -176,7 +175,10 @@ const Similar = (props) => {
           >
             <ChevronRight />
           </button>
+
+          </>
         )}
+        
       </div>
     </div>
   );

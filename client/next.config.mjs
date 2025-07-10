@@ -1,15 +1,21 @@
 import createPWA from 'next-pwa';
 
-const withPWA = createPWA.default ?? createPWA;
+const withPWA = createPWA.default ?? createPWA; // ✅ handles both ESM & CommonJS
 const isDev = process.env.NODE_ENV === 'development';
 
-const nextConfig = {
+const nextConfig = withPWA({
+  dest: 'public',
+  disable: isDev,
+  register: true,
+  skipWaiting: true,
+})({
   images: {
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'res.cloudinary.com',
       },
+      
       {
         protocol: 'https',
         hostname: 'snsteelfabrication.com',
@@ -22,12 +28,7 @@ const nextConfig = {
   experimental: {
     optimizeCss: true,
   },
-  pwa: {
-    dest: 'public',
-    disable: isDev,
-    register: true,
-    skipWaiting: true,
-  },
-};
+});
 
-export default withPWA(nextConfig);
+export default nextConfig;
+
