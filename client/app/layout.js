@@ -32,9 +32,9 @@ export const metadata = {
     siteName: "SNSF",
     images: [
       {
-        url: "https://snsteelfabrication.com/images/logo.png",
-        width: 500,
-        height: 500,
+        url: "https://snsteelfabrication.com/snsf-banner.jpg",
+        width: 1200,
+        height: 630,
         alt: "S N Steel Fabrication Logo",
       },
     ],
