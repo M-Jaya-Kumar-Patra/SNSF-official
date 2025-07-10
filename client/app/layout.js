@@ -37,6 +37,7 @@ export const metadata = {
     images: [
       {
         url: "https://snsteelfabrication.com/snsf-banner.jpg",
+        secureUrl: "https://snsteelfabrication.com/snsf-banner.jpg", // ✅ ADD THIS
         width: 1200,
         height: 630,
         alt: "S N Steel Fabrication Logo",
