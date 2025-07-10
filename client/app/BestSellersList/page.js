@@ -1,23 +1,15 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import { usePrd } from '@/app/context/ProductContext';
-import Box from '@mui/material/Box';
-import Rating from '@mui/material/Rating';
-import { IoMdStar } from "react-icons/io";
-import { fetchDataFromApi, postData } from '@/utils/api';
+import { postData } from '@/utils/api';
 import { useAuth } from '@/app/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useWishlist } from '../context/WishlistContext';
 import { MdFavorite } from "react-icons/md";
 import { MdFavoriteBorder } from "react-icons/md";
 import Image from "next/image";
-import Loading from '@/components/Loading';
 import Skeleton from '@mui/material/Skeleton';
 
 
@@ -28,7 +20,7 @@ const ProductListing = () => {
     const { prdData, productsData, setProductsData, getProductsData } = usePrd()
     const { userData, isLogin, setIsLogin, setUserData, loading, setLoading, login, logout, isCheckingToken } = useAuth()
     const router = useRouter()
-   
+
 
     useEffect(() => {
         setLoading(false)
@@ -40,19 +32,6 @@ const ProductListing = () => {
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [selectedSortVal, setSelectedSortVal] = useState("Name, A to Z")
-
-
-    const [quantity, setQuantity] = useState(1)
-
-
-
     const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist()
 
     return (
@@ -63,19 +42,19 @@ const ProductListing = () => {
                     <div className='flex-grow h-full bg-white p-2  sm:p-3 shadow-lg text-black'>
 
 
-<div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
-  {(isCheckingToken || loading || !prdData)
-    ? Array.from({ length: 8 }).map((_, idx) => (
-        <div key={idx} className="w-full min-h-[260px] shadow-md flex flex-col items-start justify-between p-3 bg-white ">
-          <Skeleton variant="rectangular" width="100%" height={260} className=" !bg-slate-300/50" />
-          <Skeleton variant="text" width="90%" height={25} sx={{ mt: 2 }} className=" !bg-slate-300/50" />
-          <Skeleton variant="text" width="60%" height={20} className=" !bg-slate-300/50" />
-        </div>
-      ))
-    : prdData
-        ?.filter(prd => prd?.isFeatured)
-        .reverse()
-        .map((prd, index) => (
+                        <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
+                            {(isCheckingToken || loading || !prdData)
+                                ? Array.from({ length: 8 }).map((_, idx) => (
+                                    <div key={idx} className="w-full min-h-[260px] shadow-md flex flex-col items-start justify-between p-3 bg-white ">
+                                        <Skeleton variant="rectangular" width="100%" height={260} className=" !bg-slate-300/50" />
+                                        <Skeleton variant="text" width="90%" height={25} sx={{ mt: 2 }} className=" !bg-slate-300/50" />
+                                        <Skeleton variant="text" width="60%" height={20} className=" !bg-slate-300/50" />
+                                    </div>
+                                ))
+                                : prdData
+                                    ?.filter(prd => prd?.isFeatured)
+                                    .reverse()
+                                    .map((prd, index) => (
                                         <div key={prd?._id || index} className="relative group w-full">
                                             <div className="w-full min-h-[260px] shadow-md flex flex-col items-center justify-between p-3 bg-white hover:shadow-[rgba(0,0,0,0.3)] sm:hover:shadow-xl transition duration-300">
                                                 <div className="w-full flex flex-col items-center">
@@ -214,10 +193,10 @@ const ProductListing = () => {
                                             </div>
                                         </div>
                                     ))}
-</div>
+                        </div>
 
 
-                        
+
 
                     </div>
                 </div>

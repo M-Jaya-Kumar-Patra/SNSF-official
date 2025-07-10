@@ -1,5 +1,4 @@
-"use client";
-
+// app/layout.tsx or layout.js
 import "./globals.css";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
@@ -15,24 +14,56 @@ import { WishlistProvider } from "./context/WishlistContext";
 import { NoticeProviders } from "./context/NotificationContext";
 import GlobalLoader from "@/components/GlobalLoader";
 import BottomNav from "@/components/BottomNav";
-import useInternetCheck from "@/hooks/useInternetCheck";
-import NoInternet from "@/components/noInternet"; // import directly
-
 import { useEffect } from "react";
 
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "700"],
-  display: "swap", // ✅ Add this
+  display: "swap",
 });
 
+// ✅ ✅ TOP-LEVEL export for SEO
+export const metadata = {
+  title: "S N Steel Fabrication – Steel Furniture, Customized for Comfort and Class",
+  description: "S N Steel Fabrication offers durable, modern, and customizable steel furniture for homes and businesses. Premium quality at affordable prices.",
+  openGraph: {
+    title: "S N Steel Fabrication",
+    description: "Modern & customizable steel furniture.",
+    url: "https://snsteelfabrication.com",
+    siteName: "SNSF",
+    images: [
+      {
+        url: "https://snsteelfabrication.com/images/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "S N Steel Fabrication Logo",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "S N Steel Fabrication",
+    description: "Modern & customizable steel furniture.",
+    images: ["https://snsteelfabrication.com/images/logo.png"],
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-32x32.png",
+    apple: "/apple-touch-icon.png",
+  },
+  themeColor: "#000000",
+  manifest: "/manifest.json",
+  viewport:
+    "width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes",
+  appleWebApp: {
+    capable: true,
+    title: "SNSF",
+    statusBarStyle: "default",
+  },
+};
+
 export default function RootLayout({ children }) {
-
-
-  const isOnline = useInternetCheck();
-
-
-  // ✅ Register Service Worker
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
@@ -48,57 +79,31 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <head>
-  <title>S N Steel Fabrication – Steel Furniture, Customized for Comfort and Class</title>
-   <meta name="description" content="S N Steel Fabrication offers durable, modern, and customizable steel furniture for homes and businesses. Premium quality at affordable prices." />
-  <link rel="manifest" href="/manifest.json" />
-  
-
-  <meta name="theme-color" content="#000000" />
-  <link rel="icon" href="/favicon.ico" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
- <meta name="mobile-web-app-capable" content="yes" />
-
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="SNSF" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes"
-  />
-</head>
-
-
       <body className={`${inter.className} w-full`}>
-        {!isOnline ? (
-          <NoInternet />
-        ) : (
-          <AuthProvider>
-            <AuthWrapper>
-              <AlertProvider>
-                <NoticeProviders>
-                  <ItemProvider>
-                    <CatProvider>
-                      <WishlistProvider>
-                        <PrdProvider>
-                          <Navbar />
-                          <GlobalLoader />
-                          <main className="min-h-screen flex flex-col">
-                            {children}
-                          </main>
-                          <BottomNav />
-                          <Footer />
-                          <Toaster position="top-right" />
-                        </PrdProvider>
-                      </WishlistProvider>
-                    </CatProvider>
-                  </ItemProvider>
-                </NoticeProviders>
-              </AlertProvider>
-            </AuthWrapper>
-          </AuthProvider>
-        )}
+        <AuthProvider>
+          <AuthWrapper>
+            <AlertProvider>
+              <NoticeProviders>
+                <ItemProvider>
+                  <CatProvider>
+                    <WishlistProvider>
+                      <PrdProvider>
+                        <Navbar />
+                        <GlobalLoader />
+                        <main className="min-h-screen flex flex-col">
+                          {children}
+                        </main>
+                        <BottomNav />
+                        <Footer />
+                        <Toaster position="top-right" />
+                      </PrdProvider>
+                    </WishlistProvider>
+                  </CatProvider>
+                </ItemProvider>
+              </NoticeProviders>
+            </AlertProvider>
+          </AuthWrapper>
+        </AuthProvider>
       </body>
     </html>
   );

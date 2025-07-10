@@ -35,6 +35,7 @@ const ProductListing = () => {
   } = useWishlist();
 
   useEffect(() => {
+    window.scrollTo(0,0)
     const fetchProducts = async () => {
       setLoadingProducts(true);
       try {
@@ -62,7 +63,6 @@ const ProductListing = () => {
       }
     };
     fetchProducts();
-    window.scrollTo(0,0)
   }, [catId, subCatId, thirdSubCatId]);
 
   if (isCheckingToken || loadingProducts) return <Loading />;
@@ -121,8 +121,8 @@ const ProductListing = () => {
                       )}
                     </div>
                     <div className="w-full mt-3">
-                      <h1 className="text-black text-[18px] font-medium">{prd?.name}</h1>
-                      <p className="text-gray-500 text-[16px] mt-1">{prd?.brand}</p>
+                      <h1 className="text-black text-[18px] font-medium truncate">{prd?.name}</h1>
+                      <p className={(prd?.brand)?`text-gray-500 text-[16px] mt-1`:`text-white text-[16px] mt-1 cursor-default`}>{prd?.brand || "Not mentioned"}</p>
                     </div>
                   </div>
                 </div>
