@@ -29,7 +29,14 @@ import Skeleton from "@mui/material/Skeleton";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-const ProductPageClient = ({ prdId })  => {
+import { PiShareFat } from "react-icons/pi";
+
+
+
+
+
+
+const ProductPageClient = ({prdId}) => {
   const [productImages, setProductImages] = useState([]);
   const [openedProduct, setOpenedProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState();
@@ -105,50 +112,82 @@ const ProductPageClient = ({ prdId })  => {
           {/* Mobile Carousel */}
           {/* Mobile Carousel */}
           <div className="block sm:hidden w-full relative">
-            <Swiper cssMode={true} spaceBetween={10} slidesPerView={1} className="w-full h-auto">
-              {productImages?.map((src, idx) => (
-                <SwiperSlide key={idx}>
-                  <Image
-                    src={src}
-                    alt={`Slide ${idx + 1}`}
-                    className="w-full h-[300px] object-contain"
-                    width={500}
-                    height={300}
-                    unoptimized
-                    onClick={() => {
-                      setShowLarge(src)
-                      setHideArrows(true)
-                    }} // show this image in modal
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
+  <Swiper cssMode={true} spaceBetween={10} slidesPerView={1} className="w-full h-auto">
+    {productImages?.map((src, idx) => (
+      <SwiperSlide key={idx}>
+        <Image
+          src={src}
+          alt={`Slide ${idx + 1}`}
+          className="w-full h-[300px] object-contain"
+          width={500}
+          height={300}
+          unoptimized
+          onClick={() => {
+            setShowLarge(src);
+            setHideArrows(true);
+          }} // show this image in modal
+        />
+      </SwiperSlide>
+    ))}
+  </Swiper>
 
-            {/* Wishlist Button for mobile */}
-            <div
-              className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-3 right-3 cursor-pointer z-[90]"
-              onClick={(e) => {
-                if (!isLogin) {
-                  router.push("/login");
-                } else {
-                  const isAlreadyInWishlist = userData?.wishlist?.some(item => item === String(openedProduct?._id));
-                  if (isAlreadyInWishlist) {
-                    const wishItem = wishlistData?.find(itemInWishData => itemInWishData.productId === openedProduct?._id);
-                    const itemId = wishItem?._id;
-                    if (itemId) removeFromWishlist(e, itemId, openedProduct?._id);
-                  } else {
-                    addToWishlist(e, openedProduct, userData?._id);
-                  }
-                }
-              }}
-            >
-              {isLogin && userData?.wishlist?.some(item => item === String(openedProduct?._id)) ? (
-                <MdFavorite className="!text-rose-600 text-[22px] z-10" />
-              ) : (
-                <MdFavoriteBorder className="text-slate-600 text-[22px]" />
-              )}
-            </div>
-          </div>
+  {/* Wishlist Button for mobile */}
+  <div
+    className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-3 right-3 cursor-pointer z-[90]"
+    onClick={(e) => {
+      if (!isLogin) {
+        router.push("/login");
+      } else {
+        const isAlreadyInWishlist = userData?.wishlist?.some(item => item === String(openedProduct?._id));
+        if (isAlreadyInWishlist) {
+          const wishItem = wishlistData?.find(itemInWishData => itemInWishData.productId === openedProduct?._id);
+          const itemId = wishItem?._id;
+          if (itemId) removeFromWishlist(e, itemId, openedProduct?._id);
+        } else {
+          addToWishlist(e, openedProduct, userData?._id);
+        }
+      }
+    }}
+  >
+    {isLogin && userData?.wishlist?.some(item => item === String(openedProduct?._id)) ? (
+      <MdFavorite className="!text-rose-600 text-[22px] z-10" />
+    ) : (
+      <MdFavoriteBorder className="text-slate-600 text-[22px]" />
+    )}
+  </div>
+
+  {/* Share Button for mobile (below Wishlist) */}
+  <div
+    className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-12 right-3 cursor-pointer z-[90]"
+    onClick={async () => {
+  const shareData = {
+    title: openedProduct?.name,
+    text: `Check out this product: ${openedProduct?.name}\nImage: ${openedProduct?.images?.[0] || ''}`,
+    url: window.location.href,
+  };
+
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+    } catch (err) {
+      console.error("Error sharing:", err);
+    }
+  } else {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      alert("Product URL copied to clipboard!");
+    } catch (err) {
+      alert("Share not supported and failed to copy URL.");
+    }
+  }
+}}
+
+    title="Share product"
+  >
+    <PiShareFat className="text-slate-600 text-[21px]" />
+  </div>
+</div>
+
 
 
           {/* Fullscreen Modal for Mobile Large View */}
@@ -201,74 +240,102 @@ const ProductPageClient = ({ prdId })  => {
 
           {/* Desktop Thumbnail + Main Image */}
           <div className="hidden sm:flex gap-2 h-auto">
-            <div className="w-[75px] overflow-y-auto h-full p-[2px] border scrollbar-hide">
-              <ul className="space-y-1">
-                {productImages?.map((src, idx) => (
-                  <li
-                    key={idx}
-                    className={`border rounded cursor-pointer ${selectedImage === src ? "ring-2 ring-blue-500" : ""}`}
-                    onClick={() => setSelectedImage(src)}
-                  >
-                    <Image
-                      src={src}
-                      alt={`Thumbnail ${idx + 1}`}
-                      className="w-[128px] h-[64px] object-contain"
-                      width={100}
-                      height={100}
-                    />
+  <div className="w-[75px] overflow-y-auto h-full p-[2px] border scrollbar-hide">
+    <ul className="space-y-1">
+      {productImages?.map((src, idx) => (
+        <li
+          key={idx}
+          className={`border rounded cursor-pointer ${selectedImage === src ? "ring-2 ring-blue-500" : ""}`}
+          onClick={() => setSelectedImage(src)}
+        >
+          <Image
+            src={src}
+            alt={`Thumbnail ${idx + 1}`}
+            className="w-[128px] h-[64px] object-contain"
+            width={100}
+            height={100}
+          />
+        </li>
+      ))}
+    </ul>
+  </div>
 
+  <div className="w-full relative">
+    <div className="w-full sm:w-[319px] bg-gray-100 sm:h-full flex justify-center items-center relative">
+      <Image
+        className="h-full w-full object-contain border cursor-zoom-in"
+        src={selectedImage || productImages?.[0] || "/"}
+        alt="Selected Product"
+        unoptimized
+        width={300}
+        height={300}
+        onClick={() => {
+          setShowLarge(selectedImage);
+          setHideArrows(true);
+        }}
+      />
 
-                  </li>
-                ))}
-              </ul>
-            </div>
+      {/* Wishlist Button */}
+      <div
+        className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-4 right-3 cursor-pointer z-[500]"
+        onClick={(e) => {
+          if (!isLogin) {
+            router.push("/login");
+          } else {
+            const isAlreadyInWishlist = userData?.wishlist?.some(item => item === String(openedProduct?._id));
+            if (isAlreadyInWishlist) {
+              const wishItem = wishlistData?.find(itemInWishData => itemInWishData.productId === openedProduct?._id);
+              const itemId = wishItem?._id;
+              if (itemId) removeFromWishlist(e, itemId, openedProduct?._id);
+            } else {
+              addToWishlist(e, openedProduct, userData?._id);
+            }
+          }
+        }}
+      >
+        {isLogin && userData?.wishlist?.some(item => item === String(openedProduct?._id)) ? (
+          <MdFavorite className="!text-rose-600 text-[22px] z-10" />
+        ) : (
+          <MdFavoriteBorder className="text-slate-600 text-[22px]" />
+        )}
+      </div>
 
-            <div className="w-full relative">
-              <div className="w-full sm:w-[319px] bg-gray-100 sm:h-full flex justify-center items-center relative">
-                <Image
-                  className="h-full w-full object-contain border cursor-zoom-in"
-                  src={selectedImage || productImages?.[0] || "/"}
-                  alt="Selected Product"
-                  unoptimized
-                  width={300}
-                  height={300}
-                  onClick={() => {
-                    setShowLarge(selectedImage)
-                    setHideArrows(true)
-                  }} // Open modal
-                />
+      {/* Share Button (below Wishlist) */}
+      <div
+        className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-14 right-3 cursor-pointer z-[500]"
+        onClick={async () => {
+  const shareData = {
+    title: openedProduct?.name,
+    text: `Check out this product: ${openedProduct?.name}\nImage: ${openedProduct?.images?.[0] || ''}`,
+    url: window.location.href,
+  };
 
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+    } catch (err) {
+      console.error("Error sharing:", err);
+    }
+  } else {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      alert("Product URL copied to clipboard!");
+    } catch (err) {
+      alert("Share not supported and failed to copy URL.");
+    }
+  }
+}}
 
-                {/* Wishlist Button */}
-                <div
-                  className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-4 right-3 cursor-pointer z-[500]"
-                  onClick={(e) => {
-                    if (!isLogin) {
-                      router.push("/login");
-                    } else {
-                      const isAlreadyInWishlist = userData?.wishlist?.some(item => item === String(openedProduct?._id));
-                      if (isAlreadyInWishlist) {
-                        const wishItem = wishlistData?.find(itemInWishData => itemInWishData.productId === openedProduct?._id);
-                        const itemId = wishItem?._id;
-                        if (itemId) removeFromWishlist(e, itemId, openedProduct?._id);
-                      } else {
-                        addToWishlist(e, openedProduct, userData?._id);
-                      }
-                    }
-                  }}
-                >
-                  {isLogin && userData?.wishlist?.some(item => item === String(openedProduct?._id)) ? (
-                    <MdFavorite className="!text-rose-600 text-[22px] z-10" />
-                  ) : (
-                    <MdFavoriteBorder className="text-slate-600 text-[22px]" />
-                  )}
-                </div>
-              </div>
+        title="Share product"
+      >
+        <PiShareFat className="text-slate-600 text-[21px]" />
+      </div>
+    </div>
 
-              {/* Buttons */}
+    {/* Buttons */}
+  </div>
+</div>
 
-            </div>
-          </div>
 
 
           {/* Fullscreen Modal for Large Image View */}
@@ -331,7 +398,9 @@ const ProductPageClient = ({ prdId })  => {
 
 
 
-          <div className=" flex justify-around my-2 mt-10 gap-2">
+          {!hideArrows && (
+            <>
+            <div className=" flex justify-around my-2 mt-10 gap-2">
 
 
 
@@ -403,6 +472,8 @@ const ProductPageClient = ({ prdId })  => {
             </Button>
 
           </div>
+          </>
+          )}
 
 
 

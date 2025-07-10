@@ -3,7 +3,7 @@
 import ProductPageClient from './ProductPageClient';
 
 export async function generateMetadata({ params }) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/product/${params.prdId}`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/product/${params.prd}`, {
     cache: "no-store",
   });
 
@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
   const productName = product?.name || "Product";
   const productImage = product?.images?.[0] || "/snsf-banner.jpg";
   const productDescription = "Check out this amazing product!";
-  const productUrl = `https://snsteelfabrication.com/product/${params.prdId}`;
+  const productUrl = `https://snsteelfabrication.com/product/${params.prd}`;
 
   return {
     title: productName,
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }) {
         },
       ],
       url: productUrl,
-      type: "product",
+      type: "website",
     },
     twitter: {
       card: "summary_large_image",
@@ -42,5 +42,5 @@ export async function generateMetadata({ params }) {
 }
 
 export default function Page({ params }) {
-  return <ProductPageClient prdId={params.prdId} />;
+  return <ProductPageClient prdId={params.prd} />;
 }
