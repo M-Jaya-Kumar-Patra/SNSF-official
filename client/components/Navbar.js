@@ -147,9 +147,9 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                   <Image
                     src={(userData?.avatar) || "/images/emptyAccount.png"}
                     alt="Account"
-                    width={40}
-                    height={40}
-                    className="!w-[40px] !h-[40px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
+                    width={37}
+                    height={37}
+                    className="!w-[37px] !h-[37px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
                   />
                 </IconButton>
 
