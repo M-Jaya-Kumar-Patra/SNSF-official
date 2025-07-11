@@ -71,6 +71,19 @@ const ProductListing = () => {
     return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
   };
 
+
+  const onClickHandler = (e, prdid, prd)=>{
+    if (!isLogin) return router.push("/login");
+                        const isInWishlist = userData?.wishlist?.includes(String(prdid));
+                        const wishItem = wishlistData?.find((item) => item.productId === prdid);
+                        const itemId = wishItem?._id;
+                        if (isInWishlist && itemId) {
+                          removeFromWishlist(e, itemId, prdid);
+                        } else {
+                          addToWishlist(prd, userData._id);
+                        }
+  }
+
   if (isCheckingToken || loadingProducts) return <Loading />;
 
   return (
@@ -109,17 +122,9 @@ const ProductListing = () => {
                     )}
                     <div
                       className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-md absolute top-4 right-3 cursor-pointer"
-                      onClick={(e) => {
-                        if (!isLogin) return router.push("/login");
-                        const isInWishlist = userData?.wishlist?.includes(String(prd._id));
-                        const wishItem = wishlistData?.find((item) => item.productId === prd._id);
-                        const itemId = wishItem?._id;
-                        if (isInWishlist && itemId) {
-                          removeFromWishlist(e, itemId, prd._id);
-                        } else {
-                          addToWishlist(prd, userData._id);
-                        }
-                      }}
+                      onClick={(e) =>
+                        onClickHandler (e, prd._id, prd)
+                      }
                     >
                       {isLogin && userData?.wishlist?.includes(String(prd._id)) ? (
                         <MdFavorite className="text-rose-600 text-[22px]" />
