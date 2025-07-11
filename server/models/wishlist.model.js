@@ -7,7 +7,6 @@ const wishlistSchema = mongoose.Schema({
     },
     countInStock: {
         type: Number,
-        required: true,
     },
     userId: {
         type: String,
@@ -23,11 +22,9 @@ const wishlistSchema = mongoose.Schema({
     },
     brand: {
         type: String,
-        required: true,
     },
     price: {
         type: Number,
-        required: true,
     },
 
 },
