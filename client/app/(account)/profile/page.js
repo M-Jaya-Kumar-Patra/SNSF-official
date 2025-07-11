@@ -195,13 +195,13 @@ const Account = () => {
           <div className=" w-full sm:w-[256px] mb-2 bg-white shadow-lg pb-2 sm:pb-5 pt-2 sm:pt-6 sm:px-5 gap-3 flex flex-col justify-center items-center ">
 
 
-            <div className="mt-2 mr-2 w-[90px] h-[90px] sm:w-[140px] sm:h-[140px] relative group overflow-hidden border   rounded-full border-gray-300 shadow">
+            <div className="mt-2 sm:mt-0 mr-2 sm:mr-0 w-[90px] h-[90px] sm:w-[140px] sm:h-[140px] relative group overflow-hidden border   rounded-full border-gray-300 shadow">
             {!uploading && (
               <Image
   src={getOptimizedCloudinaryUrl(userData?.avatar) || "/images/account.png"}
   alt="avatar"
-  width={50}
-  height={50}
+  width={140}
+  height={140}
   className="w-full h-full object-cover"
 />
 

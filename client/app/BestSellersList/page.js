@@ -115,8 +115,8 @@ const ProductListing = () => {
 
                                                     <div className='w-full justify-between items-center'>
                                                         <div className='w-full flex flex-col items-start'>
-                                                            <h1 className="text-gray-500 text-[16px] mt-1 font-sans">
-                                                                {prd?.brand}
+                                                            <h1 className={prd?.brand ? "text-gray-500 text-[16px] mt-1" : "text-white text-[16px] mt-1 cursor-default"}>
+                                                                {prd?.brand||"--- Not mentioned ---"}
                                                             </h1>
 
 
