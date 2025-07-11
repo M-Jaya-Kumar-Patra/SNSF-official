@@ -80,7 +80,7 @@ const ProductListing = () => {
                         if (isInWishlist && itemId) {
                           removeFromWishlist(e, itemId, prdid);
                         } else {
-                          addToWishlist(prd, userData._id);
+                          addToWishlist(e, prd, userData._id);
                         }
   }
 

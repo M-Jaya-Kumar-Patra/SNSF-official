@@ -95,7 +95,7 @@ const ProductListing = () => {
                                                                         removeFromWishlist(e, itemId, prd._id);
                                                                     }
                                                                 } else {
-                                                                    addToWishlist(prd, userData._id);
+                                                                    addToWishlist(e, prd, userData._id);
                                                                 }
                                                             }
                                                         }}
