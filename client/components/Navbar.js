@@ -111,7 +111,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
     alt="Logo"
     width={40}
     height={40}
-    className="w-[45px] h-[45px] sm:w-[60px] sm:h-[60px] object-contain"
+    className="w-[40px] h-[40px] sm:w-[60px] sm:h-[60px] object-contain"
     priority
     quality={90}
   />
@@ -147,9 +147,9 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                   <Image
                     src={(userData?.avatar) || "/images/emptyAccount.png"}
                     alt="Account"
-                    width={32}
-                    height={32}
-                    className="!w-[30px] !h-[30px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
+                    width={40}
+                    height={40}
+                    className="!w-[40px] !h-[40px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
                   />
                 </IconButton>
 
