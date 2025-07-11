@@ -80,7 +80,7 @@ const Bestsellers = () => {
 
           <div className="mt-3 text-center">
             <h2 className="text-black text-base font-semibold truncate">{prd?.name}</h2>
-            <p className="text-gray-500 text-sm mt-1 truncate">{prd?.brand}</p>
+            <p className={prd?.brand ? "text-gray-500 text-sm mt-1 truncate" : "text-white text-sm mt-1 truncate"}>{prd?.brand || "Unknown"}</p>
           </div>
         </div>
       </div>
