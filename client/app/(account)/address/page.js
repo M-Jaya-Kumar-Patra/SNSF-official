@@ -373,7 +373,7 @@ const Account = () => {
   </div>
 
 
-                        <div className="p-2 sm:px-0 bg-white">
+                        <div className="p-2 sm:px-0 min-h-[90vh] bg-white">
                                 {!showAddAddressForm && (
                             <button
                                 onClick={() => setShowAddAddressForm(true)}

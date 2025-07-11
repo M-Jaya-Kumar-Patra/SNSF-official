@@ -128,7 +128,7 @@ const Account = () => {
     </h2>
   </div>
 
-  <div className="list-section space-y-2 sm:space-y-4 p-2 sm:px-0 bg-white">
+  <div className="list-section min-h-[90vh] space-y-2 sm:space-y-4 p-2 sm:px-0 bg-white">
     {wishlistData?.length > 0 ? (
       wishlistData.map((item, index) => (
         <div
@@ -196,7 +196,7 @@ const Account = () => {
           href="/"
           className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full text-sm sm:text-base transition"
         >
-          Continue Shopping
+          Back to Home
         </Link>
       </div>
     )}

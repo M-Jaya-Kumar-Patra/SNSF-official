@@ -11,6 +11,7 @@
 
 /* Body Styling */
 body {
+  overflow-x: hidden;
   color: white;
   background: #ffffff;
   font-family: Arial, Helvetica, sans-serif;

@@ -39,7 +39,7 @@ const Account = () => {
 useEffect(() => {
   const handleReadOnLoad = async () => {
     await getNotifications();
-    const hasUnread = notices.some((n) => !n.read);
+    const hasUnread = Array.isArray(notices) && notices.some((n) => !n.read);
     if (hasUnread) {
       await markAllUnreadAsRead();
     }
@@ -194,7 +194,7 @@ const getOptimizedCloudinaryUrl = (url) => {
       href="/"
       className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-5 sm:px-6 py-2 rounded-full text-sm sm:text-base transition shadow-md"
     >
-      Start Shopping
+      Back to Home
     </Link>
   </div>
 )}

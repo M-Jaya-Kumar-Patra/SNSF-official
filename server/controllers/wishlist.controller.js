@@ -7,7 +7,7 @@ import WishlistModel from "../models/wishlist.model.js";
 export const addToWishlist = async (request, response) => {
     try {
         const userId = request.userId;
-        const { productTitle, image, brand, price, productId, countInStock } = request.body;
+        const { productTitle, image, brand, productId } = request.body;
 
         if (!productId) {
             return response.status(404).json({
@@ -30,9 +30,7 @@ export const addToWishlist = async (request, response) => {
         const wishlistItem = await WishlistModel.create({
             productTitle: productTitle,
             image: image,
-            price: price,
             productId: productId,
-            countInStock: countInStock,
             userId: userId,
             brand: brand
         });
