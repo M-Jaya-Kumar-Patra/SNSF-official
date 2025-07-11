@@ -47,11 +47,9 @@ const WishlistProvider = ({ children }) => {
   const data = {
     productTitle: prd?.name,
     image: prd?.images[0],
-    price: prd?.price,
     productId: prd?._id,
-    countInStock: prd?.countInStock,
     userId: userId,
-    brand: prd?.brand
+    brand: prd?.brand || "Unknown Brand",
   };
 
   postData(`/api/wishlist/add`, data, true).then((res) => {

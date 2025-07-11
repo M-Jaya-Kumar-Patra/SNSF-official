@@ -32,7 +32,7 @@ export const addToWishlist = async (request, response) => {
             image: image,
             productId: productId,
             userId: userId,
-            brand: brand
+            brand: brand || "Unknown Brand",
         });
 
         const save = await wishlistItem.save()
@@ -63,7 +63,6 @@ export const getWishlistItemController = async (req, res) => {
     try {
         const userId = req.userId;
 
-        console.log(userId, "dddddddddd")
 
         if (!userId) {
             return res.status(401).json({
@@ -96,7 +95,6 @@ export const deleteWishlistItemContoller = async (request, response) => {
     try {
         const userId = request.userId;
 
-        console.log(userId, request.body)
         const { _id, productId } = request.body;
 
         if (!_id || !productId) {

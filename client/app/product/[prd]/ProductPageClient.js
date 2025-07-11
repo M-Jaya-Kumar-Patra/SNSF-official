@@ -116,7 +116,7 @@ const ProductPageClient = ({ prdId }) => {
                 sku: openedProduct?._id,
                 brand: {
                   "@type": "Brand",
-                  name: openedProduct?.brand || "SNSF",
+                  name: openedProduct?.brand || "-",
                 },
                 offers: {
                   "@type": "Offer",
@@ -127,12 +127,7 @@ const ProductPageClient = ({ prdId }) => {
                       ? "https://schema.org/InStock"
                       : "https://schema.org/OutOfStock",
                   url: `https://snsteelfabrication.com/product/${openedProduct?._id}`,
-                },
-                aggregateRating: {
-                  "@type": "AggregateRating",
-                  ratingValue: openedProduct?.rating || 0,
-                  reviewCount: openedProduct?.ratingCount || 0,
-                },
+                }
               }),
             }}
           />

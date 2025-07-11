@@ -160,8 +160,8 @@ const Account = () => {
               <h3 className="text-lg font-semibold text-gray-800">
                 {item?.productTitle}
               </h3>
-              <p className="text-gray-500 text-sm">{item?.brand}</p>
-              
+              <p className={item?.brand!=="Unknown Brand" ? "text-gray-500 text-sm" : "hidden"}>{item?.brand}</p>
+
             </div>
           </div>
 
