@@ -10,7 +10,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import CategoryIcon from '@mui/icons-material/Category';
 import HomeIcon from '@mui/icons-material/Home';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import ContactSupportIcon from '@mui/icons-material/ContactSupport';
+import PhoneIcon from '@mui/icons-material/Phone';
 import CloseIcon from '@mui/icons-material/Close';
 import { useCat } from '@/app/context/CategoryContext';
 import Link from 'next/link';
@@ -94,7 +94,7 @@ const BottomNav = () => {
     { label: 'Category', value: 'category', icon: <CategoryIcon sx={{ fontSize: 20 }} /> },
     { label: 'Home', value: 'home', icon: <HomeIcon sx={{ fontSize: 24 }} /> },
     { label: 'Notifications', value: 'alerts', icon: <NotificationsIcon sx={{ fontSize: 20 }} /> },
-    { label: 'Contact us', value: 'support', icon: <ContactSupportIcon sx={{ fontSize: 20 }} /> }
+    { label: 'Contact us', value: 'support', icon: <PhoneIcon sx={{ fontSize: 20 }} /> }
   ];
 
   return (
