@@ -25,7 +25,7 @@ const inter = Inter({
 
 export const metadata = {
   metadataBase: new URL("https://snsteelfabrication.com"),
-  title: "S N Steel Fabrication – Steel Furniture, Customized for Comfort and Class",
+  title: "S N Steel Fabrication – Strength You Can Trust. Style You Can See.",
   description: "S N Steel Fabrication offers durable, modern, and customizable steel furniture for homes and businesses. Premium quality at affordable prices.",
   openGraph: {
     title: "S N Steel Fabrication",
