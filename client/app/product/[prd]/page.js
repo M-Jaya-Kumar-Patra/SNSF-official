@@ -33,8 +33,8 @@ export async function generateMetadata({ params }) {
   } = product;
 
   const productImage = images?.[0] || "/snsf-banner.jpg";
-  const productDescription = description || `Buy ${name} at SNSF. Durable steel furniture with features like ${specifications.material || 'top-grade materials'}, ${specifications.fabric || 'premium fabrics'}.`;
-  const productUrl = `https://snsteelfabrication.com/product/${prdId}`;
+  const productDescription = description || `Experience the perfect blend of style, durability, and functionality with ${name}. Designed to elevate your space, this piece offers comfort, reliability, and a timeless look that complements any home or office setting.`;
+const productUrl = `https://snsteelfabrication.com/product/${prdId}`;
 
   return {
     title: `${name} – ${brand || "SNSF"} | Buy Steel Furniture Online`,
@@ -46,9 +46,6 @@ export async function generateMetadata({ params }) {
       specifications.material,
       "SNSF",
       "steel furniture",
-      "qww65er4",
-      "76tyty66",
-      "999845ufhy",
     ],
     openGraph: {
       title: `${name} – ${brand || "SNSF"}`,

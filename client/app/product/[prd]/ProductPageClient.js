@@ -191,7 +191,7 @@ const ProductPageClient = ({ prdId }) => {
               onClick={async () => {
                 const shareData = {
                   title: openedProduct?.name,
-                  text: `Check out this product: ${openedProduct?.name}\nImage: ${openedProduct?.images?.[0] || ''}`,
+                  text: `Check out this product: ${openedProduct?.name}\n`,
                   url: window.location.href,
                 };
 
@@ -337,7 +337,7 @@ const ProductPageClient = ({ prdId }) => {
                   onClick={async () => {
                     const shareData = {
                       title: openedProduct?.name,
-                      text: `Check out this product: ${openedProduct?.name}\nImage: ${openedProduct?.images?.[0] || ''}`,
+                      text: `Check out this product: ${openedProduct?.name}\n`,
                       url: window.location.href,
                     };
 
@@ -456,7 +456,7 @@ const ProductPageClient = ({ prdId }) => {
                           image: openedProduct?.images?.[0],
                         });
 
-                        const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${openedProduct?.name}*.\nHere's the product image:\n${openedProduct?.images[0]}`;
+                        const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${openedProduct?.name}*.\nHere is the product link:\nhttps://snsteelfabrication.com/product/${openedProduct?._id}`;
                         window.open(whatsappURL, "_blank");
                       } catch (err) {
                         console.error("Enquiry failed:", err);

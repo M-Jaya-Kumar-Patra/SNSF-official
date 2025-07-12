@@ -159,7 +159,9 @@ const ProductListing = () => {
                             userMsg: `Enquiry for ${prd?.name} via WhatsApp`,
                             image: prd?.images[0],
                           });
-                          const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${prd?.name}*.%0AHere's the product image:%0A${prd?.images[0]}`;
+
+                          const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${prd?.name}*.\nHere is the product link:\nhttps://snsteelfabrication.com/product/${prd?._id}`;
+                          
                           window.open(whatsappURL, "_blank");
                         } catch (err) {
                           console.error("Enquiry failed:", err);

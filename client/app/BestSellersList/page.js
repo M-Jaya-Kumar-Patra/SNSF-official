@@ -152,7 +152,8 @@ const ProductListing = () => {
                                                                         image: prd?.images[0],
                                                                     });
 
-                                                                    const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${prd?.name}*.\nHere's the product image:\n${prd?.images[0]}`;
+                                                                    const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${prd?.name}*.\nHere is the product link:\nhttps://snsteelfabrication.com/product/${prd?._id}`;
+
                                                                     window.open(whatsappURL, "_blank");
                                                                 } catch (err) {
                                                                     console.error("Enquiry failed:", err);
