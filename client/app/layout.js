@@ -1,3 +1,5 @@
+// app/layout.tsx
+
 import "./globals.css";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
@@ -15,18 +17,14 @@ import GlobalLoader from "@/components/GlobalLoader";
 import BottomNav from "@/components/BottomNav";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister"; 
 
-
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "700"],
   display: "swap",
 });
 
-
-export const metadataBase = new URL("https://snsteelfabrication.com");
-
-
 export const metadata = {
+  metadataBase: new URL("https://snsteelfabrication.com"),
   title: "S N Steel Fabrication – Steel Furniture, Customized for Comfort and Class",
   description: "S N Steel Fabrication offers durable, modern, and customizable steel furniture for homes and businesses. Premium quality at affordable prices.",
   openGraph: {
@@ -37,7 +35,7 @@ export const metadata = {
     images: [
       {
         url: "https://snsteelfabrication.com/snsf-banner.jpg",
-        secureUrl: "https://snsteelfabrication.com/snsf-banner.jpg", // ✅ ADD THIS
+        secureUrl: "https://snsteelfabrication.com/snsf-banner.jpg",
         width: 1200,
         height: 630,
         alt: "S N Steel Fabrication Logo",
@@ -51,7 +49,7 @@ export const metadata = {
     description: "Modern & customizable steel furniture.",
     images: ["https://snsteelfabrication.com/snsf-banner.jpg"],
   },
-  keywords: ["steel furniture", "custom steel", "qww65er4", "76tyty66", "999845ufhy", "SNSF", "modern fabrication", "durable furniture"],
+  keywords: ["steel furniture", "custom steel", "SNSF", "modern fabrication", "durable furniture"],
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon-32x32.png",
@@ -63,22 +61,20 @@ export const metadata = {
     title: "SNSF",
     statusBarStyle: "default",
   },
+  themeColor: "#000000",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
 };
-
-export const viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 5,
-  userScalable: true,
-};
-
-export const themeColor = "#000000";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${inter.className} w-full`}>
-        <ServiceWorkerRegister /> {/* ✅ Mounts only on client */}
+        <ServiceWorkerRegister />
         <AuthProvider>
           <AuthWrapper>
             <AlertProvider>
