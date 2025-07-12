@@ -122,7 +122,7 @@ const New = () => {
                       onClick={() => router.push(`/product/${prd?._id}`)}
                     >
                       <Image
-                        src={getOptimizedCloudinaryUrl(prd?.images?.[0] || '/placeholder.png')}
+                        src={getOptimizedCloudinaryUrl(prd?.images?.[0] || '/placeholder.jpg')}
                         alt={prd?.name || 'Product Image'}
                         fill
                         sizes="(max-width: 768px) 100vw, 256px"

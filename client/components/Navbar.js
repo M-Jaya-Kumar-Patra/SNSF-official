@@ -102,17 +102,17 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
 
 
       <div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-3 sm:py-4 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4 flex items-center justify-between">
 
 <div className="flex items-center gap-0  sm:gap-1  flex-shrink-0 h-[45px] sm:h-[50px]">
   {/* Logo Icon */}
   <Image
     src={getOptimizedCloudinaryUrl("/images/logo.png")}
     alt="Logo"
-    width={40}
-    height={40}
-    className="w-[40px] h-[40px] sm:w-[60px] sm:h-[60px] object-contain"
-    priority
+    width={50}
+    height={50}
+    className="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] object-contain"
+    fetchPriority="high" // ✅ hints browser it's high-priority for LCP
     quality={90}
   />
 
@@ -123,11 +123,10 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
     width={100}
     height={30}
     className="
-                w-[120px] h-[45px] sm:w-[160px] sm:h-[60px]
+                w-[140px] h-[50px] sm:w-[160px] sm:h-[60px]
 
       object-contain"
     
-  priority // ✅ preloads the image
   fetchPriority="high" // ✅ hints browser it's high-priority for LCP
     quality={90}
   />
@@ -147,9 +146,9 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                   <Image
                     src={(userData?.avatar) || "/images/emptyAccount.png"}
                     alt="Account"
-                    width={37}
-                    height={37}
-                    className="!w-[37px] !h-[37px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
+                    width={35}
+                    height={35}
+                    className="!w-[35px] !h-[35px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
                   />
                 </IconButton>
 

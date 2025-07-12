@@ -54,7 +54,7 @@ const AllinOne = () => {
       >
         <div className="relative aspect-[4/3] rounded-md overflow-hidden">
           <Image
-            src={getOptimizedCloudinaryUrl(prd.images?.[0] || "/images/placeholder.png")}
+            src={getOptimizedCloudinaryUrl(prd.images?.[0] || "/images/placeholder.jpg")}
             alt={prd.name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"

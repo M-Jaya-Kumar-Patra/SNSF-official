@@ -149,7 +149,7 @@ const Similar = (props) => {
                   >
                     <div className="w-full relative rounded-md overflow-hidden" style={{ aspectRatio: "4 / 3" }}>
                       <Image
-                        src={getOptimizedCloudinaryUrl(prd.images?.[0] || "/images/placeholder.png")}
+                        src={getOptimizedCloudinaryUrl(prd.images?.[0] || "/images/placeholder.jpg")}
                         alt={prd.name || "Product Image"}
                         fill
                         sizes="(max-width: 768px) 100vw, 256px"
