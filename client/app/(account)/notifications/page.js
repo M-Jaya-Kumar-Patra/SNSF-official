@@ -19,8 +19,8 @@ import {
 
 const Account = () => {
   const router = useRouter();
-  const { userData, isLogin } = useAuth();
-  const { notices, getNotifications, markAllUnreadAsRead ,isCheckingToken, setIsCheckingToken } = useNotice();
+  const { userData, isLogin, isCheckingToken, setIsCheckingToken } = useAuth();
+  const { notices, getNotifications, markAllUnreadAsRead  } = useNotice();
       if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
 
 
