@@ -93,8 +93,8 @@ const BottomNav = () => {
     { label: 'Search', value: 'search', icon: <SearchIcon sx={{ fontSize: 20 }} /> },
     { label: 'Category', value: 'category', icon: <CategoryIcon sx={{ fontSize: 20 }} /> },
     { label: 'Home', value: 'home', icon: <HomeIcon sx={{ fontSize: 24 }} /> },
-    { label: 'Alerts', value: 'alerts', icon: <NotificationsIcon sx={{ fontSize: 20 }} /> },
-    { label: 'Support', value: 'support', icon: <ContactSupportIcon sx={{ fontSize: 20 }} /> }
+    { label: 'Notifications', value: 'alerts', icon: <NotificationsIcon sx={{ fontSize: 20 }} /> },
+    { label: 'Contact us', value: 'support', icon: <ContactSupportIcon sx={{ fontSize: 20 }} /> }
   ];
 
   return (
