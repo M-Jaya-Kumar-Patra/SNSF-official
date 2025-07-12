@@ -27,7 +27,6 @@ const nextConfig = withPWA({
   },
   experimental: {
     optimizeCss: true,
-    legacyBrowsers: false,
   },
 });
 
