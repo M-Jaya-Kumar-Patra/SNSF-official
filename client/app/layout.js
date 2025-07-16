@@ -1,5 +1,3 @@
-// app/layout.tsx
-
 import "./globals.css";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
@@ -15,7 +13,7 @@ import { WishlistProvider } from "./context/WishlistContext";
 import { NoticeProviders } from "./context/NotificationContext";
 import GlobalLoader from "@/components/GlobalLoader";
 import BottomNav from "@/components/BottomNav";
-import ServiceWorkerRegister from "@/components/ServiceWorkerRegister"; 
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,13 +23,14 @@ const inter = Inter({
 
 export const metadata = {
   metadataBase: new URL("https://snsteelfabrication.com"),
-  title: "S N Steel Fabrication – Strength You Can Trust. Style You Can See.",
-  description: "S N Steel Fabrication offers durable, modern, and customizable steel furniture for homes and businesses. Premium quality at affordable prices.",
+  title: "S N Steel Fabrication",
+  description:
+    "S N Steel Fabrication offers durable, modern, and customizable steel furniture for homes and businesses. Premium quality at affordable prices.",
   openGraph: {
     title: "S N Steel Fabrication",
     description: "Modern & customizable steel furniture.",
     url: "https://snsteelfabrication.com",
-    siteName: "SNSF",
+    siteName: "S N Steel Fabrication", // ✅ Updated here
     images: [
       {
         url: "https://snsteelfabrication.com/snsf-banner.jpg",
@@ -49,7 +48,13 @@ export const metadata = {
     description: "Modern & customizable steel furniture.",
     images: ["https://snsteelfabrication.com/snsf-banner.jpg"],
   },
-  keywords: ["steel furniture", "custom steel", "SNSF", "modern fabrication", "durable furniture"],
+  keywords: [
+    "steel furniture",
+    "custom steel",
+    "SNSF",
+    "modern fabrication",
+    "durable furniture",
+  ],
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon-32x32.png",
@@ -58,7 +63,7 @@ export const metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    title: "SNSF",
+    title: "S N Steel Fabrication", // ✅ Changed from "SNSF" to full name
     statusBarStyle: "default",
   },
   themeColor: "#000000",
@@ -73,6 +78,24 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "S N Steel Fabrication",
+              url: "https://snsteelfabrication.com",
+              logo: "https://snsteelfabrication.com/logo.png", // ✅ Replace with actual logo URL
+              sameAs: [
+                // Optional: Add your real social links here
+                "https://youtube.com/@snsteelfabrication6716?si=sNqOaFWnR9gMqziP"
+              ]
+            }),
+          }}
+        />
+      </head>
       <body className={`${inter.className} w-full`}>
         <ServiceWorkerRegister />
         <AuthProvider>
