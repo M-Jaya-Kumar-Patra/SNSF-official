@@ -87,7 +87,7 @@ export default function RootLayout({ children }) {
               "@type": "Organization",
               name: "S N Steel Fabrication",
               url: "https://snsteelfabrication.com",
-              logo: "https://snsteelfabrication.com/logo.png", // ✅ Replace with actual logo URL
+              logo: "https://snsteelfabrication.com/images/logo.png", // ✅ Replace with actual logo URL
               sameAs: [
                 // Optional: Add your real social links here
                 "https://youtube.com/@snsteelfabrication6716?si=sNqOaFWnR9gMqziP"
