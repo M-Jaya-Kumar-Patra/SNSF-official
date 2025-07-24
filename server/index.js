@@ -29,7 +29,7 @@ app.use(cors({
     'http://192.168.137.1:3000/',
     'https://snsteelfabrication.com',
     'https://snsf-admin.onrender.com',
-    'snsteelfabrication.com',
+    'https://snsteelfabrication.com',
     'https://snsf-ar3m.onrender.com',
     'https://snsf-admin-jrst.onrender.com',
     'https://snsf-ydwh.onrender.com',
