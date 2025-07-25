@@ -5,6 +5,7 @@ import { registerAdminController, verifyEmailController, loginController, logout
 import auth from "../middlewares/auth.js"; // Adjust the path as necessary
 import upload from "../middlewares/multer.js";
 
+
 const adminRouter = Router();
 
 adminRouter.post("/register", registerAdminController);

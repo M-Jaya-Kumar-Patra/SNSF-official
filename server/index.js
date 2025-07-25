@@ -26,7 +26,6 @@ app.use(cors({
     'http://localhost:3000',
     'http://localhost:3001',
     'https://snsf-o5mp.onrender.com',
-    'http://192.168.137.1:3000/',
     'https://snsteelfabrication.com',
     'https://snsf-admin.onrender.com',
     'https://snsteelfabrication.com',
@@ -40,22 +39,21 @@ app.use(cors({
 }));
 console.log('CORS middleware configured');
 
-app.options('*', cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'https://snsf-o5mp.onrender.com',
-    'http://192.168.137.1:3000',
-    'https://snsteelfabrication.com',
-    'https://snsf-admin.onrender.com',
-    'https://snsf-ar3m.onrender.com',
-    'https://snsf-admin-jrst.onrender.com',
-    'https://snsf-ydwh.onrender.com',
-    'https://snsf-admin-n27n.onrender.com',
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true,
-}));
+// app.options('*', cors({
+//   origin: [
+//     'http://localhost:3000',
+//     'http://localhost:3001',
+//     'https://snsf-o5mp.onrender.com',
+//     'https://snsteelfabrication.com',
+//     'https://snsf-admin.onrender.com',
+//     'https://snsf-ar3m.onrender.com',
+//     'https://snsf-admin-jrst.onrender.com',
+//     'https://snsf-ydwh.onrender.com',
+//     'https://snsf-admin-n27n.onrender.com',
+//   ],
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   credentials: true,
+// }));
 console.log('CORS preflight OPTIONS configured');
 
 app.use(express.json());
