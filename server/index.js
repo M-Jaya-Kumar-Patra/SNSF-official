@@ -25,6 +25,7 @@ app.use(cors({
   origin: [
     'http://localhost:3000',
     'http://localhost:3001',
+    'https://www.snsteelfabrication.com',
     'https://snsf-o5mp.onrender.com',
     'https://snsteelfabrication.com',
     'https://snsf-admin.onrender.com',
