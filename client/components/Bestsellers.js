@@ -58,7 +58,7 @@ const Bestsellers = () => {
   prdData
     .filter((prd) => prd?.isFeatured)
     .reverse()
-    .slice(0, 6)
+    .slice(7, 13)
     .map((prd, index) => (
       <div
         key={prd?._id || index}
