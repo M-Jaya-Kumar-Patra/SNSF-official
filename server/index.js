@@ -73,7 +73,7 @@ console.log('Helmet security middleware enabled');
 // Test route
 app.get("/", (req, res) => {
   console.log('GET / called');
-  res.json({ message: "Server is running on port " + process.env.PORT });
+  res.json({ message: "Server is running on the port " + process.env.PORT });
 });
 
 // Use routers and log when attached
