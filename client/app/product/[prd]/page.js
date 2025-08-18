@@ -3,13 +3,19 @@
 import ProductPageClient from './ProductPageClient';
 
 export async function generateMetadata({ params }) {
-  const slug = params?.slug;
+  const prd = params?.prd;
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/product/slug/${slug}`,
-    { cache: "no-store" }
-  );
+  if (!prd) {
+    return {
+      title: "Product Not Found – SNSF",
+      description: "Sorry, this product is not available.",
+    };
+  }
 
+  // Decide whether it's an ID (MongoDB) or slug
+  const fetchUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/product/${prd}`;
+
+  const res = await fetch(fetchUrl, { cache: "no-store" });
   const data = await res.json();
   const product = data?.product;
 
@@ -18,24 +24,15 @@ export async function generateMetadata({ params }) {
       title: "Product Not Found – SNSF",
       description: "Sorry, this product is not available.",
     };
-    console.log("Sorry, this product is not available.")
   }
 
-  const {
-    name,
-    images,
-    description,
-    brand,
-    specifications,
-    catName,
-  } = product;
-
+  const { name, images, description, brand, specifications, catName } = product;
   const productImage = images?.[0] || "/snsf-banner.jpg";
   const productDescription =
     description ||
     `Experience the perfect blend of style, durability, and functionality with ${name}.`;
 
-  const productUrl = `https://snsteelfabrication.com/product/${slug}`;
+  const productUrl = `https://snsteelfabrication.com/product/${prd}`;
 
   return {
     title: `${name} – ${brand || "SNSF"} | Buy Steel Furniture Online`,
@@ -72,10 +69,7 @@ export async function generateMetadata({ params }) {
   };
 }
 
-
-
-
 export default async function Page({ params }) {
-  const slug = params?.slug;
-  return <ProductPageClient prdId={slug} />;
+  const prd = params?.prd;
+  return <ProductPageClient prdId={prd} />;
 }

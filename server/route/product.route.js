@@ -30,7 +30,6 @@ productRouter.get('/getAllFeaturedProducts', getAllFeaturedProducts)
 productRouter.delete("/deleteImg", auth, removeImageFromCloudinary);
 productRouter.delete('/deleteMultiple', auth, deleteMultipleProducts)
 productRouter.delete('/:id', deleteProduct)
-productRouter.get('/:id', getProduct)
 productRouter.post("/updateProduct/:id", auth, updateProduct);
 
 productRouter.post("/filters", filters);
@@ -38,8 +37,9 @@ productRouter.post("/sortBy", sortBy);
 productRouter.get('/search/get', SearchProductsController)
 
 
-productRouter.get('/slug/:slug', getProductBySlug);
-
+// productRouter.get('/:id', getProduct)
+// productRouter.get('/slug/:slug', getProductBySlug);
+productRouter.get('/:prd', getProduct); // 'prd' can be id or slug
 
 
 

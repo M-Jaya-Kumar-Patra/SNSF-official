@@ -11,6 +11,8 @@ cloudinary.config({
   secure: true,
 });
 
+var imagesArr = [];
+
 export const getProductBySlug = async (req, res) => {
   await connectDB();
   const { slug } = req.params;
@@ -524,33 +526,33 @@ export async function deleteMultipleProducts(request, response) {
     }
 }
 
-export async function getProduct(request, response) {
-    try {
-        const product = await ProductModel.findById(request.params.id).populate("category");
+export const getProduct = async (req, res) => {
+  await connectDB();
+  const { prd } = req.params;
 
-        if (!product) {
-            return response.status(404).json({
-                message: "The product is not found",
-                error: true,
-                success: false
-            })
-        }
+  try {
+    // Check if prd is a valid MongoDB ObjectId
+    const isObjectId = /^[0-9a-fA-F]{24}$/.test(prd);
 
-        return response.status(200).json({
-            error: false,
-            success: true,
-            product: product
-        })
-
-
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        });
+    let product;
+    if (isObjectId) {
+      product = await ProductModel.findById(prd).populate("category");
+    } else {
+      product = await ProductModel.findOne({ slug: prd }).populate("category");
     }
-}
+
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    return res.status(200).json({ success: true, product });
+  } catch (err) {
+    console.error("Error fetching product:", err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+
 
 export async function removeImageFromCloudinary(request, response) {
     try {
