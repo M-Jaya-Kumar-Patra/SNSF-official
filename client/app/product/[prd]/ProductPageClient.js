@@ -125,7 +125,7 @@ const ProductPageClient = ({ prdId, initialProduct }) => {
                 offers: {
                   "@type": "Offer",
                   priceCurrency: "INR",
-                  price: openedProduct?.price,
+                  price: openedProduct?.price || undefined,
                   availability:
                     openedProduct?.countInStock > 0
                       ? "https://schema.org/InStock"

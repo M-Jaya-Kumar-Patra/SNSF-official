@@ -102,7 +102,7 @@ export default async function Page({ params }) {
                 offers: {
                   "@type": "Offer",
                   priceCurrency: "INR",
-                  price: product.price,
+                  price: product.price || undefined,
                   availability:
                     product.countInStock > 0
                       ? "https://schema.org/InStock"
