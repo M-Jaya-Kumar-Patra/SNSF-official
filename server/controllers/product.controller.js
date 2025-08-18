@@ -1,35 +1,33 @@
 import ProductModel from "../models/product.model.js";
 import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
-import CategoryModel from "../models/category.model.js";
+import connectDB from "../utils/connectDB.js"; // make sure you have this
 import slugify from "slugify";
-
-
-
 
 // Cloudinary Config
 cloudinary.config({
-    cloud_name: process.env.cloudinary_Config_Cloud_Name,
-    api_key: process.env.cloudinary_Config_API_Key,
-    api_secret: process.env.cloudinary_Config_API_Secret,
-    secure: true,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
 });
 
-let imagesArr = [];
-
-export async function handler(req, res) {
+export const getProductBySlug = async (req, res) => {
   await connectDB();
-  const { slug } = req.query;
+  const { slug } = req.params;
+
+  if (!slug) return res.status(400).json({ success: false, message: "Slug is required" });
 
   try {
     const product = await ProductModel.findOne({ slug });
-    if (!product) return res.status(404).json({ success: false, message: "Not found" });
+    if (!product)
+      return res.status(404).json({ success: false, message: "Product not found" });
 
-    res.json({ success: true, product });
+    res.status(200).json({ success: true, product });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    console.error("Error fetching product by slug:", err);
+    res.status(500).json({ success: false, message: err.message });
   }
-}
+};
 
 
 // Upload Images Controller
