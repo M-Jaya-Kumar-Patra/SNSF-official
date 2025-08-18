@@ -1,6 +1,6 @@
 import ProductModel from "../models/product.model.js";
 import { v2 as cloudinary } from "cloudinary";
-import connectDB from "../utils/connectDB.js"; // make sure you have this
+import connectDB from "../config/connectDb.js";
 import slugify from "slugify";
 
 // Cloudinary Config
