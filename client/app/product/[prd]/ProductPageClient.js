@@ -31,9 +31,9 @@ import { PiShareFat } from "react-icons/pi";
 
 
 
-const ProductPageClient = ({ prdId }) => {
+const ProductPageClient = ({ prdId, initialProduct }) => {
   const [productImages, setProductImages] = useState([]);
-  const [openedProduct, setOpenedProduct] = useState(null);
+  const [openedProduct, setOpenedProduct] = useState(initialProduct || null);
   const [selectedImage, setSelectedImage] = useState();
   const [quantity, setQuantity] = useState(1);
 
@@ -46,13 +46,17 @@ const ProductPageClient = ({ prdId }) => {
   const router = useRouter();
 
   useEffect(() => {
-    fetchDataFromApi(`/api/product/${prdId}`, false).then((res) => {
-      setOpenedProduct(res?.product);
-      setProductImages(res?.product?.images);
-      setSelectedImage(res?.product?.images[0]);
+    // Only fetch if initialProduct is not provided
+    if (!initialProduct) {
+      fetchDataFromApi(`/api/product/${prdId}`).then((res) => {
+        setOpenedProduct(res?.product);
+        setProductImages(res?.product?.images);
+        setSelectedImage(res?.product?.images[0]);
       window.scrollTo(0, 0);
-    });
-  }, [prdId, userData]);
+
+      });
+    }
+  }, [prdId, initialProduct]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
