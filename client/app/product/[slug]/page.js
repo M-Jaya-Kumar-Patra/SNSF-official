@@ -18,6 +18,7 @@ export async function generateMetadata({ params }) {
       title: "Product Not Found – SNSF",
       description: "Sorry, this product is not available.",
     };
+    console.log("Sorry, this product is not available.")
   }
 
   const {
