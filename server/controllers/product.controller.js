@@ -2,6 +2,10 @@ import ProductModel from "../models/product.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import CategoryModel from "../models/category.model.js";
+import slugify from "slugify";
+
+
+
 
 // Cloudinary Config
 cloudinary.config({
@@ -12,6 +16,21 @@ cloudinary.config({
 });
 
 let imagesArr = [];
+
+export async function handler(req, res) {
+  await connectDB();
+  const { slug } = req.query;
+
+  try {
+    const product = await ProductModel.findOne({ slug });
+    if (!product) return res.status(404).json({ success: false, message: "Not found" });
+
+    res.json({ success: true, product });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
+
 
 // Upload Images Controller
 export async function uploadImages(request, response) {
@@ -54,113 +73,109 @@ export async function uploadImages(request, response) {
 
 // Create Product Controller
 export async function createProduct(request, response) {
-    try {
-        console.log("Images Array:", imagesArr);
-        console.log(request.body);
+  try {
+    console.log("Images Array:", imagesArr);
+    console.log(request.body);
 
-        const {
-            name,
-            description,
-            images,
-            brand,
-            price,
-            oldPrice,
-            catName,
-            catId,
-            subCat,
-            subCatId,
-            thirdSubCat,
-            thirdSubCatId,
-            countInStock,
-            rating,
-            isFeatured,
-            isAllinOne,
-            discount,
-            size,
-            delivery_days,
-            callOnlyDelivery,
-            specifications,
-            location,
-            category, // ObjectId from Category collection
-        } = request.body;
+    const {
+      name,
+      description,
+      images,
+      brand,
+      price,
+      oldPrice,
+      catName,
+      catId,
+      subCat,
+      subCatId,
+      thirdSubCat,
+      thirdSubCatId,
+      countInStock,
+      rating,
+      isFeatured,
+      isAllinOne,
+      discount,
+      size,
+      delivery_days,
+      callOnlyDelivery,
+      specifications,
+      location,
+      category,
+    } = request.body;
 
-        const product = new ProductModel({
-            name,
-            productId: new mongoose.Types.ObjectId(), // generating unique product ID
-            checked: false,
-            description,
-            images: images || imagesArr,
-            brand,
-            price,
-            oldPrice,
-            catName,
-            catId,
-            subCat,
-            subCatId,
-            thirdSubCat,
-            thirdSubCatId,
-            countInStock,
-            sales: 0,
-            rating: rating || 0,
-            ratingCount: 0,
-            isFeatured,
-            isAllinOne,
-            discount,
-            size: size || [],
-            location: location || [],
-            dateCreated: Date.now(),
-            delivery_days,
-            callOnlyDelivery: callOnlyDelivery ?? true,
-            category: category || null, // category ObjectId (if present)
+    // ✅ Generate SEO-friendly slug
+    const slug = slugify(name, { lower: true, strict: true });
 
-            specifications: {
-                material: specifications?.material || "",
-                setOf: specifications?.setOf || 1,
-                grade: specifications?.grade || "",
-                fabric: specifications?.fabric || "",
-                fabricColor: specifications?.fabricColor || "",
-                size: specifications?.size || "",
-                capacity: specifications?.capacity || "",
-                weight: specifications?.weight || "",
-                width: specifications?.width || "",
-                depth: specifications?.depth || "",
-                seatHeight: specifications?.seatHeight || "",
-                length: specifications?.length || "",
-                height: specifications?.height || "",
-                minHeight: specifications?.minHeight || "",
-                maxHeight: specifications?.maxHeight || "",
-                warranty: specifications?.warranty || "",
-                thickness: specifications?.thickness || "",
-                polish: specifications?.polish || "",
-                frameMaterial: specifications?.frameMaterial || "",
-            },
-        });
+    const product = new ProductModel({
+      name,
+      slug,  // <-- Save slug
+      productId: new mongoose.Types.ObjectId(),
+      checked: false,
+      description,
+      images: images || imagesArr,
+      brand,
+      price,
+      oldPrice,
+      catName,
+      catId,
+      subCat,
+      subCatId,
+      thirdSubCat,
+      thirdSubCatId,
+      countInStock,
+      sales: 0,
+      rating: rating || 0,
+      ratingCount: 0,
+      isFeatured,
+      isAllinOne,
+      discount,
+      size: size || [],
+      location: location || [],
+      dateCreated: Date.now(),
+      delivery_days,
+      callOnlyDelivery: callOnlyDelivery ?? true,
+      category: category || null,
 
-        await product.save();
+      specifications: {
+        material: specifications?.material || "",
+        setOf: specifications?.setOf || 1,
+        grade: specifications?.grade || "",
+        fabric: specifications?.fabric || "",
+        fabricColor: specifications?.fabricColor || "",
+        size: specifications?.size || "",
+        capacity: specifications?.capacity || "",
+        weight: specifications?.weight || "",
+        width: specifications?.width || "",
+        depth: specifications?.depth || "",
+        seatHeight: specifications?.seatHeight || "",
+        length: specifications?.length || "",
+        height: specifications?.height || "",
+        minHeight: specifications?.minHeight || "",
+        maxHeight: specifications?.maxHeight || "",
+        warranty: specifications?.warranty || "",
+        thickness: specifications?.thickness || "",
+        polish: specifications?.polish || "",
+        frameMaterial: specifications?.frameMaterial || "",
+      },
+    });
 
-        if (!product) {
-            return response.status(500).json({
-                error: true,
-                success: false,
-                message: "Product not created",
-            });
-        }
+    await product.save();
 
-        imagesArr = [];
+    imagesArr = [];
 
-        return response.status(200).json({
-            error: false,
-            success: true,
-            message: "Product created successfully",
-            product,
-        });
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false,
-        });
-    }
+    return response.status(200).json({
+      error: false,
+      success: true,
+      message: "Product created successfully",
+      product,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
 }
 // /api/product/getProducts.js
 

@@ -5,6 +5,7 @@ const productSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  slug: { type: String, unique: true, required: true },
   productId: {
     type: mongoose.Schema.ObjectId,
   },

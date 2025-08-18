@@ -10,55 +10,22 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
-import { fetchDataFromApi } from "@/utils/api";
 import { handleLogout } from "@/utils/logoutHandler";
-import { useEffect } from "react";
 
 export default function LogoutBTN({ onLogout }) {
   const router = useRouter();
-  const {  logout } = useAuth();
-
+  const { logout } = useAuth();
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const handleLogoutClick = async () => {
+    console.log("logout clicked")
+    setOpen(false); // Close dialog before logout
     await handleLogout({ logout, router });
-    if(onLogout) onLogout();
+    if (onLogout) onLogout();
   };
-
-
-//  const handleLogout = async () => {
-//   const token = localStorage.getItem("accessToken");
-
-//   if (!token) {
-//     console.warn("No token found in localStorage");
-//     logout();
-//     await signOut({ redirect: false });
-//     router.push("/");
-//     return;
-//   }
-
-//   try {
-//     const response = await fetchDataFromApi(`/api/user/logout?accessToken=${token}`);
-
-//     console.log("Logout API response:", response);
-//   } catch (error) {
-//     console.error("Logout API error:", error);
-//   }
-
-//   // ✅ Always clear tokens regardless of success or failure
-//   localStorage.removeItem("accessToken");   
-//   localStorage.removeItem("refreshToken");   
-
-//   logout(); // Clear custom JWT state
-//   await signOut({ redirect: false }); // Clear NextAuth session
-//   setOpen(false);
-//   localStorage.clear()
-//   router.push("/");
-// };
-
 
   return (
     <>

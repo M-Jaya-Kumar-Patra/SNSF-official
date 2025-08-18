@@ -3,12 +3,12 @@
 import ProductPageClient from './ProductPageClient';
 
 export async function generateMetadata({ params }) {
-  const prdId =  params?.prd; // ✅ safe access
+  const slug = params?.slug;
 
-
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/product/${prdId}`, {
-    cache: "no-store",
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/product/slug/${slug}`,
+    { cache: "no-store" }
+  );
 
   const data = await res.json();
   const product = data?.product;
@@ -25,16 +25,16 @@ export async function generateMetadata({ params }) {
     images,
     description,
     brand,
-    price,
-    rating,
-    ratingCount,
     specifications,
     catName,
   } = product;
 
   const productImage = images?.[0] || "/snsf-banner.jpg";
-  const productDescription = description || `Experience the perfect blend of style, durability, and functionality with ${name}. Designed to elevate your space, this piece offers comfort, reliability, and a timeless look that complements any home or office setting.`;
-const productUrl = `https://snsteelfabrication.com/product/${prdId}`;
+  const productDescription =
+    description ||
+    `Experience the perfect blend of style, durability, and functionality with ${name}.`;
+
+  const productUrl = `https://snsteelfabrication.com/product/${slug}`;
 
   return {
     title: `${name} – ${brand || "SNSF"} | Buy Steel Furniture Online`,
@@ -43,7 +43,7 @@ const productUrl = `https://snsteelfabrication.com/product/${prdId}`;
       name,
       brand,
       catName,
-      specifications.material,
+      specifications?.material,
       "SNSF",
       "steel furniture",
     ],
@@ -74,8 +74,7 @@ const productUrl = `https://snsteelfabrication.com/product/${prdId}`;
 
 
 
-
 export default async function Page({ params }) {
-  const prdId =  params?.prd; // ✅ safe access
-  return <ProductPageClient prdId={prdId} />;
+  const slug = params?.slug;
+  return <ProductPageClient slug={slug} />;
 }

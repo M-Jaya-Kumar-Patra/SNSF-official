@@ -104,33 +104,33 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
       <div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4 flex items-center justify-between">
 
-<div className="flex items-center gap-0  sm:gap-1  flex-shrink-0 h-[45px] sm:h-[50px]">
-  {/* Logo Icon */}
-  <Image
-    src={getOptimizedCloudinaryUrl("/images/logo.png")}
-    alt="Logo"
-    width={50}
-    height={50}
-    className="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] object-contain"
-    fetchPriority="high" // ✅ hints browser it's high-priority for LCP
-    quality={90}
-  />
+          <div className="flex items-center gap-0  sm:gap-1  flex-shrink-0 h-[45px] sm:h-[50px]">
+            {/* Logo Icon */}
+            <Image
+              src={getOptimizedCloudinaryUrl("/images/logo.png")}
+              alt="Logo"
+              width={50}
+              height={50}
+              className="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] object-contain"
+              fetchPriority="high" // ✅ hints browser it's high-priority for LCP
+              quality={90}
+            />
 
-  {/* Logo Text */}
-  <Image
-    src={getOptimizedCloudinaryUrl("/images/snsf-text.png")}
-    alt="SNSF"
-    width={100}
-    height={30}
-    className="
+            {/* Logo Text */}
+            <Image
+              src={getOptimizedCloudinaryUrl("/images/snsf-text.png")}
+              alt="SNSF"
+              width={100}
+              height={30}
+              className="
                 w-[140px] h-[50px] sm:w-[160px] sm:h-[60px]
 
       object-contain"
-    
-  fetchPriority="high" // ✅ hints browser it's high-priority for LCP
-    quality={90}
-  />
-</div>
+
+              fetchPriority="high" // ✅ hints browser it's high-priority for LCP
+              quality={90}
+            />
+          </div>
 
           <div className="hidden sm:flex sm:flex-grow  px-20">
             <Search />
@@ -201,7 +201,10 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                         <CreditCard size={18} /> Payments
                       </Link> */}
                           <div className="pt-2">
-                            <LogoutBTN onLogout={() => setMenuOpen(false)} />
+                            <LogoutBTN onLogout={() => {
+                              setMenuOpen(false);  // Close menu
+                              router.refresh();    // Force page refresh to re-check isLogin
+                            }} />
                           </div>
                         </>
                       )}
@@ -257,30 +260,30 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
 
 
               <div className="relative group hidden sm:block">
-               <IconButton
-  aria-label="Account"
-  onClick={() => router.push(isLogin ? "/profile" : "/login")}
-  className="text-slate-200"
->
-  {isCheckingToken ? (
-    <Skeleton
-      variant="circular"
-      animation="wave"
-      width={32}
-      height={32}
-      sx={{ bgcolor: "rgba(203,213,225,0.5)" }}
-      className="w-[32px] h-[32px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
-    />
-  ) : (
-    <Image
-      src={(userData?.avatar) || "/images/emptyAccount.png"}
-      alt="Account"
-      width={32}
-      height={32}
-      className="w-[32px] h-[32px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
-    />
-  )}
-</IconButton>
+                <IconButton
+                  aria-label="Account"
+                  onClick={() => router.push(isLogin ? "/profile" : "/login")}
+                  className="text-slate-200"
+                >
+                  {isCheckingToken ? (
+                    <Skeleton
+                      variant="circular"
+                      animation="wave"
+                      width={32}
+                      height={32}
+                      sx={{ bgcolor: "rgba(203,213,225,0.5)" }}
+                      className="w-[32px] h-[32px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
+                    />
+                  ) : (
+                    <Image
+                      src={(userData?.avatar) || "/images/emptyAccount.png"}
+                      alt="Account"
+                      width={32}
+                      height={32}
+                      className="w-[32px] h-[32px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
+                    />
+                  )}
+                </IconButton>
 
                 {/* Hover Dropdown */}
                 <div className="absolute right-0 mt-2 w-[220px] bg-white text-[#1e293b] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[1000]">
@@ -308,7 +311,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
             <CreditCard size={18} /> Payments
           </Link> */}
                         <div className="pt-0">
-                          <LogoutBTN />
+                          <LogoutBTN onLogout={() => setMenuOpen(false)} />
                         </div>
                       </>
                     ) : (
@@ -344,144 +347,144 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
 
       {/* DESKTOP CATEGORY MENU */}
       <ul className="hidden sm:flex w-full justify-evenly border border-b-slate-200 bg-white shadow-xl px-10 z-40">
-  {/* Home Button */}
-  <li
-    onClick={() => router.push("/")}
-    className="cursor-pointer flex items-center justify-center text-[20px] px-10  hover:bg-slate-50 text-[#131e30] hover:font-semibold py-1 transition-all duration-200"
-    title="Back to Home"
-  >
-    {
-      (!catData || catData?.length === 0)?
-
-      <Skeleton
-        variant="text"
-        animation="wave"
-        width={80}
-        height={24}
-        sx={{ bgcolor: "rgba(203,213,225,0.5)" }}
-      />
-      :
-      <IoMdHome />
-    }
-  </li>
-
-  {/* Category Skeleton Loader or Actual Categories */}
-  {(!catData || catData?.length === 0)
-  ? Array.from({ length: 7 }).map((_, index) => (
-      <li key={`skeleton-${index}`} className="w-full px-6 py-1">
-        <Skeleton
-          variant="text"
-          animation="wave"
-          width={80}
-          height={24}
-          sx={{ bgcolor: "rgba(203,213,225,0.5)" }}
-        />
-      </li>
-    ))
-  : [...catData]
-      .sort((a, b) => a.sln - b.sln)
-      .map((cat, index) => (
+        {/* Home Button */}
         <li
-          key={index}
-          onClick={() => router.push(`/ProductListing?catId=${cat._id}`)}
-          className="relative group w-full text-center cursor-pointer transition-all duration-200"
+          onClick={() => router.push("/")}
+          className="cursor-pointer flex items-center justify-center text-[20px] px-10  hover:bg-slate-50 text-[#131e30] hover:font-semibold py-1 transition-all duration-200"
+          title="Back to Home"
         >
-          <span className="block text-[15px] font-medium text-slate-800 transition duration-200 group-hover:text-[#131e30] group-hover:font-semibold py-1">
-            {cat.name}
-          </span>
+          {
+            (!catData || catData?.length === 0) ?
 
-          {cat.children?.length > 0 && (
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className={`absolute top-full left-0 text-left ${index > catData.length - 3 ? "right-0 left-auto" : ""}
+              <Skeleton
+                variant="text"
+                animation="wave"
+                width={80}
+                height={24}
+                sx={{ bgcolor: "rgba(203,213,225,0.5)" }}
+              />
+              :
+              <IoMdHome />
+          }
+        </li>
+
+        {/* Category Skeleton Loader or Actual Categories */}
+        {(!catData || catData?.length === 0)
+          ? Array.from({ length: 7 }).map((_, index) => (
+            <li key={`skeleton-${index}`} className="w-full px-6 py-1">
+              <Skeleton
+                variant="text"
+                animation="wave"
+                width={80}
+                height={24}
+                sx={{ bgcolor: "rgba(203,213,225,0.5)" }}
+              />
+            </li>
+          ))
+          : [...catData]
+            .sort((a, b) => a.sln - b.sln)
+            .map((cat, index) => (
+              <li
+                key={index}
+                onClick={() => router.push(`/ProductListing?catId=${cat._id}`)}
+                className="relative group w-full text-center cursor-pointer transition-all duration-200"
+              >
+                <span className="block text-[15px] font-medium text-slate-800 transition duration-200 group-hover:text-[#131e30] group-hover:font-semibold py-1">
+                  {cat.name}
+                </span>
+
+                {cat.children?.length > 0 && (
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className={`absolute top-full left-0 text-left ${index > catData.length - 3 ? "right-0 left-auto" : ""}
                 bg-white shadow-2xl border border-gray-200 rounded-lg px-6 py-5
                 opacity-0 invisible group-hover:opacity-100 group-hover:visible
                 group-hover:translate-y-2 transition-all duration-300 ease-in-out
                 z-[300] overflow-auto scrollbar-hide`}
-              style={{ maxWidth: "100vw", whiteSpace: "nowrap" }}
-            >
-              <div className="flex gap-4" style={{ width: `${cat.children.length * 220}px` }}>
-                {cat.children.map((subCat, subIndex) => (
-                  <div
-                    key={subIndex}
-                    className="min-w-[200px] transition-transform duration-300 hover:scale-[1.02]"
+                    style={{ maxWidth: "100vw", whiteSpace: "nowrap" }}
                   >
-                    <a
-                      href={`/ProductListing?subCatId=${subCat._id}`}
-                      className="block text-[16px] font-semibold mb-3 text-slate-800 hover:text-indigo-700"
-                    >
-                      {subCat.name}
-                    </a>
-                    <ul className="space-y-1">
-                      {subCat.children?.map((thirdSubCatId, thirdIndex) => (
-                        <li key={thirdIndex}>
+                    <div className="flex gap-4" style={{ width: `${cat.children.length * 220}px` }}>
+                      {cat.children.map((subCat, subIndex) => (
+                        <div
+                          key={subIndex}
+                          className="min-w-[200px] transition-transform duration-300 hover:scale-[1.02]"
+                        >
                           <a
-                            href={`/ProductListing?thirdSubCatId=${thirdSubCatId._id}`}
-                            className="block text-[15px] text-gray-600 font-medium hover:text-[#131e30] transition-all duration-200"
+                            href={`/ProductListing?subCatId=${subCat._id}`}
+                            className="block text-[16px] font-semibold mb-3 text-slate-800 hover:text-indigo-700"
                           >
-                            {thirdSubCatId.name}
+                            {subCat.name}
                           </a>
-                        </li>
+                          <ul className="space-y-1">
+                            {subCat.children?.map((thirdSubCatId, thirdIndex) => (
+                              <li key={thirdIndex}>
+                                <a
+                                  href={`/ProductListing?thirdSubCatId=${thirdSubCatId._id}`}
+                                  className="block text-[15px] text-gray-600 font-medium hover:text-[#131e30] transition-all duration-200"
+                                >
+                                  {thirdSubCatId.name}
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </li>
-      ))}
+                )}
+              </li>
+            ))}
 
-</ul>
+      </ul>
 
 
 
 
 
       {mobileMenuOpen && (
-  <div className="sm:hidden bg-white text-[#131e30] border-t border-b py-2 px-4 space-y-2">
-    <div
-      onClick={() => {
-        router.push("/");
-        setMobileMenuOpen(false);
-      }}
-      className="cursor-pointer hover:font-semibold flex items-center gap-2"
-    >
-      <IoMdHome /> Home
-    </div>
-
-    {[...(catData || [])]
-      .sort((a, b) => a.sln - b.sln)
-      .map((cat) => (
-        <div key={cat._id}>
+        <div className="sm:hidden bg-white text-[#131e30] border-t border-b py-2 px-4 space-y-2">
           <div
             onClick={() => {
-              router.push(`/ProductListing?catId=${cat._id}`);
+              router.push("/");
               setMobileMenuOpen(false);
             }}
-            className="cursor-pointer font-medium hover:text-indigo-600"
+            className="cursor-pointer hover:font-semibold flex items-center gap-2"
           >
-            {cat.name}
+            <IoMdHome /> Home
           </div>
 
-          {cat.children?.length > 0 && (
-            <ul className="pl-4 mt-1 space-y-1 text-sm text-gray-600">
-              {cat.children.map((subCat) => (
-                <li key={subCat._id}>
-                  <Link
-                    href={`/ProductListing?subCatId=${subCat._id}`}
-                    className="hover:text-indigo-600"
-                  >
-                    {subCat.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
+          {[...(catData || [])]
+            .sort((a, b) => a.sln - b.sln)
+            .map((cat) => (
+              <div key={cat._id}>
+                <div
+                  onClick={() => {
+                    router.push(`/ProductListing?catId=${cat._id}`);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="cursor-pointer font-medium hover:text-indigo-600"
+                >
+                  {cat.name}
+                </div>
+
+                {cat.children?.length > 0 && (
+                  <ul className="pl-4 mt-1 space-y-1 text-sm text-gray-600">
+                    {cat.children.map((subCat) => (
+                      <li key={subCat._id}>
+                        <Link
+                          href={`/ProductListing?subCatId=${subCat._id}`}
+                          className="hover:text-indigo-600"
+                        >
+                          {subCat.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ))}
         </div>
-      ))}
-  </div>
-)}
+      )}
 
     </nav>
   );
