@@ -1,25 +1,26 @@
-import { fetchDataFromApi } from "@/utils/api";
-
 export async function GET() {
-  // Fetch all products
-  const res = await fetchDataFromApi("/api/product/gaps"); // your existing API
-  const products = res?.products || [];
+  // Use absolute URL or internal API fetching on server
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://snsteelfabrication.com";
 
-  // Create product URLs
-  const productUrls = products.map(
-    (p) => `
-    <url>
-      <loc>https://snsteelfabrication.com/product/${p.slug}</loc>
-    </url>`
-  ).join("");
+  let products = [];
+  try {
+    const res = await fetch(`${baseUrl}/api/product/gaps`);
+    const data = await res.json();
+    products = data?.products || [];
+  } catch (err) {
+    console.error("Failed to fetch products for sitemap:", err);
+  }
 
-  // Add static pages
+  const productUrls = products
+    .map(p => `<url><loc>${baseUrl}/product/${p.slug}</loc></url>`)
+    .join("");
+
   const staticUrls = `
-    <url><loc>https://snsteelfabrication.com/</loc></url>
-    <url><loc>https://snsteelfabrication.com/about</loc></url>
-    <url><loc>https://snsteelfabrication.com/privacy</loc></url>
-    <url><loc>https://snsteelfabrication.com/terms</loc></url>
-    <url><loc>https://snsteelfabrication.com/ProductListing</loc></url>
+    <url><loc>${baseUrl}/</loc></url>
+    <url><loc>${baseUrl}/about</loc></url>
+    <url><loc>${baseUrl}/privacy</loc></url>
+    <url><loc>${baseUrl}/terms</loc></url>
+    <url><loc>${baseUrl}/productlisting</loc></url>
   `;
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -29,8 +30,6 @@ export async function GET() {
 </urlset>`;
 
   return new Response(sitemap, {
-    headers: {
-      "Content-Type": "application/xml",
-    },
+    headers: { "Content-Type": "application/xml" },
   });
 }
