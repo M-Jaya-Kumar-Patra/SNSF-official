@@ -47,8 +47,13 @@ const ProductPageClient = ({ prdId, initialProduct }) => {
 
   useEffect(() => {
     // Only fetch if initialProduct is not provided
+    setProductImages(openedProduct.images)
+
+    
     if (!initialProduct) {
+      console.log("responsesrgfgggfg: ", initialProduct)
       fetchDataFromApi(`/api/product/${prdId}`).then((res) => {
+        console.log("response: ", res)
         setOpenedProduct(res?.product);
         setProductImages(res?.product?.images);
         setSelectedImage(res?.product?.images[0]);
@@ -58,6 +63,7 @@ const ProductPageClient = ({ prdId, initialProduct }) => {
     }
   }, [prdId, initialProduct]);
 
+  
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") setShowLarge(null);
@@ -65,7 +71,8 @@ const ProductPageClient = ({ prdId, initialProduct }) => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
-
+  
+  console.log("opened product", productImages)
 
   const getOptimizedCloudinaryUrl = (url) => {
     if (!url?.includes("res.cloudinary.com")) return url;
@@ -296,6 +303,7 @@ const ProductPageClient = ({ prdId, initialProduct }) => {
 
             <div className="w-full relative">
               <div className="w-full sm:w-[319px] bg-gray-100 sm:h-full flex justify-center items-center relative">
+                {console.log("productImages: ",productImages)}
                 <Image
                   className="h-full w-full object-contain border cursor-zoom-in"
                     src={getOptimizedCloudinaryUrl(selectedImage || productImages?.[0] || "/")}

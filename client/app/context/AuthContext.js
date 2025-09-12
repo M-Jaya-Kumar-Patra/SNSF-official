@@ -17,13 +17,13 @@ export const AuthProvider = ({ children }) => {
   const logout = useCallback(() => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    localStorage.removeItem("userId");
+    localStorage.removeItem("");
     localStorage.removeItem("email");
 
     setUserData(null);
     setIsLogin(false);
-    
-  setIsCheckingToken(false); // ✅ This is crucial
+
+    setIsCheckingToken(false); // ✅ This is crucial
     router.push("/login");
   }, [router]);
 
