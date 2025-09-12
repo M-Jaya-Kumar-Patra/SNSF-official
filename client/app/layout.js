@@ -77,7 +77,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" >
       <head>
         <script
           type="application/ld+json"
@@ -96,7 +96,7 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body className={`${inter.className} w-full`}>
+      <body className={`${inter.className} overflow-x-hidden`}>
         <ServiceWorkerRegister />
         <AuthProvider>
           <AuthWrapper>
