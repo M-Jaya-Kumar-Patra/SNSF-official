@@ -98,11 +98,11 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
   };
 
   return (
-    <nav className=" sticky top-0 sm:top-[-82px]   z-[300] bg-gradient-to-r from-indigo-950 via-indigo-900 to-[#1e40af]  text-white  border-[#1e293b] shadow-md">
+    <nav className="w sticky top-0 sm:top-[-82px]   z-[300] bg-gradient-to-r from-indigo-950 via-indigo-900 to-[#1e40af]  text-white  border-[#1e293b] shadow-md">
 
 
       <div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4 flex items-center justify-between">
+        <div className="w-full max-w-screen-xl mx-auto px-3 md:px-6 lg:px-8 py-2 sm:py-4 flex items-center justify-between overflow-hidden">
 
           <div className="flex items-center gap-0  sm:gap-1  flex-shrink-0 h-[45px] sm:h-[50px]">
             {/* Logo Icon */}
@@ -132,13 +132,13 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
             />
           </div>
 
-          <div className="hidden sm:flex sm:flex-grow  px-20">
-            <Search />
-          </div>
+       <div className="hidden sm:flex sm:flex-grow px-4 md:px-8 lg:px-20">
+  <Search />
+</div>
 
 
-          <div className="w-auto sm:hidden flex">
 
+          
 
             <div className="w-auto sm:hidden flex">
               <div className="relative block sm:hidden" ref={dropdownRef}>
@@ -212,17 +212,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                   </div>
                 )}
               </div>
-
-
-
             </div>
-
-
-
-          </div>
-
-
-
 
           <div className="hidden sm:flex items-center gap-3">
 
@@ -346,11 +336,11 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
       </div>
 
       {/* DESKTOP CATEGORY MENU */}
-      <ul className="hidden sm:flex w-full justify-evenly border border-b-slate-200 bg-white shadow-xl px-10 z-40">
+      <ul className="hidden sm:flex w-full  border border-b-slate-200 bg-white shadow-xl sm:px-5 md:px-10 z-40">
         {/* Home Button */}
         <li
           onClick={() => router.push("/")}
-          className="cursor-pointer flex items-center justify-center text-[20px] px-10  hover:bg-slate-50 text-[#131e30] hover:font-semibold py-1 transition-all duration-200"
+          className="cursor-pointer flex items-center justify-center text-[20px] lg:px-10  hover:bg-slate-50 text-[#131e30] hover:font-semibold py-1 transition-all duration-200"
           title="Back to Home"
         >
           {
@@ -387,49 +377,66 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
               <li
                 key={index}
                 onClick={() => router.push(`/ProductListing?catId=${cat._id}`)}
-                className="relative group w-full text-center cursor-pointer transition-all duration-200"
+                className="relative group w-full text-center cursor-pointer transition-all duration-200  "
               >
-                <span className="block text-[15px] font-medium text-slate-800 transition duration-200 group-hover:text-[#131e30] group-hover:font-semibold py-1">
+                <span className="block text-[15px] font-medium text-slate-800 transition duration-200 group-hover:text-[#131e30] group-hover:font-semibold py-1 text-nowrap">
                   {cat.name}
                 </span>
 
                 {cat.children?.length > 0 && (
                   <div
                     onClick={(e) => e.stopPropagation()}
-                    className={`absolute top-full left-0 text-left ${index > catData.length - 3 ? "right-0 left-auto" : ""}
-                bg-white shadow-2xl border border-gray-200 rounded-lg px-6 py-5
-                opacity-0 invisible group-hover:opacity-100 group-hover:visible
-                group-hover:translate-y-2 transition-all duration-300 ease-in-out
-                z-[300] overflow-auto scrollbar-hide`}
-                    style={{ maxWidth: "100vw", whiteSpace: "nowrap" }}
+                    className={`absolute top-full left-0 text-left 
+  ${index > catData.length - 3 ? "right-0 left-auto" : ""}
+  bg-white shadow-2xl border border-gray-200 rounded-lg sm:px-3 lg:px-6 py-5
+  opacity-0 invisible group-hover:opacity-100 group-hover:visible
+  group-hover:translate-y-2 transition-all duration-300 ease-in-out
+  z-[300] overflow-auto scrollbar-hide max-w-screen-sm sm:max-w-screen-md md:max-w-screen-lg lg:max-w-screen-xl   text-nowrap
+`}
+
                   >
-                    <div className="flex gap-4" style={{ width: `${cat.children.length * 220}px` }}>
-                      {cat.children.map((subCat, subIndex) => (
-                        <div
-                          key={subIndex}
-                          className="min-w-[200px] transition-transform duration-300 hover:scale-[1.02]"
-                        >
-                          <a
-                            href={`/ProductListing?subCatId=${subCat._id}`}
-                            className="block text-[16px] font-semibold mb-3 text-slate-800 hover:text-indigo-700"
-                          >
-                            {subCat.name}
-                          </a>
-                          <ul className="space-y-1">
-                            {subCat.children?.map((thirdSubCatId, thirdIndex) => (
-                              <li key={thirdIndex}>
-                                <a
-                                  href={`/ProductListing?thirdSubCatId=${thirdSubCatId._id}`}
-                                  className="block text-[15px] text-gray-600 font-medium hover:text-[#131e30] transition-all duration-200"
-                                >
-                                  {thirdSubCatId.name}
-                                </a>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
-                    </div>
+                    
+                    <div
+  className="flex gap-0 lg:gap-4"
+  style={{
+    width:
+      cat.children.length *
+      (window.innerWidth < 640
+        ? 160 // sm → reduced from 200
+        : window.innerWidth < 1024
+        ? 160 // md → normal
+        : 240 // lg → more space
+      ) + "px",
+  }}
+>
+  {cat.children.map((subCat, subIndex) => (
+    <div
+      key={subIndex}
+      className="min-w-[160px] sm:min-w-[16 0px] md:min-w-[200px] lg:min-w-[240px] 
+                 transition-transform duration-300 hover:scale-[1.02]"
+    >
+      <a
+        href={`/ProductListing?subCatId=${subCat._id}`}
+        className="block text-[15px] sm:text-[15px] md:text-[16px] font-semibold mb-3 text-slate-800 hover:text-indigo-700"
+      >
+        {subCat.name}
+      </a>
+      <ul className="space-y-1">
+        {subCat.children?.map((thirdSubCatId, thirdIndex) => (
+          <li key={thirdIndex}>
+            <a
+              href={`/ProductListing?thirdSubCatId=${thirdSubCatId._id}`}
+              className="block text-[14px] sm:text-[14px] md:text-[15px] text-gray-600 font-medium hover:text-[#131e30] transition-all duration-200"
+            >
+              {thirdSubCatId.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</div>
+
                   </div>
                 )}
               </li>

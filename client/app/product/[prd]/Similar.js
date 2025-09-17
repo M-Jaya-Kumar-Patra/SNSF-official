@@ -152,7 +152,7 @@ const Similar = (props) => {
                         src={getOptimizedCloudinaryUrl(prd.images?.[0] || "/images/placeholder.jpg")}
                         alt={prd.name || "Product Image"}
                         fill
-                        sizes="(max-width: 768px) 100vw, 256px"
+                        sizes="(max-width: 768px) 100%, 256px"
                         className="object-cover"
                         unoptimized
                       />
