@@ -184,7 +184,7 @@ const BottomNav = () => {
       {mobileMenuOpen && (
         <div
           ref={menuRef}
-          className="fixed top-48 bottom-14 left-[10%] transform -translate-x-1/2 w-4/5 px-6 sm:hidden z-[999] overflow-y-auto rounded-xl backdrop-blur-xl bg-white/70 shadow-2xl border border-slate-200 p-5 space-y-4 animate-slideIn no-scrollbar"
+          className="fixed top-48 bottom-14 left-[10%] transform -translate-x-1/2 w-4/5 px-6 md:hidden z-[999] overflow-y-auto rounded-xl backdrop-blur-xl bg-white/70 shadow-2xl border border-slate-200 p-5 space-y-4 animate-slideIn no-scrollbar"
         >
           {(catData || [])
             .slice()

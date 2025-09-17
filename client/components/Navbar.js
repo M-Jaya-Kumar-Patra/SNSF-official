@@ -102,7 +102,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
 
 
       <div>
-        <div className="w-full max-w-screen-xl mx-auto px-3 md:px-6 lg:px-8 py-2 sm:py-4 flex items-center justify-between overflow-hidden">
+        <div className="w-full max-w-screen-xl mx-auto px-3 md:px-6 lg:px-8 py-2 sm:py-4 flex items-center justify-between ">
 
           <div className="flex items-center gap-0  sm:gap-1  flex-shrink-0 h-[45px] sm:h-[50px]">
             {/* Logo Icon */}
@@ -336,7 +336,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
       </div>
 
       {/* DESKTOP CATEGORY MENU */}
-      <ul className="hidden sm:flex w-full  border border-b-slate-200 bg-white shadow-xl sm:px-5 md:px-10 z-40">
+      <ul className="hidden md:flex w-full  border border-b-slate-200 bg-white shadow-xl sm:px-5 md:px-10 z-40">
         {/* Home Button */}
         <li
           onClick={() => router.push("/")}
