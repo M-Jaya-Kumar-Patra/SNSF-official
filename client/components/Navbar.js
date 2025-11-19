@@ -104,7 +104,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
       <div>
         <div className="w-full max-w-screen-xl mx-auto px-3 md:px-6 lg:px-8 py-2 sm:py-4 flex items-center justify-between ">
 
-          <div className="flex items-center gap-0  sm:gap-1  flex-shrink-0 h-[45px] sm:h-[50px]">
+          <div className="flex items-center gap-0  sm:gap-1  flex-shrink-0 h-[45px] sm:h-[50cd px]">
             {/* Logo Icon */}
             <Image
               src={getOptimizedCloudinaryUrl("/images/logo.png")}

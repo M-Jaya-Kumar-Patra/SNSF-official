@@ -1,18 +1,33 @@
 export async function GET() {
-  // Use absolute URL or internal API fetching on server
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://snsteelfabrication.com";
+  // Use known domain OR Render internal URL to avoid build fetch issues
+  const baseUrl =
+    process.env.RENDER_EXTERNAL_URL ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "https://snsteelfabrication.com";
+
+  const internalUrl =
+    process.env.RENDER_INTERNAL_URL ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "https://snsteelfabrication.com";
 
   let products = [];
+
   try {
-    const res = await fetch(`${baseUrl}/api/product/gaps`);
+    // Use INTERNAL URL so the build never hangs
+    const res = await fetch(`${internalUrl}/api/product/gaps`, {
+      cache: "no-cache",
+    });
+
     const data = await res.json();
     products = data?.products || [];
   } catch (err) {
-    console.error("Failed to fetch products for sitemap:", err);
+    console.error("Sitemap product fetch failed:", err);
   }
 
   const productUrls = products
-    .map(p => `<url><loc>${baseUrl}/product/${p.slug}</loc></url>`)
+    .map(
+      (p) => `<url><loc>${baseUrl}/product/${p.slug}</loc></url>`
+    )
     .join("");
 
   const staticUrls = `
