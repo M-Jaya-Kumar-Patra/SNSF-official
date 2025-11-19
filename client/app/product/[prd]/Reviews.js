@@ -14,21 +14,21 @@ const Reviews = ({ productId }) => {
   const [reviews, setReviews] = useState([]);
 
  const { isCheckingToken } = useAuth()
-    if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
-
-
-  useEffect(() => {
-    if (!productId) return;
-
-    fetchDataFromApi(`/api/user/getReviews?productId=${productId}`)
-      .then((res) => {
-        setReviews(res?.reviews || []);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch reviews:", err);
-      });
+ 
+ 
+ useEffect(() => {
+   if (!productId) return;
+   
+   fetchDataFromApi(`/api/user/getReviews?productId=${productId}`)
+   .then((res) => {
+     setReviews(res?.reviews || []);
+    })
+    .catch((err) => {
+      console.error("Failed to fetch reviews:", err);
+    });
   }, [productId]);
-
+  
+  if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
   return (
     <Box className="w-full mt-10">
       <Typography
