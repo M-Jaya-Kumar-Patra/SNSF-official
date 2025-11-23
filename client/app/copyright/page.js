@@ -21,7 +21,7 @@ export default function CopyrightPage() {
           Unauthorized use of any material from this website may violate copyright laws and could result in legal action.
         </p>
         <p>
-          For permissions or inquiries, please contact us at: <a href="mailto:snsteelfabrication010@gmail.com" className="text-blue-600 underline">snsteelfabrication010@gmail.com</a>
+          For permissions or inquiries, please contact us at: <a href="mailto:support@snsteelfabrication.com" className="text-blue-600 underline">support@snsteelfabrication.com</a>
         </p>
       </section>
     </main>

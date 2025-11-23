@@ -32,7 +32,7 @@ export default function TermsPage() {
         </p>
         <h2 className="text-2xl font-semibold text-blue-700 mt-6 mb-3">Contact Us</h2>
         <p>
-          If you have questions about these terms, please contact us at: <a href="mailto:snsteelfabrication010@gmail.com" className="text-blue-600 underline">snsteelfabrication010@gmail.com</a>
+          If you have questions about these terms, please contact us at: <a href="mailto:support@snsteelfabrication.com" className="text-blue-600 underline">support@snsteelfabrication.com</a>
         </p>
       </section>
     </main>

@@ -37,7 +37,7 @@ const forgotPasswordEmail = (name = "Valued Customer", otp = "XXXXXX") => `
     <!-- Footer -->
     <div style="background-color: #f8fafc; padding: 20px; font-size: 12px; color: #64748b; text-align: center;">
       📍 S N Steel Fabrication, New Burupada, Near Hanuman Temple, Via-Hinjilicut, Ganjam, Odisha - 761146<br/>
-      📞 +91 9776501230 | ✉️ snsteelfabrication010@gmail.com<br/><br/>
+      📞 +91 9776501230 | ✉️ support@snsteelfabrication.com<br/><br/>
       You’re receiving this email because a password reset request was made for your SNSF account.
     </div>
   </div>  

@@ -93,7 +93,7 @@ export default function PrivacyPolicyPage() {
           <p>New Burupada, Near Hanuman Temple</p>
           <p>Via - Hinjilicut, Ganjam, Odisha - 761102</p>
           <p>Phone: +91 9776501230</p>
-          <p>Email: <a href="mailto:snsteelfabrication010@gmail.com" className="text-blue-600 underline">snsteelfabrication010@gmail.com</a></p>
+          <p>Email: <a href="mailto:support@snsteelfabrication.com" className="text-blue-600 underline">support@snsteelfabrication.com</a></p>
         </address>
       </section>
     </main>

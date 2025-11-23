@@ -70,14 +70,14 @@ export default function AboutUsPage() {
       <section className="mb-10">
         <h2 className="text-2xl font-semibold text-blue-700 mb-3">Visit Us or Get in Touch</h2>
         <p className="text-gray-700 mb-3">
-          Looking for sturdy furniture or a fabrication partner for your next project? We're ready to help.
+          Looking for sturdy furniture or a fabrication partner for your next project? We are ready to help.
         </p>
         <address className="not-italic text-gray-700 space-y-1">
           <p><strong>S N Steel Fabrication</strong></p>
           <p>New Burupada, Near Hanuman Temple</p>
           <p>Via - Hinjilicut, Ganjam, Odisha - 761102</p>
           <p>Phone: +91 9776501230</p>
-          <p>Email: <a href="mailto:snsteelfabrication010@gmail.com" className="text-blue-600 underline">snsteelfabrication010@gmail.com</a></p>
+          <p>Email: <a href="mailto:support@snsteelfabrication.com" className="text-blue-600 underline">support@snsteelfabrication.com</a></p>
         </address>
       </section>
 
