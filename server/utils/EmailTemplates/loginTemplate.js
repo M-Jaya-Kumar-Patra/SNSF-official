@@ -1,4 +1,4 @@
-const newLoginEmail = (name = "Valued Customer",  time = new Date().toLocaleString()) => `
+const newLoginEmail = (name = "Valued Customer",  time = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })) => `
   <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.1); border: 1px solid #ccc;">
     
     <!-- Header -->
