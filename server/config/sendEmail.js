@@ -1,5 +1,5 @@
-import { sendEmail } from "./emailService.js"; // Adjust path accordingly
-
+// sendEmailFun.js
+import { sendEmail } from "./emailService.js";
 
 const sendEmailFun = async (to, subject, text, html) => {
   try {
@@ -18,6 +18,5 @@ const sendEmailFun = async (to, subject, text, html) => {
     return false;
   }
 };
-
 
 export default sendEmailFun;

@@ -1,37 +1,24 @@
-import nodemailer from 'nodemailer';
-import http from 'http';
+// emailService.js
+import { Resend } from "resend";
 
-// Configure the SMTP transporter
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',          // SMTP host (e.g., for Gmail)
-  port: 465,                       // Secure port for Gmail
-  secure: true,                    // Use SSL
-  auth: {
-    user: process.env.EMAIL,       // Your Gmail address from environment variable
-    pass: process.env.EMAIL_PASS   // App password or Gmail password
-  }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Function to send email 
+// Function to send email using Resend API
 async function sendEmail(to, subject, text, html) {
   try {
-    const info = await transporter.sendMail({
-      from: process.env.EMAIL,  // Sender email
-      to,                       // Recipient(s)
-      subject,                  // Email subject
-      text,                     // Plain text content
-      html                      // HTML content
+    const response = await resend.emails.send({
+      from: process.env.EMAIL || "SNSF <noreply@snsf.com>",
+      to,
+      subject,
+      text,
+      html,
     });
 
-    return { success: true, messageId: info.messageId };
+    return { success: true, messageId: response?.id || null };
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error("Error sending email:", error);
     return { success: false, error: error.message };
   }
 }
 
-
-
-export {sendEmail};
-
-
+export { sendEmail };

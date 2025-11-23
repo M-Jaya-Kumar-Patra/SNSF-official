@@ -253,10 +253,10 @@ export async function loginController(request, response) {
             maxAge: 5 * 60 * 60 * 1000 // 5 hours
         };
 
-        console.log(user?.body?.name)
+        console.log("user_name:",user?.body?.name)
         response.cookie("accessToken", accessToken, cookieOptions);
         response.cookie("refreshToken", refreshToken, cookieOptions);
-        console.log(accessToken, refreshToken)
+        console.log("accessToken: ", accessToken, "refreshToken: ", refreshToken)
 
         await sendEmailFun(
             email,
