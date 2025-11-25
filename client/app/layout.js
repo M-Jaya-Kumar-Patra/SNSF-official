@@ -102,7 +102,7 @@ export default function RootLayout({ children }) {
         ></script>
         <ins
           class="adsbygoogle"
-          style="display:block"
+          style={{ display: 'block' }}
           data-ad-format="fluid"
           data-ad-layout-key="-7h+ew-1b-27+96"
           data-ad-client="ca-pub-9814214172872974"
