@@ -77,7 +77,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" >
       <head>
         <script
           type="application/ld+json"
@@ -90,17 +90,11 @@ export default function RootLayout({ children }) {
               logo: "https://snsteelfabrication.com/images/logo.png", // ✅ Replace with actual logo URL
               sameAs: [
                 // Optional: Add your real social links here
-                "https://youtube.com/@snsteelfabrication6716?si=sNqOaFWnR9gMqziP",
-              ],
+                "https://youtube.com/@snsteelfabrication6716?si=sNqOaFWnR9gMqziP"
+              ]
             }),
           }}
         />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9814214172872974"
-          crossorigin="anonymous"
-        ></script>
-       
       </head>
       <body className={`${inter.className} overflow-x-hidden`}>
         <ServiceWorkerRegister />
