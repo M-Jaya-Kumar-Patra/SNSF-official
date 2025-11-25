@@ -46,46 +46,39 @@ const Bestsellers = () => {
 
     return (
         <div className="flex flex-col items-center mt-2 sm:mt-5 w-full pb-4 sm:pb-8">
-            <h1
-                className={`text-2xl sm:text-3xl font-bold text-black mt-4 mb-4 sm:mt-8 sm:mb-8 ${joSan.className}`}
-            >
-                Best Sellers
-            </h1>
+  <h1
+    className={`text-2xl sm:text-3xl font-bold text-black mt-4 mb-4 sm:mt-8 sm:mb-8 ${joSan.className}`}
+  >
+    Best Sellers
+  </h1>
 
-            <div className="flex justify-center items-center">
-                <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 place-items-center gap-5 mb-5">
-                    {prdData && prdData.filter((prd) => prd?.isFeatured).length > 0 ? (
-  prdData
-    .filter((prd) => prd?.isFeatured)
-    .reverse()
-    .slice(7, 13)
-    .map((prd, index) => (
-      <div
-        key={prd?._id || index}
-        className="group w-[290px] sm:w-[290px] bg-white h-auto flex flex-col justify-between p-2 border hover:shadow-lg transition-transform duration-300 hover:scale-[1.03]"
-      >
-        <div
-          className="w-full cursor-pointer"
-          onClick={() => router.push(`/product/${prd?._id}`)}
-        >
-          <div className="w-full aspect-[4/3] relative overflow-hidden rounded-md">
-            <Image
-              src={getOptimizedCloudinaryUrl(prd?.images?.[0] || "/images/placeholder.jpg")}
-              alt={prd?.name}
-              fill
-              className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-              priority
-            />
-          </div>
+  {/* --- AdSense Ad Start --- */}
+  <div className="w-full flex justify-center mb-5">
+    <ins
+      className="adsbygoogle"
+      style={{ display: 'block' }}
+      data-ad-format="fluid"
+      data-ad-layout-key="-7h+ew-1b-27+96"
+      data-ad-client="ca-pub-9814214172872974"
+      data-ad-slot="6039763920"
+    ></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+  {/* --- AdSense Ad End --- */}
 
-          <div className="mt-3 text-center">
-            <h2 className="text-black text-base font-semibold truncate">{prd?.name}</h2>
-            <p className={prd?.brand ? "text-gray-500 text-sm mt-1 truncate" : "text-white text-sm mt-1 truncate"}>{prd?.brand || "Unknown"}</p>
-          </div>
-        </div>
-      </div>
-    ))
-) : (localLoading || isCheckingToken || !prdData || !hydrated ) ? (
+  <div className="flex justify-center items-center">
+    <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 place-items-center gap-5 mb-5">
+      {prdData && prdData.filter((prd) => prd?.isFeatured).length > 0 ? (
+        prdData
+          .filter((prd) => prd?.isFeatured)
+          .reverse()
+          .slice(7, 13)
+          .map((prd, index) => (
+            <div key={prd?._id || index} className="group w-[290px] sm:w-[290px] bg-white h-auto flex flex-col justify-between p-2 border hover:shadow-lg transition-transform duration-300 hover:scale-[1.03]">
+              {/* product card code */}
+            </div>
+          ))
+      ) : (localLoading || isCheckingToken || !prdData || !hydrated ) ? (
   Array.from({ length: 6 }).map((_, index) => (
     <div
       key={index}

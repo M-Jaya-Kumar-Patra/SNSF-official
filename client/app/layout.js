@@ -100,15 +100,7 @@ export default function RootLayout({ children }) {
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9814214172872974"
           crossorigin="anonymous"
         ></script>
-        <ins
-          class="adsbygoogle"
-          style={{ display: 'block' }}
-          data-ad-format="fluid"
-          data-ad-layout-key="-7h+ew-1b-27+96"
-          data-ad-client="ca-pub-9814214172872974"
-          data-ad-slot="6039763920"
-        ></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+       
       </head>
       <body className={`${inter.className} overflow-x-hidden`}>
         <ServiceWorkerRegister />
