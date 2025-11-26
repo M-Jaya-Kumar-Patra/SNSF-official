@@ -96,12 +96,7 @@ export default function RootLayout({ children }) {
             }),
           }}
         />
-        <Script
-    async
-    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9814214172872974"
-    crossOrigin="anonymous"
-    strategy="afterInteractive"
-  />
+       <meta name="google-adsense-account" content="ca-pub-9814214172872974">
       </head>
       <body className={`${inter.className} overflow-x-hidden`}>
         
