@@ -14,6 +14,7 @@ import { NoticeProviders } from "./context/NotificationContext";
 import GlobalLoader from "@/components/GlobalLoader";
 import BottomNav from "@/components/BottomNav";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import Script from "next/script";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -97,6 +98,8 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`${inter.className} overflow-x-hidden`}>
+        <Script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID}`}
+     crossOrigin="anonymous"></Script>
         <ServiceWorkerRegister />
         <AuthProvider>
           <AuthWrapper>
