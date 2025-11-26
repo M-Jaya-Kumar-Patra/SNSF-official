@@ -96,10 +96,15 @@ export default function RootLayout({ children }) {
             }),
           }}
         />
+        <Script
+    async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9814214172872974"
+    crossOrigin="anonymous"
+    strategy="afterInteractive"
+  />
       </head>
       <body className={`${inter.className} overflow-x-hidden`}>
-        <Script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID}`}
-     crossOrigin="anonymous"></Script>
+        
         <ServiceWorkerRegister />
         <AuthProvider>
           <AuthWrapper>
