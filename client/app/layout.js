@@ -96,7 +96,7 @@ export default function RootLayout({ children }) {
             }),
           }}
         />
-       <meta name="google-adsense-account" content="ca-pub-9814214172872974">
+       <meta name="google-adsense-account" content="ca-pub-9814214172872974"></meta>
       </head>
       <body className={`${inter.className} overflow-x-hidden`}>
         
