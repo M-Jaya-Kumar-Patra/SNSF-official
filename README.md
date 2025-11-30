@@ -54,6 +54,54 @@ This system includes a **customer-facing website** and a **complete admin dashbo
 
 ---
 
+## 🖼️ Screenshots
+
+### Customer Website Screens
+
+#### Homepage
+![Homepage](./screenshots/homepage.png)
+
+#### Login Page
+![Login Page](./screenshots/loginPage.png)
+
+#### Forgot Password
+![Forgot Password](./screenshots/forgotPassword.png)
+
+#### Product Page
+![Product Page](./screenshots/productPage.png)
+
+#### Profile Page
+![Profile Page](./screenshots/profilePage.png)
+
+#### Wishlist Page
+![Wishlist Page](./screenshots/wishlistPage.png)
+
+#### Shop By Category
+![Shop By Category](./screenshots/shopByCategory.png)
+
+#### Search
+![Search](./screenshots/search.png)
+
+#### Footer
+![Footer](./screenshots/footer.png)
+
+#### Address Section
+![Address Section](./screenshots/addressSection.png)
+
+#### Email Section
+![Email Section](./screenshots/email.png)
+
+#### Logout Modal
+![Logout Modal](./screenshots/logoutModal.png)
+
+#### Profile Popup
+![Profile Popup](./screenshots/profilePopup.png)
+
+#### Sub Menu
+![Sub Menu](./screenshots/subMenu.png)
+
+---
+
 ## 👨‍💻 Author
 **M Jaya Kumar Patra**  
 B.Tech IT • Full-Stack Developer  
