@@ -54,51 +54,51 @@ This system includes a **customer-facing website** and a **complete admin dashbo
 
 ---
 
-## 🖼️ Screenshots
+## 🖼️ screenShots
 
 ### Customer Website Screens
 
 #### Homepage
-![Homepage](./screenshots/homepage.png)
+![Homepage](./screenShots/homepage.png)
 
 #### Login Page
-![Login Page](./screenshots/loginPage.png)
+![Login Page](./screenShots/loginPage.png)
 
 #### Forgot Password
-![Forgot Password](./screenshots/forgotPassword.png)
+![Forgot Password](./screenShots/forgotPassword.png)
 
 #### Product Page
-![Product Page](./screenshots/productPage.png)
+![Product Page](./screenShots/productPage.png)
 
 #### Profile Page
-![Profile Page](./screenshots/profilePage.png)
+![Profile Page](./screenShots/profilePage.png)
 
 #### Wishlist Page
-![Wishlist Page](./screenshots/wishlistPage.png)
+![Wishlist Page](./screenShots/wishlistPage.png)
 
 #### Shop By Category
-![Shop By Category](./screenshots/shopByCategory.png)
+![Shop By Category](./screenShots/shopByCategory.png)
 
 #### Search
-![Search](./screenshots/search.png)
+![Search](./screenShots/search.png)
 
 #### Footer
-![Footer](./screenshots/footer.png)
+![Footer](./screenShots/footer.png)
 
 #### Address Section
-![Address Section](./screenshots/addressSection.png)
+![Address Section](./screenShots/addressSection.png)
 
 #### Email Section
-![Email Section](./screenshots/email.png)
+![Email Section](./screenShots/email.png)
 
 #### Logout Modal
-![Logout Modal](./screenshots/logoutModal.png)
+![Logout Modal](./screenShots/logoutModal.png)
 
 #### Profile Popup
-![Profile Popup](./screenshots/profilePopup.png)
+![Profile Popup](./screenShots/profilePopup.png)
 
 #### Sub Menu
-![Sub Menu](./screenshots/subMenu.png)
+![Sub Menu](./screenShots/subMenu.png)
 
 ---
 
