@@ -16,6 +16,8 @@ import { MdModeEdit } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
 import Link from "next/link";
 import { User, Bell } from "lucide-react";
+import { RiLockPasswordFill } from "react-icons/ri";
+
 
 const Account = () => {
   const router = useRouter();

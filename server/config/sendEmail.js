@@ -7,7 +7,7 @@ const sendEmailFun = async (to, subject, text, html) => {
     const result = await sendEmail(to, subject, text, html);
 
     if (result.success) {
-      console.log("✅ Email sent successfully.");
+      console.log(result);
       return true;
     } else {
       console.warn("⚠️ Email send failed (from result):", result);

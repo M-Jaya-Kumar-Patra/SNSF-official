@@ -530,6 +530,7 @@ export async function updateAdminDetails(request, response) {
 export async function forgotPasswordController(request, response) {
     try {
         const { email } = request.body
+        console.log("tttttttttttttttttttttttttttttttttttttt", email)
 
         const admin = await AdminModel.findOne({ email: email })
 

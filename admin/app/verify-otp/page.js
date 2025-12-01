@@ -60,7 +60,7 @@ const Page = () => {
             const res = await postData("/api/admin/verify-forgot-password-otp", {
                 email: adminEmail,
                 otp: fullOtp,
-            });
+            }, false);
 
             if (!res?.error) {
                 router.push("/forgot-password");
@@ -107,7 +107,7 @@ const Page = () => {
                 <div className="w-full gap-3 text-center">
                     <h1 className="text-[#131e30] my-2 font-bold text-lg">Verify OTP</h1>
                     <h1 className="text-gray-500 text-[13px] mb-4">
-                        OTP sent to {adminEmail}
+                        OTP sent to snsteelfabrication010@gmail.com
                     </h1>
                 </div>
 

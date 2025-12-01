@@ -127,6 +127,7 @@ export default function Login() {
       }
 
       const response = await postData("/api/admin/forgot-password", { email }, false);
+      console.log("response;;;;;;;;;;;;;;;;;;;;", response)
 
       if (!response.error) {
         alert.alertBox({ type: "success", msg: response.message });
