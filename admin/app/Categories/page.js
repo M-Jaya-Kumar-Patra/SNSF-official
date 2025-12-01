@@ -337,6 +337,9 @@ const Categories = () => {
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />
                 </div>
+                <div>
+                    
+                </div>
             </div>
             {/* delete category */}
             <Dialog
