@@ -4,9 +4,12 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAuth } from "@/app/context/AuthContext";
+import { fetchDataFromApi } from "@/utils/api";
+import { useEffect, useState } from "react";
 
 const Footer = () => {
   const { setLoading } = useAuth();
+  const[ totalVisitors, setTotalVisitors] = useState(0)
 
   const handleTelClick = () => {
     window.location.href = "tel:+919776501230";
@@ -16,6 +19,21 @@ const Footer = () => {
     if (!url?.includes("res.cloudinary.com")) return url;
     return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
   };
+
+  useEffect(() => {
+  const fetchVisitCount = async () => {
+    try {
+      const res = await fetchDataFromApi("/api/visit/getVisit", false);
+      if (res?.success) {
+        setTotalVisitors(res.count || 0);
+      }
+    } catch (err) {
+      console.error("Failed to fetch visit count:", err);
+    }
+  };
+
+  fetchVisitCount();
+}, []);
 
 
   return (
@@ -114,10 +132,32 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Bottom Copyright */}
-      <div className="border-t border-gray-700 pt-4 text-center text-gray-500 text-sm mb-10 sm:pb-0">
-        © {new Date().getFullYear()} S N Steel Fabrication. All rights reserved.
-      </div>
+     {/* Bottom Footer */}
+<footer className="w-full  border-t border-gray-300">
+  <div className="   py-4 
+                  grid grid-cols-1 sm:grid-cols-3 
+                  items-center text-sm text-gray-300 gap-2">
+
+    {/* Left: Copyright */}
+    <p className="text-center sm:text-left">
+      © {new Date().getFullYear()} S N Steel Fabrication. All rights reserved.
+    </p>
+
+    {/* Middle: Credits */}
+    <p className="text-center">
+      Designed & Developed by <span className="font-bold">Jaya Kumar</span>
+    </p>
+
+    {/* Right: Visitor Count */}
+    <p className="text-center sm:text-right">
+      Total Visitors: 
+      <span className="font-bold "> {totalVisitors}</span>
+    </p>
+
+  </div>
+</footer>
+
+
     </footer>
   );
 };

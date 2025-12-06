@@ -9,20 +9,28 @@ import Bestsellers from "@/components/Bestsellers";
 import New from "@/components/New";
 import Link from "next/link";
 import { Toaster } from "react-hot-toast";
-import { postData  } from "@/utils/api";
+import { postData } from "@/utils/api";
 import AllinOne from "@/components/AllinOne";
 
 export default function Home() {
   const { isCheckingToken } = useAuth();
 
-  useEffect(()=>{
-    window.scrollTo(0, 0)
-  })
   useEffect(() => {
-  postData("/api/visit/new", {}, false); // no auth required
-}, []);
+    window.scrollTo(0, 0);
+  }, []);
 
-  if (isCheckingToken) return <Loading />; // or your preferred loader
+  useEffect(() => {
+    const today = new Date().toDateString();
+    const lastVisit = localStorage.getItem("last-snsf-visit-date");
+
+    // Count only once per day
+    if (lastVisit !== today) {
+      postData("/api/visit/new", {}, false);
+      localStorage.setItem("last-snsf-visit-date", today);
+    }
+  }, []);
+
+  if (isCheckingToken) return <Loading />;
 
   return (
     <>
