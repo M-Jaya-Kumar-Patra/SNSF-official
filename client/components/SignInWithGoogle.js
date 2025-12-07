@@ -16,11 +16,14 @@ const SignInWithGoogle = () => {
       <GoogleLogin
         onSuccess={async (cred) => {
           try {
+            console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeee:");
             const res = await axios.post(
               `${process.env.NEXT_PUBLIC_API_URL}/api/user/authWithGoogle`,
               { token: cred.credential },
               { withCredentials: true }
             );
+
+              console.log("GOOGLE LOGIN RESPONSE:", res.data.user.email);
 
             if (res.data.success) {
               alert.alertBox({ type: "success", msg: "Login successful" });
@@ -28,7 +31,6 @@ const SignInWithGoogle = () => {
               // update context if needed
               // setIsLogin(true)
 
-              console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeee:", res.data.user.email);
 
               const token = res.data.user.accessToken;
               login(res.data, token);
