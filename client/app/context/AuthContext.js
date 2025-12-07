@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [isLogin, setIsLogin] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isCheckingToken, setIsCheckingToken] = useState(true); // ✅
+  const [isCheckingToken, setIsCheckingToken] = useState(true);
 
   const logout = useCallback(() => {
     localStorage.removeItem("accessToken");
@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
     setUserData(null);
     setIsLogin(false);
 
-    setIsCheckingToken(false); // ✅ This is crucial
+    setIsCheckingToken(false); 
     router.push("/login");
   }, [router]);
 
@@ -48,16 +48,19 @@ export const AuthProvider = ({ children }) => {
 
   const login = useCallback((data, token) => {
     if (data && token) {
+      setUserData(data);
+      setIsLogin(true);
       localStorage.setItem("accessToken", token);
       localStorage.setItem("userId", data._id || data.id || "");
       localStorage.setItem("email", data.email || "");
-      setUserData(data);
-      setIsLogin(true);
+      console.log("User dataaaaaaaaaaaaaaaaaaaaaa: ", data)
+
     }
   }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
+
 
     if (!token) {
       setIsLogin(false);

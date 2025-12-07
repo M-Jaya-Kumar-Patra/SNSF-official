@@ -13,15 +13,14 @@ export const handleLogout = async ({ logout, router }) => {
       }
     }
 
-    // Remove auth keys explicitly
+    // Remove auth keys
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("email");
     localStorage.removeItem("userId");
-
     sessionStorage.clear();
 
-    // Clear non-HttpOnly cookies
+    // Clear cookies
     document.cookie.split(";").forEach(cookie => {
       document.cookie = cookie
         .replace(/^ +/, "")
@@ -30,12 +29,11 @@ export const handleLogout = async ({ logout, router }) => {
 
     logout();
 
-    // Redirect and force hard reload
-    router.push("/").then(() => {
-      window.location.reload();
-    });
-
+    // Redirect and reload
+    router.push("/");
+    window.location.reload(); // just call reload after push
   } catch (error) {
     console.error("Logout error:", error);
   }
 };
+

@@ -110,7 +110,6 @@ export const editData = async (url, updatedData, authRequired = true) => {
     });
     console.log(response.status, response.headers.get("Content-Type"));
 
-    console.log("errorrrr")
     const data = await response.json();
     console.log(data);
     return data;

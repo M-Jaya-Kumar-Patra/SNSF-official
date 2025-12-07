@@ -17,6 +17,9 @@ import { Righteous, Poppins } from "next/font/google";
 import { postData } from "@/utils/api";
 import { useAlert } from "../context/AlertContext";
 import { useAuth } from "../context/AuthContext";
+import SignInWithGoogle from "@/components/SignInWithGoogle";
+
+
 
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
 const poppins = Poppins({ subsets: ["latin"], weight: "300" });
@@ -34,10 +37,11 @@ export default function Signup() {
     label: "",
     color: "",
   });
+  const [showPopUp, setShowPopUp] = useState(null);
 
   const router = useRouter();
   const alert = useAlert();
-  const { isLogin, isCheckingToken, setIsCheckingToken } = useAuth();
+  const { login, isLogin, setIsLogin, isCheckingToken, setIsCheckingToken } = useAuth();
 
   const [emailError, setEmailError] = useState(false);
 
@@ -101,6 +105,10 @@ export default function Signup() {
 
     setEmailError(false)
     const response = await postData("/api/user/register", formFields, false);
+
+    if(response?.popup){
+      setShowPopUp(response?.popup)
+    }
     if (!response.error) {
       const { email, name, _id } = response.user;
 
@@ -112,10 +120,12 @@ export default function Signup() {
       setFormFields({ name: "", email: "", password: "" });
       router.push("/verify-otp");
     } else {
-      alert.alertBox({
+      if(!response?.popup){
+        alert.alertBox({
         type: "error",
         msg: response?.message || "Signup failed",
       });
+      }
     }
 
     setIsLoading(false);
@@ -299,8 +309,42 @@ export default function Signup() {
               </span>
             </h3>
           </div>
+
+  <p className="text-gray-500 text-sm my-2 mb-3">or</p>
+
+          <SignInWithGoogle />
         </div>
       </div>
+
+
+      {showPopUp && (
+  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 animate-fadeIn">
+    <div className="bg-white rounded-xl shadow-xl w-[90%] max-w-md p-6 relative animate-scaleIn">
+
+      {/* Title */}
+      <h2 className="text-lg font-semibold text-gray-800 mb-2">
+        Continue with Google
+      </h2>
+
+      {/* Message from your state */}
+      <p className="text-sm text-gray-600 mb-5">{showPopUp}</p>
+
+      {/* Google Button */}
+      <div className="flex justify-center mb-4">
+        <SignInWithGoogle />
+      </div>
+
+      {/* Close Button */}
+      <button
+        onClick={() => setShowPopUp(false)}
+        className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+      >
+        ✕
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

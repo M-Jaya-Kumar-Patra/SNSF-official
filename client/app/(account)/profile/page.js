@@ -19,6 +19,7 @@ import { RiLockPasswordFill } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";
 import Image from "next/image";
 
+
 const Account = () => {
   const router = useRouter();
   const alert = useAlert();
@@ -79,6 +80,8 @@ const Account = () => {
       setUploading(false);
     }
   };
+
+  console.log("UUUUUUUUUUUserData: ", userData)
   
 
   const onChangeInput = (e) => {
@@ -96,11 +99,7 @@ const Account = () => {
     setIsLoading(true);
     const { name, email, phone } = formFields;
 
-    if (!name || !email || !phone) {
-      alert.alertBox({ type: "error", msg: "Please fill all fields" });
-      setIsLoading(false);
-      return;
-    }
+    
 
     if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
       alert.alertBox({ type: "error", msg: "Invalid email format" });
@@ -162,6 +161,56 @@ const Account = () => {
       if (!response.error) {
         alert.alertBox({ type: "success", msg: "Password changed successfully" });
         setChangePasswordForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
+        setShowTopForm(false);
+      } else {
+        alert.alertBox({ type: "error", msg: response?.message });
+      }
+    } catch (err) {
+      alert.alertBox({ type: "error", msg: err?.message });
+    } finally {
+      setPassLoading(false);
+    }
+  };
+
+    const handleSetPassword = async (e) => {
+    e.preventDefault();
+    setPassLoading(true);
+    const { newPassword, confirmPassword } = changePasswordForm;
+
+    if (!newPassword || !confirmPassword) {
+      setPassLoading(false);
+      alert.alertBox({ type: "error", msg: "Please fill all password fields" });
+      return;
+    }
+   
+    if (confirmPassword !== newPassword) {
+      setPassLoading(false);
+      alert.alertBox({ type: "error", msg: "Passwords do not match" });
+      return;
+    }
+
+    try {
+      const response = await postData("/api/user/setPassword", {
+        email: userData?.email,
+        newPassword,
+        confirmPassword,
+      });
+
+      if (!response.error) {
+        alert.alertBox({ type: "success", msg: "Password set successfully" });
+        setChangePasswordForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
+        await editData(`/api/user/${userData?._id}`, {
+          email: userData?.email,
+        signUpWithGoogle: false
+      }, true);
+      setShowTopForm(false);
+
+      setUserData({
+        ...userData,
+        signUpWithGoogle: false
+      });
+
+
       } else {
         alert.alertBox({ type: "error", msg: response?.message });
       }
@@ -368,7 +417,92 @@ const Account = () => {
 
             </Box>
           </form>
-          <form className="border border-slate-400 rounded-md mt-3 sm:mt-6 mx-1 sm:mx-3 p-2 sm:pt-3 " onSubmit={handlePasswordChange}>
+
+
+
+          {/* change password field */}
+         {userData?.signUpWithGoogle ?  
+          <form className="border border-slate-400 rounded-md mt-3 sm:mt-6 mx-1 sm:mx-3 p-2 sm:pt-3 " onSubmit={handleSetPassword}>
+  <div>
+  <div key={'top'}>
+    <div className="flex justify-center sm:justify-between" onClick={() => setShowTopForm(prev => !prev)}>
+      <div className="hidden sm:block text-gray-700 font-semibold text-sm  sm:text-lg">Set Password</div>
+      <button
+        // onClick={() => setShowTopForm(prev => !prev)}
+        className="mt-0 text-[#1e40af] font-sans font-bold text-xs sm:text-md"
+        type="button"
+      >
+        SET PASSWORD
+      </button>
+    </div>
+
+    {showTopForm && (
+      <div className="border-slate-500 rounded-md flex flex-col justify-center items-center">
+        <div className="mt-4  gap-x-3 w-full sm:w-2/3 ">
+        <Box
+              component="div"
+              sx={{ "& .MuiTextField-root": {  width: "full" } }}
+              className=" w-full"
+            >
+        
+          <TextField
+            label="New password"
+            variant="outlined"
+            size="small"
+            name="newPassword"
+            margin="dense"
+            value={changePasswordForm.newPassword}
+            fullWidth
+            onChange={onChangePassword}
+
+          />
+          <TextField
+            label="Confirm password"
+            variant="outlined"
+            size="small"
+            name="confirmPassword"
+            margin="dense"
+            value={changePasswordForm.confirmPassword}
+            fullWidth
+            onChange={onChangePassword}
+
+          />
+
+        <div className="flex w-full gap-3 ">
+          <button
+          type="submit"
+          disabled={passLoading}
+          onClick={()=>setShowTopForm(prev => !prev)}
+          className={`btn-org btn-sm w-full bg-white p-1 mt-3 mb-2 border text-xs sm:text-normal  border-slate-400 rounded-md ${
+            passLoading ? 'opacity-50 cursor-not-allowed' : ''
+          }`}> 
+          
+          <div className="flex items-center justify-center font-semibold text-red-500  gap-2"><RxCross2 /><h1>Cancel</h1></div> 
+        </button>
+        <button
+          type="submit"
+          disabled={passLoading}
+          className={`btn-org btn-sm w-full bg-primary-gradient text-xs sm:text-normal text-nowrap p-1 mt-3 mb-2 rounded-md ${
+            passLoading ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          >
+          {passLoading ? (
+            <CircularProgress color="inherit" size={22} />
+          ) : (
+            <div className="flex items-center justify-center font-semibold gap-2"><RiLockPasswordFill /><h1>Change Password</h1></div>
+          )}
+        </button>
+        </div>
+          </Box>
+          </div>
+      </div>
+    )}
+  </div>
+</div>
+
+</form>
+         
+         :  <form className="border border-slate-400 rounded-md mt-3 sm:mt-6 mx-1 sm:mx-3 p-2 sm:pt-3 " onSubmit={handlePasswordChange}>
   <div>
   <div key={'top'}>
     <div className="flex justify-center sm:justify-between" onClick={() => setShowTopForm(prev => !prev)}>
@@ -457,7 +591,7 @@ const Account = () => {
   </div>
 </div>
 
-</form>
+</form>}
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import createPWA from 'next-pwa';
 
-const withPWA = createPWA.default ?? createPWA; // ✅ handles both ESM & CommonJS
+const withPWA = createPWA.default ?? createPWA;
 const isDev = process.env.NODE_ENV === 'development';
 
 const nextConfig = withPWA({
@@ -12,23 +12,27 @@ const nextConfig = withPWA({
   images: {
     remotePatterns: [
       {
-        protocol: 'https',  
+        protocol: 'https',
         hostname: 'res.cloudinary.com',
       },
-      
       {
         protocol: 'https',
         hostname: 'snsteelfabrication.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com', // ✅ Google avatar images
+      },
     ],
   },
+
   env: {
     GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
   },
+
   experimental: {
     optimizeCss: true,
   },
 });
 
 export default nextConfig;
-

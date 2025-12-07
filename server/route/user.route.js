@@ -1,6 +1,6 @@
 import { Router } from "express";
   
-import { registerUserController, verifyEmailController, authWithGoogle, loginController, logoutController, userAvatarController, removeImageFromCloudinary, updateUserDetails, forgotPasswordController, verifyForgotPasswordOtp, resetPassword, refreshToken, userDetails, changePassword, addAddress , getUserAddress, deleteAddress, updateUserAddress, resendOTP, 
+import { registerUserController, verifyEmailController, authWithGoogle, loginController, logoutController, userAvatarController, removeImageFromCloudinary, updateUserDetails, forgotPasswordController, verifyForgotPasswordOtp, resetPassword, refreshToken, userDetails, changePassword, addAddress , getUserAddress, deleteAddress, updateUserAddress, resendOTP, setPassword,
      getRelatedProductsByCategory, getAllUsers     
 } from "../controllers/user.controller.js";
 
@@ -23,6 +23,7 @@ userRouter.post('/reset-password', resetPassword)
 userRouter.post('/refresh-token', refreshToken)
 userRouter.get('/user-details', auth, userDetails)
 userRouter.post('/changePassword', auth, changePassword)
+userRouter.post('/setPassword', auth, setPassword)
 userRouter.post("/addAddress", auth, addAddress)
 userRouter.get("/getAddress/:id", auth, getUserAddress)
 userRouter.delete("/:id/address/:addressId", auth, deleteAddress)

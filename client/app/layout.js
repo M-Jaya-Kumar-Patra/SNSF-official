@@ -15,6 +15,7 @@ import GlobalLoader from "@/components/GlobalLoader";
 import BottomNav from "@/components/BottomNav";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import Script from "next/script";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -111,9 +112,11 @@ export default function RootLayout({ children }) {
                       <PrdProvider>
                         <Navbar />
                         <GlobalLoader />
+                        <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID}>
                         <main className="min-h-screen flex flex-col">
                           {children}
                         </main>
+                        </GoogleOAuthProvider>
                         <BottomNav />
                         <Footer />
                         <Toaster position="top-right" />

@@ -19,6 +19,7 @@ import { Righteous, Poppins } from "next/font/google";
 import { postData } from "@/utils/api";
 import { useAlert } from "../context/AlertContext";
 import { useAuth } from "../context/AuthContext";
+import SignInWithGoogle from "@/components/SignInWithGoogle";
 
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
 const poppins = Poppins({ subsets: ["latin"], weight: "300" });
@@ -29,15 +30,20 @@ export default function Login() {
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [loading, setLoading] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
-  const { isLogin, login, setIsLogin,isCheckingToken ,setIsCheckingToken} = useAuth();
-      if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
+  const { isLogin, login, setIsLogin, isCheckingToken, setIsCheckingToken } =
+    useAuth();
+
+  const [showPopUp, setShowPopUp] = useState(null);
+
+  if (isCheckingToken)
+    return <div className="text-center mt-10">Checking session...</div>;
 
   const router = useRouter();
   const alert = useAlert();
 
   useEffect(() => {
     if (isLogin) {
-      setIsCheckingToken(false)
+      setIsCheckingToken(false);
       router.push("/profile");
     } else {
       setCheckingAuth(false);
@@ -53,12 +59,10 @@ export default function Login() {
     }
   }, [alert]);
 
-
-  const onChangeInput = (e) => {
-    const { name, value } = e.target;
+  const handleInputChange = (field, value) => {
     setFormFields((prev) => ({
       ...prev,
-      [name]: name === "email" ? value.toLowerCase() : value,
+      [field]: field === "email" ? value.toLowerCase() : value,
     }));
   };
 
@@ -91,8 +95,15 @@ export default function Login() {
     }
 
     try {
-      const response = await postData("/api/user/login", { email, password }, false);
+      const response = await postData(
+        "/api/user/login",
+        { email, password },
+        false
+      );
 
+      if (response?.popup) {
+        setShowPopUp(response?.popup);
+      }
       if (!response.error && response.data?.accessToken) {
         alert.alertBox({ type: "success", msg: "Logged in successfully" });
 
@@ -108,12 +119,22 @@ export default function Login() {
 
         router.push("/profile");
       } else {
-        alert.alertBox({ type: "error", msg: response?.message || "Login failed" });
+         if (!response?.popup) {
+        alert.alertBox({
+          type: "error",
+          msg: response?.message || "Login failed",
+        });
+      }
         setFormFields({ email: "", password: "" });
       }
     } catch (error) {
-      console.error("Login error:", error);
-      alert.alertBox({ type: "error", msg: "Something went wrong. Please try again." });
+      if (!response?.popup) {
+        console.error("Login error:", error);
+        alert.alertBox({
+          type: "error",
+          msg: "Something went wrong. Please try again.",
+        });
+      }
     } finally {
       setLoading(false);
       setBtnLoading(false);
@@ -131,21 +152,26 @@ export default function Login() {
     localStorage.setItem("userEmail", formFields.email);
     localStorage.setItem("actionType", "forgot-password");
 
-    const response = await postData("/api/user/forgot-password", { email: formFields.email }, false);
+    const response = await postData(
+      "/api/user/forgot-password",
+      { email: formFields.email },
+      false
+    );
 
     if (!response.error) {
       alert.alertBox({ type: "success", msg: response.message });
       router.push("/verify-otp");
     } else {
-      alert.alertBox({ type: "error", msg: response?.message || "Failed to send OTP" });
+      alert.alertBox({
+        type: "error",
+        msg: response?.message || "Failed to send OTP",
+      });
     }
   };
 
   return (
     <div className="relative flex justify-center items-center w-full h-screen bg-gray-100">
       <div className="absolute top-[10%] sm:top-[20%] w-[300px] border rounded-md shadow overflow-hidden bg-white">
-        
-
         <div className="w-full py-4 px-5 flex flex-col items-center">
           <Image
             className="w-16 h-16 rounded-full mt-4"
@@ -170,19 +196,22 @@ export default function Login() {
             size="small"
             fullWidth
             margin="dense"
-            name="email"
+            name="user_email_unique"
             value={formFields.email}
-            onChange={onChangeInput}
+            onChange={(e) => handleInputChange("email", e.target.value)}
             disabled={loading}
           />
 
           <FormControl size="small" fullWidth margin="dense" variant="outlined">
             <InputLabel>Password</InputLabel>
             <OutlinedInput
-              name="password"
+              name="user_password_unique"
+              autoComplete="new-password"
               type={showPassword ? "text" : "password"}
               value={formFields.password}
-              onChange={onChangeInput}
+              onChange={(e) => {
+                handleInputChange("password", e.target.value);
+              }}
               disabled={loading}
               endAdornment={
                 <InputAdornment position="end">
@@ -217,7 +246,11 @@ export default function Login() {
               active:scale-95 active:shadow-inner`}
             disabled={loading}
           >
-            {btnLoading ? <CircularProgress size={20} color="inherit" /> : "Log In"}
+            {btnLoading ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              "Log In"
+            )}
           </button>
 
           <div className="w-full text-center mt-3">
@@ -226,11 +259,42 @@ export default function Login() {
               onClick={() => router.push("/signup")}
             >
               Don&apos;t have an account?{" "}
-              <span className="hover:text-blue-700 hover:underline">Sign up</span>
+              <span className="hover:text-blue-700 hover:underline">
+                Sign up
+              </span>
             </h3>
           </div>
+          <p className="text-gray-500 text-sm my-2 mb-3">or</p>
+
+          <SignInWithGoogle />
         </div>
       </div>
+      {showPopUp && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 animate-fadeIn">
+          <div className="bg-white rounded-xl shadow-xl w-[90%] max-w-md p-6 relative animate-scaleIn">
+            {/* Title */}
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">
+              Continue with Google
+            </h2>
+
+            {/* Message from your state */}
+            <p className="text-sm text-gray-600 mb-5">{showPopUp}</p>
+
+            {/* Google Button */}
+            <div className="flex justify-center mb-4">
+              <SignInWithGoogle />
+            </div>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setShowPopUp(false)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

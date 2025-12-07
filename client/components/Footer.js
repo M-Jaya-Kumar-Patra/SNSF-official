@@ -133,10 +133,10 @@ const Footer = () => {
       </div>
 
      {/* Bottom Footer */}
-<footer className="w-full  border-t border-gray-300">
+<footer className="w-full  border-t border-gray-400">
   <div className="   py-4 
                   grid grid-cols-1 sm:grid-cols-3 
-                  items-center text-sm text-gray-300 gap-2">
+                  items-center text-sm text-gray-400 gap-2">
 
     {/* Left: Copyright */}
     <p className="text-center sm:text-left">
@@ -145,11 +145,11 @@ const Footer = () => {
 
     {/* Middle: Credits */}
     <p className="text-center">
-      Designed & Developed by <span className="font-bold">Jaya Kumar</span>
+      Designed & Developed by <span className="font-bold text-nowrap">Jaya Kumar</span>
     </p>
 
     {/* Right: Visitor Count */}
-    <p className="text-center sm:text-right">
+    <p className="text-center sm:text-right mb-8 sm:mb-0 text-nowrap">
       Total Visitors: 
       <span className="font-bold "> {totalVisitors}</span>
     </p>
