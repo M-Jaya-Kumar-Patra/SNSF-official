@@ -507,6 +507,7 @@ export async function logoutController(request, response) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      path: "/",
     };
 
     response.clearCookie("accessToken", cookieOptions);

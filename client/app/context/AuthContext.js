@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import { jwtDecode } from "jwt-decode";
 import { fetchDataFromApi } from "@/utils/api";
 import { useRouter } from "next/navigation";
@@ -14,17 +20,34 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [isCheckingToken, setIsCheckingToken] = useState(true);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    try {
+      // Backend logout (clears cookies)
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/logout`, {
+        method: "GET",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.log("Logout API failed:", err);
+    }
+
+    // Frontend cleanup
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    localStorage.removeItem("");
     localStorage.removeItem("email");
+    localStorage.removeItem("userId");
 
     setUserData(null);
     setIsLogin(false);
+    setIsCheckingToken(false);
 
-    setIsCheckingToken(false); 
+    // Redirect
     router.push("/login");
+
+    // 🔥 IMPORTANT: Fix mobile logout not working
+    setTimeout(() => {
+      window.location.reload();
+    }, 50);
   }, [router]);
 
   const fetchUserDetails = useCallback(async () => {
@@ -53,14 +76,12 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("accessToken", token);
       localStorage.setItem("userId", data._id || data.id || "");
       localStorage.setItem("email", data.email || "");
-      console.log("User dataaaaaaaaaaaaaaaaaaaaaa: ", data)
-
+      console.log("User dataaaaaaaaaaaaaaaaaaaaaa: ", data);
     }
   }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-
 
     if (!token) {
       setIsLogin(false);
