@@ -408,11 +408,16 @@ export async function authWithGoogle(req, res) {
       return res.status(400).json({ error: true, message: "Token missing." });
     }
 
+
+    console.log("GOOGLE ID TOKEN:", req.body.token);
+console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
     // 1. Verify Google Token
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
+
+    
 
     const payload = ticket.getPayload();
 
@@ -489,11 +494,6 @@ export async function authWithGoogle(req, res) {
       },
     });
 
-    return response.json({
-      message: "Login successfully",
-      error: false,
-      success: true,
-    });
   } catch (err) {
     console.error("Google Auth Error:", err);
     return res.status(500).json({ error: true, message: err.message });
