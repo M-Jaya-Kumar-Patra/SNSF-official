@@ -22,18 +22,17 @@ const SignInWithGoogle = () => {
               { withCredentials: true }
             );
             
-            console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeee:", res);
-              console.log("GOOGLE LOGIN RESPONSE:", res.data.user.email);
-
             if (res.data.success) {
               alert.alertBox({ type: "success", msg: "Login successful" });
 
               // update context if needed
               // setIsLogin(true)
 
+              const { accessToken, refreshToken, user } = res.data;
+login(user, accessToken);
+localStorage.setItem('refreshToken', refreshToken);
 
-              const token = res.data.user.accessToken;
-              login(res.data, token);
+
 
               // localStorage.setItem("accessToken", token);
               // localStorage.setItem("refreshToken", res.data.user.refreshToken);
@@ -43,7 +42,7 @@ const SignInWithGoogle = () => {
               // setIsLogin(true);
               router.push("/profile");
 
-              window.location.reload();
+              // window.location.reload();
             }
           } catch (err) {
             console.log("EEEEEEEEEEEERRROR: ", err);

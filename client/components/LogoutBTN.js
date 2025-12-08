@@ -29,13 +29,14 @@ export default function LogoutBTN({ onLogout }) {
 
   return (
     <>
-      <div
-        className="h-[50px] flex items-center pl-5 font-semibold text-red-600 cursor-pointer gap-2 capitalize"
-        onClick={handleClickOpen}
-      >
-        <LogOut size={18} />
-        Logout
-      </div>
+      <button
+  type="button"
+  className="h-[50px] w-full flex items-center pl-5 font-semibold text-red-600 cursor-pointer gap-2 capitalize text-left bg-transparent border-none outline-none"
+  onClick={handleClickOpen}
+>
+  <LogOut size={18} />
+  Logout
+</button>
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>{"Confirm Logout"}</DialogTitle>

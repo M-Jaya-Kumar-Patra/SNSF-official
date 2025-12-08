@@ -485,8 +485,6 @@ console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
       accessToken,
       refreshToken,
       user: {
-        accessToken,
-        refreshToken,
         id: user._id,
         email,
         name,
@@ -536,6 +534,7 @@ export async function userAvatarController(request, response) {
   try {
     console.log("userAvatarController Triggered");
     const userId = request.userId;
+    console.log("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", userId)
     console.log("User ID from token:", userId);
     console.log("Is valid ObjectId:", mongoose.Types.ObjectId.isValid(userId));
 
@@ -547,6 +546,7 @@ export async function userAvatarController(request, response) {
         success: false,
       });
     }
+
 
     const user = await UserModel.findById(userId);
     if (!user) {
