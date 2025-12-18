@@ -63,10 +63,10 @@ const Slider = () => {
   );
 };
   // ✅ Render nothing while loading or waiting for token
-   if (isCheckingToken || localLoading || !slides.length) {
+   if( (isCheckingToken || localLoading || !slides.length)) {
     return (
       <div className="flex justify-center w-full">
-        <div className="relative w-full aspect-[16/9] max-w-[1000px] mx-auto overflow-hidden shadow-md ">
+        <div className="relative w-full aspect-[6/1.5] max-w-[1600px] mx-auto overflow-hidden shadow-md ">
           <Skeleton
             variant="rectangular"
             animation="wave"
@@ -86,8 +86,8 @@ const Slider = () => {
     );
   }
   return (
-    <div className="flex justify-center w-full ">
-      <div className="relative w-full aspect-[16/9] max-w-[1000px] mx-auto  overflow-hidden shadow-md">
+    <div className="flex justify-center w-full sticky top-[80px]">
+      <div className="relative w-full aspect-[6/1.5] max-w-[1600px] mx-auto  overflow-hidden shadow-md">
         {/* Left Arrow */}
         <button
           onClick={handlePrev}

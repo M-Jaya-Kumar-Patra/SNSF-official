@@ -152,3 +152,29 @@ export const deleteWishlistItemContoller = async (request, response) => {
         });
     }
 };
+
+export const getMostWishlisted = async (req, res) => {
+  try {
+    const agg = await WishlistModel.aggregate([
+      {
+        $group: {
+          _id: "$productId",
+          count: { $sum: 1 },
+          title: { $first: "$productTitle" },
+          image: { $first: "$image" },
+          price: { $first: "$price" }
+        }
+      },
+      { $sort: { count: -1 } },
+      { $limit: 20 }
+    ]);
+
+    res.json({
+      success: true,
+      data: agg
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+

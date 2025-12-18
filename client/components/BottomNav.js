@@ -100,7 +100,7 @@ const BottomNav = () => {
   return (
     <>
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 w-full z-50 md:hidden">
+      <div className="fixed bottom-0 w-screen z-50 lg:hidden">
         <BottomNavigation
           value={value}
           onChange={handleChange}
@@ -136,12 +136,12 @@ const BottomNav = () => {
         minWidth: 0,
         padding: '0 4px',
         '&.Mui-selected': {
-          color: '#1e40af'
+          color: '#0f172a'
         },
         '.MuiBottomNavigationAction-label': {
           fontSize: '10px',
           '&.Mui-selected': {
-            color: '#1e40af'
+            color: '#0f172a'
           }
         }
       }}
@@ -184,7 +184,7 @@ const BottomNav = () => {
       {mobileMenuOpen && (
         <div
           ref={menuRef}
-          className="fixed top-48 bottom-14 left-[10%] transform -translate-x-1/2 w-4/5 px-6 md:hidden z-[999] overflow-y-auto rounded-xl backdrop-blur-xl bg-white/70 shadow-2xl border border-slate-200 p-5 space-y-4 animate-slideIn no-scrollbar"
+          className="fixed top-48 bottom-14 left-[10%] transform -translate-x-1/2 w-4/5 px-6 lg:hidden z-[999] overflow-y-auto rounded-xl backdrop-blur-xl bg-white/70 shadow-2xl border border-slate-200 p-5 space-y-4 animate-slideIn no-scrollbar"
         >
           {(catData || [])
             .slice()

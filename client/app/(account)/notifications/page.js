@@ -16,7 +16,7 @@ import {
   Heart,
   Bell,
 } from "lucide-react";
-
+import { trackVisitor } from "@/lib/tracking";
 const Account = () => {
   const router = useRouter();
   const { userData, isLogin, isCheckingToken, setIsCheckingToken } = useAuth();
@@ -33,7 +33,9 @@ const Account = () => {
           }
         }, [isLogin, router]);
       
-
+ useEffect(() => {
+    trackVisitor("notifications");
+  }, []);
 
 
 useEffect(() => {

@@ -20,6 +20,11 @@ import { postData } from "@/utils/api";
 import { useAlert } from "../context/AlertContext";
 import { useAuth } from "../context/AuthContext";
 import SignInWithGoogle from "@/components/SignInWithGoogle";
+import { trackVisitor } from "@/lib/tracking";
+
+
+
+
 
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
 const poppins = Poppins({ subsets: ["latin"], weight: "300" });
@@ -50,6 +55,7 @@ export default function Login() {
     }
   }, [isLogin, router]);
 
+   
   useEffect(() => {
     const alertData = sessionStorage.getItem("alert");
     if (alertData) {
@@ -159,7 +165,7 @@ export default function Login() {
     );
 
     if (!response.error) {
-      alert.alertBox({ type: "success", msg: response.message });
+      // alert.alertBox({ type: "success", msg: response.message });
       router.push("/verify-otp");
     } else {
       alert.alertBox({
@@ -169,55 +175,91 @@ export default function Login() {
     }
   };
 
-  return (
-    <div className="relative flex justify-center items-center w-full h-screen bg-gray-100">
-      <div className="absolute top-[10%] sm:top-[20%] w-[300px] border rounded-md shadow overflow-hidden bg-white">
-        <div className="w-full py-4 px-5 flex flex-col items-center">
-          <Image
-            className="w-16 h-16 rounded-full mt-4"
-            src="/images/logo.png"
-            alt="SNSF Logo"
-            width={64}
-            height={64}
-          />
+return (
+  <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 ">
+    <div className="w-full max-w-5xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
 
-          <div className="w-full flex items-center gap-1 justify-center">
-            <h1 className="text-[#131e30] my-2 font-bold text-lg">Log in to</h1>
-            <h1
-              className={`text-xl font-bold ${righteous.className} bg-gradient-to-b from-[#8ca4b4] via-[#4c6984] to-[#93b2c7] bg-clip-text text-transparent`}
-            >
-              SNSF
-            </h1>
+      {/* ================= LEFT : VISUAL / BRAND ================= */}
+      <div className="hidden lg:flex relative">
+        <Image
+          src="/images/login-furniture.png" // 👉 sofa / bed / interior image
+          alt="Premium Furniture"
+          fill
+          className="object-cover"
+          priority
+        />
+
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/30 to-transparent" />
+
+        {/* Brand text */}
+        <div className="relative z-10 p-10 flex flex-col justify-end text-white">
+          <h1 className={`text-4xl font-bold ${righteous.className}`}>
+            Welcome Back
+          </h1>
+          <p className="mt-2 text-lg text-slate-200">
+            Premium furniture for modern living
+          </p>
+        </div>
+      </div>
+
+      {/* ================= RIGHT : LOGIN FORM ================= */}
+      <div className="flex items-center justify-center p-6 sm:p-10">
+        <div className="w-full max-w-sm">
+
+          {/* Logo */}
+          <div className="flex justify-center mb-4">
+            <Image
+              src="/images/logo.png"
+              alt="SNSF Logo"
+              width={70}
+              height={70}
+              className="rounded-full"
+            />
           </div>
 
+          {/* Title */}
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-slate-900">
+              Log in to{" "}
+              <span
+                className={`${righteous.className} bg-gradient-to-r from-slate-700 via-slate-900 to-black bg-clip-text text-transparent`}
+              >
+                SNSF
+              </span>
+            </h2>
+            <p className="text-sm text-slate-500 mt-1">
+              Access your personalized experience
+            </p>
+          </div>
+
+          {/* Email */}
           <TextField
-            label="Email Id"
+            label="Email"
             variant="outlined"
             size="small"
             fullWidth
             margin="dense"
-            name="user_email_unique"
             value={formFields.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
             disabled={loading}
+            autoComplete="off"
           />
 
+          {/* Password */}
           <FormControl size="small" fullWidth margin="dense" variant="outlined">
             <InputLabel>Password</InputLabel>
             <OutlinedInput
-              name="user_password_unique"
-              autoComplete="new-password"
               type={showPassword ? "text" : "password"}
               value={formFields.password}
-              onChange={(e) => {
-                handleInputChange("password", e.target.value);
-              }}
+              onChange={(e) =>
+                handleInputChange("password", e.target.value)
+              }
               disabled={loading}
               endAdornment={
                 <InputAdornment position="end">
                   <IconButton
                     onClick={() => setShowPassword((prev) => !prev)}
-                    onMouseDown={(e) => e.preventDefault()}
                     edge="end"
                   >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -228,73 +270,86 @@ export default function Login() {
             />
           </FormControl>
 
-          <button
-            className="relative bg-transparent border-none text-[#131e30] text-[14px] mt-2 right-0"
-            onClick={forgotPassword}
-            disabled={loading}
-          >
-            Forgot password?
-          </button>
+          {/* Forgot password */}
+          <div className="text-right mt-2">
+            <button
+              onClick={forgotPassword}
+              disabled={loading}
+              className="text-sm text-slate-600 hover:text-slate-900 transition"
+            >
+              Forgot password?
+            </button>
+          </div>
 
+          {/* Login Button */}
           <button
-            type="submit"
             onClick={handleLogin}
-            className={`w-[120px] h-[36px] flex justify-center items-center 
-              !bg-primary-gradient hover:opacity-90 
-              transition duration-200 text-white rounded-md mt-4 text-[15px]
-              shadow-[0_4px_10px_rgba(0,0,0,0.3)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.35)] 
-              active:scale-95 active:shadow-inner`}
             disabled={loading}
+            className="
+              w-full h-[44px] mt-5
+              bg-gradient-to-r from-slate-800 to-slate-900
+              text-white rounded-lg
+              font-medium
+              flex items-center justify-center
+              shadow-lg
+              hover:opacity-95
+              active:scale-[0.98]
+              transition
+            "
           >
             {btnLoading ? (
-              <CircularProgress size={20} color="inherit" />
+              <CircularProgress size={22} color="inherit" />
             ) : (
               "Log In"
             )}
           </button>
 
-          <div className="w-full text-center mt-3">
-            <h3
-              className="text-[#131e30] text-[14px] cursor-pointer"
+          {/* Signup */}
+          <p className="text-center text-sm text-slate-600 mt-4">
+            Don&apos;t have an account?{" "}
+            <span
               onClick={() => router.push("/signup")}
+              className="text-slate-900 font-medium cursor-pointer hover:underline"
             >
-              Don&apos;t have an account?{" "}
-              <span className="hover:text-blue-700 hover:underline">
-                Sign up
-              </span>
-            </h3>
-          </div>
-          <p className="text-gray-500 text-sm my-2 mb-3">or</p>
+              Sign up
+            </span>
+          </p>
 
+          {/* Divider */}
+          <div className="flex items-center my-5">
+            <div className="flex-1 h-px bg-slate-300" />
+            <span className="px-3 text-sm text-slate-500">or</span>
+            <div className="flex-1 h-px bg-slate-300" />
+          </div>
+
+          {/* Google Login */}
           <SignInWithGoogle />
         </div>
       </div>
-      {showPopUp && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 animate-fadeIn">
-          <div className="bg-white rounded-xl shadow-xl w-[90%] max-w-md p-6 relative animate-scaleIn">
-            {/* Title */}
-            <h2 className="text-lg font-semibold text-gray-800 mb-2">
-              Continue with Google
-            </h2>
-
-            {/* Message from your state */}
-            <p className="text-sm text-gray-600 mb-5">{showPopUp}</p>
-
-            {/* Google Button */}
-            <div className="flex justify-center mb-4">
-              <SignInWithGoogle />
-            </div>
-
-            {/* Close Button */}
-            <button
-              onClick={() => setShowPopUp(false)}
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
     </div>
-  );
+
+    {/* ================= GOOGLE POPUP (UNCHANGED) ================= */}
+    {showPopUp && (
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="bg-white rounded-xl shadow-xl w-[90%] max-w-md p-6 relative">
+          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+            Continue with Google
+          </h2>
+          <p className="text-sm text-gray-600 mb-5">{showPopUp}</p>
+          <div className="flex justify-center mb-4">
+            <SignInWithGoogle />
+          </div>
+          <button
+            onClick={() => setShowPopUp(false)}
+            className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+);
+
+
 }

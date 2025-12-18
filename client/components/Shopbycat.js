@@ -32,7 +32,7 @@ const Shopbycat = () => {
       <a
         key={`${rowKey}-${index}`}
         href={`/ProductListing?catId=${cat._id}`}
-        className="w-[65px] h-[65px] sm:w-[100px] sm:h-[100px] bg-white rounded-full p-1 shadow-gray-400 shadow-md flex justify-center items-center transition-transform hover:scale-110 hover:shadow-lg hover:shadow-gray-500"
+        className="w-[65px] h-[65px] sm:w-[100px] sm:h-[100px] md:w-[150px] md:h-[150px] lg:w-[200px] lg:h-[200px] bg-white rounded-full p-1 shadow-gray-400 shadow-md flex justify-center items-center transition-transform hover:scale-110 hover:shadow-lg hover:shadow-gray-500"
       >
         {cat?.images?.[0] ? (
           <Image
@@ -60,7 +60,7 @@ const Shopbycat = () => {
     Array.from({ length: count }).map((_, index) => (
       <div
         key={`${rowKey}-skeleton-${index}`}
-        className="w-[65px] h-[65px] sm:w-[100px] sm:h-[100px] bg-white rounded-full p-1 shadow-gray-400 shadow-md flex justify-center items-center"
+        className="w-[65px] h-[65px] sm:w-[100px] sm:h-[100px] md:w-[150px] md:h-[150px]  bg-white rounded-full p-1 shadow-gray-400 shadow-md flex justify-center items-center"
       >
         <Skeleton
           variant="circular"
@@ -75,7 +75,7 @@ const Shopbycat = () => {
   return (
     <div className="flex flex-col items-center bg-slate-100 w-full pb-4 sm:pb-8">
       <h1
-        className={`text-2xl sm:text-3xl font-bold text-black mt-4 sm:mt-8 mb-4 sm:mb-8 ${joSan.className}`}
+        className={`text-2xl sm:text-3xl  lg:text-5xl xl:text-8xl  font-bold text-black mt-4 sm:mt-8 mb-4 sm:mb-8 ${joSan.className}`}
       >
         Shop by Category
       </h1>

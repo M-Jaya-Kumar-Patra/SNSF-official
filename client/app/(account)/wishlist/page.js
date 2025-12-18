@@ -18,6 +18,11 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import { MdDelete } from "react-icons/md";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { trackVisitor } from "@/lib/tracking";
+
+
+
+
 
 
 
@@ -36,6 +41,8 @@ const Account = () => {
       router.push("/login");
     }
   }, [isLogin, router]);
+
+
 
 
   const getOptimizedCloudinaryUrl = (url) => {

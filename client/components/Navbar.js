@@ -1,5 +1,3 @@
-
-
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
@@ -27,32 +25,76 @@ import { MdOutlineMessage } from "react-icons/md";
 import Loading from "./Loading";
 import NextImage from "next/image";
 import Skeleton from "@mui/material/Skeleton";
+import { usePathname } from "next/navigation";
+import HomeIcon from '@mui/icons-material/Home';
+import { useScreen } from "@/app/context/ScreenWidthContext";
 
-const StyledBadge = styled(Badge)(({ theme }) => ({
-  '& .MuiBadge-badge': {
-    right: -3,
-    top: 13,
-    border: `2px solid ${theme.palette.background.paper}`,
-    padding: '0 4px',
-  },
-}));
+import {
+  Sofa,
+  Home,
+  BedDouble,
+  UtensilsCrossed,
+  Laptop,
+  LampDesk,
+  Boxes,
+} from "lucide-react";
 
 const righteous = Righteous({ subsets: ["latin"], weight: "400" });
 
+/* ---------------- ICON MAP ---------------- */
+const categoryIcons = {
+  sofas: Sofa,
+  "living room": Home,
+  bedroom: BedDouble,
+  dining: UtensilsCrossed,
+  "study & office": Laptop,
+  "home decor": LampDesk,
+  accessories: Boxes,
+};
+
+const getCategoryIcon = (name) => {
+  const Icon = categoryIcons[name?.toLowerCase()] || Package;
+  return <Icon className="w-8 h-8 text-slate-900" />;
+};
+
+/* ---------------- STYLED BADGE ---------------- */
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  "& .MuiBadge-badge": {
+    right: -3,
+    top: 13,
+    border: `2px solid ${theme.palette.background.paper}`,
+    padding: "0 4px",
+  },
+}));
+
+/* ================== NAVBAR ================== */
 const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
-  const { catData, setCatData } = useCat();
   const router = useRouter();
-  const { setLoading, userData, isLogin, isCheckingToken } = useAuth();
-  const { getNotifications } = useNotice();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const pathName = usePathname();
   const dropdownRef = useRef(null);
 
-  const toggleMenu = () => setMenuOpen((prev) => !prev);
+  const { catData } = useCat();
+  const { userData, isLogin, isCheckingToken } = useAuth();
+  const { getNotifications } = useNotice();
+  const { showLarge } = usePrd();
+  const { isXs, isSm, isMd, isLg, isXl, isXl1440, is2Xl, isGELg, screenWidth, deskSearch, setDeskSearch  } = useScreen(); 
+  
+  
 
-  const [localLoading, setLocalLoading] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [localLoading, setLocalLoading] = useState(false);
 
 
+    const toggleMenu = () => setMenuOpen((prev) => !prev);
+
+  console.log("CATDATA ::::::::::::::::::::::", catData)
+
+
+  /* ---------------- EFFECTS ---------------- */
+
+  
   useEffect(() => {
     const img = new window.Image(); // ✅ Native Image
     img.src = "/images/logo.png";
@@ -68,13 +110,18 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
   }, []);
 
 
-  if (localLoading) return <Loading />;
 
   useEffect(() => {
     getNotifications();
   }, []);
 
   useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+ useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setMenuOpen(false);
@@ -92,19 +139,26 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
     };
   }, [menuOpen]);
 
+
   const getOptimizedCloudinaryUrl = (url) => {
     if (!url?.includes("res.cloudinary.com")) return url;
     return url.replace("/upload/", "/upload/w_300,h_300,c_fit,fl_lossless,f_auto,q_100/");
   };
+  // if (!showLarge) return null;
+  if (localLoading) return <Loading />;
 
+  /* ================= RENDER ================= */
+   if (!showLarge) {
   return (
-    <nav className=" sticky top-0 sm:top-[-82px]   z-[300] bg-gradient-to-r from-indigo-950 via-indigo-900 to-[#1e40af]  text-white  border-[#1e293b] shadow-md">
+    <nav className={`sticky top-[0] z-[300] bg-slate-900  h-[90px]` }>
 
-
-      <div>
-        <div className="w-full max-w-screen-xl mx-auto px-3 md:px-6 lg:px-8 py-2 sm:py-4 flex items-center justify-between ">
-
-          <div className="flex items-center gap-0  sm:gap-1  flex-shrink-0 h-[45px] sm:h-[50cd px]">
+      <div className="  bg-slate-900 text-white ">
+         {/* ================= TOP BAR ================= */}
+      <div
+        className={`sticky max-w-[1600px] mx-auto px-6 flex items-center justify-between h-[90px]`}
+      >
+        {/* LOGO */}
+        <div className="flex items-center gap-0  sm:gap-1  flex-shrink-0 h-[45px] sm:h-[50px]">
             {/* Logo Icon */}
             <Image
               src={getOptimizedCloudinaryUrl("/images/logo.png")}
@@ -122,25 +176,107 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
               alt="SNSF"
               width={100}
               height={30}
-              className="
-                w-[140px] h-[50px] sm:w-[160px] sm:h-[60px]
-
-      object-contain"
+              className="w-[140px] h-[50px] sm:w-[160px] sm:h-[60px] object-contain"
 
               fetchPriority="high" // ✅ hints browser it's high-priority for LCP
               quality={90}
             />
           </div>
 
-       <div className="hidden sm:flex sm:flex-grow px-4 md:px-8 lg:px-20">
-  <Search />
+        {/* SCROLLED TEXT CATEGORIES */}
+   
+   <div
+  className={`
+    hidden lg:flex h-full items-center gap-4 ml-10 mr-5 mt-4 text-sm font-medium
+    transition-all duration-500
+    ease-[cubic-bezier(0.22,1,0.36,1)]
+    will-change-[opacity,transform]
+    transform-gpu
+
+    ${
+      deskSearch
+        ? "opacity-0 translate-y-4 pointer-events-none"
+        : pathName === "/"
+          ? isScrolled
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-6 pointer-events-none"
+          : "opacity-100 translate-y-0"
+    }
+  `}
+>
+  {/* Go Home Button */}
+  {pathName !== "/" && (
+    <button
+      onClick={() => router.push("/")}
+      className="text-slate-300 hover:text-white transition-colors"
+    >
+     <HomeIcon/>
+    </button>
+  )}
+
+  {pathName !== "/" && (
+    <span className="text-slate-400 font-extrabold text-[20px]">|</span>
+  )}
+
+  {/* Menu Items */}
+  {[
+    "Sofas",
+    "Living Room",
+    "Bedroom",
+    "Dining",
+  ].map((name, i, arr) => (
+    <React.Fragment key={name}>
+      <button
+        onClick={() => {
+          const catId = catData?.find((c) => c.name === name)?._id;
+          if (catId) {
+            router.push(`/ProductListing?catId=${catId}`);
+          }
+        }}
+        className={`
+          text-slate-300 hover:text-white
+          transition-colors duration-300
+          relative after:absolute after:-bottom-1 after:left-0
+          after:w-0 after:h-[1px] after:bg-white 
+          hover:after:w-full after:transition-all after:duration-300
+            ${(isXl1440 || is2Xl)? "text-[20px]" : " text-[17px]" } `}
+        
+      >
+        {name}
+      </button>
+
+      {i < arr.length - 1 && (
+        <span className="text-slate-400 font-extrabold text-[20px]">|</span>
+      )}
+    </React.Fragment>
+  ))}
+</div>
+   
+
+      <div className="sm:flex sm:gap-6 w-">
+
+
+
+        {/* SEARCH */}
+<div className="relative md:w-[50px] lg:w-[50px] xl:w-[100px]">
+  <div
+    className={`
+      absolute right-0 top-1/2 -translate-y-1/2
+      transition-[opacity,transform]
+      duration-[500ms]
+      ease-[cubic-bezier(0.22,1,0.36,1)]
+      will-change-[opacity,transform]
+      ${isScrolled
+        ? " translate-x-0 "
+        : "opacity-100 translate-x-0"}
+    `}
+  >
+    <Search />
+  </div>
 </div>
 
 
-
-          
-
-            <div className="w-auto sm:hidden flex">
+ <div className="w-auto sm:hidden flex">
               <div className="relative block sm:hidden" ref={dropdownRef}>
                 <IconButton aria-label="Account" onClick={toggleMenu} className="text-slate-200">
                   <Image
@@ -214,10 +350,13 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
               </div>
             </div>
 
+
+
+
           <div className="hidden sm:flex items-center gap-3">
 
 
-            <div className="sm:hidden">
+ <div className="sm:hidden">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="text-white focus:outline-none"
@@ -239,17 +378,17 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
             </div>
 
 
+        {/* ICONS */}
+        <div className="hidden sm:flex items-center gap-3">
+          <IconButton onClick={() => router.push("/notifications")}>
+            <FaBell className="text-[28px] text-white" />
+          </IconButton>
+          <IconButton aria-label="Call" onClick={() => (window.location.href = "tel:+919776501230")}>
+            <MdCall className="text-[34px] text-white" />
+          </IconButton>
 
-            <div className="hidden sm:flex items-center gap-3">
-              <IconButton aria-label="Notification" onClick={() => router.push("/notifications")}>
-                <FaBell className="text-[28px] text-white" />
-              </IconButton>
-              <IconButton aria-label="Call" onClick={() => window.location.href = 'tel:+919776501230'}>
-                <MdCall className="text-[34px] text-white" />
-              </IconButton>
-
-
-              <div className="relative group hidden sm:block">
+          {/* ACCOUNT */}
+          <div className="relative group hidden sm:block">
                 <IconButton
                   aria-label="Account"
                   onClick={() => router.push(isLogin ? "/profile" : "/login")}
@@ -325,129 +464,151 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                   </div>
                 </div>
               </div>
-
-
-
-            </div>
-
-          </div>
+        </div>
         </div>
 
       </div>
+      </div>
 
-      {/* DESKTOP CATEGORY MENU */}
-      <ul className="hidden md:flex w-full  border border-b-slate-200 bg-white shadow-xl sm:px-5 md:px-10 z-40">
-        {/* Home Button */}
-        <li
-          onClick={() => router.push("/")}
-          className="cursor-pointer flex items-center justify-center text-[20px] lg:px-10  hover:bg-slate-50 text-[#131e30] hover:font-semibold py-1 transition-all duration-200"
-          title="Back to Home"
-        >
-          {
-            (!catData || catData?.length === 0) ?
-
-              <Skeleton
-                variant="text"
-                animation="wave"
-                height={24}
-                sx={{ bgcolor: "rgba(203,213,225,0.5)" }}
-              />
-              :
-              <IoMdHome />
-          }
-        </li>
-
-        {/* Category Skeleton Loader or Actual Categories */}
-        {(!catData || catData?.length === 0)
-          ? Array.from({ length: 7 }).map((_, index) => (
-            <li key={`skeleton-${index}`} className="w-full px-6 py-1">
-              <Skeleton
-                variant="text"
-                animation="wave"
-                width={80}
-                height={24}
-                sx={{ bgcolor: "rgba(203,213,225,0.5)" }}
-              />
-            </li>
-          ))
-          : [...catData]
-            .sort((a, b) => a.sln - b.sln)
-            .map((cat, index) => (
-              <li
-                key={index}
-                onClick={() => router.push(`/ProductListing?catId=${cat._id}`)}
-                className="relative group w-full text-center cursor-pointer transition-all duration-200  "
-              >
-                <span className="block text-[15px] font-medium text-slate-800 transition duration-200 group-hover:text-[#131e30] group-hover:font-semibold py-1 text-nowrap">
-                  {cat.name}
-                </span>
-
-                {cat.children?.length > 0 && (
-                  <div
-                    onClick={(e) => e.stopPropagation()}
-                    className={`absolute top-full left-0 text-left 
-  ${index > catData.length - 3 ? "right-0 left-auto" : ""}
-  bg-white shadow-2xl border border-gray-200 rounded-lg sm:px-3 lg:px-6 py-5
-  opacity-0 invisible group-hover:opacity-100 group-hover:visible
-  group-hover:translate-y-2 transition-all duration-300 ease-in-out
-  z-[300] overflow-auto scrollbar-hide max-w-screen-sm sm:max-w-screen-md md:max-w-screen-lg lg:max-w-screen-xl   text-nowrap
-`}
-
-                  >
-                    
-                    <div
-  className="flex gap-0 lg:gap-4"
-  style={{
-    width:
-      cat.children.length *
-      (window.innerWidth < 640
-        ? 160 // sm → reduced from 200
-        : window.innerWidth < 1024
-        ? 160 // md → normal
-        : 240 // lg → more space
-      ) + "px",
-  }}
+      </div>
+     
+{/* ================= CATEGORY CARDS ================= */}
+<div
+  className={`
+    hidden md:block
+    transition-[opacity,transform]
+    duration-[500ms]
+    ease-[cubic-bezier(0.22,1,0.36,1)]
+    will-change-[opacity,transform]
+    ${isScrolled
+      ? "opacity-0 translate-y-3 pointer-events-none"
+      : "opacity-100 translate-y-0"}
+  `}
 >
-  {cat.children.map((subCat, subIndex) => (
-    <div
-      key={subIndex}
-      className="min-w-[160px] sm:min-w-[16 0px] md:min-w-[200px] lg:min-w-[240px] 
-                 transition-transform duration-300 hover:scale-[1.02]"
-    >
-      <a
-        href={`/ProductListing?subCatId=${subCat._id}`}
-        className="block text-[15px] sm:text-[15px] md:text-[16px] font-semibold mb-3 text-slate-800 hover:text-indigo-700"
-      >
-        {subCat.name}
-      </a>
-      <ul className="space-y-1">
-        {subCat.children?.map((thirdSubCatId, thirdIndex) => (
-          <li key={thirdIndex}>
-            <a
-              href={`/ProductListing?thirdSubCatId=${thirdSubCatId._id}`}
-              className="block text-[14px] sm:text-[14px] md:text-[15px] text-gray-600 font-medium hover:text-[#131e30] transition-all duration-200"
+  <div className={`max-w-[1600px] mx-auto py-2 flex justify-center  ${pathName === "/"?"block": "hidden"}`}>
+  <ul className="flex items-start gap-4   ">
+    {!catData || catData.length === 0 ? (
+      Array.from({ length: 7 }).map((_, index) => (
+        <li key={`skeleton-${index}`} className="w-[72px] h-[72px]">
+          <Skeleton
+            variant="rectangular"
+            animation="wave"
+            width={72}
+            height={72}
+            sx={{ bgcolor: "rgba(203,213,225,0.5)", borderRadius: "12px" }}
+          />
+        </li>
+      ))
+    ) : (
+      [...catData]
+        .sort((a, b) => a.sln - b.sln)
+        .map((cat, index) => (
+          <li
+            key={cat._id}
+            onClick={() => router.push(`/ProductListing?catId=${cat._id}`)}
+            className="relative group cursor-pointer"
+          >
+            {/* CATEGORY CARD */}
+            <div
+              className="
+                w-[80px] h-[80px] xl:w-[100px] 2xl:w-[120px]
+                bg-white rounded-xl
+
+
+                flex flex-col
+                items-center justify-center
+                p-1 gap-1
+                shadow-sm
+                shadow-slate-900/20
+                hover:shadow-lg
+                hover:shadow-slate-900/30
+
+                transition-all duration-200
+              "
             >
-              {thirdSubCatId.name}
-            </a>
+              <div className="w-8 h-8 flex items-center justify-center">
+                {getCategoryIcon(cat.name)}
+              </div>
+
+              <span className="text-[12px] font-medium text-slate-900 text-center">
+                {cat.name}
+              </span>
+            </div>
+
+            {/* MEGA MENU */}
+            {cat.children?.length > 0 && (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className={`
+                  absolute top-full left-0 text-left
+                  ${index > catData.length - 3 ? "right-0 left-auto" : ""}
+                  bg-white shadow-2xl border border-gray-200 rounded-lg
+                  sm:px-3 lg:px-6 py-5
+                  opacity-0 invisible
+                  group-hover:opacity-100 group-hover:visible
+                  group-hover:translate-y-2
+                  transition-all duration-300 ease-in-out
+                  z-[300]
+                  overflow-auto scrollbar-hide
+                  max-w-screen-lg
+
+                  
+                `}
+              >
+                <div
+                  className="flex gap-4 "
+                  style={{
+                    width:
+                      cat.children.length *
+                        (typeof window !== "undefined" && window.innerWidth < 640
+                          ? 160
+                          : typeof window !== "undefined" && window.innerWidth < 1024
+                          ? 160
+                          : 240) + "px",
+                  }}
+                >
+                  {cat.children.map((subCat, subIndex) => (
+                    <div
+                      key={subIndex}
+                      className="min-w-[160px] md:min-w-[200px] lg:min-w-[240px]
+                                 transition-transform duration-300 hover:scale-[1.02]
+                                 
+                                 "
+                    >
+                      <a
+                        href={`/ProductListing?subCatId=${subCat._id}`}
+                        className="block text-[15px] md:text-[16px] font-semibold mb-3 text-slate-800 hover:text-indigo-700"
+                      >
+                        {subCat.name}
+                      </a>
+
+                      <ul className="space-y-1">
+                        {subCat.children?.map((third, thirdIndex) => (
+                          <li key={thirdIndex}>
+                            <a
+                              href={`/ProductListing?thirdSubCatId=${third._id}`}
+                              className="block text-[14px] md:text-[15px] text-gray-600 font-medium hover:text-[#131e30] transition-all duration-200"
+                            >
+                              {third.name}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </li>
-        ))}
-      </ul>
-    </div>
-  ))}
+        ))
+    )}
+  </ul>
+</div>
 </div>
 
-                  </div>
-                )}
-              </li>
-            ))}
-
-      </ul>
 
 
-
-
-
-      {mobileMenuOpen && (
+  {mobileMenuOpen && (
         <div className="sm:hidden bg-white text-[#131e30] border-t border-b py-2 px-4 space-y-2">
           <div
             onClick={() => {
@@ -492,8 +653,10 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
         </div>
       )}
 
+
     </nav>
   );
+}
 };
 
 export default Navbar;

@@ -3,8 +3,9 @@
 import ProductPageClient from './ProductPageClient';
 import Head from "next/head";
 
+
 export async function generateMetadata({ params }) {
-  const prd = await params?.prd;
+  const prd = params?.prd;
 
   if (!prd) {
     return {
@@ -70,9 +71,8 @@ export async function generateMetadata({ params }) {
   };
 }
 
-
 export default async function Page({ params }) {
-  const prd = await params?.prd;
+  const prd = params?.prd; // ❌ remove await
 
   // Fetch product from backend
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/product/${prd}`, {
@@ -119,3 +119,4 @@ export default async function Page({ params }) {
     </>
   );
 }
+

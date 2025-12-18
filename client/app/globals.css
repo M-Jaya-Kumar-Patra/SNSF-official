@@ -2,27 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import Google Fonts */
+/* Import Righteous strictly for special headers if needed */
 @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  color: white; /* Ensure text is visible on white background? */
+  background: #ffffff;
+  
+  /* IMPORTANT: Do NOT put font-family here. 
+     Let Next.js (josefin.className) handle it. */
+}
 
+/* Custom Class for Righteous Font */
 .righteous {
   font-family: 'Righteous', sans-serif;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-}
-
-
-/* Body Styling */
-body {
-  width: 100%;
-  overflow-x: hidden;
-  color: white;
-  background: #ffffff;
-  font-family: Arial, Helvetica, sans-serif;
-}
+/* --- Utilities & Resets --- */
 
 /* Remove number spinners */
 [type="number"]::-webkit-inner-spin-button,
@@ -50,7 +49,7 @@ body {
   background: #868686;
 }
 
-/* Animation Utilities */
+/* --- Animations --- */
 @layer utilities {
   .animate-fadeIn {
     animation: fadeIn 0.3s ease-out both;
@@ -60,58 +59,32 @@ body {
   }
 
   @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(12px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 }
 
-
-/* Add to your global.css or inject inline in a style tag */
+/* Extra Keyframes */
 @keyframes slideInLeft {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0%);
-  }
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0%); }
 }
 
 @keyframes slideOutLeft {
-  from {
-    transform: translateX(0%);
-  }
-  to {
-    transform: translateX(-100%);
-  }
+  from { transform: translateX(0%); }
+  to { transform: translateX(-100%); }
 }
 
+/* Skeleton Wave Animation */
 @keyframes mui-skeleton-wave {
-  0% {
-    transform: translateX(-100%);
-  }
-  50% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
+  100% { transform: translateX(100%); }
 }
 
 .MuiSkeleton-wave::after {
@@ -124,7 +97,6 @@ body {
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
   animation: mui-skeleton-wave 1.6s linear 0.5s infinite;
 }
-  
 
 @media (max-width: 768px) {
   .swiper-button-next,

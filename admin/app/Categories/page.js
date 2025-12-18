@@ -253,117 +253,159 @@ const Categories = () => {
     }
     return (
         <>
-            <div className="w-full flex justify-center">
-                <div className='w-full   px-6'>
-                    <div className='flex justify-between items-center   '>
-                        <h1 className='text-blue-900 font-sans text-xl font-semibold p-4 pl-0 py-1 rounded-md my-3   '>
-                            Manage Categories
-                        </h1>
-                        <button className='w-auto h-auto p-2 py-1 pr-3 rounded-md  bg-green-800 flex items-center gap-1 ' onClick={() => handleCategAddClick()}><AddIcon />Add New Categories</button>
-                    </div>
-                    <div className='flex gap-3'>
-                        <div className="relative w-full text-black flex  h-10  px-2 gap-2  border border-slate-300 rounded-md items-center">
-                            <SearchIcon className='text-gray-600' />
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                className=" outline-none text-black"
-                            />
-                        </div>
-                        <div className='h-10 w-10 border border-slate-300 rounded-md text-black flex items-center justify-center cursor-pointer'>
-                            <FilterAltIcon />
-                        </div>
-                    </div>
-                    {/* Table */}
-                    <table className='w-full text-center border-collapse border border-slate-200 rounded-md shadow-lg mt-4'>
-                        <thead className='h-12 bg-blue-100 border-b border-slate-300'>
-                            <tr>
-                                <th className='w-[55px]'><Checkbox/></th>
-                                <th className='text-black w-[40%] '>Category Image</th>
-                                <th className='text-black w-[40%] '>Category</th>
-                                <th className='text-black w-[20%]'>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {Array.isArray(catData) && catData.length > 0 &&
-                                catData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((item, index) => (
-                                        <tr key={index} className="border-b border-slate-300 h-auto">
-                                            <td className="w-[55px]">
-                                                <Checkbox />
-                                            </td>
-                                            <td className="text-black flex items-center justify-center gap-2 min h-[100px]">
-                                                {Array.isArray(item.images) && item.images.length > 0 ? (
-                                                    item.images.map((imgUrl, idx) => (
-                                                        <Image
-                                                            key={idx}
-                                                            src={imgUrl}
-                                                            alt={`${item.name || "Category image"} ${idx + 1}`}
-                                                            width={100}
-                                                            height={100}
-                                                            className="my-2"
-                                                        />
-                                                    ))
-                                                ) : (
-                                                    <div className="w-[100px] h-[100px] bg-gray-200 text-xs flex items-center justify-center text-gray-600">
-                                                        No Image
-                                                    </div>
-                                                )}
-                                            </td>
-                                            <td className="text-black">{item.name}</td>
-                                            <td className="text-black px-2">
+             {/* PAGE WRAPPER */}
+    <div className="min-h-screen bg-slate-50 text-slate-800">
+      <div className="w-full px-6 py-4">
 
-                                                <div className='  flex items-center justify-center ml-auto gap-1'>
-                                                    <Button className=' !rounded-full  !text-blue-600 '>
-                                                        <ModeEditOutlineIcon className='!w-[30px] !h-[30px] ' onClick={() => handleCategEditClick(item._id, item)} />
-                                                    </Button>
-                                                    <Button className='!rounded-full  !text-red-600'>
-                                                        <MdDeleteOutline className='!w-[30px] !h-[30px] ' onClick={(e) => handleClickOpenDeleteAlert(e, item._id)} />
-                                                    </Button>
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h1 className="text-2xl font-semibold text-slate-900">
+              Manage Categories
+            </h1>
+            <p className="text-sm text-slate-500">
+              Create and manage product categories
+            </p>
+          </div>
 
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                        </tbody>
-                    </table>
-                    <TablePagination
-                        rowsPerPageOptions={[10, 20, 30]}
-                        component="div"
-                        count={catData?.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </div>
-                
-            </div>
-            {/* delete category */}
-            <Dialog
-                open={open}
-                onClose={handleCloseDeleteAlert}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">
-                    {"Confirm Deletion"}
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        Are you sure you want to delete this category? This action cannot be undone.
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDeleteAlert} color='inherit'>Cancel</Button>
-                    <Button onClick={(e) => {
-                        handleDeleteCategory(e, selectedCategoryId),
-                            setOpen(false);
-                    }} autoFocus color='error'>
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
+          <button
+            onClick={handleCategAddClick}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow"
+          >
+            <AddIcon fontSize="small" />
+            Add Category
+          </button>
+        </div>
+
+        {/* SEARCH + FILTER */}
+        <div className="flex gap-3 mb-4">
+          <div className="flex items-center gap-2 h-11 px-4 bg-white border border-slate-200 rounded-lg shadow-sm w-full">
+            <SearchIcon className="text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search categories..."
+              className="w-full bg-transparent outline-none text-slate-700 placeholder-slate-400"
+            />
+          </div>
+
+          <button className="h-11 w-11 bg-white border border-slate-200 rounded-lg shadow-sm flex items-center justify-center hover:bg-slate-100">
+            <FilterAltIcon className="text-slate-600" />
+          </button>
+        </div>
+
+        {/* TABLE */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-slate-100 text-slate-700 text-sm">
+              <tr>
+                <th className="p-3 w-[50px]">
+                  <Checkbox />
+                </th>
+                <th className="p-3">Category Image</th>
+                <th className="p-3">Category Name</th>
+                <th className="p-3 text-center">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {Array.isArray(catData) &&
+                catData
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((item, index) => (
+                    <tr
+                      key={index}
+                      className="border-b border-slate-200 hover:bg-slate-50 transition"
+                    >
+                      <td className="p-3">
+                        <Checkbox />
+                      </td>
+
+                      <td className="p-3">
+                        <div className="flex gap-2">
+                          {item.images?.length ? (
+                            item.images.map((img, i) => (
+                              <Image
+                                key={i}
+                                src={img}
+                                alt={item.name}
+                                width={60}
+                                height={60}
+                                className="rounded-md border"
+                              />
+                            ))
+                          ) : (
+                            <div className="w-[60px] h-[60px] bg-slate-200 flex items-center justify-center text-xs text-slate-500 rounded">
+                              No Image
+                            </div>
+                          )}
+                        </div>
+                      </td>
+
+                      <td className="p-3 font-medium text-slate-900">
+                        {item.name}
+                      </td>
+
+                      <td className="p-3 flex justify-center gap-3">
+                        <Button className="!rounded-full !text-blue-600">
+                          <ModeEditOutlineIcon
+                            className="!w-[26px] !h-[26px]"
+                            onClick={() =>
+                              handleCategEditClick(item._id, item)
+                            }
+                          />
+                        </Button>
+
+                        <Button className="!rounded-full !text-red-600">
+                          <MdDeleteOutline
+                            className="!w-[26px] !h-[26px]"
+                            onClick={(e) =>
+                              handleClickOpenDeleteAlert(e, item._id)
+                            }
+                          />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+            </tbody>
+          </table>
+
+          {/* PAGINATION */}
+          <div className="border-t border-slate-200">
+            <TablePagination
+              rowsPerPageOptions={[10, 20, 30]}
+              component="div"
+              count={catData?.length || 0}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* DELETE DIALOG */}
+    <Dialog open={open} onClose={handleCloseDeleteAlert}>
+      <DialogTitle>Confirm Deletion</DialogTitle>
+      <DialogContent>
+        <DialogContentText className="text-slate-600">
+          Are you sure you want to delete this category? This action cannot be undone.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCloseDeleteAlert}>Cancel</Button>
+        <Button
+          color="error"
+          onClick={(e) => {
+            handleDeleteCategory(e, selectedCategoryId);
+            setOpen(false);
+          }}
+        >
+          Delete
+        </Button>
+      </DialogActions>
+    </Dialog>
             {showCategEditModal && (
                 <div className='flex w-full h-full justify-center items-center bg-black bg-opacity-50 fixed top-0 left-0 z-50'>
                     <form onSubmit={handleSubmitEditForm}>

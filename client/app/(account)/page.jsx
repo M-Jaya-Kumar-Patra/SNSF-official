@@ -8,6 +8,11 @@ import { User, Package, MapPin, Heart, RefreshCcw, Bell, LifeBuoy, Menu } from "
 import Link from "next/link";
 import Image from "next/image";
 import Loading from "@/components/Loading";
+import { trackVisitor } from "@/lib/tracking";
+
+
+
+
 
 const Account = () => {
   const router = useRouter();
@@ -21,6 +26,8 @@ const Account = () => {
       
     }
   }, [isLogin]);
+
+ 
   
 
    const getOptimizedCloudinaryUrl = (url) => {

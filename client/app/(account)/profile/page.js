@@ -12,13 +12,18 @@ import InputAdornment from "@mui/material/InputAdornment";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useAlert } from "@/app/context/AlertContext";
-import { uploadImage, editData, postData } from "@/utils/api";
+import { uploadImage, editData, postData, putImage } from "@/utils/api";
 import { useAuth } from "@/app/context/AuthContext";
 import { MdModeEdit } from "react-icons/md";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";
 import Image from "next/image";
-import axios from "axios";
+import { getDeviceId } from "@/utils/deviceId";
+
+
+
+
+
 
 const Account = () => {
   const router = useRouter();
@@ -66,58 +71,79 @@ const Account = () => {
       });
     }
   }, [isLogin, userData, router]);
+  
+    useEffect(() => {
+      const id = userData?._id || userData?.id;
+      if (id) {
+        setUserId(id);
+        localStorage.setItem("userId", id);
+      }
+    }, [userData]);
 
-  useEffect(() => {
-    const id = userData?._id || userData?.id;
-    if (id) {
-      setUserId(id);
-      localStorage.setItem("userId", id);
+   useEffect(() => {
+    const today = new Date().toDateString();
+    const lastVisit = localStorage.getItem("last-snsf-visit-date");
+  
+    if (lastVisit !== today) {
+      const deviceId = getDeviceId();
+  
+      postData("/api/visit/new", {
+        deviceId,
+      }, false);
+  
+      localStorage.setItem("last-snsf-visit-date", today);
     }
-  }, [userData]);
+  }, []);
+
 
   const onChangeFile = async (e) => {
-    e.preventDefault();
-    try {
-      const file = e.target.files?.[0];
-      if (
-        file &&
-        ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-          file.type
-        )
-      ) {
-        setUploading(true);
-        const formData = new FormData();
-        formData.append("avatar", file);
+  e.preventDefault();
 
-        console.log("OOOOOOOOOOOOOOOOOOOOOOOOOOOOO", formData)
+  try {
+    const file = e.target.files?.[0];
 
-        const response = await axios.post( `${process.env.NEXT_PUBLIC_API_URL}/api/user/user-avatar`, formData, {
-          onUploadProgress: (progressEvent) => {
-            const percent = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            setUploadProgress(percent);
-          },
-        });
+    if (
+      file &&
+      ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type)
+    ) {
+      setUploading(true);
 
-        if (response?.success && response.avatar) {
-          setUserData((prev) => ({ ...prev, avatar: response.avatar }));
-          localStorage.setItem("userAvatar", response.avatar);
-        } else {
-          alert.alertBox({
-            type: "error",
-            msg: response.message || "Failed to update avatar",
-          });
-        }
-      } else {
-        alert.alertBox({ type: "error", msg: "Invalid image format" });
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      // Debugging log
+      for (let pair of formData.entries()) {
+        console.log("FORMDATA ENTRY:", pair[0], pair[1]);
       }
-    } catch (error) {
-      alert.alertBox({ type: "error", msg: "Something went wrong" });
-    } finally {
-      setUploading(false);
+
+      // Call your NEW util
+      const response = await uploadImage("/api/user/user-avatar", formData);
+
+
+      console.log("response:", response)
+
+      if (response?.success && response?.avatar) {
+      console.log("response.success:", response?.success)
+      console.log("response?.avatar:", response?.avatar)
+
+        setUserData((prev) => ({ ...prev, avatar: response.avatar }));
+        localStorage.setItem("userAvatar", response.avatar);
+      } else {
+        alert.alertBox({
+          type: "error",
+          msg: response?.message || "Failed to update avatar",
+        });
+      }
+    } else {
+      alert.alertBox({ type: "error", msg: "Invalid image format" });
     }
-  };
+  } catch (error) {
+    alert.alertBox({ type: "error", msg: "Something went wrong" });
+  } finally {
+    setUploading(false);
+  }
+};
+
 
   console.log("UUUUUUUUUUUserData: ", userData);
 
@@ -492,7 +518,7 @@ const Account = () => {
                     </div>
                     <button
                       // onClick={() => setShowTopForm(prev => !prev)}
-                      className="mt-0 text-[#1e40af] font-sans font-bold text-xs sm:text-md"
+                      className="mt-0 text-slate-900 font-sans font-bold text-xs sm:text-md"
                       type="button"
                     >
                       SET PASSWORD
@@ -586,7 +612,7 @@ const Account = () => {
                     </div>
                     <button
                       // onClick={() => setShowTopForm(prev => !prev)}
-                      className="mt-0 text-[#1e40af] font-sans font-bold text-xs sm:text-md"
+                      className="mt-0 text-slate-900 font-sans font-bold text-xs sm:text-md"
                       type="button"
                     >
                       CHANGE PASSWORD

@@ -1,116 +1,82 @@
 "use client";
-import React, { useState } from 'react';
-import Box from '@mui/material/Box';
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import MenuIcon from '@mui/icons-material/Menu';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import CategoryIcon from '@mui/icons-material/Category';
-import { BsBoxSeamFill, BsFillPeopleFill } from "react-icons/bs";
-import { RxCross2 } from "react-icons/rx";
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/context/AuthContext';
+import MenuIcon from "@mui/icons-material/Menu";
+import SearchIcon from "@mui/icons-material/Search";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { FcShop } from "react-icons/fc";
-import { TfiLayoutSliderAlt } from "react-icons/tfi";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/context/AuthContext";
 
-
-
-
-const Navbar = () => {
-  const [state, setState] = useState({ right: false });
-  const [selectedText, setSelectedText] = useState("Dashboard");
-  const anchor = 'right';
-
-  const {isLogin, adminData, isLoading} = useAuth();
-
-  const toggleDrawer = (anchor, open) => (event) => {
-    if (event?.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) return;
-    setState({ ...state, [anchor]: open });
-  };
-
-  const navItems = ['Dashboard', 'Products', 'Categories', 'Subcategories' , 'Users', 'Customers', 'HomeSlider'];
-  const Router = useRouter();
-
-  const list = () => (
-    <Box
-      sx={{ width: 250 }}
-      role="presentation"
-      onKeyDown={toggleDrawer(anchor, false)}
-    >
-      <List className='bg-red-50'>
-
-        {/* Close Button */}
-        <ListItem disablePadding>
-          <ListItemButton onClick={toggleDrawer(anchor, false)}>
-            <ListItemIcon>
-              <RxCross2 />
-            </ListItemIcon>
-            <ListItemText primary="Close" />
-          </ListItemButton>
-        </ListItem>
-
-        {/* Menu Items */}
-        {navItems.map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton onClick={() => {
-              setSelectedText(text);
-              text === "Dashboard" ? Router.push("/") : Router.push(`/${text}`);
-              setState({ ...state, [anchor]: false });
-            }}>
-              <ListItemIcon>
-                {index === 0 ? <DashboardIcon /> :
-                  index === 1 ? <BsBoxSeamFill size={20} /> :
-                    index === 2 ? <CategoryIcon /> :
-                    index === 3 ? " " :
-                    index === 4 ? <BsFillPeopleFill size={20} />:
-                    index === 5 ? <BsFillPeopleFill size={20} />:
-                        <TfiLayoutSliderAlt size={20} />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-    </Box>
-  );
+export default function Navbar({ onMenuClick }) {
+  const router = useRouter();
+  const { adminData } = useAuth();
 
   return (
-    <div>
-      {/* Top Navbar */}
-      <div className="py-2 w-full border border-slate-100 shadow-md bg-white font-bold flex items-center justify-between px-7">
-        <div className='w-16 h-16'>
-          <img src="/images/logo.png" alt="Logo" className='rounded-full' />
-        </div>
-        {/* ✅ Fixed the menu click issue */}
-        <div className='flex items-center gap-5'>
-          <div className='w-10 h-10 rounded-full' onClick={()=>Router.push("/profile")}>
-            <img src={adminData?.avatar || "/images/account.png"} alt="" className='rounded-full w-10 h-10 ' />
-          </div>
-          <div  className='w-10 h-10 text-black cursor-pointer'>
-            <FcShop onClick={()=>Router.push("/")} size={40}/>
-          </div>
-          <MenuIcon
-          onClick={(e) => toggleDrawer(anchor, true)(e)}
-          className="text-black cursor-pointer"
-        />
-        </div>
-        <SwipeableDrawer
-          anchor={anchor}
-          open={state[anchor]}
-          onClose={toggleDrawer(anchor, false)}
-          onOpen={toggleDrawer(anchor, true)}
-        >
-          {list()}
-        </SwipeableDrawer>
-      </div>
-    </div>
-  );
-};
+    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6">
 
-export default Navbar;
+      {/* LEFT */}
+      <div className="lg:hidden flex items-center gap-4">
+        {/* Mobile menu */}
+        <button
+          className="lg:hidden text-slate-600 hover:text-slate-900"
+          onClick={onMenuClick}
+        >
+          <MenuIcon />
+        </button>
+
+        {/* Page title */}
+        
+      </div>
+
+      {/* CENTER (Search – dummy) */}
+      <div className="hidden md:flex items-center bg-slate-200 px-3 py-2 rounded-lg w-[320px]">
+        <SearchIcon className="text-slate-500 mr-2" />
+        <input
+          type="text"
+          placeholder="Search anything..."
+          className="bg-transparent outline-none text-sm w-full text-slate-800 placeholder-slate-500"
+        />
+      </div>
+
+      {/* RIGHT */}
+      <div className="flex items-center gap-5">
+
+        {/* Visit Store */}
+        <FcShop
+          size={26}
+          className="cursor-pointer hover:scale-105 transition"
+          title="Visit Store"
+          onClick={() => router.push("/")}
+        />
+
+        {/* Notifications */}
+        <div className="relative cursor-pointer">
+          <NotificationsNoneIcon className="text-slate-700" />
+          {/* dummy badge */}
+          <span className="absolute -top-1 -right-1 w-4 h-4 text-[10px] bg-red-500 text-white rounded-full flex items-center justify-center">
+            3
+          </span>
+        </div>
+
+        {/* Profile */}
+        <div
+          className="flex items-center gap-2 cursor-pointer hover:bg-slate-100 px-2 py-1 rounded-lg transition"
+          onClick={() => router.push("/profile")}
+        >
+          <img
+            src={adminData?.avatar || "/images/account.png"}
+            className="w-9 h-9 rounded-full border object-cover"
+            alt="profile"
+          />
+          <div className="hidden sm:flex flex-col leading-tight">
+            <span className="text-sm font-semibold text-slate-800">
+              {adminData?.name || "Admin"}
+            </span>
+            <span className="text-xs text-slate-500">Administrator</span>
+          </div>
+          <ExpandMoreIcon className="text-slate-500 hidden sm:block" />
+        </div>
+      </div>
+    </header>
+  );
+}

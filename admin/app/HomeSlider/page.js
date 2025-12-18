@@ -210,10 +210,10 @@ const handleURL = (e) => {
     return (
         <>
 
-            <div className="w-full flex justify-center">
+            <div className="w-full min-h-screen flex justify-center">
                 <div className='w-full   px-6'>
                     <div className='flex justify-between items-center   '>
-                        <h1 className='text-blue-900 font-sans text-xl font-semibold p-4 pl-0 py-1 rounded-md my-3   '>
+                        <h1 className='text-slate-900 font-sans text-xl font-semibold p-4 pl-0 py-1 rounded-md my-3   '>
                             Manage Home Page Slides
                         </h1>
                         <div className='flex gap-4'>
@@ -221,8 +221,8 @@ const handleURL = (e) => {
                         </div>
                     </div>
 
-                    <div className='flex gap-3'>
-                        <div className="relative w-full text-black flex  h-10  px-2 gap-2  border border-slate-300 rounded-md items-center">
+                    <div className='flex gap-3 '>
+                        <div className="relative w-full text-black flex  bg-white  h-10  px-2 gap-2  border border-slate-300 rounded-md items-center">
                             <SearchIcon className='text-gray-600' />
                             <input
                                 type="text"
@@ -234,7 +234,7 @@ const handleURL = (e) => {
 
 
                         </div>
-                        <div className='h-10 w-10 border border-slate-300 rounded-md text-black flex items-center justify-center cursor-pointer'>
+                        <div className='h-10 w-10 border bg-white border-slate-300 rounded-md text-black flex items-center justify-center cursor-pointer'>
                             <FilterAltIcon />
                         </div>
                     </div>

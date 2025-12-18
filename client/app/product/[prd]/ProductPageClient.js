@@ -9,27 +9,24 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 import Image from "next/image";
-import { useWishlist } from '@/app/context/WishlistContext';
+import { useWishlist } from "@/app/context/WishlistContext";
 import ProductSpecs from "@/components/ProductSpecs";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { RxCross2 } from "react-icons/rx";
-import { Navigation, Pagination, A11y } from 'swiper/modules';
+import { Navigation, Pagination, A11y } from "swiper/modules";
 import WhatsappIcon from "@/components/WhatsappIcon";
 import { IoCall } from "react-icons/io5";
 
 import Skeleton from "@mui/material/Skeleton";
 
-
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 import { PiShareFat } from "react-icons/pi";
-
-
-
-
-
+import Suggestions from "@/components/Suggestions";
+import { trackProductEvent } from "@/lib/tracking";
+import { usePrd } from "@/app/context/ProductContext";
 
 const ProductPageClient = ({ prdId }) => {
   const [productImages, setProductImages] = useState([]);
@@ -37,10 +34,12 @@ const ProductPageClient = ({ prdId }) => {
   const [selectedImage, setSelectedImage] = useState();
   const [quantity, setQuantity] = useState(1);
 
-  const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist()
+  const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist();
   const { userData, setUserData, isLogin, isCheckingToken } = useAuth();
-  const [showLarge, setShowLarge] = useState(null); // null means no modal, otherwise holds image src
-  const [hideArrows, setHideArrows] = useState(null)
+  const { showLarge, setShowLarge } = usePrd();
+
+
+  const [hideArrows, setHideArrows] = useState(null);
 
   const params = useParams();
   const router = useRouter();
@@ -55,6 +54,22 @@ const ProductPageClient = ({ prdId }) => {
   }, [prdId, userData]);
 
   useEffect(() => {
+    if (!openedProduct?._id) return;
+
+    let start = Date.now();
+
+    return () => {
+      const duration = Math.floor((Date.now() - start) / 1000); // in seconds
+      trackProductEvent(
+        openedProduct._id,
+        "view",
+        duration,
+        userData?._id || null
+      );
+    };
+  }, [openedProduct]);
+
+  useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") setShowLarge(null);
     };
@@ -62,12 +77,28 @@ const ProductPageClient = ({ prdId }) => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  useEffect(() => {
+    if (!openedProduct?._id) return;
+
+    const viewedKey = "recentlyViewed";
+    let viewed = JSON.parse(localStorage.getItem(viewedKey)) || [];
+
+    // remove if exists already
+    viewed = viewed.filter((id) => id !== openedProduct._id);
+
+    // add at the top
+    viewed.unshift(openedProduct._id);
+
+    // limit max items (optional)
+    viewed = viewed.slice(0, 20);
+
+    localStorage.setItem(viewedKey, JSON.stringify(viewed));
+  }, [openedProduct]);
 
   const getOptimizedCloudinaryUrl = (url) => {
     if (!url?.includes("res.cloudinary.com")) return url;
     return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
   };
-
 
   if (isCheckingToken || !openedProduct || !productImages) {
     return (
@@ -77,7 +108,12 @@ const ProductPageClient = ({ prdId }) => {
           <div className="w-full flex gap-2 sm:w-[420px] p-1">
             <div className="hidden sm:flex flex-col gap-1">
               {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} variant="rectangular" width={64} height={74} />
+                <Skeleton
+                  key={i}
+                  variant="rectangular"
+                  width={64}
+                  height={74}
+                />
               ))}
             </div>
             <Skeleton variant="rectangular" width="100%" height={310} />
@@ -85,13 +121,38 @@ const ProductPageClient = ({ prdId }) => {
 
           {/* Right Skeleton: Details */}
           <div className="sm:w-[600px] sm:p-5 sm:pl-6">
-            <Skeleton variant="text" width="80%" height={40} className="sm:!mb-3" />
-            <Skeleton variant="text" width="60%" height={25} className="!mb-4 sm:!mb-8" />
+            <Skeleton
+              variant="text"
+              width="80%"
+              height={40}
+              className="sm:!mb-3"
+            />
+            <Skeleton
+              variant="text"
+              width="60%"
+              height={25}
+              className="!mb-4 sm:!mb-8"
+            />
             <div className="flex gap-[8px]">
-              <Skeleton variant="rectangular" width="50%" height={35} className="!mb-8" />
-              <Skeleton variant="rectangular" width="50%" height={35} className="!mb-8" />
+              <Skeleton
+                variant="rectangular"
+                width="50%"
+                height={35}
+                className="!mb-8"
+              />
+              <Skeleton
+                variant="rectangular"
+                width="50%"
+                height={35}
+                className="!mb-8"
+              />
             </div>
-            <Skeleton variant="rectangular" width="100%" height={200} className="!mb-8" />
+            <Skeleton
+              variant="rectangular"
+              width="100%"
+              height={200}
+              className="!mb-8"
+            />
           </div>
         </div>
       </div>
@@ -127,20 +188,24 @@ const ProductPageClient = ({ prdId }) => {
                       ? "https://schema.org/InStock"
                       : "https://schema.org/OutOfStock",
                   url: `https://snsteelfabrication.com/product/${openedProduct?._id}`,
-                }
+                },
               }),
             }}
           />
         </Head>
       )}
 
-      <div className="w-full sm:w-[1020px] mb-2 sm:my-3 pt-2 sm:p-2 mx-auto sm:flex justify-between bg-white">
+      <div className="w-full sm:w-[1020px] mb-2 sm:my-3 pt-2 sm:p-2 mx-auto lg:flex justify-between bg-white">
         {/* Left: Image Section */}
-        <div className="image sm:sticky top-[50px] w-full sm:w-[400px] sm:h-[310px] sm:p-[2px] sm:border sm:border-slate-400 sm:m-3 mr-4 flex gap-[2px] flex-col sm:flex-row">
+        <div className="image sm:sticky lg:top-[110px] w-full sm:w-[400px] sm:h-[310px] sm:p-[2px] sm:border sm:border-slate-400 sm:m-3 mr-4 flex gap-[2px] flex-col sm:flex-row">
           {/* Mobile Carousel */}
-          {/* Mobile Carousel */}
-          <div className="block sm:hidden w-full relative">
-            <Swiper cssMode={true} spaceBetween={10} slidesPerView={1} className="w-full h-auto">
+          <div className="block lg:hidden w-full relative">
+            <Swiper
+              cssMode={true}
+              spaceBetween={10}
+              slidesPerView={1}
+              className="w-full h-auto"
+            >
               {productImages?.map((src, idx) => (
                 <SwiperSlide key={idx}>
                   <Image
@@ -155,7 +220,6 @@ const ProductPageClient = ({ prdId }) => {
                     }}
                     loading="lazy"
                   />
-
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -167,18 +231,27 @@ const ProductPageClient = ({ prdId }) => {
                 if (!isLogin) {
                   router.push("/login");
                 } else {
-                  const isAlreadyInWishlist = userData?.wishlist?.some(item => item === String(openedProduct?._id));
+                  const isAlreadyInWishlist = userData?.wishlist?.some(
+                    (item) => item === String(openedProduct?._id)
+                  );
                   if (isAlreadyInWishlist) {
-                    const wishItem = wishlistData?.find(itemInWishData => itemInWishData.productId === openedProduct?._id);
+                    const wishItem = wishlistData?.find(
+                      (itemInWishData) =>
+                        itemInWishData.productId === openedProduct?._id
+                    );
                     const itemId = wishItem?._id;
-                    if (itemId) removeFromWishlist(e, itemId, openedProduct?._id);
+                    if (itemId)
+                      removeFromWishlist(e, itemId, openedProduct?._id);
                   } else {
                     addToWishlist(e, openedProduct, userData?._id);
                   }
                 }
               }}
             >
-              {isLogin && userData?.wishlist?.some(item => item === String(openedProduct?._id)) ? (
+              {isLogin &&
+              userData?.wishlist?.some(
+                (item) => item === String(openedProduct?._id)
+              ) ? (
                 <MdFavorite className="!text-rose-600 text-[22px] z-10" />
               ) : (
                 <MdFavoriteBorder className="text-slate-600 text-[22px]" />
@@ -210,26 +283,23 @@ const ProductPageClient = ({ prdId }) => {
                   }
                 }
               }}
-
               title="Share product"
             >
               <PiShareFat className="text-slate-600 text-[21px]" />
             </div>
           </div>
 
-
-
           {/* Fullscreen Modal for Mobile Large View */}
           {showLarge && (
             <div
-              className="fixed inset-0 bg-slate-100 bg-opacity-80 z-[999] flex flex-col items-center justify-center px-4"
+              className="flex lg:hidden fixed inset-0 bg-slate-100 bg-opacity-80 z-[999]  flex-col items-center justify-center px-4"
               style={{ touchAction: "pinch-zoom", overflow: "auto" }}
             >
               <div className="w-full flex justify-end">
                 <button
                   onClick={() => {
-                    setShowLarge(null)
-                    setHideArrows(false)
+                    setShowLarge(null);
+                    setHideArrows(false);
                   }}
                   className="!text-black text-3xl p-2"
                 >
@@ -245,7 +315,9 @@ const ProductPageClient = ({ prdId }) => {
                   pagination={{ clickable: true }}
                   navigation
                   className="w-full h-full"
-                  initialSlide={productImages.findIndex(img => img === showLarge) || 0}
+                  initialSlide={
+                    productImages.findIndex((img) => img === showLarge) || 0
+                  }
                 >
                   {productImages.map((img, idx) => (
                     <SwiperSlide key={idx}>
@@ -257,7 +329,6 @@ const ProductPageClient = ({ prdId }) => {
                         className="object-contain w-full h-full touch-auto"
                         loading="lazy"
                       />
-
                     </SwiperSlide>
                   ))}
                 </Swiper>
@@ -265,21 +336,20 @@ const ProductPageClient = ({ prdId }) => {
             </div>
           )}
 
-
-
-
           {/* Desktop Thumbnail + Main Image */}
-          <div className="hidden sm:flex gap-2 h-auto">
+          <div className="hidden lg:flex gap-2 h-auto">
             <div className="w-[75px] overflow-y-auto h-full p-[2px] border scrollbar-hide">
               <ul className="space-y-1">
                 {productImages?.map((src, idx) => (
                   <li
                     key={idx}
-                    className={`border rounded cursor-pointer ${selectedImage === src ? "ring-2 ring-blue-500" : ""}`}
+                    className={`border rounded cursor-pointer ${
+                      selectedImage === src ? "ring-2 ring-blue-500" : ""
+                    }`}
                     onClick={() => setSelectedImage(src)}
                   >
                     <Image
-                    src={getOptimizedCloudinaryUrl(src)}
+                      src={getOptimizedCloudinaryUrl(src)}
                       alt={`Thumbnail ${idx + 1}`}
                       className="w-[128px] h-[64px] object-contain"
                       width={100}
@@ -294,8 +364,9 @@ const ProductPageClient = ({ prdId }) => {
               <div className="w-full sm:w-[319px] bg-gray-100 sm:h-full flex justify-center items-center relative">
                 <Image
                   className="h-full w-full object-contain border cursor-zoom-in"
-                    src={getOptimizedCloudinaryUrl(selectedImage || productImages?.[0] || "/")}
-
+                  src={getOptimizedCloudinaryUrl(
+                    selectedImage || productImages?.[0] || "/"
+                  )}
                   alt="Selected Product"
                   unoptimized
                   width={300}
@@ -313,18 +384,27 @@ const ProductPageClient = ({ prdId }) => {
                     if (!isLogin) {
                       router.push("/login");
                     } else {
-                      const isAlreadyInWishlist = userData?.wishlist?.some(item => item === String(openedProduct?._id));
+                      const isAlreadyInWishlist = userData?.wishlist?.some(
+                        (item) => item === String(openedProduct?._id)
+                      );
                       if (isAlreadyInWishlist) {
-                        const wishItem = wishlistData?.find(itemInWishData => itemInWishData.productId === openedProduct?._id);
+                        const wishItem = wishlistData?.find(
+                          (itemInWishData) =>
+                            itemInWishData.productId === openedProduct?._id
+                        );
                         const itemId = wishItem?._id;
-                        if (itemId) removeFromWishlist(e, itemId, openedProduct?._id);
+                        if (itemId)
+                          removeFromWishlist(e, itemId, openedProduct?._id);
                       } else {
                         addToWishlist(e, openedProduct, userData?._id);
                       }
                     }
                   }}
                 >
-                  {isLogin && userData?.wishlist?.some(item => item === String(openedProduct?._id)) ? (
+                  {isLogin &&
+                  userData?.wishlist?.some(
+                    (item) => item === String(openedProduct?._id)
+                  ) ? (
                     <MdFavorite className="!text-rose-600 text-[22px] z-10" />
                   ) : (
                     <MdFavoriteBorder className="text-slate-600 text-[22px]" />
@@ -349,14 +429,15 @@ const ProductPageClient = ({ prdId }) => {
                       }
                     } else {
                       try {
-                        await navigator.clipboard.writeText(window.location.href);
+                        await navigator.clipboard.writeText(
+                          window.location.href
+                        );
                         alert("Product URL copied to clipboard!");
                       } catch (err) {
                         alert("Share not supported and failed to copy URL.");
                       }
                     }
                   }}
-
                   title="Share product"
                 >
                   <PiShareFat className="text-slate-600 text-[21px]" />
@@ -367,16 +448,18 @@ const ProductPageClient = ({ prdId }) => {
             </div>
           </div>
 
-
-
           {/* Fullscreen Modal for Large Image View */}
           {showLarge && (
-            <div className="fixed inset-0 bg-slate-100 bg-opacity-80 z-[999] flex flex-col items-center justify-center px-4">
+            <div
+             className="hidden sm:flex fixed  inset-0 bg-slate-100 bg-opacity-80 z-[999]  flex-col items-center justify-center px-4">
+
+              
               <div className="w-full flex justify-end">
                 <button
                   onClick={() => {
-                    setShowLarge(null)
-                    setHideArrows(false)
+                    setShowLarge(null);
+                    
+                    setHideArrows(false);
                   }}
                   className="text-black text-3xl p-2"
                 >
@@ -392,7 +475,9 @@ const ProductPageClient = ({ prdId }) => {
                   pagination={{ clickable: true }}
                   navigation
                   className="w-full h-full"
-                  initialSlide={productImages.findIndex(img => img === showLarge) || 0}
+                  initialSlide={
+                    productImages.findIndex((img) => img === showLarge) || 0
+                  }
                 >
                   {productImages.map((img, idx) => (
                     <SwiperSlide key={idx}>
@@ -410,8 +495,6 @@ const ProductPageClient = ({ prdId }) => {
               </div>
             </div>
           )}
-
-
         </div>
 
         {/* Right: Product Details */}
@@ -424,20 +507,12 @@ const ProductPageClient = ({ prdId }) => {
             {openedProduct?.brand}
           </h2>
 
-
-
-
-
-
           {!hideArrows && (
             <>
               <div className=" flex justify-around my-2 mt-10 gap-2">
-
-
-
                 <Button
                   variant="outlined"
-                  className="!capitalize !text-[#1e40af] !border-[#1e40af] bg-gray-600 rounded-md px-1 py-1 text-base w-auto sm:!w-1/2 !text-nowrap flex items-center gap-2"
+                  className="!capitalize !text-slate-900 !border-slate-900 bg-gray-600 rounded-md px-1 py-1 text-base w-auto sm:!w-1/2 !text-nowrap flex items-center gap-2"
                   onClick={async () => {
                     if (!isLogin) {
                       router.push("/login");
@@ -487,7 +562,7 @@ const ProductPageClient = ({ prdId }) => {
                           productId: openedProduct?._id,
                           message: `Direct call initiated for "${openedProduct?.name}"`,
                           userMsg: `Enquiry for ${openedProduct?.name} via Call`,
-                          image: openedProduct?.images[0]
+                          image: openedProduct?.images[0],
                         });
 
                         window.open("tel:+919776501230");
@@ -498,43 +573,38 @@ const ProductPageClient = ({ prdId }) => {
                   }}
                 >
                   <IoCall className="w-6 h-6 mx-2" />
-                  <span  >Call to Get Best Price</span>
-
+                  <span>Call to Get Best Price</span>
                 </Button>
-
               </div>
             </>
           )}
 
-
-
-
-
-
-
-
           {/* Description */}
-          {openedProduct?.description &&
+          {openedProduct?.description && (
             <div className="flex gap-4 mt-4">
               <h1 className="text-gray-500 font-semibold">Description</h1>
-              <p className="text-black">
-                {openedProduct?.description}
-              </p>
+              <p className="text-black">{openedProduct?.description}</p>
             </div>
-          }
+          )}
 
           {/* Product Specs */}
           <ProductSpecs specs={openedProduct?.specifications} />
 
         </div>
-
       </div>
-
 
       {/* similar products */}
-      <div className=" w-full mx-10">
-        <Similar prdId={prdId} hideArrows={hideArrows} />
-      </div>
+      {!showLarge && (
+        <div className=" w-full mx-10">
+          <Suggestions
+            productId={openedProduct?._id}
+            catId={openedProduct.catId}
+            subCatId={openedProduct.subCatId}
+            thirdSubCatId={openedProduct.thirdSubCatId}
+            brand={openedProduct.brand}
+          />
+        </div>
+      )}
     </div>
   );
 };

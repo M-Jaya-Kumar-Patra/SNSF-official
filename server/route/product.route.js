@@ -1,53 +1,91 @@
 import { Router } from "express";
 import auth from "../middlewares/auth.js";
 import upload from "../middlewares/multer.js";
-import { createProduct, getAllProducts, uploadImages, getAllProductsByCatId, getAllProductsByCatName, getAllProductsBySubCatId, getAllProductsBySubCatName, getAllProductsByThirdCatId, getAllProductsByThirdCatName, getAllProductsByPrice, getAllProductsByRating, getProductsCount, getAllFeaturedProducts, deleteProduct,
-getProduct, removeImageFromCloudinary, updateProduct,
-deleteMultipleProducts, filters, sortBy, SearchProductsController, getProductBySlug
 
+import {
+  createProduct,
+  getAllProducts,
+  uploadImages,
+  getAllProductsByCatId,
+  getAllProductsByCatName,
+  getAllProductsBySubCatId,
+  getAllProductsBySubCatName,
+  getAllProductsByThirdCatId,
+  getAllProductsByThirdCatName,
+  getAllProductsByPrice,
+  getAllProductsByRating,
+  getProductsCount,
+  getAllFeaturedProducts,
+  deleteProduct,
+  getProduct,
+  removeImageFromCloudinary,
+  updateProduct,
+  deleteMultipleProducts,
+  filters,
+  sortBy,
+  SearchProductsController,
+  getProductBySlug,
+  getNewArrivals,
+  getBestSellers,
+  getSuggestions,
+  getRecentlyViewed
 } from "../controllers/product.controller.js";
 
 const productRouter = Router();
 
-productRouter.post('/uploadImages', auth, upload.array('images'), uploadImages)
-productRouter.post('/create', auth,  createProduct)
-productRouter.get('/gaps',  getAllProducts)
+// Upload images
+productRouter.post("/uploadImages", auth, upload.array("images"), uploadImages);
 
+// Create product
+productRouter.post("/create", auth, createProduct);
 
+// All products
+productRouter.get("/gaps", getAllProducts);
 
-productRouter.get('/gapsByCatId/:Id', getAllProductsByCatId);
-productRouter.get('/gapsByCatName', getAllProductsByCatName);
-productRouter.get('/gapsBySubCatId/:Id', getAllProductsBySubCatId);
-productRouter.get('/gapsBySubCatName', getAllProductsBySubCatName);
-productRouter.get('/gapsByThirdCatId/:thirdSubCatId', getAllProductsByThirdCatId);
-productRouter.get('/gapsByThirdCatName', getAllProductsByThirdCatName);
+// Category based
+productRouter.get("/gapsByCatId/:Id", getAllProductsByCatId);
+productRouter.get("/gapsByCatName", getAllProductsByCatName);
+productRouter.get("/gapsBySubCatId/:Id", getAllProductsBySubCatId);
+productRouter.get("/gapsBySubCatName", getAllProductsBySubCatName);
+productRouter.get("/gapsByThirdCatId/:thirdSubCatId", getAllProductsByThirdCatId);
+productRouter.get("/gapsByThirdCatName", getAllProductsByThirdCatName);
 
+// Price & Rating
+productRouter.get("/gapsByPrice", getAllProductsByPrice);
+productRouter.get("/gapsByRating", getAllProductsByRating);
 
-productRouter.get('/gapsByPrice', getAllProductsByPrice)
-productRouter.get('/gapsByRating', getAllProductsByRating)
-productRouter.get('/getAllProductsCount', getProductsCount)
-productRouter.get('/getAllFeaturedProducts', getAllFeaturedProducts)
+// Counts & Featured
+productRouter.get("/getAllProductsCount", getProductsCount);
+productRouter.get("/getAllFeaturedProducts", getAllFeaturedProducts);
+
+// Delete
 productRouter.delete("/deleteImg", auth, removeImageFromCloudinary);
-productRouter.delete('/deleteMultiple', auth, deleteMultipleProducts)
-productRouter.delete('/:id', deleteProduct)
+productRouter.delete("/deleteMultiple", auth, deleteMultipleProducts);
+productRouter.delete("/:id", deleteProduct);
+
+// Update
 productRouter.post("/updateProduct/:id", auth, updateProduct);
 
+// Filters & Sort
 productRouter.post("/filters", filters);
 productRouter.post("/sortBy", sortBy);
-productRouter.get('/search/get', SearchProductsController)
 
+// Search
+productRouter.get("/search/get", SearchProductsController);
 
-// productRouter.get('/:id', getProduct)
-// productRouter.get('/slug/:slug', getProductBySlug);
-productRouter.get('/:prd', getProduct); // 'prd' can be id or slug
+// NEW ARRIVALS
+productRouter.get("/new-arrivals", getNewArrivals);
 
+// BEST SELLERS
+productRouter.get("/best-sellers", getBestSellers);
 
+// SUGGESTIONS
+productRouter.get("/suggestions", getSuggestions);
 
+// RECENTLY VIEWED
+productRouter.post("/recently-viewed", getRecentlyViewed);
 
+// Product by ID or SLUG
+productRouter.get("/:prd", getProduct);
 
-
-
-
-
-
-export default productRouter
+export default productRouter;

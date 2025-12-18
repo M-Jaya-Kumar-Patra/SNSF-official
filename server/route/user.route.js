@@ -1,8 +1,13 @@
 import { Router } from "express";
   
 import { registerUserController, verifyEmailController, authWithGoogle, loginController, logoutController, userAvatarController, removeImageFromCloudinary, updateUserDetails, forgotPasswordController, verifyForgotPasswordOtp, resetPassword, refreshToken, userDetails, changePassword, addAddress , getUserAddress, deleteAddress, updateUserAddress, resendOTP, setPassword,
-     getRelatedProductsByCategory, getAllUsers     
+     getRelatedProductsByCategory, getAllUsers   , getCurrentlyLoggedInUsers,
+  getLoggedOutUsers,
+  getLoginMethodStats,  
 } from "../controllers/user.controller.js";
+
+import { getMostActiveUsers } from "../controllers/loginAnalytics.controller.js";
+
 
 import auth from "../middlewares/auth.js"; // Adjust the path as necessary
 import upload from "../middlewares/multer.js";
@@ -14,7 +19,7 @@ userRouter.post("/verifyEmail", verifyEmailController);
 userRouter.post("/login", loginController);
 userRouter.post("/authWithGoogle", authWithGoogle);
 userRouter.get("/logout", auth, logoutController);  
-userRouter.put("/user-avatar", auth, upload.array('avatar'), userAvatarController);
+userRouter.post("/user-avatar", auth, upload.array('avatar', 1), userAvatarController);
 userRouter.delete("/remove-img", auth, removeImageFromCloudinary);
 userRouter.put('/:id', auth, updateUserDetails)
 userRouter.post('/forgot-password', forgotPasswordController)
@@ -35,7 +40,13 @@ userRouter.get("/getCategoriesByProductId", getRelatedProductsByCategory);
 
 userRouter.get("/getAllUsers", getAllUsers);
 
+userRouter.get("/getMostActiveUsers", getMostActiveUsers);
 
+
+
+userRouter.get("/analytics/active-users", getCurrentlyLoggedInUsers);
+userRouter.get("/analytics/logged-out-users", getLoggedOutUsers);
+userRouter.get("/analytics/login-methods", getLoginMethodStats);
 
 
 

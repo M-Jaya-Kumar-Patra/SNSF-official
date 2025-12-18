@@ -2,6 +2,7 @@ import ProductModel from "../models/product.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import connectDB from "../config/connectDb.js";
 import slugify from "slugify";
+import fs from "fs";
 
 // Cloudinary Config
 cloudinary.config({
@@ -823,45 +824,327 @@ export async function sortBy(request, response) {
 
 
 
-export async function SearchProductsController(request, response) {
+// export async function SearchProductsController(request, response) {
+//     try {
+//         const query = request.query.q;
+//         const page = parseInt(request.query.page) || 1;
+//         const limit = parseInt(request.query.limit) || 10;
+//         const skip = (page - 1) * limit;
+
+//         if (!query) {
+//             return response.status(400).json({
+//                 message: "Query is required",
+//                 error: true,
+//                 success: false
+//             });
+//         }
+
+//         const items = await ProductModel.find({
+//             $or: [
+//                 { name: { $regex: query, $options: "i" } },
+//                 { brand: { $regex: query, $options: "i" } },
+//                 { catName: { $regex: query, $options: "i" } },
+//                 { subCat: { $regex: query, $options: "i" } },
+//                 { thirdSubCat: { $regex: query, $options: "i" } },
+//             ]
+//         })
+//             .populate("category")
+//             .skip(skip)
+//             .limit(limit);
+
+//         return response.status(200).json({
+//             error: false,
+//             success: true,
+//             products: items,
+//         });
+
+//     } catch (error) {
+//         return response.status(500).json({
+//             message: error.message || error,
+//             error: true,
+//             success: false,
+//         });
+//     }
+// }
+
+import SearchLog from "../models/searchLog.model.js";
+
+export async function SearchProductsController(req, res) {
+  try {
+    const query = (req.query.q || "").trim();
+    const visitorId = req.headers["x-visitor-id"] || null;
+    const sessionId = req.headers["x-session-id"] || null;
+    const userId = req.headers["x-user-id"] || null;
+
+    if (!query) {
+      return res.json({ success: true, products: [] });
+    }
+
+    // 🔹 Split query into words
+    const queryWords = query.split(/\s+/); // handles any number of words
+
+    // 🔹 Build dynamic $and array where each word must match at least one field
+    const andConditions = queryWords.map(word => ({
+      $or: [
+        { name: { $regex: word, $options: "i" } },
+        { brand: { $regex: word, $options: "i" } },
+        { catName: { $regex: word, $options: "i" } },
+        { subCat: { $regex: word, $options: "i" } },
+        { thirdSubCat: { $regex: word, $options: "i" } },
+      ]
+    }));
+
+    // 🔹 Query the database
+    const products = await ProductModel.find({ $and: andConditions }).limit(50);
+
+    // 🔥 Log search (non-blocking)
     try {
-        const query = request.query.q;
-        const page = parseInt(request.query.page) || 1;
-        const limit = parseInt(request.query.limit) || 10;
-        const skip = (page - 1) * limit;
+      await SearchLog.create({
+        query,
+        visitorId,
+        sessionId,
+        userId,
+        resultsFound: products.length,
+      });
+    } catch (logError) {
+      console.error("Failed to log search:", logError);
+    }
 
-        if (!query) {
-            return response.status(400).json({
-                message: "Query is required",
-                error: true,
-                success: false
-            });
-        }
+    return res.json({ success: true, products });
 
-        const items = await ProductModel.find({
-            $or: [
-                { name: { $regex: query, $options: "i" } },
-                { brand: { $regex: query, $options: "i" } },
-                { catName: { $regex: query, $options: "i" } },
-                { subCat: { $regex: query, $options: "i" } },
-                { thirdSubCat: { $regex: query, $options: "i" } },
-            ]
-        })
-            .populate("category")
-            .skip(skip)
-            .limit(limit);
+  } catch (err) {
+    console.error("Search error:", err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+}
 
-        return response.status(200).json({
+
+export async function getNewArrivals(req, res) {
+    try {
+        const limit = Number(req.query.limit) || 10; // default 10 latest products
+
+        const products = await ProductModel.find({})
+
+        return res.status(200).json({
             error: false,
             success: true,
-            products: items,
+            data: products,
+            total: products.length,
         });
 
     } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
+        return res.status(500).json({
             error: true,
             success: false,
+            message: error.message,
         });
+    }
+}  
+
+export async function getBestSellers(req, res) {
+    try {
+        const products = await ProductModel.find({ isFeatured: true })
+            .populate("category").sort({ createdAt: -1 });
+
+        return res.status(200).json({
+            error: false,
+            success: true,
+            data: products,
+            total: products.length,
+        });
+    } catch (error) {
+        return res.status(500).json({ error: true, success: false, message: error.message });
+    }
+}
+
+export async function getSuggestions(req, res) {
+
+  try {
+    const {
+      productId,
+      catId,
+      subCatId,
+      thirdSubCatId,
+      brand,
+      keywords,
+      limit = 10,
+      excludeIds,
+    } = req.query;
+
+    const desiredLimit = Math.max(1, Math.min(50, parseInt(limit, 10) || 10)); // clamp 1..50
+
+    // Build exclude set (ObjectId)
+    const excludeSet = new Set();
+    if (productId) {
+      try { excludeSet.add(String(new mongoose.Types.ObjectId(productId))); } catch (e) {}
+    }
+    if (excludeIds) {
+      excludeIds.split(",").forEach((id) => {
+        const trimmed = id.trim();
+        if (trimmed) {
+          try { excludeSet.add(String(new mongoose.Types.ObjectId(trimmed))); } catch (e) {}
+        }
+      });
+    }
+
+    // Helper: add unique docs to results array
+    const addUnique = (accArr, docs) => {
+      for (const d of docs) {
+        const idStr = String(d._id);
+        if (!excludeSet.has(idStr) && !accArr.some((x) => String(x._id) === idStr)) {
+          accArr.push(d);
+          if (accArr.length >= desiredLimit) break;
+        }
+      }
+    };
+
+    const results = [];
+
+    // 1) Try same sub-category (highest relevance)
+    if (subCatId) {
+      const docs = await ProductModel.find({
+        subCatId,
+        _id: { $nin: Array.from(excludeSet) },
+      })
+        .limit(desiredLimit)
+        .populate("category")
+        .exec();
+      addUnique(results, docs);
+    }
+
+    // 2) Then same third-sub-category
+    if (results.length < desiredLimit && thirdSubCatId) {
+      const docs = await ProductModel.find({
+        thirdSubCatId,
+        _id: { $nin: Array.from(excludeSet) },
+      })
+        .limit(desiredLimit - results.length)
+        .populate("category")
+        .exec();
+      addUnique(results, docs);
+    }
+
+    // 3) Then same category
+    if (results.length < desiredLimit && catId) {
+      const docs = await ProductModel.find({
+        catId,
+        _id: { $nin: Array.from(excludeSet) },
+      })
+        .limit(desiredLimit - results.length)
+        .populate("category")
+        .exec();
+      addUnique(results, docs);
+    }
+
+    // 4) Then same brand
+    if (results.length < desiredLimit && brand) {
+      const docs = await ProductModel.find({
+        brand,
+        _id: { $nin: Array.from(excludeSet) },
+      })
+        .limit(desiredLimit - results.length)
+        .populate("category")
+        .exec();
+      addUnique(results, docs);
+    }
+
+    // 5) Keyword / name similarity (either provided keywords or use product name)
+    if (results.length < desiredLimit) {
+      let keywordList = [];
+      if (keywords) {
+        keywordList = keywords
+          .split(",")
+          .map((k) => k.trim())
+          .filter(Boolean)
+          .slice(0, 5);
+      } else if (productId) {
+        try {
+          const base = await ProductModel.findById(productId).select("name").lean();
+          if (base?.name) {
+            // split name into meaningful tokens (skip tiny words)
+            keywordList = base.name
+              .split(/\s+/)
+              .map((w) => w.replace(/[^\w\-]/g, ""))
+              .filter((w) => w.length > 2)
+              .slice(0, 5);
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      if (keywordList.length) {
+        // Build OR regex queries for keywords
+        const orQueries = keywordList.map((kw) => ({
+          name: { $regex: kw.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"), $options: "i" },
+        }));
+
+        const docs = await ProductModel.find({
+          $or: orQueries,
+          _id: { $nin: Array.from(excludeSet) },
+        })
+          .limit(desiredLimit - results.length)
+          .populate("category")
+          .exec();
+
+        addUnique(results, docs);
+      }
+    }
+
+    // 6) Final fallback: random sampling (fills remaining slots)
+    if (results.length < desiredLimit) {
+      const remaining = desiredLimit - results.length;
+      // Use aggregation $match + $sample
+      const match = { _id: { $nin: Array.from(excludeSet) } };
+      // Optionally prefer same category if provided (soft boost)
+      if (catId) match.catId = catId;
+
+      const sampled = await ProductModel.aggregate([
+        { $match: match },
+        { $sample: { size: remaining } },
+      ]);
+
+      // populate category for sampled docs (aggregate returns plain objects)
+      const sampledIds = sampled.map((d) => d._id);
+      if (sampledIds.length) {
+        const populated = await ProductModel.find({ _id: { $in: sampledIds } }).populate("category").exec();
+        addUnique(results, populated);
+      }
+    }
+
+    // Ensure we never return the excluded productId
+    const final = results.slice(0, desiredLimit).filter((p) => String(p._id) !== String(productId));
+
+
+    console.log("finannnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnl: ", final, final.length)
+    return res.status(200).json({
+      error: false,
+      success: true,
+      data: final,
+      total: final.length,
+    });
+  } catch (error) {
+    console.error("getSuggestions error:", error);
+    return res.status(500).json({
+      error: true,
+      success: false,
+      message: error.message || error,
+    });
+  }
+}
+export async function getRecentlyViewed(req, res) {
+    try {
+        const ids = req.body.ids || [];
+
+        const products = await ProductModel.find({ _id: { $in: ids } })
+            .populate("category");
+
+        return res.status(200).json({
+            error: false,
+            success: true,
+            data: products,
+        });
+    } catch (error) {
+        return res.status(500).json({ error: true, success: false, message: error.message });
     }
 }

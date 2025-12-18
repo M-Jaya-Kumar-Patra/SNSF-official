@@ -1,10 +1,17 @@
 import { Router } from "express";
-import auth from "../middlewares/auth.js";
-import { addVisitCount, getVisitCount } from "../controllers/visitCount.controller.js";
+import {
+  addVisitCount,
+  getVisitCount,
+  getVisitsByRange,
+  getVisitsByCustomRange 
+} from "../controllers/visitCount.controller.js";
 
-const visitRouter = Router()
+const visitRouter = Router();
 
-visitRouter.post('/new' , addVisitCount)   
-visitRouter.get('/getVisit' , getVisitCount)   
+visitRouter.post("/new", addVisitCount);
+visitRouter.get("/getVisit", getVisitCount);
+visitRouter.get("/getByRange", getVisitsByRange);
+visitRouter.get("/getCustomRange", getVisitsByCustomRange );
 
-export default visitRouter          
+
+export default visitRouter;

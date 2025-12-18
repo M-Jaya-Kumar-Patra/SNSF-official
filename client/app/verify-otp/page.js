@@ -6,6 +6,11 @@ import { postData } from "@/utils/api";
 import { useAlert } from "../context/AlertContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useAuth } from "../context/AuthContext";
+import { trackVisitor } from "@/lib/tracking";
+
+
+
+
 
 export default function VerifyOtpPage() {
   const [otp, setOtp] = useState(new Array(6).fill(""));
@@ -32,7 +37,7 @@ const timerRef = useRef(null); // to store interval reference
   if (userData?.otp === false) {
     router.push("/");
   }
-
+   
   if (typeof window !== "undefined") {
     const storedEmail = localStorage.getItem("userEmail");
     const storedName = localStorage.getItem("userName");
@@ -48,6 +53,11 @@ const timerRef = useRef(null); // to store interval reference
     setIsClient(true);
   }
 }, []);
+
+useEffect(() => {
+      trackVisitor("verify-otp");
+    }, []);
+
 
   useEffect(() => {
     if (resendCooldown > 0) {

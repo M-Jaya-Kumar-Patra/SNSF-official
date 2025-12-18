@@ -16,6 +16,13 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext";
 
+import { trackVisitor } from "@/lib/tracking";
+
+
+
+
+
+
 export default function ResetPasswordPage() {
   const [formFields, setFormFields] = useState({
     email: "",
@@ -42,6 +49,7 @@ export default function ResetPasswordPage() {
     }
   }, []);
 
+  
   if (!isClient) return null;
 
   const onChangeInput = (e) => {

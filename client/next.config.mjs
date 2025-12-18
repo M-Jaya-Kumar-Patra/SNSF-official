@@ -23,6 +23,10 @@ const nextConfig = withPWA({
         protocol: 'https',
         hostname: 'lh3.googleusercontent.com', // ✅ Google avatar images
       },
+       {
+        protocol: 'https',
+        hostname: 'img.youtube.com', // ✅ Google avatar images
+      },
     ],
   },
 

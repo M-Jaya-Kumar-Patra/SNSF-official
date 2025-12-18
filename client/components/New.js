@@ -2,204 +2,166 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import { Josefin_Sans } from "next/font/google";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { usePrd } from "@/app/context/ProductContext";
-import { Button } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/app/context/AuthContext";
 import Image from "next/image";
-import Loading from "./Loading";
-import WhatsappIcon from "@/components/WhatsappIcon";
-import { IoCall } from "react-icons/io5";
 import Skeleton from "@mui/material/Skeleton";
-
+import { fetchDataFromApi } from "@/utils/api";
+import { useAuth } from "@/app/context/AuthContext";
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
 const New = () => {
-  const { prdData } = usePrd();
-  const { setLoading, isCheckingToken } = useAuth(); // ✅ use isCheckingToken
-  const scrollRef = useRef(null);
   const router = useRouter();
-  const [localLoading, setLocalLoading] = useState(false);
+  const scrollRef = useRef(null);
+  const { setLoading, isCheckingToken } = useAuth();
 
-
+  const [data, setData] = useState([]);
   const [hydrated, setHydrated] = useState(false);
-  const [isAtStart, setIsAtStart] = useState(true);
-  const [isAtEnd, setIsAtEnd] = useState(false);
 
   useEffect(() => {
-    if (!prdData) {
-      setLocalLoading(false)
-    }
     setHydrated(true);
   }, []);
 
-  useEffect(() => {
-    if (!hydrated || isCheckingToken) return;
-
-    if (Array.isArray(prdData)) {
-      setLoading(false); // finished loading
+  const loadNewArrivals = async () => {
+    try {
+      const res = await fetchDataFromApi(
+        "/api/product/new-arrivals?limit=12",
+        false
+      );
+      if (!res.error) setData([...(res.data || [])].reverse());
+    } catch (err) {
+      console.log("New Arrivals fetch error:", err);
+    } finally {
+      setLoading(false);
     }
-  }, [prdData, hydrated, isCheckingToken, setLoading]);
+  };
 
   useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-
-    checkScrollLimits(); // Check on mount
-
-    container.addEventListener("scroll", checkScrollLimits);
-    return () => container.removeEventListener("scroll", checkScrollLimits);
+    loadNewArrivals();
   }, []);
-
-
-  const scroll = (direction) => {
-    const container = scrollRef.current;
-    if (!container) return;
-
-    const { scrollLeft, clientWidth } = container;
-    const scrollAmount = clientWidth * 0.8;
-
-    container.scrollBy({
-      left: direction === "left" ? -scrollAmount : scrollAmount,
-      behavior: "smooth",
-    });
-  };
-
-
-  const checkScrollLimits = () => {
-    const container = scrollRef.current;
-    if (!container) return;
-
-    const { scrollLeft, scrollWidth, clientWidth } = container;
-
-    setIsAtStart(scrollLeft <= 0);
-    setIsAtEnd(scrollLeft + clientWidth >= scrollWidth - 5);
-  };
-
 
   const getOptimizedCloudinaryUrl = (url) => {
     if (!url?.includes("res.cloudinary.com")) return url;
     return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
   };
 
-
-
   return (
-    <div className="flex flex-col items-center mt-3 pb-5 sm:pb-8 bg-slate-100 w-full">
-      <h1 className={`text-2xl sm:text-3xl font-bold text-black mt-4 mb-4 sm:mt-8 sm:mb-8 ${joSan.className}`}>
+    <div className="flex flex-col bg-white w-full p-3 sm:p-6 pb-2">
+      <h1
+className={`text-xl sm:text-2xl lg:text-3xl font-bold text-black ${joSan.className}`} >
         New Arrivals
       </h1>
 
-      <div className="relative w-full max-w-[1100px] mx-auto px-4">
-        <button
-          onClick={() => scroll("left")}
-          disabled={isAtStart}
-          className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 p-1 sm:p-2 rounded-full shadow transition text-base sm:text-xl ${isAtStart ? "bg-gray-300 cursor-not-allowed" : "bg-white/60 hover:bg-white text-gray-800"
-            }`}
-        >
-          <ChevronLeft />
-        </button>
+      <div
+        ref={scrollRef}
+        className="
+          relative
+          overflow-x-auto
+            scrollbar-hide
+          scroll-smooth
+          mt-2 sm:mt-4
+        "
+      >
         <div
-          ref={scrollRef}
-          className="overflow-x-auto whitespace-nowrap scroll-smooth scrollbar-hide py-5"
+          className="
+            grid gap-4 sm:gap-6
+
+            /* MOBILE */
+            grid-rows-2
+            grid-flow-col
+            auto-cols-[minmax(110px,1fr)]
+
+            /* SM AND UP */
+            sm:grid-rows-1
+            sm:auto-cols-[minmax(230px,1fr)]
+
+            pb-1
+            sm:px-4
+            sm:pb-4
+
+          "
         >
-          <div className="inline-flex gap-4 overflow-x-auto py-4 px-2">
-            {Array.isArray(prdData) && prdData.length > 0 ? (
-              [...prdData]
-                .sort((a, b) => new Date(b.dateCreated) - new Date(a.dateCreated))
-                .slice(0, 10)
-                .map((prd, index) => (
-                  <div
-                    key={index}
-                    className="min-w-[256px] max-w-[256px] p-2 bg-white shadow-md flex flex-col items-center justify-start gap-3 transition-transform duration-300 group hover:scale-105    "
-                  >
-                    {/* Image */}
-                    <div
-                      className="w-full relative rounded-md overflow-hidden cursor-pointer"
-                      style={{ aspectRatio: '4 / 3' }}
-                      onClick={() => router.push(`/product/${prd?._id}`)}
-                    >
-                      <Image
-                        src={getOptimizedCloudinaryUrl(prd?.images?.[0] || '/placeholder.jpg')}
-                        alt={prd?.name || 'Product Image'}
-                        fill
-                        sizes="(max-width: 768px) 100%, 256px"
-                        className="object-cover"
-                        unoptimized
-                      />
-                    </div>
-
-                    {/* Title */}
-                    <div
-                      className="w-full flex flex-col items-center text-center gap-1 px-2 cursor-pointer"
-                      onClick={() => router.push(`/product/${prd?._id}`)}
-                    >
-                      <h2 className="text-sm font-semibold text-gray-800 truncate w-full">
-                        {prd?.name || 'Unnamed Product'}
-                      </h2>
-                    </div>
-                  </div>
-                ))
-            ) : (localLoading || isCheckingToken || !prdData || !hydrated) ? (
-              Array.from({ length: 6 }).map((_, idx) => (
-                <div
-                  key={idx}
-                  className="min-w-[256px] max-w-[256px] p-2 bg-white shadow-md flex flex-col items-center justify-start gap-3 "
-                >
-                  {/* Skeleton Image */}
-                  <div
-                    className="w-full relative rounded-md overflow-hidden"
-                    style={{ aspectRatio: '4 / 3' }}
-                  >
-                    <Skeleton
-                      variant="rectangular"
-                      animation="wave"
-                      width="100%"
-                      height="100%"
-                      sx={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        height: "100%",
-                        width: "100%",
-                        borderRadius: "8px",
-                        bgcolor: 'rgba(203,213,225,0.5)', // match slate-100 tone
-                      }}
-                    />
-                  </div>
-
-                  {/* Skeleton Title */}
-                  <Skeleton
-                    variant="text"
-                    animation="wave"
-                    width="80%"
-                    height={20}
-                    sx={{ bgcolor: 'rgba(203,213,225,0.5)', borderRadius: '4px' }}
+          {Array.isArray(data) && data.length > 0 ? (
+            data.slice(0, 12).map((prd) => (
+              <article
+                key={prd._id}
+                onClick={() => router.push(`/product/${prd._id}`)}
+                className="
+                  group
+                  cursor-pointer
+                  bg-white
+                  rounded-xl sm:rounded-2xl
+                  overflow-hidden
+                  border border-gray-200
+                  shadow-[0_2px_10px_rgba(0,0,0,0.04)]
+                  transition-all duration-300
+                  sm:hover:shadow-[0_10px_20px_rgba(0,0,0,0.12)]
+                  sm:hover:-translate-y-1
+                  flex flex-col
+                "
+              >
+                {/* IMAGE */}
+                <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100">
+                  <Image
+                    src={getOptimizedCloudinaryUrl(
+                      prd?.images?.[0] || "/placeholder.jpg"
+                    )}
+                    alt={prd?.name}
+                    fill
+                    className="
+                      object-cover
+                      transition-transform duration-700
+                      group-hover:scale-105
+                    "
+                    unoptimized
                   />
                 </div>
-              ))
-            ) : (
-              <p className="text-gray-500 text-sm">No products available</p>
-            )}
 
+                {/* CONTENT */}
+                <div className="p-1 sm:p-2 text-center">
+                  <h3
+                    className="
+                              text-[12px] sm:text-[14px] md:text-[16px] xl:text-[18px]
 
-          </div>
+                      font-medium
+                      text-gray-900
+                      truncate
+                      px-1
+                    "
+                    title={prd?.name}
+                  >
+                    {prd?.name}
+                  </h3>
+                </div>
+              </article>
+            ))
+          ) : (
+  /* ===== NEW ARRIVALS GRID SKELETON ===== */
+  Array.from({ length: 12 }).map((_, idx) => (
+    <article
+      key={idx}
+      className="
+        bg-white
+        rounded-xl sm:rounded-2xl
+        overflow-hidden
+        border border-gray-200
+        shadow-[0_2px_10px_rgba(0,0,0,0.04)]
+        flex flex-col
+        animate-pulse
+      "
+    >
+      {/* IMAGE */}
+      <div className="relative w-full aspect-[4/3] bg-slate-200" />
 
+      {/* TITLE */}
+      <div className="p-1 sm:p-2 text-center">
+        <div className="h-3 sm:h-4 w-[70%] mx-auto bg-slate-200 rounded" />
+      </div>
+    </article>
+  ))
+)
+ }
         </div>
-
-
-        <button
-          onClick={() => scroll("right")}
-          disabled={isAtEnd}
-          className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 p-1 sm:p-2 rounded-full shadow transition text-base sm:text-xl ${isAtEnd ? "bg-gray-300 cursor-not-allowed" : "bg-white/60 hover:bg-white text-gray-800"
-            }`}
-        >
-          <ChevronRight />
-        </button>
-
-
       </div>
     </div>
   );

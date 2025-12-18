@@ -2,9 +2,15 @@
 
 import React from "react";
 import { useAuth } from "../context/AuthContext";
+import { trackVisitor } from "@/lib/tracking";
+import { useEffect } from "react";
+
+
+
 
 export default function TermsPage() {
-  const {isCheckingToken}=useAuth()
+  const {isCheckingToken}=useAuth();
+   
 
    if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
   return (

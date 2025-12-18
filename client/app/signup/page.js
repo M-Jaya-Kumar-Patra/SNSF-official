@@ -18,6 +18,11 @@ import { postData } from "@/utils/api";
 import { useAlert } from "../context/AlertContext";
 import { useAuth } from "../context/AuthContext";
 import SignInWithGoogle from "@/components/SignInWithGoogle";
+import { trackVisitor } from "@/lib/tracking";
+
+
+
+
 
 
 
@@ -56,6 +61,8 @@ export default function Signup() {
       setCheckingAuth(false);
     }
   }, [isLogin, router]);
+
+   
 
   // Reset form on mount
   useEffect(() => {
@@ -156,82 +163,99 @@ export default function Signup() {
     return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
   };
 
-  return (
-    <div className="flex justify-center items-center w-full h-screen bg-gray-100">
-      <div className="w-[300px] border rounded-md shadow overflow-hidden bg-white">
-        <div className="w-full py-4 px-5 flex flex-col items-center">
-          <Image
-            className="w-16 h-16 rounded-full mt-4"
-            src={getOptimizedCloudinaryUrl("/images/logo.png")}
-            alt="SNSF Logo"
-            width={64}
-            height={64}
-          />
+ return (
+  <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300">
+    <div className="w-full max-w-5xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
 
-          <div className="w-full flex items-center gap-3 justify-center">
-            <h1 className="text-[#131e30] my-2 font-bold text-lg">
-              Sign up to
-            </h1>
-            <h1
-              className={`text-xl font-bold ${righteous.className} bg-gradient-to-b from-[#8ca4b4] via-[#4c6984] to-[#93b2c7] bg-clip-text text-transparent`}
-            >
-              SNSF
-            </h1>
+      {/* ================= LEFT : VISUAL / BRAND ================= */}
+      <div className="hidden lg:flex relative">
+        <Image
+          src="/images/signup-furniture.png" // sofa / bed / interior image
+          alt="Luxury Furniture"
+          fill
+          className="object-cover"
+          priority
+        />
+
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-transparent" />
+
+        {/* Brand text */}
+        <div className="relative z-10 p-10 flex flex-col justify-end text-white">
+          <h1 className={`text-4xl font-bold ${righteous.className}`}>
+            Join SNSF
+          </h1>
+          <p className="mt-2 text-lg text-slate-200">
+            Crafted furniture for refined living
+          </p>
+        </div>
+      </div>
+
+      {/* ================= RIGHT : SIGNUP FORM ================= */}
+      <div className="flex items-center justify-center p-6 sm:p-10">
+        <div className="w-full max-w-sm">
+
+          {/* Logo */}
+          <div className="flex justify-center mb-4">
+            <Image
+              src={getOptimizedCloudinaryUrl("/images/logo.png")}
+              alt="SNSF Logo"
+              width={70}
+              height={70}
+              className="rounded-full"
+            />
           </div>
 
-          {/* Dummy hidden inputs to prevent autofill */}
-          <form autoComplete="off" className="w-full">
-            <input
-              type="text"
-              name="fake_username"
-              style={{ display: "none" }}
-            />
-            <input
-              type="password"
-              name="fake_password"
-              style={{ display: "none" }}
-            />
+          {/* Title */}
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-slate-900">
+              Sign up to{" "}
+              <span
+                className={`${righteous.className} bg-gradient-to-r from-slate-700 via-slate-900 to-black bg-clip-text text-transparent`}
+              >
+                SNSF
+              </span>
+            </h2>
+            <p className="text-sm text-slate-500 mt-1">
+              Create your premium account
+            </p>
+          </div>
 
+          {/* Dummy hidden inputs */}
+          <form autoComplete="off" className="w-full">
+            <input type="text" name="fake_username" style={{ display: "none" }} />
+            <input type="password" name="fake_password" style={{ display: "none" }} />
+
+            {/* Full Name */}
             <TextField
               label="Full name"
               variant="outlined"
               margin="dense"
               size="small"
               fullWidth
-              name="name"
               disabled={isLoading}
               value={formFields.name}
               onChange={(e) => handleInputChange("name", e.target.value)}
-              autoComplete="off"
             />
 
+            {/* Email */}
             <TextField
-              label="Email Id"
+              label="Email"
               variant="outlined"
               margin="dense"
               size="small"
               fullWidth
-              name="user_email_unique"
-              autoComplete="new-email"
               disabled={isLoading}
               value={formFields.email}
               error={emailError}
-              helperText={
-                emailError ? "Please enter a valid email address" : ""
-              }
+              helperText={emailError ? "Please enter a valid email address" : ""}
               onChange={(e) => handleInputChange("email", e.target.value)}
             />
 
-            <FormControl
-              size="small"
-              fullWidth
-              margin="dense"
-              variant="outlined"
-            >
+            {/* Password */}
+            <FormControl size="small" fullWidth margin="dense" variant="outlined">
               <InputLabel>Password</InputLabel>
               <OutlinedInput
-                name="user_password_unique"
-                autoComplete="new-password"
                 type={showPassword ? "text" : "password"}
                 disabled={isLoading}
                 value={formFields.password}
@@ -243,7 +267,6 @@ export default function Signup() {
                   <InputAdornment position="end">
                     <IconButton
                       onClick={() => setShowPassword((prev) => !prev)}
-                      onMouseDown={(e) => e.preventDefault()}
                       edge="end"
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -254,8 +277,9 @@ export default function Signup() {
               />
             </FormControl>
 
+            {/* Password strength */}
             {formFields.password.length > 0 && (
-              <div className="w-full mt-1">
+              <div className="w-full mt-2">
                 <div className="w-full h-1.5 rounded bg-gray-200 overflow-hidden">
                   <div
                     className="h-full transition-all duration-300"
@@ -268,7 +292,7 @@ export default function Signup() {
                           : "100%",
                       backgroundColor: passwordStrength.color,
                     }}
-                  ></div>
+                  />
                 </div>
                 <p
                   className="text-xs mt-1 font-medium"
@@ -278,73 +302,77 @@ export default function Signup() {
                 </p>
               </div>
             )}
-            <div className="w-full flex justify-center mt-1">
-              <button
-                type="submit"
-                onClick={handleSubmit}
-                disabled={isLoading}
-                className="w-[120px] h-[36px] flex justify-center items-center 
-                !bg-primary-gradient hover:opacity-90 
-                transition duration-200 text-white rounded-md mt-4 text-[15px]
-                shadow-[0_4px_10px_rgba(0,0,0,0.3)] hover:shadow-[0_6px_15px_rgba(0,0,0,0.35)] 
-                active:scale-95 active:shadow-inner"
-              >
-                {isLoading ? (
-                  <CircularProgress size={20} sx={{ color: "white" }} />
-                ) : (
-                  "Sign Up"
-                )}
-              </button>
-            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              onClick={handleSubmit}
+              disabled={isLoading}
+              className="
+                w-full h-[44px] mt-6
+                bg-gradient-to-r from-slate-800 to-slate-900
+                text-white rounded-lg
+                font-medium
+                flex items-center justify-center
+                shadow-lg
+                hover:opacity-95
+                active:scale-[0.98]
+                transition
+              "
+            >
+              {isLoading ? (
+                <CircularProgress size={22} sx={{ color: "white" }} />
+              ) : (
+                "Create Account"
+              )}
+            </button>
           </form>
 
-          <div className="w-full text-center mt-3">
-            <h3
-              className="text-[#131e30] text-[14px] cursor-pointer"
+          {/* Login */}
+          <p className="text-center text-sm text-slate-600 mt-4">
+            Already have an account?{" "}
+            <span
               onClick={() => router.push("/login")}
+              className="text-slate-900 font-medium cursor-pointer hover:underline"
             >
-              Already have an account?{" "}
-              <span className="hover:text-blue-700 hover:underline">
-                Log in
-              </span>
-            </h3>
+              Log in
+            </span>
+          </p>
+
+          {/* Divider */}
+          <div className="flex items-center my-5">
+            <div className="flex-1 h-px bg-slate-300" />
+            <span className="px-3 text-sm text-slate-500">or</span>
+            <div className="flex-1 h-px bg-slate-300" />
           </div>
 
-  <p className="text-gray-500 text-sm my-2 mb-3">or</p>
-
+          {/* Google */}
           <SignInWithGoogle />
         </div>
       </div>
+    </div>
 
-
-      {showPopUp && (
-  <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 animate-fadeIn">
-    <div className="bg-white rounded-xl shadow-xl w-[90%] max-w-md p-6 relative animate-scaleIn">
-
-      {/* Title */}
-      <h2 className="text-lg font-semibold text-gray-800 mb-2">
-        Continue with Google
-      </h2>
-
-      {/* Message from your state */}
-      <p className="text-sm text-gray-600 mb-5">{showPopUp}</p>
-
-      {/* Google Button */}
-      <div className="flex justify-center mb-4">
-        <SignInWithGoogle />
+    {/* ================= GOOGLE POPUP (UNCHANGED) ================= */}
+    {showPopUp && (
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="bg-white rounded-xl shadow-xl w-[90%] max-w-md p-6 relative">
+          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+            Continue with Google
+          </h2>
+          <p className="text-sm text-gray-600 mb-5">{showPopUp}</p>
+          <div className="flex justify-center mb-4">
+            <SignInWithGoogle />
+          </div>
+          <button
+            onClick={() => setShowPopUp(false)}
+            className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+          >
+            ✕
+          </button>
+        </div>
       </div>
-
-      {/* Close Button */}
-      <button
-        onClick={() => setShowPopUp(false)}
-        className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
-      >
-        ✕
-      </button>
-    </div>
+    )}
   </div>
-)}
+);
 
-    </div>
-  );
 }

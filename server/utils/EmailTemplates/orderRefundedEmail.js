@@ -13,7 +13,7 @@ const refundCompletedEmail = (
   <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.1); border: 1px solid #ccc;">
     
     <!-- Header -->
-   <div style="background: linear-gradient(to right, #1e1b4b, #1e1e80, #1e40af); padding: 24px; text-align: center;">
+   <div style="background: linear-gradient(to right, #1e1b4b, #1e1e80, #0f172a); padding: 24px; text-align: center;">
       <img src="https://snsteelfabrication.com/images/logo.png" alt="SNSF Logo" style="height: 60px; border-radius: 8px;" />
       <h2 style="color: #ffffff; margin: 16px 0 4px;">💸 Refund Completed</h2>
    <p style="color: #cbd5e1; font-size: 14px;">Your refund for Order <strong>${orderId}</strong> has been processed</p>

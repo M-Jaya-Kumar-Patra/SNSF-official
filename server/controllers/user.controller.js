@@ -17,6 +17,7 @@ import forgotPasswordEmail from "../utils/EmailTemplates/forgotPasswordTemplate.
 import passwordResetSuccessEmail from "../utils/EmailTemplates/passwordResetSuccessEmail.js";
 import newLoginEmail from "../utils/EmailTemplates/loginTemplate.js";
 import { OAuth2Client } from "google-auth-library";
+import Session from "../models/session.model.js";
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 cloudinary.config({
@@ -198,6 +199,7 @@ export async function verifyEmailController(request, response) {
     });
   }
 }
+import LoginHistoryModel from "../models/loginHistory.model.js";
 
 export async function loginController(request, response) {
   try {
@@ -260,6 +262,8 @@ export async function loginController(request, response) {
     await UserModel.findByIdAndUpdate(user._id, {
       last_login_date: new Date(),
     });
+
+    await LoginHistoryModel.create({ userId: user._id });
 
     const cookieOptions = {
       httpOnly: true,
@@ -450,6 +454,14 @@ console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
     const accessToken = await generatedAccessToken(user._id);
     const refreshToken = await generatedRefreshToken(user._id);
 
+
+    await LoginHistoryModel.create({ userId: user._id });
+
+    await UserModel.findByIdAndUpdate(user._id, {
+      last_login_date: new Date(),
+    });
+
+    
     const cookieOptions = {
       httpOnly: true,
       secure: false,
@@ -548,6 +560,8 @@ export async function userAvatarController(request, response) {
         success: false,
       });
     }
+
+    console.log("UserIddddddddddddddddddddddddd", userId)
 
 
     const user = await UserModel.findById(userId);
@@ -1469,22 +1483,89 @@ export async function getRelatedProductsByCategory(req, res) {
   }
 }
 
-export async function getAllUsers(req, res) {
+
+export const getAllUsers = async (req, res) => {
   try {
     const users = await UserModel.find()
       .select("-password")
-      .populate("address_details"); // exclude password
+      .populate("address_details");
 
-    return res.status(200).json({
+    // Fetch lastActivity for each user
+    const usersWithActivity = await Promise.all(
+      users.map(async (u) => {
+        const session = await Session.findOne({ userId: u._id })
+          .sort({ lastActivity: -1 })
+          .select("lastActivity");
+
+        return {
+          ...u.toObject(),
+          lastActivity: session?.lastActivity || null,
+        };
+      })
+    );
+
+    res.status(200).json({
       success: true,
       error: false,
-      users,
+      users: usersWithActivity,
     });
+
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       error: true,
-      message: error.message || "Server Error",
+      message: error.message || "Server error",
     });
   }
-}
+};
+
+
+
+export const getCurrentlyLoggedInUsers = async (req, res) => {
+  try {
+    const users = await UserModel.find({
+      refresh_token: { $ne: "" }
+    }).select("name email avatar");
+
+    res.json({
+      success: true,
+      count: users.length,
+      users
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+
+export const getLoggedOutUsers = async (req, res) => {
+  try {
+    const users = await UserModel.find({
+      refresh_token: ""
+    }).select("name email avatar");
+
+    res.json({
+      success: true,
+      count: users.length,
+      users
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+
+export const getLoginMethodStats = async (req, res) => {
+  try {
+    const googleUsers = await UserModel.countDocuments({ provider: "google" });
+    const emailUsers = await UserModel.countDocuments({ provider: "credentials" });
+
+    res.json({
+      success: true,
+      googleUsers,
+      emailUsers
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};

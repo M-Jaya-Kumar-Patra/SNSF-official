@@ -1,8 +1,16 @@
 "use client";
 
 import React from "react";
+import { trackVisitor } from "@/lib/tracking";
+import { useEffect } from "react";
+
+
+
 
 export default function WarrantyPage() {
+
+  
+
   return (
     <main className="max-w-4xl mx-auto p-8 bg-white rounded-xl shadow-lg border-t-4 border-blue-700 my-12">
       <h1 className="text-4xl font-extrabold text-blue-800 mb-6">Warranty Policy</h1>

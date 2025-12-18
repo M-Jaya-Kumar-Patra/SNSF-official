@@ -37,6 +37,64 @@ export const postData = async (url, formData, authRequired = true) => {
 };
 
 
+export const putData = async (url, formData, authRequired = true) => {
+  try {
+    const headers = {
+      "Content-Type": "application/json",
+    };
+
+    if (authRequired) {
+      const token = localStorage.getItem("accessToken");
+      if (!token) throw new Error("Access token is missing or expired");
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(apiUrl + url, {
+      method: "PUT",
+      headers,
+      credentials: "include",
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json(); // ✅ Only one read
+    console.log("Response JSON:", data);
+
+    return data;
+  } catch (error) {
+    console.error("POST request error:", error);
+    throw error;
+  }
+};
+
+
+export const putImage = async (url, formData, authRequired = true) => {
+  try {
+    // ⭐ IMPORTANT: NEVER set Content-Type manually for FormData
+    const headers = {};
+
+    if (authRequired) {
+      const token = localStorage.getItem("accessToken");
+      if (!token) throw new Error("Access token missing or expired");
+
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(apiUrl + url, {
+      method: "PUT",
+      headers,
+      credentials: "include",
+      body: formData, // ⭐ send raw FormData
+    });
+
+    const data = await response.json();
+    console.log("putImage response:", data);
+    return data;
+  } catch (error) {
+    console.error("PUT IMAGE error:", error);
+    throw error;
+  }
+};
+
 // GET request
 export const fetchDataFromApi = async (url, authRequired = true) => {
   try {
@@ -105,7 +163,6 @@ export const uploadImages = async (url, formData, authRequired = true) => {
     if (authRequired) {
       const token = localStorage.getItem("accessToken");
       
-      console.log("errorrrr")
       if (!token) {
         return { error: true, message: "Access token is missing or expired" };
       }
@@ -224,6 +281,27 @@ export const deleteProduct = async (url, id)=>{
     throw error;
   }
 }
+
+
+export const deleteData = async (url)=>{
+  try{
+    const token = localStorage.getItem("accessToken")
+    
+    const response = await axios.delete(apiUrl+url,{
+      headers:{
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      }
+      
+    })
+
+    return response.data
+  }catch(error){
+    console.error("deleteCategory error:",  error);
+    throw error;
+  }
+}
+
 
 // export const deleteMultipleData = async (url, data) => {
 //   try {

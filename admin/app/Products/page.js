@@ -530,169 +530,197 @@ const Products = () => {
 
 
     return (
-        <>
+  <>
+    {/* PAGE WRAPPER */}
+    <div className="min-h-screen bg-slate-50 text-slate-800">
+      <div className="w-full px-6 py-4">
 
-            <div className="w-full flex justify-center">
-                <div className='w-full   px-6'>
-                    <div className='flex justify-between items-center   '>
-                        <h1 className='text-blue-900 font-sans text-xl font-semibold p-4 pl-0 py-1 rounded-md my-3   '>
-                            Manage Products
-                        </h1>
-                        <div className='flex gap-4'>
-                            {sortedIds?.length !== 0 && <button className='bg-red-600 text-white px-3 rounded-md' onClick={deleteMultipleProduct}>Delete </button>}
-                            <button className='w-auto h-auto p-2 py-1 pr-3 rounded-md  bg-green-800 flex items-center gap-1 ' onClick={() => handleAddClick()}><AddIcon />Add New Product</button>
-                        </div>
-                    </div>
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h1 className="text-2xl font-semibold text-slate-900">
+              Manage Products
+            </h1>
+            <p className="text-sm text-slate-500">
+              Create, edit and manage your product catalog
+            </p>
+          </div>
 
-                    <div className='flex gap-3'>
-                        <div className="relative w-full text-black flex  h-10  px-2 gap-2  border border-slate-300 rounded-md items-center">
-                            <SearchIcon className='text-gray-600' />
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                className="outline-none text-black w-full"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value.toLowerCase())}
-                            />
+          <div className="flex gap-3">
+            {sortedIds?.length !== 0 && (
+              <button
+                onClick={deleteMultipleProduct}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium shadow"
+              >
+                Delete Selected
+              </button>
+            )}
 
-
-                        </div>
-                        <div className='h-10 w-10 border border-slate-300 rounded-md text-black flex items-center justify-center cursor-pointer'>
-                            <FilterAltIcon />
-                        </div>
-                    </div>
-
-                    {/* Table */}
-
-                    <table className='w-full text-center border-collapse border border-slate-200 rounded-md shadow-lg mt-4'>
-                        <thead className='h-12 bg-blue-100 border-b border-slate-300'>
-                            <tr>
-                                <th className='w-[55px]'><Checkbox size='small'
-                                    checked={prdData?.length > 0 ? prdData.every((item) => item.checked) : false}
-                                    onChange={handleSelectAll}
-
-                                /></th>
-                                <th className='text-black w-[100px] '>Product</th>
-                                <th className='text-black w-[20%] '>Name</th>
-                                <th className='text-black w-[16%]'>Category</th>
-                                <th className='text-black w-[16%]'>Sub Category</th>
-                                <th className='text-black w-[12%]'>Price</th>
-                                <th className='text-black w-[10%] '>Sales</th>
-                                <th className='text-black w-[10%]'>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {loading ? (
-                                <tr>
-                                    <td colSpan={8}>
-                                        <Box sx={{ width: '100%' }}>
-                                            <LinearProgress />
-                                        </Box>
-                                    </td>
-                                </tr>
-                            ) : (
-                                Array.isArray(prdData) &&
-                                prdData.length > 0 &&
-                                prdData
-                                    .filter((prd) => {
-                                        const name = prd?.name?.toLowerCase() || '';
-                                        const category = prd?.catName?.toLowerCase() || '';
-                                        const subCategory = prd?.subCat?.toLowerCase() || '';
-                                        return (
-                                            name.includes(searchQuery.toLowerCase()) ||
-                                            category.includes(searchQuery.toLowerCase()) ||
-                                            subCategory.includes(searchQuery.toLowerCase())
-                                        );
-                                    }).reverse()
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((prd, index) => (
-                                        <tr key={index} className="border-b border-slate-300">
-                                            <td className="w-[55px]">
-                                                <Checkbox
-                                                    size="small"
-                                                    checked={!!prd.checked}
-                                                    onChange={(e) => handleCheckBoxChange(e, prd._id, index)}
-                                                />
-                                            </td>
-                                            <td className="text-black flex items-center justify-center">
-                                                {Array.isArray(prd.images) && prd.images.length > 0 ? (
-                                                    <Image
-                                                        src={prd.images[0]}
-                                                        alt={`${prd.name || 'Product image'} 1`}
-                                                        width={100}
-                                                        height={100}
-                                                        className="my-2"
-                                                    />
-                                                ) : (
-                                                    <div className="w-[100px] h-[100px] bg-gray-200 text-xs flex items-center justify-center text-gray-600">
-                                                        No Image
-                                                    </div>
-                                                )}
-                                            </td>
-                                            <td className="text-black">{prd.name}</td>
-                                            <td className="text-black">{prd.catName}</td>
-                                            <td className="text-black">{prd.subCat}</td>
-                                            <td className="text-black">{prd.price}</td>
-                                            <td className="text-black">{prd.sales}</td>
-                                            <td className="text-black">
-                                                <ModeEditOutlineIcon
-                                                    onClick={() => handleClickEdit(prd._id, prd)}
-                                                    className="text-blue-600 cursor-pointer mr-4 active:bg-gray-200 rounded-full"
-                                                />
-                                                <DeleteOutlineIcon
-                                                    className="text-red-600 cursor-pointer active:bg-gray-200 rounded-full"
-                                                    onClick={(e) => handleClickOpenDeleteAlert(e, prd._id)}
-                                                />
-                                            </td>
-                                        </tr>
-                                    ))
-                            )}
-                        </tbody>
-
-
-                    </table>
-                    <TablePagination
-                        rowsPerPageOptions={[10, 20, 30]}
-                        component="div"
-                        count={prdData?.length || 0}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={handleChangePage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-
-
-                </div>
-            </div>
-
-
-
-            <Dialog
-                open={open}
-                onClose={handleCloseDeleteAlert}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
+            <button
+              onClick={handleAddClick}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow"
             >
-                <DialogTitle id="alert-dialog-title">
-                    {"Confirm Deletion"}
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        Are you sure you want to delete this product? This action cannot be undone.
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDeleteAlert} color='inherit'>Cancel</Button>
-                    <Button onClick={(e) => {
-                        handleDeleteProduct(e, selectedProductId),
-                            setOpen(false);
-                    }} autoFocus color='error'>
-                        Delete
-                    </Button>
-                </DialogActions>
-            </Dialog>
+              <AddIcon fontSize="small" />
+              Add Product
+            </button>
+          </div>
+        </div>
 
-            {showEditModal && editProduct && (
+        {/* SEARCH + FILTER */}
+        <div className="flex gap-3 mb-4">
+          <div className="flex items-center gap-2 h-11 px-4 bg-white border border-slate-200 rounded-lg shadow-sm w-full">
+            <SearchIcon className="text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search by product, category or sub-category"
+              className="w-full bg-transparent outline-none text-slate-700 placeholder-slate-400"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value.toLowerCase())}
+            />
+          </div>
+
+          <button className="h-11 w-11 bg-white border border-slate-200 rounded-lg shadow-sm flex items-center justify-center hover:bg-slate-100">
+            <FilterAltIcon className="text-slate-600" />
+          </button>
+        </div>
+
+        {/* TABLE */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-slate-100 text-slate-700 text-sm">
+              <tr>
+                <th className="p-3 w-[50px]">
+                  <Checkbox
+                    size="small"
+                    checked={prdData?.length > 0 ? prdData.every(i => i.checked) : false}
+                    onChange={handleSelectAll}
+                  />
+                </th>
+                <th className="p-3">Product</th>
+                <th className="p-3">Name</th>
+                <th className="p-3">Category</th>
+                <th className="p-3">Sub Category</th>
+                <th className="p-3">Price</th>
+                <th className="p-3">Sales</th>
+                <th className="p-3 text-center">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan={8}>
+                    <LinearProgress />
+                  </td>
+                </tr>
+              ) : (
+                prdData
+                  ?.filter((prd) => {
+                    const q = searchQuery.toLowerCase();
+                    return (
+                      prd?.name?.toLowerCase().includes(q) ||
+                      prd?.catName?.toLowerCase().includes(q) ||
+                      prd?.subCat?.toLowerCase().includes(q)
+                    );
+                  })
+                  .reverse()
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((prd, index) => (
+                    <tr
+                      key={index}
+                      className="border-b border-slate-200 hover:bg-slate-50 transition"
+                    >
+                      <td className="p-3">
+                        <Checkbox
+                          size="small"
+                          checked={!!prd.checked}
+                          onChange={(e) =>
+                            handleCheckBoxChange(e, prd._id, index)
+                          }
+                        />
+                      </td>
+
+                      <td className="p-3">
+                        {prd.images?.length ? (
+                          <Image
+                            src={prd.images[0]}
+                            alt={prd.name}
+                            width={60}
+                            height={60}
+                            className="rounded-md border"
+                          />
+                        ) : (
+                          <div className="w-[60px] h-[60px] bg-slate-200 flex items-center justify-center text-xs text-slate-500 rounded">
+                            No Image
+                          </div>
+                        )}
+                      </td>
+
+                      <td className="p-3 font-medium text-slate-900">
+                        {prd.name}
+                      </td>
+                      <td className="p-3 text-slate-700">{prd.catName}</td>
+                      <td className="p-3 text-slate-700">{prd.subCat}</td>
+                      <td className="p-3 text-slate-700">₹{prd.price}</td>
+                      <td className="p-3 text-slate-700">{prd.sales}</td>
+
+                      <td className="p-3 flex justify-center gap-3">
+                        <ModeEditOutlineIcon
+                          onClick={() => handleClickEdit(prd._id, prd)}
+                          className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                        />
+                        <DeleteOutlineIcon
+                          onClick={(e) =>
+                            handleClickOpenDeleteAlert(e, prd._id)
+                          }
+                          className="text-red-600 hover:text-red-800 cursor-pointer"
+                        />
+                      </td>
+                    </tr>
+                  ))
+              )}
+            </tbody>
+          </table>
+
+          {/* PAGINATION */}
+          <div className="border-t border-slate-200">
+            <TablePagination
+              rowsPerPageOptions={[10, 20, 30]}
+              component="div"
+              count={prdData?.length || 0}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* DELETE DIALOG */}
+    <Dialog open={open} onClose={handleCloseDeleteAlert}>
+      <DialogTitle>Confirm Deletion</DialogTitle>
+      <DialogContent>
+        <DialogContentText className="text-slate-600">
+          Are you sure you want to delete this product? This action cannot be undone.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCloseDeleteAlert}>Cancel</Button>
+        <Button
+          color="error"
+          onClick={(e) => {
+            handleDeleteProduct(e, selectedProductId);
+            setOpen(false);
+          }}
+        >
+          Delete
+        </Button>
+      </DialogActions>
+    </Dialog>
+
+      {showEditModal && editProduct && (
                 <div className='flex w-full h-full justify-center items-center bg-black bg-opacity-50 fixed top-0 left-0 z-50'>
                     <div className='w-[700px] h-[90%] bg-white rounded-md text-black p-6 py-3 overflow-auto scrollbar-hide'>
                         <form onSubmit={handleSubmitEditForm}>
@@ -1644,9 +1672,9 @@ const Products = () => {
                 </div>
 
             )}
+  </>
+);
 
-        </>
-    )
 }
 
 export default Products

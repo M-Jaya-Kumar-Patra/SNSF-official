@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { trackVisitor } from "@/lib/tracking";
+
+
+
+
 
 const SuccessPage = () => {
   const [isClient, setIsClient] = useState(false);
@@ -11,6 +16,7 @@ const SuccessPage = () => {
   useEffect(() => {
     setIsClient(true);
   }, []);
+   
 
   const getOptimizedCloudinaryUrl = (url) => {
     if (!url?.includes("res.cloudinary.com")) return url;

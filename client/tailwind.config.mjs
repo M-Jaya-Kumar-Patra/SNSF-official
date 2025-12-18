@@ -13,10 +13,12 @@ export default {
       },
       screens: {
         'iphone12': '390px',
+        'mdlg': '1552px', 
       },
       backgroundImage: {
-        'primary-gradient': 'linear-gradient(to left, #2563eb, #3730a3)', // blue-600 → indigo-800
+        'primary-gradient': 'linear-gradient(to left, #1e293b, #0f172a)', // blue-600 → indigo-800
       },
+      
     },
   },
   plugins: [

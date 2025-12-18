@@ -3,16 +3,59 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
-import { fetchDataFromApi } from "@/utils/api";
+import { fetchDataFromApi, searchAPI } from "@/utils/api";
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import { useScreen } from "@/app/context/ScreenWidthContext";
+import CloseIcon from "@mui/icons-material/Close";
+
+
 
 const Search = ({ onClose }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const pathName = usePathname();
+
+
+
 
   const containerRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
+
+  const { isXs, isSm, isMd, isLg, isXl, isXl1440, is2Xl, isGELg, screenWidth, deskSearch, setDeskSearch } = useScreen(); 
+
+
+  const inputRef = useRef(null);
+
+useEffect(() => {
+  if (deskSearch) containerRef.current?.focus();
+}, [deskSearch]);
+
+
+
+  const expandedWidth = is2Xl
+  ? "w-[520px] "
+  : isXl1440
+  ? "w-[420px] "
+  : isXl
+  ? "w-[360px] "
+  : isLg
+  ? "w-[300px] "
+  : isMd
+  ? "w-[260px] "
+  : "w-full";
+
+
+  const shouldShowSearch = true;
+
+
+  const collapsedWidth = pathName === "/" ? isScrolled ?
+isSm?"hidden" : isMd? "w-[200px] ": isLg? "w-[37.2px]" : isXl1440? "w-[110px]":is2Xl? "w-[110px]":"hidden":
+ isSm?"hidden " : isMd? "w-[200px]" : isGELg? "w-[200px] "  :    "hidden"
+:isLg?"w-[37.2px]":  isXl? "w-[110px]":isXl1440 || is2Xl?"w-[200px]":"hidden";
 
   // 🔹 Reset search state
   const resetSearch = () => {
@@ -31,33 +74,63 @@ const Search = ({ onClose }) => {
       setIsDropdownVisible(false);
     }
   }, [pathname]);
+   useEffect(() => {
+      const handleScroll = () => setIsScrolled(window.scrollY > 10);
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+  
 
-  // 🔹 Handle input changes
-  const onChangeInput = async (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
+  // Update debounced query after 300ms of no typing
+useEffect(() => {
+  const handler = setTimeout(() => {
+    setDebouncedQuery(searchQuery);
+  }, 500);
 
-    if (!query.trim()) return resetSearch();
+  return () => clearTimeout(handler);
+}, [searchQuery]);
 
-    setIsDropdownVisible(true);
+// Fetch search results whenever debounced query changes
+useEffect(() => {
+  if (!debouncedQuery.trim()) return resetSearch();
+
+  const fetchResults = async () => {
     try {
-      const res = await fetchDataFromApi(`/api/product/search/get?q=${query}`, false);
+      const res = await searchAPI(`/api/product/search/get?q=${debouncedQuery}`, false);
       setResults(res?.products ?? []);
+      setIsDropdownVisible(true);
     } catch (err) {
       console.error("Search error:", err);
       setResults([]);
     }
   };
 
-  // 🔹 Navigate to product listing
-  const handleClickResult = (item) => {
-    resetSearch();
-    if (onClose) onClose();
+  fetchResults();
+}, [debouncedQuery]);
 
-    if (item.thirdSubCatId) router.push(`/ProductListing?thirdSubCatId=${item.thirdSubCatId}`);
-    else if (item.subCatId) router.push(`/ProductListing?subCatId=${item.subCatId}`);
-    else if (item.catId) router.push(`/ProductListing?catId=${item.catId}`);
-  };
+ const onChangeInput = (e) => {
+  setSearchQuery(e.target.value);
+};
+
+
+  // 🔹 Navigate to product listing
+ const handleClickResult = (item) => {
+  // ✅ 1. Show selected item in input
+  setSearchQuery(item.name);
+
+  // ✅ 2. Close dropdown
+  setIsDropdownVisible(false);
+  if (onClose) onClose();
+
+  // ✅ 3. Navigate
+  if (item.thirdSubCatId) {
+    router.push(`/ProductListing?thirdSubCatId=${item.thirdSubCatId}`);
+  } else if (item.subCatId) {
+    router.push(`/ProductListing?subCatId=${item.subCatId}`);
+  } else if (item.catId) {
+    router.push(`/ProductListing?catId=${item.catId}`);
+  }
+};
 
   // 🔹 Handle Enter key
   const handleKeyDown = (e) => {
@@ -68,35 +141,175 @@ const Search = ({ onClose }) => {
     }
   };
 
-  // 🔹 Close dropdown when clicked outside
-  useEffect(() => {
-    const handleOutsideClick = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) resetSearch();
-    };
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => document.removeEventListener("mousedown", handleOutsideClick);
-  }, []);
+useEffect(() => {
+  const handleOutsideClick = (e) => {
+    if (containerRef.current && !containerRef.current.contains(e.target)) {
+      setDeskSearch(false);        // ✅ collapse bar
+      setIsDropdownVisible(false);
+      resetSearch();
+    }
+  };
+
+  document.addEventListener("mousedown", handleOutsideClick);
+  return () => document.removeEventListener("mousedown", handleOutsideClick);
+}, []);
+
+
+
+  const toggleDeskSearch = ()=>{
+    setDeskSearch(prev => !prev);
+  };
 
   // 🔹 Optimize Cloudinary images
   const getOptimizedCloudinaryUrl = (url) =>
     url?.includes("res.cloudinary.com") ? url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/") : url;
 
+
+  
+
+
   return (
-    <div ref={containerRef} className="relative w-full max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl">
+
+    <div
+
+     ref={containerRef}
+
+  className="flex items-center w-full cursor-text"
+  onClick={() => {
+    if (!deskSearch) setDeskSearch(true);
+  }}
+>
+
+   <div
+  ref={containerRef}
+  className={`
+    relative transition-all duration-300 ease-out
+    ${shouldShowSearch ? "block" : "hidden"}
+    ${deskSearch ? expandedWidth : collapsedWidth}
+  `}
+>
+
+
+
+
+{/* 
+  
+const isXs = screenWidth < 640;// < sm
+const isSm = screenWidth >= 640 && screenWidth < 768;
+const isMd = screenWidth >= 768 && screenWidth < 1024;
+const isLg = screenWidth >= 1024 && screenWidth < 1280;
+const isXl = screenWidth >= 1280 && screenWidth < 1440;
+const isXl1440 = screenWidth >= 1440 && screenWidth < 1536;
+const is2Xl = screenWidth >= 1536;
+const isGELg = screenWidth>=1024;
+//
+
+
+*/}
+
+
+
+
+
+      {/* max-w-[1800px] mx-auto px-4 flex items-center justify-between
+        ${isScrolled ? "h-[70px]" : "h-[80px]"}
+ */}
+
+
       {/* Search Box */}
-      <div className="flex items-center w-full bg-indigo-50 bg-opacity-5 rounded-lg px-3 py-[6px] shadow-sm border border-slate-400 focus-within:ring-[0.5px] focus-within:ring-slate-200 transition duration-300">
-        <Image src="/images/search.png" alt="Search" width={20} height={20} className="sm:invert opacity-80 mr-3 select-none" />
-        <input
-          type="text"
-          placeholder="Search products..."
-          value={searchQuery}
-          onChange={onChangeInput}
-          onKeyDown={handleKeyDown}
-          className="flex-grow bg-transparent outline-none text-sm text-black sm:text-white sm:placeholder-slate-200"
-          autoComplete="off"
-          spellCheck="false"
-        />
-      </div>
+      <div
+  className={`
+    flex items-center w-full sm:bg-white
+    px-2 py-[6px]   /* height locked */
+    border border-slate-400
+    focus-within:ring-[0.5px] focus-within:ring-slate-200
+
+    transition-[border-radius,box-shadow,transform,background-color]
+    duration-100
+    ease-[cubic-bezier(0.22,1,0.36,1)]
+    will-change-[transform]
+rounded-full
+bg-white shadow-md
+  `}
+>
+  <SearchOutlinedIcon
+    width={20}
+    height={20}
+    className={`
+      mr-3 select-none text-slate-900
+      transition-transform duration-300
+    `}
+  />
+
+{/* 
+  
+const isXs = screenWidth < 640;// < sm
+const isSm = screenWidth >= 640 && screenWidth < 768;
+const isMd = screenWidth >= 768 && screenWidth < 1024;
+const isLg = screenWidth >= 1024 && screenWidth < 1280;
+const isXl = screenWidth >= 1280 && screenWidth < 1440;
+const isXl1440 = screenWidth >= 1440 && screenWidth < 1536;
+const is2Xl = screenWidth >= 1536;
+const isGELg = screenWidth>=1024;
+//
+
+
+*/}
+
+{/* 
+
+${ pathName === "/" ? isScrolled ?
+isSm?"hidden" : isMd? "w-[200px] ": isLg? "w-[110px]" : isXl1440? "w-[110px]":is2Xl? "w-[110px]":"hidden":
+ isSm?"hidden " : isMd? "w-[200px]"   :    "hidden"
+:isLg?"w-[37.2px]":  isXl? "w-[110px]":isXl1440 || is2Xl?"w-[200px]":"hidden"
+ */}
+
+
+ <input
+ ref={inputRef}
+ 
+  type="text"
+  placeholder={
+    pathName === "/" ? isScrolled ? 
+    
+   isMd?"Search Products" :isLg?"": isXl1440? "Search":is2Xl? "Search":""// '/' scrolled                   //// if any error  seach-->""
+
+    :  isMd ?"Search Products": isSm? "" :"Search Products"// '/' not scrolled -------
+
+    :  
+    
+    isLg ? " " : isXl?"Search" : isXl1440 || is2Xl?"Search Products":""//not '/' scrolled
+
+    
+  }
+  value={searchQuery}
+  onChange={onChangeInput}
+  onKeyDown={handleKeyDown}
+  className=" w-full
+    flex-grow bg-transparent outline-none
+    text-sm text-black
+    placeholder-slate-500
+  "
+  autoComplete="off"
+  spellCheck="false"
+/>
+
+{deskSearch && (
+  <button
+    onClick={(e) => {
+      e.stopPropagation();   // 🔥 VERY IMPORTANT
+      setDeskSearch(false);
+      setIsDropdownVisible(false);
+    }}
+    className="ml-2 p-1 text-slate-500 hover:text-slate-800"
+  >
+    <CloseIcon fontSize="small" />
+  </button>
+)}
+
+
+</div>
+
 
       {/* Dropdown */}
       {isDropdownVisible && searchQuery.trim() && (
@@ -126,6 +339,8 @@ const Search = ({ onClose }) => {
         </ul>
       )}
     </div>
+    </div>
+
   );
 };
 

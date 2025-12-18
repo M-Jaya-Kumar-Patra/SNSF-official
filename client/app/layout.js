@@ -16,12 +16,22 @@ import BottomNav from "@/components/BottomNav";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import Script from "next/script";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import VisitorTracker from "@/components/VisitorTracker";
+import { ScreenWidthProvider } from "./context/ScreenWidthContext";
 
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "700"],
   display: "swap",
 });
+
+export const viewport = {
+  themeColor: "#000000",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
 
 export const metadata = {
   metadataBase: new URL("https://snsteelfabrication.com"),
@@ -68,18 +78,11 @@ export const metadata = {
     title: "S N Steel Fabrication", // ✅ Changed from "SNSF" to full name
     statusBarStyle: "default",
   },
-  themeColor: "#000000",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" >
+    <html lang="en">
       <head>
         <script
           type="application/ld+json"
@@ -92,42 +95,49 @@ export default function RootLayout({ children }) {
               logo: "https://snsteelfabrication.com/images/logo.png", // ✅ Replace with actual logo URL
               sameAs: [
                 // Optional: Add your real social links here
-                "https://youtube.com/@snsteelfabrication6716?si=sNqOaFWnR9gMqziP"
-              ]
+                "https://youtube.com/@snsteelfabrication6716?si=sNqOaFWnR9gMqziP",
+              ],
             }),
           }}
         />
-       <meta name="google-adsense-account" content="ca-pub-9814214172872974"></meta>
+        <meta
+          name="google-adsense-account"
+          content="ca-pub-9814214172872974"
+        ></meta>
       </head>
-      <body className={`${inter.className} overflow-x-hidden`}>
-        
+      <body className={`${inter.className}`}>
         <ServiceWorkerRegister />
-        <AuthProvider>
-          <AuthWrapper>
-            <AlertProvider>
-              <NoticeProviders>
-                <ItemProvider>
-                  <CatProvider>
-                    <WishlistProvider>
-                      <PrdProvider>
-                        <Navbar />
-                        <GlobalLoader />
-                        <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID}>
-                        <main className="min-h-screen flex flex-col">
-                          {children}
-                        </main>
-                        </GoogleOAuthProvider>
-                        <BottomNav />
-                        <Footer />
-                        <Toaster position="top-right" />
-                      </PrdProvider>
-                    </WishlistProvider>
-                  </CatProvider>
-                </ItemProvider>
-              </NoticeProviders>
-            </AlertProvider>
-          </AuthWrapper>
-        </AuthProvider>
+        <ScreenWidthProvider>
+          <AuthProvider>
+            <AuthWrapper>
+              <AlertProvider>
+                <NoticeProviders>
+                  <ItemProvider>
+                    <CatProvider>
+                      <WishlistProvider>
+                        <PrdProvider>
+                          <Navbar />
+                          <GlobalLoader />
+                          <GoogleOAuthProvider
+                            clientId={process.env.GOOGLE_CLIENT_ID}
+                          >
+                            <VisitorTracker />
+                            <main className="min-h-screen flex flex-col">
+                              {children}
+                            </main>
+                          </GoogleOAuthProvider>
+                          <BottomNav />
+                          <Footer />
+                          <Toaster position="top-right" />
+                        </PrdProvider>
+                      </WishlistProvider>
+                    </CatProvider>
+                  </ItemProvider>
+                </NoticeProviders>
+              </AlertProvider>
+            </AuthWrapper>
+          </AuthProvider>
+        </ScreenWidthProvider>
       </body>
     </html>
   );

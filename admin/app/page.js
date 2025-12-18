@@ -1,186 +1,77 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import Box from '@mui/material/Box';
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import MenuIcon from '@mui/icons-material/Menu';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import CategoryIcon from '@mui/icons-material/Category';
-import { BsBoxSeamFill, BsFillPeopleFill } from "react-icons/bs";
-import { RxCross2 } from "react-icons/rx";
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';
-import Navbar from '@/components/Navbar';
 
-import { useAuth } from './context/AuthContext';
+import { useEffect, useState } from "react";
+import { useAuth } from "./context/AuthContext";
+import { fetchDataFromApi } from "@/utils/api";
 
-
-import TablePagination from '@mui/material/TablePagination';
-import { useRouter } from 'next/navigation';
-import { BsPCircle } from "react-icons/bs";
-import { AiFillProduct } from "react-icons/ai";
-import { usePrd } from './context/ProductContext';
-import { fetchDataFromApi } from '@/utils/api';
-import Enquiries from '@/components/Enquiries';
+import KpiCards from "@/components/charts/KpiCards";
+import VisitsOverTime from "@/components/charts/VisitChart";
+import LoginActivityChart from "@/components/charts/LoginActivityChart";
+import MostActiveUsers from "@/components/charts/MostActiveUsers";
+import AnalyticsDashboard from "@/components/charts/AnalyticsDashboard";
+import Enquiries from "@/components/Enquiries";
 
 
 
+const Card = ({ children, className = "" }) => (
+  <div
+    className={`bg-white rounded-2xl border border-slate-200 shadow-sm ${className}`}
+  >
+    {children}
+  </div>
 
+);
 
+export default function Home() {
+  const { isLogin } = useAuth();
 
-const Home = () => {
+  const [stats, setStats] = useState({
+    visits: 0,
+    users: 0,
+    enquiries: 0,
+    products: 0,
+  });
 
-  const {isLogin} =useAuth();
-  const {prdData} = usePrd();
-   const [state, setState] = useState({ right: false });
-    const [selectedText, setSelectedText] = useState("Dashboard");
-    const anchor = 'right';
+  useEffect(() => {
+    fetchDataFromApi("/api/admin/admin/stats", false).then((res) => {
+      if (res?.success) setStats(res.stats);
+    });
+  }, []);
 
-    const router = useRouter()
-  
-    const toggleDrawer = (anchor, open) => (event) => {
-      if (event?.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) return;
-      setState({ ...state, [anchor]: open });
-    };
-    const [totalVisit, setTotalVisit] = useState(0);
-
-useEffect(() => {
-  const fetchVisitCount = async () => {
-    try {
-      const res = await fetchDataFromApi("/api/visit/getVisit", false);
-      if (res?.success) {
-        setTotalVisit(res.count || 0);
-      }
-    } catch (err) {
-      console.error("Failed to fetch visit count:", err);
-    }
-  };
-
-  fetchVisitCount();
-}, []);
-
-    
-
-
-
-  
-    const navItems = ['Dashboard', 'Products', 'Categories', 'Customers'];  
-
-
-
-
-    // for page change
-    
-      const [page, setPage] = useState(0);
-      const [rowsPerPage, setRowsPerPage] = useState(3);
-    
-      const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-      };
-    
-      const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0); // Reset to first page
-      };
-
-
+  if (!isLogin) return null;
 
   return (
-    <>
-    {isLogin && <div>
-      <div className="w-full flex justify-center">
-        <div className='w-[full] px-6'>
-          <h1 className='text-blue-900 font-sans text-xl font-semibold p-4 pl-0 py-1 rounded-md my-3   '>
-            Dashboard
-          </h1>
+    <div className="bg-slate-50 min-h-screen p-6 space-y-8">
 
-          {/* Colored Boxes */}
-          <ul className='text-black rounded-sm my-3 text-[18px] flex h-[100px] gap-3 justify-between'>
-            <li className='w-1/4 h-full bg-blue-600 rounded-md  text-white flex justify-center items-center gap-1 p-3 '>
-            <div className='w-[20%]  flex justify-center items-center'>
-                <BsPCircle className="w-8 h-8 font-extrabold " />
-              </div>
-               <div className='w-[60%] '> 
-                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">Total Visits</div>
-                <div className='font-bold font-sans text-2xl' >{totalVisit}</div>
-
-              </div>
-               <div className='w-[20%]  flex justify-center items-center'>
-                <AiFillProduct  className="w-8 h-8 font-extrabold " />
-
-              </div></li>
-
-
-            <li className='w-1/4 h-full bg-orange-500 rounded-md  text-white flex justify-center items-center gap-1 p-3 '>
-            <div className='w-[20%]  flex justify-center items-center'>
-                <BsPCircle className="w-8 h-8 font-extrabold " />
-              </div>
-               <div className='w-[60%] '> 
-                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">
-
-
-                </div>
-                <div className='font-bold font-sans text-2xl' >
-
-
-                </div>
-
-              </div>
-               <div className='w-[20%]  flex justify-center items-center'>
-                <AiFillProduct  className="w-8 h-8 font-extrabold " />
-
-              </div></li>
-
-
-            <li className='w-1/4 h-full bg-green-700 rounded-md  text-white flex justify-center items-center gap-1 p-3 '>
-            <div className='w-[20%]  flex justify-center items-center'>
-                <BsPCircle className="w-8 h-8 font-extrabold " />
-              </div>
-               <div className='w-[60%] '> 
-                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">
-
-                </div>
-                <div className='font-bold font-sans text-2xl' >
-
-                </div>
-
-              </div>
-               <div className='w-[20%]  flex justify-center items-center'>
-                <AiFillProduct  className="w-8 h-8 font-extrabold " />
-
-              </div></li>
-
-
-            <li className='w-1/4 h-full bg-violet-600 rounded-md text-white flex justify-center items-center gap-1 p-3   '>
-              <div className='w-[20%]  flex justify-center items-center'>
-                <BsPCircle className="w-8 h-8 font-extrabold " />
-              </div>
-               <div className='w-[60%] '> 
-                <div className="text-nowrap first-letter:capitalize font-normal font-sans ">Total Products</div>
-                <div className='font-bold font-sans text-2xl' >{prdData?.length}</div>
-
-              </div>
-               <div className='w-[20%]  flex justify-center items-center'>
-                <AiFillProduct  className="w-8 h-8 font-extrabold " />
-
-              </div>
-            </li>
-          </ul>
-
-          
-        </div>
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl font-semibold text-slate-900">
+          Admin Dashboard
+        </h1>
+        <p className="text-sm text-slate-500 mt-1">
+          Overview of platform activity & performance
+        </p>
       </div>
+
+      {/* KPI Cards */}
+      <KpiCards stats={stats} />
+
+      {/* Primary Chart */}
       
+        <VisitsOverTime />
+      
+          <MostActiveUsers />
 
 
-    </div>}
-      <Enquiries/>
-    </>
+      {/* Deep Analytics */}
+      <Card className="p-6">
+        <h2 className="text-lg font-semibold text-slate-800 mb-4">
+          Advanced Analytics
+        </h2>
+        <AnalyticsDashboard />
+      </Card>
+
+        <Enquiries />
+    </div>
   );
 }
-
-
-export default Home;  

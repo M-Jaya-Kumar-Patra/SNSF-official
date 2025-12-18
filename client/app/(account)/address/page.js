@@ -32,7 +32,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { MdOutlineMessage } from "react-icons/md";
-
+import { trackVisitor } from "@/lib/tracking";
 
 
 const ITEM_HEIGHT = 48;
@@ -96,7 +96,9 @@ const Account = () => {
                 fetchAddresses();
               }
             }, [isLogin, router]);
-          
+           useEffect(() => {
+    trackVisitor("address");
+  }, []);
     
     const [addressArray, setaddressArray] = useState([
         {

@@ -15,13 +15,14 @@ import wishRouter from './route/wishlist.route.js';
 import noticeRouter from './route/notification.route.js';
 import visitRouter from './route/visitCount.js';
 import enquiryRouter from './route/enquiry.route.js';
-// import visitorRouter from './route/visitor.routes.js';
-// import recommendRouter from './route/recommendation.routes.js';
-// import productEventRouter from './route/productEvent.route.js';
-// import sectionRouter from './route/homeSection.route.js';
-// import styleSpaceRouter from './route/styleYourSpace.route.js';
-// import posterRouter from './route/poster.route.js';
-// import analyticsRouter from './route/analytics.route.js';
+import visitorRouter from './route/visitor.routes.js';
+import recommendRouter from './route/recommendation.routes.js';
+import productEventRouter from './route/productEvent.route.js';
+import sectionRouter from './route/homeSection.route.js';
+import styleSpaceRouter from './route/styleYourSpace.route.js';
+import posterRouter from './route/poster.route.js';
+import analyticsRouter from './route/analytics.route.js';
+import videoRouter from './route/video.route.js';
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.use(cors({
     'https://snsf-official-vi9q.onrender.com',
     'https://snsf-server-4b7o.onrender.com',
     'https://snsf-admin-tucj.onrender.com',
+    'http://172.24.80.1:3000/'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
@@ -90,21 +92,21 @@ app.use('/api/visit', visitRouter);
 
 app.use('/api/enquiries', enquiryRouter);
 
-// app.use("/api/visitor", visitorRouter);
+app.use("/api/visitor", visitorRouter);
 
-// app.use("/api/recommendations", recommendRouter);
+app.use("/api/recommendations", recommendRouter);
 
-// app.use("/api/productEvent", productEventRouter);
+app.use("/api/productEvent", productEventRouter);
 
-// app.use("/api/home-sections", sectionRouter);
+app.use("/api/home-sections", sectionRouter);
 
-// app.use("/api/style-your-space", styleSpaceRouter);
+app.use("/api/style-your-space", styleSpaceRouter);
 
-// app.use("/api/poster", posterRouter);
+app.use("/api/poster", posterRouter);
 
-// app.use("/api/analytics", analyticsRouter);
+app.use("/api/analytics", analyticsRouter);
 
-
+app.use("/api/videos", videoRouter);
 
 
 connectDB().then(() => {

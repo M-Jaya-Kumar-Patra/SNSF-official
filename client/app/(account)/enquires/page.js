@@ -8,7 +8,7 @@ import LogoutBTN from "@/components/LogoutBTN";
 import { useAuth } from "@/app/context/AuthContext";
 import { getUserEnquiries } from "@/utils/api"; // ✅ import the API function
 import { MdOutlineMessage } from "react-icons/md";
-
+import { trackVisitor } from "@/lib/tracking";
 import {
     User,
     Package,
@@ -39,6 +39,10 @@ const Account = () => {
             })
             .finally(() => setLoading(false));
     }, [userData?._id]);
+
+     useEffect(() => {
+        trackVisitor("enquires");
+      }, []);
 
     const getOptimizedCloudinaryUrl = (url) => {
   if (!url?.includes("res.cloudinary.com")) return url; // Don't touch local images

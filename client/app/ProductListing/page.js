@@ -12,6 +12,11 @@ import WhatsappIcon from "@/components/WhatsappIcon";
 import { IoCall } from "react-icons/io5";
 import Loading from "@/components/Loading";
 import Skeleton from "@mui/material/Skeleton";
+import { trackVisitor } from "@/lib/tracking";
+
+
+
+
 
 const ProductListing = () => {
   const searchParams = useSearchParams();
@@ -33,6 +38,8 @@ const ProductListing = () => {
     removeFromWishlist,
     wishlistData,
   } = useWishlist();
+
+  
 
   useEffect(() => {
     window.scrollTo(0,0)
@@ -143,7 +150,7 @@ const ProductListing = () => {
                   <div className="bg-white shadow-lg p-2 flex gap-2 justify-center sm:justify-between flex-wrap">
                     <Button
                       variant="outlined"
-                      className="!capitalize !text-[#1e40af] !border-[#1e40af] bg-gray-600 rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
+                      className="!capitalize !text-slate-900 !border-slate-900 bg-gray-600 rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
                       onClick={async () => {
                         if (!isLogin) return router.push("/login");
                         try {

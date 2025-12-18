@@ -7,6 +7,13 @@ const generatedAccessToken = (userId) => {
     { expiresIn: "1d" }
   );
   return token;
+
+
+
+
+
+
+  
 };
 
 export default generatedAccessToken;

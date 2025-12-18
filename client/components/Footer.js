@@ -25,7 +25,8 @@ const Footer = () => {
     try {
       const res = await fetchDataFromApi("/api/visit/getVisit", false);
       if (res?.success) {
-        setTotalVisitors(res.count || 0);
+        console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee,",res?.data?.total)
+        setTotalVisitors(res?.data?.total);
       }
     } catch (err) {
       console.error("Failed to fetch visit count:", err);
@@ -37,8 +38,10 @@ const Footer = () => {
 
 
   return (
-    <footer className="bg-black text-white px-6 md:px-16 pt-10 pb-6 font-sans">
-      {/* Main Grid */}
+    <footer className="w-full bg-slate-900">
+     <div className="max-w-[1600px] mx-auto  text-white px-6  pt-10 pb-6 font-sans">
+
+       {/* Main Grid */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-10 mb-10">
         {/* Company */}
         <div>
@@ -135,28 +138,25 @@ const Footer = () => {
      {/* Bottom Footer */}
 <footer className="w-full  border-t border-gray-400">
   <div className="   py-4 
-                  grid grid-cols-1 sm:grid-cols-3 
+                  grid grid-cols-1 sm:grid-cols-2 
                   items-center text-sm text-gray-400 gap-2">
 
     {/* Left: Copyright */}
-    <p className="text-center sm:text-left">
+    <p className="text-center
+     sm:text-left">
       © {new Date().getFullYear()} S N Steel Fabrication. All rights reserved.
     </p>
 
     {/* Middle: Credits */}
-    <p className="text-center">
+    <p className="text-center sm:text-right">
       Designed & Developed by <span className="font-bold text-nowrap">Jaya Kumar</span>
-    </p>
-
-    {/* Right: Visitor Count */}
-    <p className="text-center sm:text-right mb-8 sm:mb-0 text-nowrap">
-      Total Visitors: 
-      <span className="font-bold "> {totalVisitors}</span>
     </p>
 
   </div>
 </footer>
 
+
+      </div>
 
     </footer>
   );

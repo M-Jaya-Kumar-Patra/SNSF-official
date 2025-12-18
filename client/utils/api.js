@@ -3,11 +3,11 @@
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 import axios from 'axios';
+import Cookies from "js-cookie";
 
 // POST request
 export const postData = async (url, formData, authRequired = true) => {
 
-  console.log(formData)
   try {
     const headers = {
       "Content-Type": "application/json",
@@ -64,13 +64,53 @@ export const fetchDataFromApi = async (url, authRequired = true) => {
   }
 };
 
+
+// GET request
+export const searchAPI = async (url, authRequired = true) => {
+  try {
+    const headers = {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-cache",
+
+      // 🔥 Extra Tracking Headers
+      "x-visitor-id": Cookies.get("visitorId") || "",
+      "x-session-id": Cookies.get("sessionId") || "",
+      "x-user-id": localStorage.getItem("userId") || "",   // <-- optional
+    };
+
+    // 🔐 Auth token (if required)
+    if (authRequired) {
+      const token = localStorage.getItem("accessToken");
+
+      if (!token) {
+        return { error: true, message: "Access token is missing or expired" };
+      }
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    // 🚀 Actual GET request
+    const response = await fetch(apiUrl + url, {
+      method: "GET",
+      headers,
+    });
+
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error("GET request error:", error);
+    return { error: true, message: error.message };
+  }
+};
+
+
 // uploadImage (PUT with FormData)
 export const uploadImage = async (url, updatedData, authRequired = true) => {
   try {
     const headers = {};
 
     if (authRequired) {
-      const token = localStorage.getItem("accessToken")
+      const token = localStorage.getItem("accessToken");
 
       if (!token) {
         return { error: true, message: "Access token is missing or expired" };
@@ -81,12 +121,14 @@ export const uploadImage = async (url, updatedData, authRequired = true) => {
     const response = await fetch(apiUrl + url, {
       method: "PUT",
       headers,
-      body: updatedData, // FormData object
+      credentials: "include", // optional but good
+      body: updatedData, // FormData
     });
 
     const data = await response.json();
-    console.log(data);
+    console.log("uploadImage response:", data);
     return data;
+
   } catch (error) {
     console.error("PUT (uploadImage) error:", error);
     return { error: true, message: error.message };
@@ -248,6 +290,36 @@ export const getUserEnquiries = async () => {
       };
     }
 
+    return { error: true, message: error.message };
+  }
+};
+
+
+// Add this to your api.js if you don't have a FormData-compatible POST function
+
+export const uploadVideoToCloud = async (url, formData, authRequired = true) => {
+  try {
+    const headers = {};
+
+    if (authRequired) {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return { error: true, message: "Access token missing" };
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+    
+    // Note: Do NOT set "Content-Type" manually when sending FormData; 
+    // the browser sets it with the boundary automatically.
+
+    const response = await fetch(apiUrl + url, {
+      method: "POST",
+      headers,
+      body: formData, 
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("uploadVideoToCloud error:", error);
     return { error: true, message: error.message };
   }
 };

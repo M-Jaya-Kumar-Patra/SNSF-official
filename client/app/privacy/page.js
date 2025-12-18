@@ -1,9 +1,17 @@
 "use client";
 import { useAuth } from "../context/AuthContext";
 import React from "react";
+import { trackVisitor } from "@/lib/tracking";
+import { useEffect } from "react";
+
+
+
 
 export default function PrivacyPolicyPage() {
-   const { isCheckingToken } = useAuth()
+   const { isCheckingToken } = useAuth();
+    useEffect(() => {
+       trackVisitor("privacy");
+     }, []);
       if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
   return (
     <main className="max-w-4xl mx-auto p-8 bg-white rounded-xl shadow-lg border-t-4 border-blue-700 my-12">

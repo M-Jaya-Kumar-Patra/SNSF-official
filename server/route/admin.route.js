@@ -6,6 +6,8 @@ import auth from "../middlewares/auth.js"; // Adjust the path as necessary
 import upload from "../middlewares/multer.js";
 
 
+import { getAdminStats } from "../controllers/stats.controller.js";
+
 const adminRouter = Router();
 
 adminRouter.post("/register", registerAdminController);
@@ -22,6 +24,9 @@ adminRouter.post('/refresh-token', refreshToken)
 adminRouter.get('/admin-details', auth, adminDetails)
 adminRouter.post('/changePassword', auth, changePassword)
 adminRouter.post("/resendOTP", resendOTP)
+
+
+adminRouter.get("/admin/stats", getAdminStats);
 
 
 

@@ -11,6 +11,11 @@ import { MdFavorite } from "react-icons/md";
 import { MdFavoriteBorder } from "react-icons/md";
 import Image from "next/image";
 import Skeleton from '@mui/material/Skeleton';
+import { trackVisitor } from "@/lib/tracking";
+
+
+
+
 
 
 import WhatsappIcon from "@/components/WhatsappIcon";
@@ -25,7 +30,10 @@ const ProductListing = () => {
     useEffect(() => {
         setLoading(false)
         getProductsData()
-    }, [isLogin, userData, getProductsData])
+    }, [isLogin, userData, getProductsData]);
+     useEffect(() => {
+        trackVisitor("bestSellersList");
+      }, []);
 
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
@@ -108,14 +116,14 @@ const ProductListing = () => {
                                                     </div>
 
                                                     <div className='w-full '>
-                                                        <h1 className="text-black sm:text-[18px] text-[18px] mt-3 font-medium font-sans">
+                                                        <h1 className="text-black sm:text-[18px] text-[18px] mt-3 font-medium font-sans truncate">
                                                             {prd?.name}
                                                         </h1>
                                                     </div>
 
                                                     <div className='w-full justify-between items-center'>
                                                         <div className='w-full flex flex-col items-start'>
-                                                            <h1 className={prd?.brand ? "text-gray-500 text-[16px] mt-1" : "text-white text-[16px] mt-1 cursor-default"}>
+                                                            <h1 className={prd?.brand ? "text-gray-500 text-[16px] mt-1" : "text-white text-[16px] mt-1 cursor-default truncate"}>
                                                                 {prd?.brand||"--- Not mentioned ---"}
                                                             </h1>
 
@@ -133,7 +141,7 @@ const ProductListing = () => {
                                                     {/* WhatsApp Button */}
                                                     <Button
                                                         variant="outlined"
-                                                        className="!capitalize !text-[#1e40af] !border-[#1e40af] bg-gray-600 rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
+                                                        className="!capitalize !text-slate-900 !border-slate-900 bg-gray-600 rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
                                                         onClick={async () => {
                                                             if (!isLogin) {
                                                                 router.push("/login");

@@ -6,14 +6,20 @@ import { fetchDataFromApi } from "@/utils/api";
 const PrdContext = createContext();
 
 const PrdProvider = ({ children }) => {
-  const [prdData, setPrdData] = useState();
+  const [prdData, setPrdData] = useState([]);
   
    
    const [productsData, setProductsData] = useState([]);
 
+   const [showLarge, setShowLarge] = useState(null);
+
 
    const getProductsData = () => {
-  if (prdData && prdData.length > 0 || productsData && productsData.length > 0) return; // ✅ Already fetched
+  if (
+  (prdData?.length ?? 0) > 0 ||
+  (productsData?.length ?? 0) > 0
+) return;
+
   fetchDataFromApi("/api/product/gaps", false).then((response) => {
     if (!response.error) {
       setPrdData(response?.data);
@@ -28,7 +34,7 @@ const PrdProvider = ({ children }) => {
   
 
   return (
-    <PrdContext.Provider value={{ prdData, setPrdData, productsData, setProductsData, getProductsData }}>
+    <PrdContext.Provider value={{ prdData, setPrdData, productsData, setProductsData, getProductsData, showLarge, setShowLarge}}>
       {children}
     </PrdContext.Provider>
   );

@@ -56,8 +56,8 @@ const Admins = () => {
         
       </div>
 
-      {/* Search & Filter */}
-      <div className="flex gap-3 mb-5">
+<div className='w-full flex justify-between items-center'>
+  <div className="flex gap-3 mb-5">
         <div className="relative flex items-center border border-slate-300 bg-white rounded-md px-3 w-full max-w-md shadow-sm">
           <SearchIcon className="text-gray-500" />
           <input
@@ -70,10 +70,11 @@ const Admins = () => {
           <FilterAltIcon />
         </div>
       </div>
-{
-    console.log("uuuuuuuuuuuuuuuuuu",selectedUser)
 
-}
+      <div className="text-xl text-gray-600">
+        Total Users: <span className="font-bold">{users.length}</span>
+      </div>
+</div>
       {/* User Table */}
       <div className="rounded-xl bg-white shadow-lg overflow-x-auto">
         <table className="w-full min-w-[1200px] border-separate border-spacing-y-2 text-sm">
@@ -82,9 +83,9 @@ const Admins = () => {
               <th className="px-3 py-2 text-left"><Checkbox /></th>
               <th className="px-3 py-2 text-left">Avatar</th>
               <th className="px-3 py-2 text-left">Name</th>
-              <th className="px-3 py-2 text-left">Email</th>
-              <th className="px-3 py-2 text-left">Phone</th>
+              <th className="px-3 py-2 text-left">Contact</th>
               <th className="px-3 py-2 text-left">Last Login</th>
+              <th className="px-3 py-2 text-left">Last Activity</th>
               <th className="px-3 py-2 text-center">Wishlist</th>
               <th className="px-3 py-2 text-left">Address</th>
               <th className="px-3 py-2 text-left">Status</th>
@@ -102,8 +103,7 @@ const Admins = () => {
                   <img src={user.avatar || "/images/account.png"} alt="avatar" className="w-10 h-10 rounded-full object-cover border" />
                 </td>
                 <td className="px-3 py-3 font-medium text-slate-800">{user.name}</td>
-                <td className="px-3 py-3 text-slate-600">{user.email}</td>
-                <td className="px-3 py-3 text-slate-600">{user.phone}</td>
+                <td className="px-3 py-3 text-slate-600">{user.email} {user.phone}</td>
                 <td className="px-3 py-3 text-slate-600 whitespace-nowrap">
                   {user.last_login_date && (
                     <>
@@ -120,6 +120,18 @@ const Admins = () => {
                     </>
                   )}
                 </td>
+                <td className="px-3 py-3 text-slate-600 whitespace-nowrap">
+  {user?.lastActivity
+    ? new Date(user.lastActivity).toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "—"}
+</td>
+
                 <td className="px-3 py-3 text-center text-blue-700 font-semibold">{user.wishlist.length}</td>
                 <td className="px-3 py-3 text-slate-600 whitespace-nowrap">
                   {user?.address_details?.[0]?.address}, {user?.address_details?.[0]?.city}
@@ -213,8 +225,8 @@ const Admins = () => {
                               <p><b>Email verified: </b>{selectedUser?.verify_email}</p>  
                               <p><b>Updated at: </b>{selectedUser?.updatedAt}</p> 
                               <p><b>Order: </b>{selectedUser}</p>  
-                              <p><b>Cart: </b>{selectedUser?.shopping_cart.length}</p>  
-                              <p><b>Wishlist: </b>{selectedUser?.wishlist.length}</p>  
+                              <p><b>Cart: </b>{selectedUser?.shopping_cart?.length}</p>  
+                              <p><b>Wishlist: </b>{selectedUser?.wishlist?.length}</p>  
 
 
 

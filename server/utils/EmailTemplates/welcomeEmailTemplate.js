@@ -2,7 +2,7 @@ const welcomeEmail = (userName = "Valued Customer") => `
   <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.1); border: 1px solid #ccc;">
 
     <!-- Header -->
-    <div style="background: linear-gradient(to right, #1e1b4b, #1e1e80, #1e40af); padding: 24px; text-align: center;">
+    <div style="background: linear-gradient(to right, #1e1b4b, #1e1e80, #0f172a); padding: 24px; text-align: center;">
       <img src="https://snsteelfabrication.com/images/logo.png" alt="SNSF Logo" style="height: 60px; border-radius: 8px;" />
       <h2 style="color: #ffffff; margin: 16px 0 4px;">Welcome to S N Steel Fabrication</h2>
       <p style="color: #cbd5e1; font-size: 14px;">We’re glad to have you with us!</p>
@@ -25,7 +25,7 @@ const welcomeEmail = (userName = "Valued Customer") => `
       </div>
 
       <div style="text-align: center; margin-top: 20px;">
-        <a href="https://snsteelfabrication.com" target="_blank" style="background-color: #1e40af; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">
+        <a href="https://snsteelfabrication.com" target="_blank" style="background-color: #0f172a; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500;">
           Visit Our Store →
         </a>
       </div>

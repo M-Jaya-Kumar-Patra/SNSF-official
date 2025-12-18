@@ -26,9 +26,7 @@ const Enquiries = () => {
     setLoading(true);
     try {
       const res = await fetchDataFromApi("/api/enquiries/admin");
-      if (res?.success) {
-        setEnquiries(res.data);
-      }
+      if (res?.success) setEnquiries(res.data);
     } catch (err) {
       console.error("Failed to fetch enquiries", err);
     } finally {
@@ -38,7 +36,6 @@ const Enquiries = () => {
 
   const handleDelete = async (id) => {
     if (!confirm("Are you sure you want to delete this enquiry?")) return;
-
     try {
       const res = await deleteProduct(`/api/enquiries/${id}`);
       if (res?.success) {
@@ -54,85 +51,124 @@ const Enquiries = () => {
   }, []);
 
   return (
-    <div className="p-4 bg-white rounded-md shadow-sm">
-      <Typography variant="h5" gutterBottom className="font-bold">
-        Customer Enquiries
-      </Typography>
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm">
+      {/* Header */}
+      <div className="px-6 py-5 border-b border-slate-200">
+        <Typography variant="h6" className="font-semibold text-slate-800">
+          Customer Enquiries
+        </Typography>
+        <p className="text-sm text-slate-500 mt-1">
+          All customer product enquiries in one place
+        </p>
+      </div>
 
+      {/* Content */}
       {loading ? (
-        <div className="flex justify-center items-center py-10">
-          <CircularProgress />
+        <div className="flex justify-center items-center py-16">
+          <CircularProgress size={28} />
         </div>
       ) : enquiries.length === 0 ? (
-        <Typography className="text-center text-gray-500 py-5">
+        <div className="py-16 text-center text-slate-500">
           No enquiries found.
-        </Typography>
+        </div>
       ) : (
-        <TableContainer component={Paper}>
-          <Table size="small" aria-label="enquiries table">
+        <TableContainer component={Paper} elevation={0}>
+          <Table size="small">
             <TableHead>
-              <TableRow>
-                <TableCell><strong>ID</strong></TableCell>
-                <TableCell><strong>Image</strong></TableCell>
-                <TableCell><strong>Product</strong></TableCell>
-                <TableCell><strong>Customer</strong></TableCell>
-                <TableCell><strong>Phone & Email</strong></TableCell>
-                <TableCell><strong>Message</strong></TableCell>
-                <TableCell><strong>Date & Time</strong></TableCell>
-                <TableCell align="center"><strong>Actions</strong></TableCell>
+              <TableRow className="bg-slate-50">
+                <TableCell className="font-semibold">Product ID</TableCell>
+                <TableCell className="font-semibold">Image</TableCell>
+                <TableCell className="font-semibold">Product</TableCell>
+                <TableCell className="font-semibold">Customer</TableCell>
+                <TableCell className="font-semibold">Contact</TableCell>
+                <TableCell className="font-semibold">Message</TableCell>
+                <TableCell className="font-semibold">Date</TableCell>
+                <TableCell align="center" className="font-semibold">
+                  Actions
+                </TableCell>
               </TableRow>
             </TableHead>
+
             <TableBody>
               {enquiries.slice().reverse().map((enq) => (
-                <TableRow key={enq._id}>
-
-
-                  <TableCell>{enq.productId?._id}</TableCell>
+                <TableRow
+                  key={enq._id}
+                  hover
+                  className="transition hover:bg-slate-50"
+                >
+                  <TableCell className="text-xs text-slate-500">
+                    {enq.productId?._id}
+                  </TableCell>
 
                   <TableCell>
                     {enq?.image ? (
                       <img
                         src={enq.image}
                         alt="Product"
-                        className="w-40 h-[30] object-cover rounded-md"
+                        className="w-16 h-16 rounded-lg object-cover border"
                       />
                     ) : (
-                      <span className="text-gray-400 italic">No image</span>
+                      <span className="text-slate-400 italic text-sm">
+                        No image
+                      </span>
                     )}
                   </TableCell>
-                  <TableCell>{enq.productId?.name || "-"}</TableCell>
-                  <TableCell>{enq.contactInfo?.name || "-"}</TableCell>
 
+                  <TableCell className="font-medium text-slate-800">
+                    {enq.productId?.name || "-"}
+                  </TableCell>
 
+                  <TableCell>
+                    {enq.contactInfo?.name || "-"}
+                  </TableCell>
 
-                  <TableCell><div className="!flex !flex-col !gap-5">
-                    <div>{enq.contactInfo?.email || "-"} </div> 
-                    <div>{enq.contactInfo?.phone || "-"}</div>
+                  <TableCell>
+                    <div className="text-sm">
+                      <div>{enq.contactInfo?.email || "-"}</div>
+                      <div className="text-slate-500">
+                        {enq.contactInfo?.phone || "-"}
+                      </div>
                     </div>
                   </TableCell>
 
-                  <TableCell>{enq.message?.slice(0, 40)}...</TableCell>
                   <TableCell>
+                    <Tooltip title={enq.message || ""}>
+                      <span className="text-sm text-slate-600 cursor-help">
+                        {enq.message?.slice(0, 30)}…
+                      </span>
+                    </Tooltip>
+                  </TableCell>
+
+                  <TableCell className="text-sm text-slate-500">
                     {new Date(enq.createdAt).toLocaleString()}
                   </TableCell>
+
                   <TableCell align="center">
-                    <Tooltip title="View Product">
-                      <IconButton
-                        onClick={() =>
-                          window.open(`/product/${enq.productId?._id}`, "_blank")
-                        }
-                      >
-                        <VisibilityIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete Enquiry">
-                      <IconButton
-                        color="error"
-                        onClick={() => handleDelete(enq._id)}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
+                    <div className="flex justify-center gap-1">
+                      <Tooltip title="View Product">
+                        <IconButton
+                          size="small"
+                          onClick={() =>
+                            window.open(
+                              `/product/${enq.productId?._id}`,
+                              "_blank"
+                            )
+                          }
+                        >
+                          <VisibilityIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title="Delete Enquiry">
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => handleDelete(enq._id)}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

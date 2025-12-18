@@ -2,14 +2,14 @@
 const nextConfig = {
   images: {
     domains: [
-      "lh3.googleusercontent.com", // ✅ fix spelling
-      "res.cloudinary.com",        // ✅ add Cloudinary domain
+      "lh3.googleusercontent.com", 
+      "res.cloudinary.com", 
+      "img.youtube.com" // <--- Added this
     ],
   },
   env: {
     GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
   },
-  
 };
 
 export default nextConfig;

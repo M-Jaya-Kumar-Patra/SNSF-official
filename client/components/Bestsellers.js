@@ -1,163 +1,248 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Josefin_Sans } from "next/font/google";
-import { usePrd } from "@/app/context/ProductContext";
+import Image from "next/image";
+import Skeleton from "@mui/material/Skeleton";
 import Button from "@mui/material/Button";
 import { useRouter } from "next/navigation";
-import { useAlert } from "@/app/context/AlertContext";
-import { useItem } from "@/app/context/ItemContext";
+import { fetchDataFromApi } from "@/utils/api";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
-import Image from "next/image";
-import Loading from "./Loading";
-import WhatsappIcon from "@/components/WhatsappIcon";
-import { IoCall } from "react-icons/io5";
-import Skeleton from "@mui/material/Skeleton";
-
-
+import { useScreen } from "@/app/context/ScreenWidthContext";
+import ProductGrid from "./ProductGrid";
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
-const Bestsellers = () => {
-    const { prdData } = usePrd();
-    const router = useRouter();
-    const alert = useAlert();
-    const { item, setItem } = useItem();
-    const { userData, setUserData, isLogin, setLoading, isCheckingToken } = useAuth();
-    const [localLoading, setLocalLoading] = useState(false);
+const Bestsellers = ({ posterIndex }) => {
+  const router = useRouter();
+  const scrollRef = useRef(null);
+  const { setLoading, isCheckingToken } = useAuth(); // ✅ use isCheckingToken
+  const { isXs } = useScreen();
 
+  const [data, setData] = useState([]);
+  const [poster, setPoster] = useState([]);
 
-    const [quantity] = useState(1);
-    const [hydrated, setHydrated] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+  const [isAtStart, setIsAtStart] = useState(true);
+  const [isAtEnd, setIsAtEnd] = useState(false);
+  const [localLoading, setLocalLoading] = useState(false);
 
-    useEffect(() => {
-        if (!prdData) {
-            setLocalLoading(false)
-        }
-        setHydrated(true);
-    }, []);
-    const getOptimizedCloudinaryUrl = (url) => {
+  const limit = isXs ? 8 : 12;
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  const loadCurratedLooks = async () => {
+    try {
+      const res = await fetchDataFromApi(
+        "/api/home-sections?sectionName=bestsellers",
+        false
+      );
+
+      if (!res.error) setData(res?.data || []);
+    } catch (err) {
+      console.log("Best sellers fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadPoster = async () => {
+    try {
+      const res = await fetchDataFromApi("/api/poster/getAll", false);
+
+      console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ", res);
+      if (!res.error) setPoster(res?.data[posterIndex]);
+    } catch (err) {
+      console.log("Best sellers fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadCurratedLooks();
+    loadPoster();
+  }, []);
+
+  const getOptimizedCloudinaryUrl = (url) => {
     if (!url?.includes("res.cloudinary.com")) return url;
     return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
   };
 
+  const productsForGrid = Array.isArray(data)
+    ? data
+        .slice(0, limit + 1)
+        .filter((prd) => prd?.enabled && prd?.product)
+        .map((prd) => ({
+          id: prd.product._id,
+          image: getOptimizedCloudinaryUrl(
+            prd.product.images?.[0] || "/placeholder.jpg"
+          ),
+          title: prd.product.name,
+        }))
+    : [];
 
-
-
-    return (
-        <div className="flex flex-col items-center mt-2 sm:mt-5 w-full pb-4 sm:pb-8">
-            <h1
-                className={`text-2xl sm:text-3xl font-bold text-black mt-4 mb-4 sm:mt-8 sm:mb-8 ${joSan.className}`}
-            >
-                Best Sellers
-            </h1>
-
-            <div className="flex justify-center items-center">
-                <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 place-items-center gap-5 mb-5">
-                    {prdData && prdData.filter((prd) => prd?.isFeatured).length > 0 ? (
-  prdData
-    .filter((prd) => prd?.isFeatured)
-    .reverse()
-    .slice(7, 13)
-    .map((prd, index) => (
+  return (
+    <div
+      className="
+        w-full max-w-[1600px]
+        flex flex-col lg:flex-row
+        gap-6 lg:gap-0
+      "
+    >
+      {/* ================= LEFT : Customer Favorites LIST ================= */}
       <div
-        key={prd?._id || index}
-        className="group w-[290px] sm:w-[290px] bg-white h-auto flex flex-col justify-between p-2 border hover:shadow-lg transition-transform duration-300 hover:scale-[1.03]"
+        className="
+          w-full lg:w-[70%] 
+          bg-white
+          p-3 sm:p-6 pb-1 sm:pb-0
+          border
+          lg:border-r-0
+          rounded-lg lg:rounded-r-none
+          lg:my-4
+          
+        "
       >
-        <div
-          className="w-full cursor-pointer"
-          onClick={() => router.push(`/product/${prd?._id}`)}
-        >
-          <div className="w-full aspect-[4/3] relative overflow-hidden rounded-md">
-            <Image
-              src={getOptimizedCloudinaryUrl(prd?.images?.[0] || "/images/placeholder.jpg")}
-              alt={prd?.name}
-              fill
-              className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-              priority
-            />
-          </div>
+        <div className="flex justify-between items-center">
+          <h1
+            className={`text-xl sm:text-2xl lg:text-3xl font-bold text-black ${joSan.className}`}
+          >
+            Customer Favorites
+          </h1>
 
-          <div className="mt-3 text-center">
-            <h2 className="text-black text-base font-semibold truncate">{prd?.name}</h2>
-            <p className={prd?.brand ? "text-gray-500 text-sm mt-1 truncate" : "text-white text-sm mt-1 truncate"}>{prd?.brand || "Unknown"}</p>
+          <button
+            onClick={() => router.push("/ProductListing?type=bestsellers")}
+            className="
+      flex items-center gap-2
+      px-3 py-1.5
+      rounded-full
+      text-slate-500
+      transition-all duration-300
+      hover:text-slate-900
+    "
+          >
+            {/* Text → hidden on mobile */}
+            <span className="hidden sm:inline text-sm font-medium">
+              View more
+            </span>
+
+            {/* Arrow → always visible */}
+            <span
+              className="
+        flex items-center justify-center
+        w-8 h-5
+        rounded-full
+        bg-slate-700
+        text-white
+        transition-colors duration-300
+        group-hover:bg-slate-900
+      "
+            >
+              →
+            </span>
+          </button>
+        </div>
+
+        <div className="relative w-full mt-2 sm:mt-4">
+          <div
+            ref={scrollRef}
+            className="
+    overflow-y-auto 
+    sm:overflow-x-auto
+    scroll-smooth
+    scrollbar-hide
+    pb-2 sm:pb-2
+  "
+          >
+            {productsForGrid.length > 0 ? (
+              <ProductGrid products={productsForGrid} row={2} />
+            ) : (
+              /* ===== GRID SKELETON ===== */
+              <div
+                className="
+        grid gap-4 sm:gap-6
+        grid-rows-2
+        grid-flow-col
+        auto-cols-max
+        pb-2
+      "
+              >
+                {Array.from({ length: limit }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="
+            w-[120px] sm:w-[220px]
+            bg-white
+            rounded-xl
+            border
+            shadow-sm
+            overflow-hidden
+          "
+                  >
+                    {/* IMAGE */}
+                    <div className="relative w-full aspect-[16/10]">
+                      <Skeleton
+                        variant="rectangular"
+                        sx={{
+                          width: "100%",
+                          height: "100%",
+                          bgcolor: "rgba(203,213,225,0.5)",
+                        }}
+                      />
+                    </div>
+
+                    {/* TITLE */}
+                    <div className="p-2">
+                      <Skeleton width="90%" height={16} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
-    ))
-) : (localLoading || isCheckingToken || !prdData || !hydrated ) ? (
-  Array.from({ length: 6 }).map((_, index) => (
-    <div
-      key={index}
-      className="w-[290px] sm:w-[290px] bg-white h-auto flex flex-col justify-between p-2 border shadow-sm "
-    >
-      {/* Skeleton Image */}
-      <div className="w-full aspect-[4/3] relative overflow-hidden rounded-md">
-        <Skeleton
-          variant="rectangular"
-          animation="wave"
-          width="100%"
-          height="100%"
-          sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            borderRadius: "8px",
-            bgcolor: "rgba(203,213,225,0.5)",
-          }}
-        />
-      </div>
 
-      {/* Skeleton Text */}
-      <div className="mt-3 text-center">
-        <Skeleton
-          variant="text"
-          animation="wave"
-          width="80%"
-          height={20}
-          sx={{
-            mx: "auto",
-            bgcolor: "rgba(203,213,225,0.5)",
-            borderRadius: "4px",
-          }}
-        />
-        <Skeleton
-          variant="text"
-          animation="wave"
-          width="60%"
-          height={16}
-          sx={{
-            mt: 1,
-            mx: "auto",
-            bgcolor: "rgba(203,213,225,0.5)",
-            borderRadius: "4px",
-          }}
-        />
+      {/* ================= RIGHT : POSTER ================= */}
+      <div
+        className="
+
+        hidden lg:block
+          w-full lg:w-[30%]
+          relative
+          overflow-hidden
+          rounded-xl lg:rounded-l-none
+          cursor-pointer
+        "
+        onClick={() => poster?.url && router.push(poster.url)}
+      >
+        {poster?.status ? (
+          <Image
+            src={getOptimizedCloudinaryUrl(poster?.image[0])}
+            alt="Promotional Poster"
+            fill
+            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 30vw"
+            priority
+            unoptimized
+          />
+        ) : (
+          <Skeleton
+            variant="rectangular"
+            sx={{
+              position: "absolute",
+              inset: 0,
+              height: "100%",
+              bgcolor: "rgba(203,213,225,0.5)",
+            }}
+          />
+        )}
       </div>
     </div>
-  ))
-) : (
-  <p className="text-gray-500 text-sm col-span-full text-center">
-    No featured products found
-  </p>
-)}
-
-                </div>
-            </div>
-
-            <Button
-                variant="contained"
-                className="!bg-blue-900 hover:!bg-blue-950 text-white rounded-md px-6 py-2"
-                onClick={() => {
-                    router.push("/BestSellersList");
-                }}
-            >
-                Explore Now
-            </Button>
-        </div>
-    );
+  );
 };
 
 export default Bestsellers;
