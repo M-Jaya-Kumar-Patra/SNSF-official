@@ -12,6 +12,11 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 import { useScreen } from "@/app/context/ScreenWidthContext";
 import ProductGrid from "./ProductGrid";
+import { IoArrowForwardCircle } from "react-icons/io5";
+
+
+
+
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
@@ -111,7 +116,7 @@ const Bestsellers = ({ posterIndex }) => {
           <h1 className="section-title">Customer Favorites</h1>
 
           <button
-            onClick={() => router.push("/ProductListing?type=bestsellers")}
+            onClick={() => router.push("/BestSellersList")}
             className="
       flex items-center gap-2
       sm:px-3 
@@ -129,25 +134,7 @@ const Bestsellers = ({ posterIndex }) => {
               View more
             </span>
 
-            {/* Arrow → always visible */}
-            <span
-              className="
-        flex items-center justify-center
-        w-6 h-3.5  
-
-pb-1
-        rounded-full
-        bg-slate-900
-        sm:bg-slate-600
-        sm:group-hover:bg-slate-900
-
-
-        text-white
-        transition-colors duration-300
-      "
-            >
-              →
-            </span>
+           <IoArrowForwardCircle className="!section-heading w-5 h-5 " />
           </button>
         </div>
 

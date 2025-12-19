@@ -426,7 +426,7 @@ console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
 
     const payload = ticket.getPayload();
 
-    const { email, name, picture } = payload;
+    const { email, name, picture, sub } = payload;
 
     if (!email) {
       return res
@@ -444,6 +444,7 @@ console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
         avatar: picture,
         provider: "google",
         password: null,
+        googleId: sub,
         verify_email: true,
         emailVerified: true,
         signUpWithGoogle: true,

@@ -204,16 +204,15 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
 >
   {/* Go Home Button */}
   {pathName !== "/" && (
-    <button
+   <div className="flex items-center justify-center gap-4">
+     <button
       onClick={() => router.push("/")}
-      className="text-slate-300 hover:text-white transition-colors"
+      className="text-slate-300 hover:text-white transition-colors mt-1"
     >
      <HomeIcon/>
     </button>
-  )}
-
-  {pathName !== "/" && (
     <span className="text-slate-400 font-semibold text-[20px]">|</span>
+   </div>
   )}
 
   {/* Menu Items */}
@@ -244,7 +243,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
       </button>
 
       {i < arr.length - 1 && (
-        <span className="text-slate-400 font-extrabold text-[20px]">|</span>
+        <span className="text-slate-400 font-semibold text-[20px]">|</span>
       )}
     </React.Fragment>
   ))}
