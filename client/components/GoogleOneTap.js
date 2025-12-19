@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { postData } from "@/utils/api";
 
 export default function GoogleOneTap() {
   useEffect(() => {
