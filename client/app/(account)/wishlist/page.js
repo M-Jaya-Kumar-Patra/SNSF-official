@@ -66,7 +66,7 @@ const Account = () => {
   loading="lazy"
 />
 
-            <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide">
+            <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide card-title">
               {userData?.name}
             </h1>
           </div>
@@ -130,7 +130,7 @@ const Account = () => {
         {/* Wishlist Section */}
 <div className="right h-full w-full sm:w-[750px] bg-slate-100 sm:bg-white shadow-xl sm:p-6">
   <div className="mb-2 sm:border-b border-gray-200 py-2 pl-3 sm:py-0 sm:pl-0 sm:pb-4 bg-white">
-    <h2 className="text-[22px] sm:text-3xl font-extrabold text-gradient text-black ">
+    <h2 className="section-title ">
       My Wishlist 
     </h2>
   </div>
@@ -201,7 +201,7 @@ const Account = () => {
         </p>
         <Link
           href="/"
-          className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full text-sm sm:text-base transition"
+          className="mt-6 bg-blue-600 hover:bg-slate-900 text-white px-6 py-2 rounded-full text-sm sm:text-base transition"
         >
           Back to Home
         </Link>

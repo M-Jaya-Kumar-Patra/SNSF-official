@@ -287,7 +287,7 @@ isSm?"hidden" : isMd? "w-[200px] ": isLg? "w-[110px]" : isXl1440? "w-[110px]":is
   onKeyDown={handleKeyDown}
   className=" w-full
     flex-grow bg-transparent outline-none
-    text-sm text-black
+    card-title text-black
     placeholder-slate-500
   "
   autoComplete="off"

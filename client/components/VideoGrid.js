@@ -22,7 +22,7 @@ const VideoGrid = ({
     const load = async () => {
       try {
         const res = await fetchDataFromApi("/api/videos/getAll", false);
-        if (!res?.error) setVideos(res.data || []);
+        if (!res?.error) setVideos(res.data || []); 
       } catch (e) {
         console.error("Video fetch error", e);
       }
@@ -37,9 +37,9 @@ const VideoGrid = ({
   return (
     <div className="w-full">
       <div
-        className={`grid ${gap}`}
-        style={{ gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))` }}
-      >
+  className={`grid grid-flow-col auto-cols-[220px] sm:auto-cols-[260px] ${gap}`}
+>
+
         {items.length > 0
           ? items.map((item) => (
               <div

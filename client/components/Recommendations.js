@@ -50,7 +50,7 @@ const Recommendations = ({ limit = 10 }) => {
   return (
     <div className="w-full lg:max-w-[50%] p-3 sm:p-6 pb-2 border rounded-xl shadow-2xl bg-white">
       <h1
-className={`text-xl sm:text-2xl lg:text-3xl font-bold text-black ${joSan.className}`}    >
+className="section-title"    >
         Recommended for You
       </h1>
 

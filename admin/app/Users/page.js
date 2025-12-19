@@ -52,7 +52,7 @@ const Admins = () => {
     <div className="p-6 max-w-screen overflow-x-auto bg-gradient-to-tr from-white via-blue-50 to-cyan-50 min-h-screen font-sans">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-blue-800 tracking-wide">Manage Users</h1>
+        <h1 className="text-2xl font-bold text-slate-900 tracking-wide">Manage Users</h1>
         
       </div>
 
@@ -132,7 +132,7 @@ const Admins = () => {
     : "—"}
 </td>
 
-                <td className="px-3 py-3 text-center text-blue-700 font-semibold">{user.wishlist.length}</td>
+                <td className="px-3 py-3 text-center text-slate-900 font-semibold">{user.wishlist.length}</td>
                 <td className="px-3 py-3 text-slate-600 whitespace-nowrap">
                   {user?.address_details?.[0]?.address}, {user?.address_details?.[0]?.city}
                 </td>

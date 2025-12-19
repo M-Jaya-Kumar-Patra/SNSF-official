@@ -196,7 +196,7 @@ const Page = () => {
                 onClick={() => router.push("/login")}
               >
                 Already have an account?{" "}
-                <span className="hover:text-blue-700 hover:underline">Log in</span>
+                <span className="hover:text-slate-900 hover:underline">Log in</span>
               </h3>
             </div>
 

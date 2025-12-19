@@ -382,7 +382,7 @@
 
           <button
             onClick={handleCategAddClick}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-slate-900 text-white px-4 py-2 rounded-lg font-medium shadow"
           >
             <AddIcon fontSize="small" />
             Add Sub Category

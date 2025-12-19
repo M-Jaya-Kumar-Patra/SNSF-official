@@ -48,16 +48,15 @@ export default function RecentlyViewed() {
     <div className=" mx-auto 
       mt-2 sm:mt-4 md:mt-6 lg:mt-0  
       px-2 sm:px-4 md:px-6  w-full lg:max-w-[50%] p-3 sm:p-6 pb-2 border rounded-xl shadow-2xl bg-white ">
-      <h1
-       className={`text-xl sm:text-2xl lg:text-3xl font-bold text-black ${joSan.className}`}   >
-        Recently Viewed
-      </h1>
+      <h2 className="section-title">
+  Customer Favorites
+</h2>
 
       {/* SCROLL AREA */}
       <div className="mt-2 sm:mt-4  overflow-x-auto scrollbar-hide scroll-smooth">
         <div
           className="
-            grid gap-4 sm:gap-6
+            grid gap-4 sm:gap-6 
             grid-rows-1
             grid-flow-col
             auto-cols-[minmax(100px,1fr)]

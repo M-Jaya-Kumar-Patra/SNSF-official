@@ -26,7 +26,7 @@ const Account = () => {
   if (checkingAuth) {
     return (
       <div className="w-full h-screen flex justify-center items-center text-gray-500 text-lg">
-        Loading...
+        <Loading/>
       </div>
     );
   }

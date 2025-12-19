@@ -303,7 +303,7 @@ const Account = () => {
   loading="lazy"
 />
 
-                            <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide">
+                            <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide card-title">
                                 {userData?.name}
                             </h1>
                         </div>
@@ -369,7 +369,7 @@ const Account = () => {
                     {/* Right Profile Section */}
 <div className="right h-full w-full sm:w-[750px] bg-slate-100 sm:bg-white shadow-xl sm:p-6">
   <div className="mb-2 sm:border-b border-gray-200   py-2 pl-3 sm:py-0 sm:pl-0 sm:pb-4 bg-white">
-    <h2 className="text-[22px] sm:text-3xl font-extrabold text-gradient text-black ">
+    <h2 className="section-title ">
       Manage Addresses
     </h2>
   </div>
@@ -544,7 +544,7 @@ const Account = () => {
 
                                             <button
                                                 type="submit"
-                                                className="px-5 py-2 rounded-xl bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md active:shadow-inner active:translate-y-[1px] transition-all duration-200 font-medium"
+                                                className="px-5 py-2 rounded-xl bg-blue-600 text-white shadow-sm hover:bg-slate-900 hover:shadow-md active:shadow-inner active:translate-y-[1px] transition-all duration-200 font-medium"
                                             >
                                                 Save
                                             </button>
@@ -727,7 +727,7 @@ const Account = () => {
 
                                             <button
                                                 type="submit"
-                                                className="px-5 py-2 rounded-xl bg-blue-600 text-white shadow-sm hover:bg-blue-700 hover:shadow-md active:shadow-inner active:translate-y-[1px] transition-all duration-200 font-medium"
+                                                className="px-5 py-2 rounded-xl bg-blue-600 text-white shadow-sm hover:bg-slate-900 hover:shadow-md active:shadow-inner active:translate-y-[1px] transition-all duration-200 font-medium"
                                             >
                                                 Save
                                             </button>

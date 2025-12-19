@@ -270,7 +270,7 @@ const Categories = () => {
 
           <button
             onClick={handleCategAddClick}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-slate-900 text-white px-4 py-2 rounded-lg font-medium shadow"
           >
             <AddIcon fontSize="small" />
             Add Category
@@ -410,7 +410,7 @@ const Categories = () => {
                 <div className='flex w-full h-full justify-center items-center bg-black bg-opacity-50 fixed top-0 left-0 z-50'>
                     <form onSubmit={handleSubmitEditForm}>
                         <div className='w-[700px] h-[90%] bg-white rounded-md text-black p-3 overflow-auto scrollbar-hide'>
-                            <div className="text-blue-800 m-3 text-xl border-b-2 border-slate-300 py-2 font-sans font-semibold flex gap-2 items-center">
+                            <div className="text-slate-900 m-3 text-xl border-b-2 border-slate-300 py-2 font-sans font-semibold flex gap-2 items-center">
                                 <ArrowBackIcon
                                     onClick={() => setShowCategEditModal(false)}
                                     className='cursor-pointer text-black'
@@ -486,7 +486,7 @@ const Categories = () => {
                                     Cancel
                                 </button>
                                 <button
-                                    className='bg-blue-700 py-1 w-[90px] text-lg rounded-full hover:bg-blue-500 hover:border-none text-white font-medium'
+                                    className='bg-slate-900 py-1 w-[90px] text-lg rounded-full hover:bg-blue-500 hover:border-none text-white font-medium'
                                     type='submit'
                                 >
                                     Save

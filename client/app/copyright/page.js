@@ -4,6 +4,7 @@ import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { trackVisitor } from "@/lib/tracking";
 import { useEffect } from "react";
+import Loading from "@/components/Loading";
 
 
 
@@ -11,10 +12,10 @@ import { useEffect } from "react";
 export default function CopyrightPage() {
   const { isCheckingToken, isLogin, userData } = useAuth();
  
-  if (isCheckingToken) return <div>Loading...</div>;
+  if (isCheckingToken) return <div><Loading/></div>;
   return (
-    <main className="max-w-4xl mx-auto p-8 bg-white rounded-xl shadow-lg border-t-4 border-blue-700 my-12">
-      <h1 className="text-4xl font-extrabold text-blue-800 mb-6">Copyright Notice</h1>
+    <main className="max-w-4xl mx-auto p-8 bg-white rounded-xl shadow-lg border-t-4 border-slate-900 my-12">
+      <h1 className="text-4xl font-extrabold text-slate-900 mb-6">Copyright Notice</h1>
       <section className="text-gray-700 space-y-4">
         <p>
           © {new Date().getFullYear()} S N Steel Fabrication. All rights reserved.

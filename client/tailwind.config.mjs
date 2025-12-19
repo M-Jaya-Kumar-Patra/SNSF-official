@@ -18,6 +18,10 @@ export default {
       backgroundImage: {
         'primary-gradient': 'linear-gradient(to left, #1e293b, #0f172a)', // blue-600 → indigo-800
       },
+      fontFamily: {
+        heading: ["var(--font-heading)", "sans-serif"],
+        body: ["var(--font-body)", "sans-serif"],
+      },
       
     },
   },

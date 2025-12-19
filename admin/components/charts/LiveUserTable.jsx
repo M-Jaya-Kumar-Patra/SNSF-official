@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchDataFromApi } from "@/utils/api";
 import UserDetailModal from "./UserDetailModal";
+import formatDurationUptoHour from "@/utils/timeFormat";
 
 export default function LiveUserTable() {
   const [users, setUsers] = useState([]);
@@ -91,8 +92,8 @@ export default function LiveUserTable() {
                     </td>
 
                     <td className="p-2 text-gray-700">
-                      {u.timeActive}s
-                    </td>
+  {formatDurationUptoHour(u.timeActive)}
+</td>
                   </tr>
                 ))
               )}

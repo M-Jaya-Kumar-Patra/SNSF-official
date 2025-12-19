@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Josefin_Sans } from "next/font/google";
+
 import Image from "next/image";
 import Skeleton from "@mui/material/Skeleton";
 import Button from "@mui/material/Button";
@@ -107,25 +108,24 @@ const Bestsellers = ({ posterIndex }) => {
         "
       >
         <div className="flex justify-between items-center">
-          <h1
-            className={`text-xl sm:text-2xl lg:text-3xl font-bold text-black ${joSan.className}`}
-          >
-            Customer Favorites
-          </h1>
+          <h1 className="section-title">Customer Favorites</h1>
 
           <button
             onClick={() => router.push("/ProductListing?type=bestsellers")}
             className="
       flex items-center gap-2
-      px-3 py-1.5
+      sm:px-3 
       rounded-full
-      text-slate-500
+      sm:text-slate-500
+      sm:hover:text-slate-900
+      text-slate-900
+
       transition-all duration-300
-      hover:text-slate-900
+      group
     "
           >
             {/* Text → hidden on mobile */}
-            <span className="hidden sm:inline text-sm font-medium">
+            <span className="hidden sm:inline text-sm font-medium ">
               View more
             </span>
 
@@ -133,12 +133,17 @@ const Bestsellers = ({ posterIndex }) => {
             <span
               className="
         flex items-center justify-center
-        w-8 h-5
+        w-6 h-3.5  
+
+pb-1
         rounded-full
-        bg-slate-700
+        bg-slate-900
+        sm:bg-slate-600
+        sm:group-hover:bg-slate-900
+
+
         text-white
         transition-colors duration-300
-        group-hover:bg-slate-900
       "
             >
               →
@@ -146,7 +151,7 @@ const Bestsellers = ({ posterIndex }) => {
           </button>
         </div>
 
-        <div className="relative w-full mt-2 sm:mt-4">
+        <div className="relative w-full mt-3 sm:mt-4">
           <div
             ref={scrollRef}
             className="

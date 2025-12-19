@@ -19,6 +19,7 @@ import { RiLockPasswordFill } from "react-icons/ri";
 import { RxCross2 } from "react-icons/rx";
 import Image from "next/image";
 import { getDeviceId } from "@/utils/deviceId";
+import Loading from "@/components/Loading";
 
 
 
@@ -311,7 +312,7 @@ const Account = () => {
 
   const [showTopForm, setShowTopForm] = useState(false);
 
-  if (!isLogin) return <div className="text-center mt-10">Loading...</div>;
+  if (!isLogin) return <div className="text-center mt-10"><Loading/></div>;
 
   return (
     <div className="flex w-full min-h-screen justify-center bg-slate-100">
@@ -319,7 +320,7 @@ const Account = () => {
         {/* Sidebar */}
         <div className="left sm:h-full">
           <div className="flex sm:hidden w-full pl-3 items-center justify-start mb-2 bg-white shadow-lg py-2">
-            <span className="text-black text-[22px] sm:text-3xl font-extrabold ml-1 sm:ml-0 ">
+            <span className="!section-title">
               Profile Information
             </span>
           </div>
@@ -358,7 +359,7 @@ const Account = () => {
                 />
               </div>
             </div>
-            <h1 className=" text-black font-sans font-semibold overflow-x-auto scrollbar-hide">
+            <h1 className=" text-black font-sans font-semibold overflow-x-auto scrollbar-hide card-title">
               {userData?.name}
             </h1>
           </div>
@@ -424,7 +425,7 @@ const Account = () => {
         {/* Main Panel */}
         <div className="w-full sm:w-[750px] bg-white shadow-lg p-2 sm:p-5">
           <div className="hidden sm:flex items-center justify-between">
-            <span className="text-black text-[22px] sm:text-3xl font-extrabold ml-1 sm:ml-0 ">
+            <span className="section-title">
               Profile Information
             </span>
           </div>

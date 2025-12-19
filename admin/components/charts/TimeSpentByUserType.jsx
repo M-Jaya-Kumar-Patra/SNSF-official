@@ -11,6 +11,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { fetchDataFromApi } from "@/utils/api";
+import formatDurationUptoHour from "@/utils/timeFormat";
 
 export default function TimeSpentByUserType() {
   const [data, setData] = useState([]);
@@ -46,7 +47,7 @@ export default function TimeSpentByUserType() {
           </p>
         </div>
         <div className="text-lg font-bold text-slate-700">
-          {total} sec
+          {formatDurationUptoHour(total)}
         </div>
       </div>
 

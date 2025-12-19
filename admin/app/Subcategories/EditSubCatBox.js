@@ -200,7 +200,7 @@ const EditSubCatBox = (props) => {
                     <>
                         <span className='font-semibold font-sans text-[18px] '>{props?.name}</span>
                         <div className='flex items-center ml-auto gap-0'>
-                            <Button className=' !w-[35px] !h-[35px]  !rounded-full  !text-blue-700'
+                            <Button className=' !w-[35px] !h-[35px]  !rounded-full  !text-slate-900'
                                 onClick={() => {
                                     setEditMode(true);
                                 }}>

@@ -220,7 +220,7 @@ export default function Login() {
               onClick={() => router.push("/signup")}
             >
               Don&apos;t have an account?{" "}
-              <span className="hover:text-blue-700 hover:underline">Sign up</span>
+              <span className="hover:text-slate-900 hover:underline">Sign up</span>
             </h3>
           </div>
         </div>

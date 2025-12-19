@@ -46,9 +46,9 @@ const New = () => {
   };
 
   return (
-    <div className="flex flex-col bg-white w-full p-3 sm:p-6 pb-2">
+    <div className="flex flex-col bg-white w-full p-3 sm:p-6 sm:pb-3 pb-3">
       <h1
-className={`text-xl sm:text-2xl lg:text-3xl font-bold text-black ${joSan.className}`} >
+className="section-title sm:ml-4" >
         New Arrivals
       </h1>
 
@@ -59,7 +59,7 @@ className={`text-xl sm:text-2xl lg:text-3xl font-bold text-black ${joSan.classNa
           overflow-x-auto
             scrollbar-hide
           scroll-smooth
-          mt-2 sm:mt-4
+          mt-3 sm:mt-4
         "
       >
         <div
@@ -121,10 +121,7 @@ className={`text-xl sm:text-2xl lg:text-3xl font-bold text-black ${joSan.classNa
                 <div className="p-1 sm:p-2 text-center">
                   <h3
                     className="
-                              text-[12px] sm:text-[14px] md:text-[16px] xl:text-[18px]
-
-                      font-medium
-                      text-gray-900
+                             card-title
                       truncate
                       px-1
                     "

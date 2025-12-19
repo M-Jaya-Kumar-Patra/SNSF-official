@@ -38,9 +38,9 @@ const PosterGrid = ({
     .slice(0, total);
 
   return (
-    <div className="w-full">
+    <div className="w-full ">
       <div
-        className={`grid ${gap}`}
+        className={`grid ${gap} `}
         style={{ gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))` }}
       >
         {items.length > 0

@@ -72,9 +72,7 @@ export default function ProductGrid({ products = [], row = 2 }) {
   <div className="p-1 sm:p-2 flex flex-col gap-2 flex-1 items-center ">
     <h3
       className="
-        text-[12px] sm:text-[14px] md:text-[16px] xl:text-[18px]
-        font-medium
-        text-gray-900
+       card-title
         leading-snug
         text-center 
         truncate

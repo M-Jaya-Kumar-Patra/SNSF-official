@@ -15,8 +15,8 @@ export default function AboutUsPage() {
      }, []);
       if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
   return (
-    <main className="max-w-5xl mx-auto p-8 bg-white rounded-xl shadow-lg border-t-4 border-blue-700 my-12">
-      <h1 className="text-4xl font-extrabold text-blue-800 mb-4">About Us</h1>
+    <main className="max-w-5xl mx-auto p-8 bg-white rounded-xl shadow-lg border-t-4 border-slate-900 my-12">
+      <h1 className="text-4xl font-extrabold text-slate-900 mb-4">About Us</h1>
       <p className="text-sm text-gray-500 italic mb-8"> Strength You Can Trust. Style You Can See.</p>
 
       <section className="mb-10 text-gray-700 space-y-4">
@@ -30,7 +30,7 @@ export default function AboutUsPage() {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-2xl font-semibold text-blue-700 mb-3">Our Story</h2>
+        <h2 className="text-2xl font-semibold text-slate-900 mb-3">Our Story</h2>
         <p className="text-gray-700">
           Our journey started with a clear goal — to provide strong and long-lasting steel furniture tailored to our customers’ needs. We started small, focusing on beds and almirahs, and gradually expanded to include dining tables, sofa sets, office furniture, and custom fabrication projects.
         </p>
@@ -40,7 +40,7 @@ export default function AboutUsPage() {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-2xl font-semibold text-blue-700 mb-3">What We Offer</h2>
+        <h2 className="text-2xl font-semibold text-slate-900 mb-3">What We Offer</h2>
         <ul className="list-disc list-inside text-gray-700 space-y-2">
           <li>Stainless steel beds, almirahs, chairs, dining tables, and sofa sets</li>
           <li>Custom fabrication services for residential and commercial projects</li>
@@ -51,7 +51,7 @@ export default function AboutUsPage() {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-2xl font-semibold text-blue-700 mb-3">Why Choose Us</h2>
+        <h2 className="text-2xl font-semibold text-slate-900 mb-3">Why Choose Us</h2>
         <ul className="list-disc list-inside text-gray-700 space-y-2">
           <li><strong>Solid Craftsmanship:</strong> We focus on strong joints, precise cutting, and polished finishes.</li>
           <li><strong>Customization:</strong> We adapt designs to your measurements, layout, and purpose.</li>
@@ -62,21 +62,21 @@ export default function AboutUsPage() {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-2xl font-semibold text-blue-700 mb-3">Our Vision</h2>
+        <h2 className="text-2xl font-semibold text-slate-900 mb-3">Our Vision</h2>
         <p className="text-gray-700">
           We aim to be a go-to name in steel furniture and fabrication across Odisha and beyond — trusted for strength, practicality, and long-term value.
         </p>
       </section>
 
       <section className="mb-10">
-        <h2 className="text-2xl font-semibold text-blue-700 mb-3">Our Commitment</h2>
+        <h2 className="text-2xl font-semibold text-slate-900 mb-3">Our Commitment</h2>
         <p className="text-gray-700">
           Every item that leaves our workshop reflects our commitment to solid build quality and honest work. Whether it’s a single piece or a bulk requirement, we take pride in delivering furniture you can rely on.
         </p>
       </section>
 
       <section className="mb-10">
-        <h2 className="text-2xl font-semibold text-blue-700 mb-3">Visit Us or Get in Touch</h2>
+        <h2 className="text-2xl font-semibold text-slate-900 mb-3">Visit Us or Get in Touch</h2>
         <p className="text-gray-700 mb-3">
           Looking for sturdy furniture or a fabrication partner for your next project? We are ready to help.
         </p>

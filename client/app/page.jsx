@@ -28,9 +28,12 @@ import SmPoster from "@/components/SmPoster";
 import VideoSlider from "@/components/VideoSlider";
 import VideoGrid from "@/components/VideoGrid";
 
+import { useScreen } from "./context/ScreenWidthContext";
+
 
 
 import { Josefin_Sans } from "next/font/google";
+import GoogleOneTap from "@/components/GoogleOneTap";
 const joSan = Josefin_Sans({ subsets: ["latin"] });
 
 
@@ -47,13 +50,30 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Home() {
-  const { isCheckingToken } = useAuth();
+  const { isCheckingToken, userData } = useAuth();
+
+  const { isXs, isSm, isMd, isLg, isXl, isXl1440, is2Xl, isGELg } = useScreen()
 
   const [isScrolled, setIsScrolled] = useState(false);
 
   const res = fetchDataFromApi("/api/get");
 
   console.log("fffffffffffffffffffffffffffffffffffff", res);
+
+  const [videosLength, setVideosLength] = useState(0);
+
+
+  useEffect(() => {
+      const load = async () => {
+        try {
+          const res = await fetchDataFromApi("/api/videos/getAll", false);
+          if (!res?.error) setVideosLength(res.data.length || []);
+        } catch (e) {
+          console.error("Video fetch error", e);
+        }
+      };
+      load();
+    }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -92,12 +112,16 @@ export default function Home() {
       <section
         className={` bg-slate-100 h-[96px] hidden md:block transition-opacity duration-500 ${
           isScrolled ? "opacity-0" : "opacity-100"
-        }`}
+          }`}
       />
 
       <section className="flex justify-center">
         <Slider />
       </section>
+
+          {!userData && !isCheckingToken && <GoogleOneTap />}
+
+      
       <section
         className="flex justify-center 
       max-w-[1600px] 
@@ -114,22 +138,22 @@ export default function Home() {
         className="w- flex justify-center 
       max-w-[1600px] 
       mx-auto 
-      mt-2 sm:mt-4 md:mt-6   bg-white py-6 pt-8
+      mt-2 sm:mt-4 md:mt-6   bg-white  pb-2  sm:pb-6 pt-4 sm:pt-6 md:pt-8
       "
       >
 <div  className="w-full">
   
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-4 mb-3 sm:mb-4 md:mb-6">
           <div className="h-[1px] bg-slate-300 flex-1 "></div>
-          <h2 className={`${joSan.className} text-2xl md:text-3xl font-bold text-slate-800 tracking-wide uppercase`}>
+          <h2 className={`section-title tracking-wide uppercase`}>
             Explore Aesthetics
           </h2>
           <div className="h-[1px] bg-slate-300 flex-1"></div>
         </div>
         {/* Single poster */}
         <PosterGrid
-          rows={1}
-          cols={3}
+          rows={`${isXs? "3" : "1"}`}
+          cols={`${isXs? "1" : "3"}`}
           posterIndex={[1, 4]}
           aspect={"5 /3"}
           gap={"gap-2 sm:gap-0"}
@@ -140,43 +164,45 @@ export default function Home() {
 </div>
       </section>
 
+
+      <section className="w-full">
+  <div className="max-w-[1600px] mx-auto  mt-2 sm:mt-4 md:mt-6 ">
+    <StyleYourSpaceSection />
+  </div>
+</section>
+
+
+
+{videosLength <= 5 && (
+
       <section
-        className="flex justify-center 
+        className="w-full flex
       max-w-[1600px] 
       mx-auto 
-      mt-2 sm:mt-4 md:mt-6 
+      mt-2 sm:mt-4 md:mt-6   bg-white px-4 sm:px-8 py-4 sm:py-6
+      "
+      >
       
-      "
+      {/* SCROLL CONTAINER */}
+      <div
+        className="
+          overflow-x-auto
+          scroll-smooth
+          scrollbar-hide
+          pb-2
+        "
       >
-        <StyleYourSpaceSection />
-      </section>
-
-
-
-<section
-        className="w- flex justify-center 
-      max-w-[1600px] 
-      mx-auto 
-      mt-2 sm:mt-4 md:mt-6   bg-white p-6 pt-8
-      "
-      >
-<div  className="w-full ">
-  
-        <div className="flex items-center gap-4 mb-6 ">
-          <h2 className={`${joSan.className} text-2xl md:text-3xl font-bold text-slate-800 tracking-wide uppercase`}>
-            See It In Action
-          </h2>
-        </div>
-        {/* Single poster */}
         <VideoGrid
-          cols={5} // 4 columns for "Shorts" look
-          videoIndex={[1, 5]} // Next 4 videos
-          aspect="9/16" // Vertical Phone Ratio
-          autoplay={false} // Auto-play muted to grab attention
+          cols={5}
+          videoIndex={[1, 5]}
+          aspect="9/16"
+          autoplay={false}
           rounded="xl"
         />
-</div>
-      </section>
+      </div>
+  </section>
+)}
+
 
 
  
@@ -185,26 +211,25 @@ export default function Home() {
       </section>
 
 
-
-<section
-        className=" hidden w-full justify-center 
+ <section
+        className="hidden  justify-center 
       max-w-[1600px] 
       mx-auto 
-      mt-2 sm:mt-4 md:mt-6   bg-white p-6 pt-8
+      mt-2 sm:mt-4 md:mt-6   bg-white  pb-2  sm:pb-6 pt-4 sm:pt-6 md:pt-8
       "
       >
 <div  className="w-full ">
   
-        <div className="flex items-center gap-4 mb-6 ">
+         <div className="flex items-center gap-4 mb-3 sm:mb-4 md:mb-6">
           <div className="h-[1px] bg-slate-300 flex-1"></div>
 
-          <h2 className={`${joSan.className} text-2xl md:text-3xl font-bold text-slate-800 tracking-wide uppercase`}>
+          <h2 className="section-title">
             Craftsmanship & Quality
           </h2>
           <div className="h-[1px] bg-slate-300 flex-1"></div>
         </div>
         {/* Single poster */}
-        <div className="px-[300px]">
+        <div className="w-full  lg:w-[1/2] px-4 ">
           <VideoGrid
           cols={1} // 4 columns for "Shorts" look
           videoIndex={[0, 1]} // Next 4 videos

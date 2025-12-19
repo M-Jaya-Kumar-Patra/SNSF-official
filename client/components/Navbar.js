@@ -54,7 +54,7 @@ const categoryIcons = {
 
 const getCategoryIcon = (name) => {
   const Icon = categoryIcons[name?.toLowerCase()] || Package;
-  return <Icon className="w-8 h-8 text-slate-900" />;
+  return <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-900" />;
 };
 
 /* ---------------- STYLED BADGE ---------------- */
@@ -150,12 +150,12 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
   /* ================= RENDER ================= */
    if (!showLarge) {
   return (
-    <nav className={`sticky top-[0] z-[300] bg-slate-900  h-[90px]` }>
+    <nav className={`fixed w-full top-0 z-[300] bg-slate-900 h-[80px]  sm:h-[90px]` }>
 
       <div className="  bg-slate-900 text-white ">
          {/* ================= TOP BAR ================= */}
       <div
-        className={`sticky max-w-[1600px] mx-auto px-6 flex items-center justify-between h-[90px]`}
+        className={` max-w-[1600px] mx-auto px-2 sm:px-6 flex items-center justify-between  h-[80px]  sm:h-[90px]`}
       >
         {/* LOGO */}
         <div className="flex items-center gap-0  sm:gap-1  flex-shrink-0 h-[45px] sm:h-[50px]">
@@ -190,8 +190,6 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
     hidden lg:flex h-full items-center gap-4 ml-10 mr-5 mt-4 text-sm font-medium
     transition-all duration-500
     ease-[cubic-bezier(0.22,1,0.36,1)]
-    will-change-[opacity,transform]
-    transform-gpu
 
     ${
       deskSearch
@@ -215,7 +213,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
   )}
 
   {pathName !== "/" && (
-    <span className="text-slate-400 font-extrabold text-[20px]">|</span>
+    <span className="text-slate-400 font-semibold text-[20px]">|</span>
   )}
 
   {/* Menu Items */}
@@ -381,10 +379,10 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
         {/* ICONS */}
         <div className="hidden sm:flex items-center gap-3">
           <IconButton onClick={() => router.push("/notifications")}>
-            <FaBell className="text-[28px] text-white" />
+            <FaBell className="!text-[33px] text-white" />
           </IconButton>
           <IconButton aria-label="Call" onClick={() => (window.location.href = "tel:+919776501230")}>
-            <MdCall className="text-[34px] text-white" />
+            <MdCall className="!text-[37px] text-white" />
           </IconButton>
 
           {/* ACCOUNT */}
@@ -398,18 +396,18 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                     <Skeleton
                       variant="circular"
                       animation="wave"
-                      width={32}
-                      height={32}
+                      width={37}
+                      height={37}
                       sx={{ bgcolor: "rgba(203,213,225,0.5)" }}
-                      className="w-[32px] h-[32px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
+                      className="w-[37.2px] h-[37.2px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
                     />
                   ) : (
                     <Image
                       src={(userData?.avatar) || "/images/emptyAccount.png"}
                       alt="Account"
-                      width={32}
-                      height={32}
-                      className="w-[32px] h-[32px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
+                      width={37}
+                      height={37}
+                      className="w-[37.2px] h-[37.2px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
                     />
                   )}
                 </IconButton>
@@ -486,10 +484,11 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
   `}
 >
   <div className={`max-w-[1600px] mx-auto py-2 flex justify-center  ${pathName === "/"?"block": "hidden"}`}>
-  <ul className="flex items-start gap-4   ">
+                
+  <ul className="flex items-start gap-4  ">
     {!catData || catData.length === 0 ? (
       Array.from({ length: 7 }).map((_, index) => (
-        <li key={`skeleton-${index}`} className="w-[72px] h-[72px]">
+        <li key={`skeleton-${index}`} className=" w-[80px] h-[60px] sm:w-[80px] sm:h-[80px] xl:w-[100px] 2xl:w-[120px]">
           <Skeleton
             variant="rectangular"
             animation="wave"
@@ -511,7 +510,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
             {/* CATEGORY CARD */}
             <div
               className="
-                w-[80px] h-[80px] xl:w-[100px] 2xl:w-[120px]
+                w-[80px] h-[60px] sm:w-[80px] sm:h-[80px] xl:w-[100px] 2xl:w-[120px]
                 bg-white rounded-xl
 
 
@@ -524,6 +523,8 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                 hover:shadow-slate-900/30
 
                 transition-all duration-200
+
+
               "
             >
               <div className="w-8 h-8 flex items-center justify-center">

@@ -23,8 +23,9 @@ const SignInWithGoogle = () => {
             );
             
             if (res.data.success) {
-              alert.alertBox({ type: "success", msg: "Login successful" });
+              alert.alertBox({ type: "success", msg: "Logged in successfully" });
 
+              router.push("/profile");
               // update context if needed
               // setIsLogin(true)
 
@@ -40,12 +41,10 @@ localStorage.setItem('refreshToken', refreshToken);
 
               // setFormFields({ email: "", password: "" });
               // setIsLogin(true);
-              router.push("/profile");
 
               // window.location.reload();
             }
           } catch (err) {
-            console.log("EEEEEEEEEEEERRROR: ", err);
             alert.alertBox({ type: "error", msg: "Login failed" });
           }
         }}

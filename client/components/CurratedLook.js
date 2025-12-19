@@ -142,7 +142,7 @@ const CurratedLooks = () => {
         "
         >
           <h1
-           className={`text-xl sm:text-2xl lg:text-3xl font-bold text-black ${joSan.className}`} >
+           className="section-title" >
             Curated Looks
           </h1>
 

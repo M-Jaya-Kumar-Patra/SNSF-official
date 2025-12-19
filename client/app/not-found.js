@@ -31,7 +31,7 @@ const NotFound = () => {
       <p className="text-md text-gray-500 mt-2">Sorry, the page you're looking for doesn't exist.</p>
       <Link
         href="/"
-        className="mt-6 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        className="mt-6 bg-blue-600 text-white px-4 py-2 rounded hover:bg-slate-900 transition"
       >
         Go Back Home
       </Link>

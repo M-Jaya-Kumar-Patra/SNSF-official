@@ -39,7 +39,7 @@ const Account = () => {
   if (isCheckingToken) return <Loading/>;
 
   return (
-    <div className="flex flex-col sm:flex-row w-full min-h-screen">
+    <div className="flex flex-col sm:flex-row w-full min-h-screen  ">
       {/* Mobile Header */}
       <div className="sm:hidden flex items-center justify-between px-4 py-3 border-b shadow-md">
         <h2 className="text-lg font-semibold text-gray-800">Account</h2>
@@ -78,7 +78,7 @@ const Account = () => {
 
       {/* Content Area */}
       <div className="w-full flex-1">
-        <div className="min-h-10 w-full shadow-md text-black font-sans font-semibold flex items-center pl-4 text-lg bg-white">
+        <div className="min-h-10 w-full shadow-md text-black font-sans font-semibold flex items-center pl-4 text-lg bg-white ">
           Profile information
         </div>
         <div className="p-4">

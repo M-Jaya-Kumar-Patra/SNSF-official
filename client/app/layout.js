@@ -5,7 +5,6 @@ import AuthWrapper from "@/components/AuthWrapper";
 import { AlertProvider } from "./context/AlertContext";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast";
-import { Inter } from "next/font/google";
 import { CatProvider } from "./context/CategoryContext";
 import { PrdProvider } from "./context/ProductContext";
 import { ItemProvider } from "./context/ItemContext";
@@ -19,11 +18,32 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import VisitorTracker from "@/components/VisitorTracker";
 import { ScreenWidthProvider } from "./context/ScreenWidthContext";
 
+
+import { Inter, Montserrat, Poppins } from "next/font/google";
+
+
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "700"],
-  display: "swap",
+  weight: ["400", "500", "600"],
+  variable: "--font-body",
 });
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["600"],
+  variable: "--font-heading",
+});
+
+
+const poppins = Montserrat({
+  subsets: ["cyrillic"],
+  weight: ["600", "700", "800"],
+  variable: "--poppins",
+});
+
+
+
+
 
 export const viewport = {
   themeColor: "#000000",
@@ -105,7 +125,7 @@ export default function RootLayout({ children }) {
           content="ca-pub-9814214172872974"
         ></meta>
       </head>
-      <body className={`${inter.className}`}>
+      <body className={`${inter.variable} ${montserrat.variable}`}>
         <ServiceWorkerRegister />
         <ScreenWidthProvider>
           <AuthProvider>
@@ -119,11 +139,16 @@ export default function RootLayout({ children }) {
                           <Navbar />
                           <GlobalLoader />
                           <GoogleOAuthProvider
-                            clientId={process.env.GOOGLE_CLIENT_ID}
+                            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
                           >
                             <VisitorTracker />
-                            <main className="min-h-screen flex flex-col">
+                            <main className="pt-[70px] mt-3 sm:mt-0 sm:pt-[90px] min-h-screen flex flex-col">
                               {children}
+
+                               <Script
+          src="https://accounts.google.com/gsi/client"
+          strategy="afterInteractive"
+        />
                             </main>
                           </GoogleOAuthProvider>
                           <BottomNav />

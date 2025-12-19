@@ -139,7 +139,7 @@ const StyleYourSpace = () => {
 
           <button
             onClick={applyOrder}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-slate-900 text-white px-4 py-2 rounded-lg shadow"
           >
             Save Order
           </button>

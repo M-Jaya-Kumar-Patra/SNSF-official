@@ -4,17 +4,23 @@
 
 /* Import Righteous strictly for special headers if needed */
 @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
-html, body {
+
+
+html {
+  height: auto;
+  overflow-y: visible;   /* VERY IMPORTANT */
+  overflow-x: hidden;
+}
+
+body {
   margin: 0;
   padding: 0;
-  width: 100%;
+  min-height: 100vh;
+  overflow-y: auto;      /* window regains scroll */
   overflow-x: hidden;
-  color: white; /* Ensure text is visible on white background? */
   background: #ffffff;
-  
-  /* IMPORTANT: Do NOT put font-family here. 
-     Let Next.js (josefin.className) handle it. */
 }
+
 
 /* Custom Class for Righteous Font */
 .righteous {
@@ -102,5 +108,29 @@ html, body {
   .swiper-button-next,
   .swiper-button-prev {
     display: none !important;
+  }
+}
+
+
+
+
+@layer components {
+ .section-title {
+  @apply font-heading font-semibold text-[20px] leading-6 md:text-[26px] md:leading-[30px] text-slate-900;
+}
+
+
+  .card-title {
+    @apply  text-[14px] sm:text-[14px] xl:text-[16px]
+        font-normal
+        text-gray-900
+  }
+
+  .link-text {
+    @apply font-medium text-[14px] leading-5 text-slate-600 hover:text-slate-900 transition-colors;
+  }
+
+  .text {
+    @apply font-normal text-[14px] leading-5 text-slate-600;
   }
 }

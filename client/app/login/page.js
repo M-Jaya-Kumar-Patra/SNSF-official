@@ -21,6 +21,7 @@ import { useAlert } from "../context/AlertContext";
 import { useAuth } from "../context/AuthContext";
 import SignInWithGoogle from "@/components/SignInWithGoogle";
 import { trackVisitor } from "@/lib/tracking";
+import Loading from "@/components/Loading";
 
 
 
@@ -41,7 +42,7 @@ export default function Login() {
   const [showPopUp, setShowPopUp] = useState(null);
 
   if (isCheckingToken)
-    return <div className="text-center mt-10">Checking session...</div>;
+    return <div className="text-center mt-10"><Loading/></div>;
 
   const router = useRouter();
   const alert = useAlert();
@@ -112,18 +113,18 @@ export default function Login() {
       }
       if (!response.error && response.data?.accessToken) {
         alert.alertBox({ type: "success", msg: "Logged in successfully" });
-
+        
+        router.push("/profile");
         const token = response.data.accessToken;
+        setFormFields({ email: "", password: "" });
+        setIsLogin(true);
         login(response.data, token);
-
+        
         localStorage.setItem("accessToken", token);
         localStorage.setItem("refreshToken", response.data.refreshToken);
         localStorage.setItem("email", response.data.email);
-
-        setFormFields({ email: "", password: "" });
-        setIsLogin(true);
-
-        router.push("/profile");
+        
+        
       } else {
          if (!response?.popup) {
         alert.alertBox({
@@ -134,14 +135,13 @@ export default function Login() {
         setFormFields({ email: "", password: "" });
       }
     } catch (error) {
-      if (!response?.popup) {
-        console.error("Login error:", error);
-        alert.alertBox({
-          type: "error",
-          msg: "Something went wrong. Please try again.",
-        });
-      }
-    } finally {
+  console.error("Login error:", error);
+  alert.alertBox({
+    type: "error",
+    msg: "Something went wrong. Please try again.",
+  });
+}
+ finally {
       setLoading(false);
       setBtnLoading(false);
     }
@@ -176,8 +176,8 @@ export default function Login() {
   };
 
 return (
-  <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300 ">
-    <div className="w-full max-w-5xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+  <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300">
+ <div className="w-full max-w-5xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
 
       {/* ================= LEFT : VISUAL / BRAND ================= */}
       <div className="hidden lg:flex relative">

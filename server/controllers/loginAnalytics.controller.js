@@ -81,45 +81,43 @@ export const getMostActiveUsers = async (req, res) => {
 
 export const getLoginActivity = async (req, res) => {
   try {
-    const { type } = req.query;
+    let start, end;
 
+    // 🔹 CUSTOM RANGE
     if (req.query.start && req.query.end) {
-  const start = new Date(req.query.start);
-  const end = new Date(req.query.end);
+      start = new Date(req.query.start);
+      end = new Date(req.query.end);
+    } else {
+      // 🔹 PRESET RANGE
+      const now = new Date();
+      end = now;
 
-  // same pipeline but using start & end
-}
-
-
-    const now = new Date();
-    let start;
-
-    switch (type) {
-      case "1hour":
-        start = new Date(now.getTime() - 60 * 60 * 1000);
-        break;
-      case "12hour":
-        start = new Date(now.getTime() - 12 * 60 * 60 * 1000);
-        break;
-      case "1day":
-        start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        break;
-      case "7day":
-        start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        break;
-      case "6month":
-        start = new Date(now.setMonth(now.getMonth() - 6));
-        break;
-      case "1year":
-        start = new Date(now.setFullYear(now.getFullYear() - 1));
-        break;
-      default:
-        start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      switch (req.query.type) {
+        case "1hour":
+          start = new Date(now.getTime() - 60 * 60 * 1000);
+          break;
+        case "12hour":
+          start = new Date(now.getTime() - 12 * 60 * 60 * 1000);
+          break;
+        case "1day":
+          start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+          break;
+        case "7day":
+          start = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          break;
+        case "6month":
+          start = new Date(new Date().setMonth(now.getMonth() - 6));
+          break;
+        case "1year":
+          start = new Date(new Date().setFullYear(now.getFullYear() - 1));
+          break;
+        default:
+          start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      }
     }
 
-    const diffHours = (now - start) / (1000 * 60 * 60);
+    const diffHours = (end - start) / (1000 * 60 * 60);
 
-    // Auto bucket resolution
     const unit =
       diffHours <= 1 ? "minute" :
       diffHours <= 48 ? "hour" :
@@ -129,7 +127,7 @@ export const getLoginActivity = async (req, res) => {
     const pipeline = [
       {
         $match: {
-          loggedInAt: { $gte: start, $lte: now }
+          loggedInAt: { $gte: start, $lte: end }
         }
       },
       {
@@ -146,6 +144,7 @@ export const getLoginActivity = async (req, res) => {
       },
       {
         $project: {
+          _id: 0,
           time: "$_id",
           logins: "$count"
         }

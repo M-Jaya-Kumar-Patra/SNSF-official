@@ -558,7 +558,7 @@ const Products = () => {
 
             <button
               onClick={handleAddClick}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-slate-900 text-white px-4 py-2 rounded-lg font-medium shadow"
             >
               <AddIcon fontSize="small" />
               Add Product
@@ -667,7 +667,7 @@ const Products = () => {
                       <td className="p-3 flex justify-center gap-3">
                         <ModeEditOutlineIcon
                           onClick={() => handleClickEdit(prd._id, prd)}
-                          className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                          className="text-blue-600 hover:text-slate-900 cursor-pointer"
                         />
                         <DeleteOutlineIcon
                           onClick={(e) =>
@@ -725,7 +725,7 @@ const Products = () => {
                     <div className='w-[700px] h-[90%] bg-white rounded-md text-black p-6 py-3 overflow-auto scrollbar-hide'>
                         <form onSubmit={handleSubmitEditForm}>
 
-                            <div className="text-blue-800  text-xl border-b-2 border-slate-300 py-2 font-sans font-semibold flex gap-2 items-center" onClick={() => setShowEditModal(false)}>
+                            <div className="text-slate-900  text-xl border-b-2 border-slate-300 py-2 font-sans font-semibold flex gap-2 items-center" onClick={() => setShowEditModal(false)}>
                                 <ArrowBackIcon
                                     onClick={() => setShowEditModal(false)}
                                     className='cursor-pointer text-black'
@@ -1177,7 +1177,7 @@ const Products = () => {
                                     >
                                         Cancel
                                     </button>
-                                    <button className=' bg-blue-700  py-1  w-[90px] text-lg rounded-full hover:bg-blue-500 hover:border-none text-white  font-medium' type='submit'>Save</button>
+                                    <button className=' bg-slate-900  py-1  w-[90px] text-lg rounded-full hover:bg-blue-500 hover:border-none text-white  font-medium' type='submit'>Save</button>
                                 </div>
                             </div>
 

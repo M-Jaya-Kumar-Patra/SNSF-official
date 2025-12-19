@@ -46,6 +46,50 @@ export default function AvgSessionDurationChart({ type = "1day" }) {
     })();
   }, [type]);
 
+
+  const formatDurationSmart = (seconds) => {
+  if (!seconds || seconds < 1) return "0s";
+
+  const minute = 60;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+  const month = 30 * day;   // average month
+  const year = 365 * day;   // average year
+
+  if (seconds < minute) {
+    return `${seconds}s`;
+  }
+
+  if (seconds < hour) {
+    const m = Math.floor(seconds / minute);
+    const s = seconds % minute;
+    return s ? `${m}m ${s}s` : `${m}m`;
+  }
+
+  if (seconds < day) {
+    const h = Math.floor(seconds / hour);
+    const m = Math.floor((seconds % hour) / minute);
+    return m ? `${h}h ${m}m` : `${h}h`;
+  }
+
+  if (seconds < month) {
+    const d = Math.floor(seconds / day);
+    const h = Math.floor((seconds % day) / hour);
+    return h ? `${d}d ${h}h` : `${d}d`;
+  }
+
+  if (seconds < year) {
+    const mo = Math.floor(seconds / month);
+    const d = Math.floor((seconds % month) / day);
+    return d ? `${mo}mo ${d}d` : `${mo}mo`;
+  }
+
+  const y = Math.floor(seconds / year);
+  const mo = Math.floor((seconds % year) / month);
+  return mo ? `${y}y ${mo}mo` : `${y}y`;
+};
+
+
   return (
     <div className="w-full p-5 bg-white rounded-2xl border border-slate-200 shadow-sm">
 
@@ -61,8 +105,8 @@ export default function AvgSessionDurationChart({ type = "1day" }) {
         </div>
 
         <div className="text-lg font-semibold text-slate-900">
-          {average}s
-        </div>
+  {formatDurationSmart(average)}
+</div>
       </div>
 
       {/* Chart */}
@@ -77,8 +121,8 @@ export default function AvgSessionDurationChart({ type = "1day" }) {
                 <div className="bg-white border border-gray-300 shadow-md rounded-lg p-2 text-sm">
                   <p className="font-semibold text-gray-800">🕒 {label}</p>
                   <p className="text-cyan-600">
-                    Avg Duration: {payload[0].value}s
-                  </p>
+  Avg Duration: {formatDurationSmart(payload[0].value)}
+</p>
                 </div>
               ) : null
             }

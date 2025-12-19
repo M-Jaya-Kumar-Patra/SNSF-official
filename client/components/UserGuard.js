@@ -3,6 +3,7 @@
 import { useUser } from "../context/UserContext.js";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Loading from "./Loading.js";
 
 export default function UserGuard({ children }) {
   const { userData, loading } = useUser();
@@ -14,7 +15,7 @@ export default function UserGuard({ children }) {
     }
   }, [loading, userData, router]);
 
-  if (loading) return <div>Loading...</div>; // or show a spinner
+  if (loading) return <div><Loading/></div>; // or show a spinner
 
   if (!userData) return null; // prevent render until redirected
 
