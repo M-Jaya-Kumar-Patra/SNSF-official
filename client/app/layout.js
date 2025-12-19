@@ -142,7 +142,7 @@ export default function RootLayout({ children }) {
                             clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
                           >
                             <VisitorTracker />
-                            <main className="pt-[70px] mt-3 sm:mt-0 sm:pt-[90px] min-h-screen flex flex-col">
+                            <main className="pt-[70px] mt-[10px] sm:mt-0 sm:pt-[90px] min-h-screen flex flex-col">
                               {children}
 
                                <Script
