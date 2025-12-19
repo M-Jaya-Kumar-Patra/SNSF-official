@@ -331,7 +331,7 @@ return (
     {/* ================= GOOGLE POPUP (UNCHANGED) ================= */}
     {showPopUp && (
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
-        <div className="bg-white rounded-xl shadow-xl w-[90%] max-w-md p-6 relative">
+        <div className="bg-green-500 rounded-xl shadow-xl max-w-[40%]  p-6 relative">
           <h2 className="text-lg font-semibold text-gray-800 mb-2">
             Continue with Google
           </h2>

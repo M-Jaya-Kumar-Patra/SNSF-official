@@ -21,34 +21,23 @@ export const AuthProvider = ({ children }) => {
   const [isCheckingToken, setIsCheckingToken] = useState(true);
 
   const logout = useCallback(async () => {
-    try {
-      // Backend logout (clears cookies)
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/logout`, {
-        method: "GET",
-        credentials: "include",
-      });
-    } catch (err) {
-      console.log("Logout API failed:", err);
-    }
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/logout`, {
+      method: "GET",
+      credentials: "include",
+    });
+  } catch (err) {
+    console.log("Logout API failed:", err);
+  }
 
-    // Frontend cleanup
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("email");
-    localStorage.removeItem("userId");
+  localStorage.clear();
 
-    setUserData(null);
-    setIsLogin(false);
-    setIsCheckingToken(false);
+  setUserData(null);
+  setIsLogin(false);
+  setIsCheckingToken(false);
 
-    // Redirect
-    router.push("/login");
-
-    // 🔥 IMPORTANT: Fix mobile logout not working
-    setTimeout(() => {
-      window.location.reload();
-    }, 50);
-  }, [router]);
+  router.push("/login");
+}, [router]);
 
   const fetchUserDetails = useCallback(async () => {
     try {
@@ -81,6 +70,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    
     const token = localStorage.getItem("accessToken");
 
     if (!token) {

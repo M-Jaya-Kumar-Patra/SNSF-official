@@ -9,22 +9,18 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
-
 export default function LogoutBTN({ onLogout }) {
   const { logout } = useAuth();
   const [open, setOpen] = React.useState(false);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleLogoutClick = async (e) => {
+    e?.preventDefault();
+    e?.stopPropagation();
 
-  const handleLogoutClick = async () => {
-    console.log("Logout clicked");
+    console.log("Logout clicked (mobile-safe)");
+
     setOpen(false);
-
-    // 🔥 Directly call AuthContext logout (SINGLE source of truth)
     await logout();
-
-    // If parent passed callback
     if (onLogout) onLogout();
   };
 
@@ -32,15 +28,15 @@ export default function LogoutBTN({ onLogout }) {
     <>
       <button
         type="button"
-        className="h-[50px] w-full flex items-center pl-5 font-semibold text-red-600 cursor-pointer gap-2 capitalize text-left bg-transparent border-none outline-none"
-        onClick={handleOpen}
+        className="h-[50px] w-full flex items-center pl-5 font-semibold text-red-600 gap-2"
+        onClick={() => setOpen(true)}
       >
         <LogOut size={18} />
         Logout
       </button>
 
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{"Confirm Logout"}</DialogTitle>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle>Confirm Logout</DialogTitle>
 
         <DialogContent>
           <DialogContentText>
@@ -49,11 +45,16 @@ export default function LogoutBTN({ onLogout }) {
         </DialogContent>
 
         <DialogActions>
-          <Button onClick={handleClose} color="inherit">
+          <Button type="button" onClick={() => setOpen(false)}>
             Cancel
           </Button>
 
-          <Button onClick={handleLogoutClick} autoFocus color="error">
+          <Button
+            type="button"
+            color="error"
+            onTouchStart={handleLogoutClick}
+            onClick={handleLogoutClick}
+          >
             Logout
           </Button>
         </DialogActions>

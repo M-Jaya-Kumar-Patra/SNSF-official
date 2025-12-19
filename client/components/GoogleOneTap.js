@@ -29,12 +29,8 @@ export default function GoogleOneTap() {
   }, []);
 
   const handleCredentialResponse = async (response) => {
-    await fetch("/api/auth/google", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: response.credential }),
-    });
-  };
+    await postData("/api/user/authWithGoogle", { token: response.credential }, false);
 
+  }
   return null;
 }

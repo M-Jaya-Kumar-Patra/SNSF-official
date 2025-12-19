@@ -18,7 +18,7 @@ userRouter.post("/register", registerUserController);
 userRouter.post("/verifyEmail", verifyEmailController);
 userRouter.post("/login", loginController);
 userRouter.post("/authWithGoogle", authWithGoogle);
-userRouter.get("/logout", auth, logoutController);  
+userRouter.get("/logout", logoutController);  
 userRouter.post("/user-avatar", auth, upload.array('avatar', 1), userAvatarController);
 userRouter.delete("/remove-img", auth, removeImageFromCloudinary);
 userRouter.put('/:id', auth, updateUserDetails)

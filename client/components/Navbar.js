@@ -89,7 +89,6 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
 
     const toggleMenu = () => setMenuOpen((prev) => !prev);
 
-  console.log("CATDATA ::::::::::::::::::::::", catData)
 
 
   /* ---------------- EFFECTS ---------------- */
@@ -334,10 +333,9 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                         <CreditCard size={18} /> Payments
                       </Link> */}
                           <div className="pt-2">
-                            <LogoutBTN onLogout={() => {
-                              setMenuOpen(false);  // Close menu
-                              router.refresh();    // Force page refresh to re-check isLogin
-                            }} />
+                            <div className="pt-0">
+                          <LogoutBTN onLogout={() => setMenuOpen(false)} />
+                        </div>
                           </div>
                         </>
                       )}
