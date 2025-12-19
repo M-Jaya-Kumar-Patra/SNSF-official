@@ -358,8 +358,8 @@ const Account = () => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <div>
-                                        <LogoutBTN />
+                                    <div >
+                                        <LogoutBTN className={"!pl-5"} />
                                     </div>
                                 </li>
                             </ul>

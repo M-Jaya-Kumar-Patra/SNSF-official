@@ -21,11 +21,6 @@ import Image from "next/image";
 import { getDeviceId } from "@/utils/deviceId";
 import Loading from "@/components/Loading";
 
-
-
-
-
-
 const Account = () => {
   const router = useRouter();
   const alert = useAlert();
@@ -53,11 +48,6 @@ const Account = () => {
   });
   const [uploadProgress, setUploadProgress] = useState(0);
 
-
-
-
-
-
   if (isCheckingToken)
     return <div className="text-center mt-10">Checking session...</div>;
   useEffect(() => {
@@ -72,79 +62,82 @@ const Account = () => {
       });
     }
   }, [isLogin, userData, router]);
-  
-    useEffect(() => {
-      const id = userData?._id || userData?.id;
-      if (id) {
-        setUserId(id);
-        localStorage.setItem("userId", id);
-      }
-    }, [userData]);
 
-   useEffect(() => {
+  useEffect(() => {
+    const id = userData?._id || userData?.id;
+    if (id) {
+      setUserId(id);
+      localStorage.setItem("userId", id);
+    }
+  }, [userData]);
+
+  useEffect(() => {
     const today = new Date().toDateString();
     const lastVisit = localStorage.getItem("last-snsf-visit-date");
-  
+
     if (lastVisit !== today) {
       const deviceId = getDeviceId();
-  
-      postData("/api/visit/new", {
-        deviceId,
-      }, false);
-  
+
+      postData(
+        "/api/visit/new",
+        {
+          deviceId,
+        },
+        false
+      );
+
       localStorage.setItem("last-snsf-visit-date", today);
     }
   }, []);
 
-
   const onChangeFile = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const file = e.target.files?.[0];
+    try {
+      const file = e.target.files?.[0];
 
-    if (
-      file &&
-      ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type)
-    ) {
-      setUploading(true);
+      if (
+        file &&
+        ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+          file.type
+        )
+      ) {
+        setUploading(true);
 
-      const formData = new FormData();
-      formData.append("avatar", file);
+        const formData = new FormData();
+        formData.append("avatar", file);
 
-      // Debugging log
-      for (let pair of formData.entries()) {
-        console.log("FORMDATA ENTRY:", pair[0], pair[1]);
-      }
+        // Debugging log
+        for (let pair of formData.entries()) {
+          console.log("FORMDATA ENTRY:", pair[0], pair[1]);
+        }
 
-      // Call your NEW util
-      const response = await uploadImage("/api/user/user-avatar", formData);
+        // Call your NEW util
+        const response = await uploadImage("/api/user/user-avatar", formData);
 
+        console.log("response:", response);
 
-      console.log("response:", response)
+        if (response?.success && response?.avatar) {
+          console.log("response.success:", response?.success);
+          console.log("response?.avatar:", response?.avatar);
 
-      if (response?.success && response?.avatar) {
-      console.log("response.success:", response?.success)
-      console.log("response?.avatar:", response?.avatar)
-
-        setUserData((prev) => ({ ...prev, avatar: response.avatar }));
-        localStorage.setItem("userAvatar", response.avatar);
+          setUserData((prev) => ({ ...prev, avatar: response.avatar }));
+          localStorage.setItem("userAvatar", response.avatar);
+        } else {
+          alert.alertBox({
+            type: "error",
+            msg: response?.message || "Failed to update avatar",
+          });
+        }
       } else {
-        alert.alertBox({
-          type: "error",
-          msg: response?.message || "Failed to update avatar",
-        });
+        alert.alertBox({ type: "error", msg: "Invalid image format" });
       }
-    } else {
-      alert.alertBox({ type: "error", msg: "Invalid image format" });
+    } catch (error) {
+      alert.alertBox({ type: "error", msg: "Something went wrong" });
+    } finally {
+      setUploading(false);
     }
-  } catch (error) {
-    alert.alertBox({ type: "error", msg: "Something went wrong" });
-  } finally {
-    setUploading(false);
-  }
-};
-
+  };
 
   console.log("UUUUUUUUUUUserData: ", userData);
 
@@ -312,7 +305,12 @@ const Account = () => {
 
   const [showTopForm, setShowTopForm] = useState(false);
 
-  if (!isLogin) return <div className="text-center mt-10"><Loading/></div>;
+  if (!isLogin)
+    return (
+      <div className="text-center mt-10">
+        <Loading />
+      </div>
+    );
 
   return (
     <div className="flex w-full min-h-screen justify-center bg-slate-100">
@@ -320,9 +318,7 @@ const Account = () => {
         {/* Sidebar */}
         <div className="left sm:h-full">
           <div className="flex sm:hidden w-full pl-3 items-center justify-start mb-2 bg-white shadow-lg py-2">
-            <span className="!section-title">
-              Profile Information
-            </span>
+            <span className="!section-title">Profile Information</span>
           </div>
           <div className=" w-full sm:w-[256px] mb-2 bg-white shadow-lg pb-2 sm:pb-5 pt-2 sm:pt-6 sm:px-5 gap-3 flex flex-col justify-center items-center ">
             <div className="mt-2 sm:mt-0 mr-2 sm:mr-0 w-[90px] h-[90px] sm:w-[140px] sm:h-[140px] relative group overflow-hidden border   rounded-full border-gray-300 shadow">
@@ -415,7 +411,7 @@ const Account = () => {
               </li>
               <li>
                 <div>
-                  <LogoutBTN />
+                  <LogoutBTN className={"!pl-5"} />
                 </div>
               </li>
             </ul>
@@ -425,9 +421,7 @@ const Account = () => {
         {/* Main Panel */}
         <div className="w-full sm:w-[750px] bg-white shadow-lg p-2 sm:p-5">
           <div className="hidden sm:flex items-center justify-between">
-            <span className="section-title">
-              Profile Information
-            </span>
+            <span className="section-title">Profile Information</span>
           </div>
 
           {/* Profile Info Form */}

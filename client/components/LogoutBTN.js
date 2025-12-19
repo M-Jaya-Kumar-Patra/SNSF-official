@@ -9,7 +9,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
-export default function LogoutBTN({ onLogout }) {
+export default function LogoutBTN({ onLogout, className = "" }) {
   const { logout } = useAuth();
   const [open, setOpen] = React.useState(false);
 
@@ -28,7 +28,7 @@ export default function LogoutBTN({ onLogout }) {
     <>
       <button
         type="button"
-        className="h-[50px] w-full flex items-center pl-5 font-semibold text-red-600 gap-2"
+       className={`h-[50px] w-full flex items-center font-semibold text-red-600 gap-2 pl-[14px] ${className}`}
         onClick={() => setOpen(true)}
       >
         <LogOut size={18} />

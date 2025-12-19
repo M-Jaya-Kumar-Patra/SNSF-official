@@ -9,65 +9,54 @@ import LogoutBTN from "@/components/LogoutBTN";
 import { useAuth } from "@/app/context/AuthContext";
 import { useNotice } from "@/app/context/NotificationContext";
 import { MdOutlineMessage } from "react-icons/md";
-import {
-  User,
-  Package,
-  CreditCard,
-  Heart,
-  Bell,
-} from "lucide-react";
+import { User, Package, CreditCard, Heart, Bell } from "lucide-react";
 import { trackVisitor } from "@/lib/tracking";
 const Account = () => {
   const router = useRouter();
   const { userData, isLogin, isCheckingToken, setIsCheckingToken } = useAuth();
-  const { notices, getNotifications, markAllUnreadAsRead  } = useNotice();
-      if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
+  const { notices, getNotifications, markAllUnreadAsRead } = useNotice();
+  if (isCheckingToken)
+    return <div className="text-center mt-10">Checking session...</div>;
 
+  useEffect(() => {
+    if (!isLogin) {
+      setIsCheckingToken(false);
+      router.push("/login");
+    } else {
+      getNotifications();
+    }
+  }, [isLogin, router]);
 
-      useEffect(() => {
-          if (!isLogin) {
-            setIsCheckingToken(false)
-            router.push("/login");
-          } else {
-            getNotifications();
-          }
-        }, [isLogin, router]);
-      
- useEffect(() => {
+  useEffect(() => {
     trackVisitor("notifications");
   }, []);
 
+  useEffect(() => {
+    const handleReadOnLoad = async () => {
+      await getNotifications();
+      const hasUnread = Array.isArray(notices) && notices.some((n) => !n.read);
+      if (hasUnread) {
+        await markAllUnreadAsRead();
+      }
+    };
 
-useEffect(() => {
-  const handleReadOnLoad = async () => {
-    await getNotifications();
-    const hasUnread = Array.isArray(notices) && notices.some((n) => !n.read);
-    if (hasUnread) {
-      await markAllUnreadAsRead();
-    }
+    handleReadOnLoad();
+  }, []);
+
+  const getOptimizedCloudinaryUrl = (url) => {
+    if (!url?.includes("res.cloudinary.com")) return url; // Don't touch local images
+    return url.replace("/upload/", "/upload/w_800,h_800,c_fill,f_auto,q_90/");
   };
 
-  handleReadOnLoad();
-}, []);
-
-
-const getOptimizedCloudinaryUrl = (url) => {
-  if (!url?.includes("res.cloudinary.com")) return url; // Don't touch local images
-  return url.replace("/upload/", "/upload/w_800,h_800,c_fill,f_auto,q_90/");
-};
-
-
-     const getStatusIcon = (message = "") => {
-  if (message.includes("confirmed")) return "✅";
-  if (message.includes("processing")) return "🔄";
-  if (message.includes("delivered")) return "📦";
-  if (message.includes("canceled")) return "❌";
-  if (message.includes("returned")) return "↩️";
-  if (message.includes("refunded")) return "💸";
-  return "📬";
-};
-
-
+  const getStatusIcon = (message = "") => {
+    if (message.includes("confirmed")) return "✅";
+    if (message.includes("processing")) return "🔄";
+    if (message.includes("delivered")) return "📦";
+    if (message.includes("canceled")) return "❌";
+    if (message.includes("returned")) return "↩️";
+    if (message.includes("refunded")) return "💸";
+    return "📬";
+  };
 
   return (
     <div className="flex w-full min-h-screen justify-center bg-slate-100">
@@ -76,13 +65,16 @@ const getOptimizedCloudinaryUrl = (url) => {
         <div className="hidden sm:block left h-fit sticky top-8">
           <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5 gap-3 flex flex-col justify-center items-center">
             <Image
-  className="h-[140px] w-full sm:w-[140px] rounded-full object-cover"
-  src={getOptimizedCloudinaryUrl(userData?.avatar) || "/images/account.png"}
-  alt="User Profile"
-  width={140}
-  height={140}
-  loading="lazy"
-/>
+              className="h-[140px] w-full sm:w-[140px] rounded-full object-cover"
+              src={
+                getOptimizedCloudinaryUrl(userData?.avatar) ||
+                "/images/account.png"
+              }
+              alt="User Profile"
+              width={140}
+              height={140}
+              loading="lazy"
+            />
             <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide card-title">
               {userData?.name}
             </h1>
@@ -138,71 +130,69 @@ const getOptimizedCloudinaryUrl = (url) => {
                 </Link>
               </li>
               <li>
-                <LogoutBTN />
+                <div>
+                  <LogoutBTN className={"!pl-5"} />
+                </div>
               </li>
             </ul>
           </div>
         </div>
 
-{/* Right Notification Section */}
-<div className="right h-full w-full sm:w-[750px] bg-slate-100 sm:bg-white shadow-xl sm:p-6">
-  <div className="mb-2 sm:border-b border-gray-200  py-2 pl-3 sm:py-0 sm:pl-0 sm:pb-4 bg-white">
-    <h2 className="section-title">
-      Notifications
-    </h2>
-  </div>
-
-  {notices?.length > 0 ? (
-  <div className="space-y-2 sm:space-y-3 p-2 sm:px-0 bg-white">
-    {notices.map((notice, index) => (
-      <div
-        key={index}
-        className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-3 sm:p-5 shadow-sm hover:shadow-lg transition-all cursor-pointer hover:scale-[1.02] duration-200"
-        onClick={() => {
-          if (notice?.link) router.push(notice.link);
-        }}
-      >
-        <div className="flex items-start gap-3 sm:gap-4">
-          <div className="text-xl sm:text-2xl">
-            {getStatusIcon(notice.message)}
+        {/* Right Notification Section */}
+        <div className="right h-full w-full sm:w-[750px] bg-slate-100 sm:bg-white shadow-xl sm:p-6">
+          <div className="mb-2 sm:border-b border-gray-200  py-2 pl-3 sm:py-0 sm:pl-0 sm:pb-4 bg-white">
+            <h2 className="section-title">Notifications</h2>
           </div>
-          <div className="flex-1">
-            <div className="text-[14px] sm:text-[15px] text-gray-800 font-medium leading-relaxed">
-              <span
-                dangerouslySetInnerHTML={{ __html: notice.message }}
-              />
-              {!notice.read && (
-                <span className="ml-2 w-2 h-2 rounded-full bg-blue-600 inline-block animate-ping"></span>
-              )}
+
+          {notices?.length > 0 ? (
+            <div className="space-y-2 sm:space-y-3 p-2 sm:px-0 bg-white">
+              {notices.map((notice, index) => (
+                <div
+                  key={index}
+                  className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-3 sm:p-5 shadow-sm hover:shadow-lg transition-all cursor-pointer hover:scale-[1.02] duration-200"
+                  onClick={() => {
+                    if (notice?.link) router.push(notice.link);
+                  }}
+                >
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <div className="text-xl sm:text-2xl">
+                      {getStatusIcon(notice.message)}
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-[14px] sm:text-[15px] text-gray-800 font-medium leading-relaxed">
+                        <span
+                          dangerouslySetInnerHTML={{ __html: notice.message }}
+                        />
+                        {!notice.read && (
+                          <span className="ml-2 w-2 h-2 rounded-full bg-blue-600 inline-block animate-ping"></span>
+                        )}
+                      </div>
+                      <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                        {new Date(notice.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <p className="text-xs sm:text-sm text-gray-500 mt-1">
-              {new Date(notice.createdAt).toLocaleString()}
-            </p>
-          </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center mt-16 sm:mt-20 text-center px-4">
+              <h2 className="text-lg sm:text-2xl font-semibold text-gray-700">
+                No Notifications Yet
+              </h2>
+              <p className="text-gray-500 mt-2 text-sm sm:text-base max-w-sm">
+                You currently don’t have any notifications. We’ll keep you
+                posted!
+              </p>
+              <Link
+                href="/"
+                className="mt-6 bg-blue-600 hover:bg-slate-900 text-white px-5 sm:px-6 py-2 rounded-full text-sm sm:text-base transition shadow-md"
+              >
+                Back to Home
+              </Link>
+            </div>
+          )}
         </div>
-      </div>
-    ))}
-  </div>
-) : (
-  <div className="flex flex-col items-center justify-center mt-16 sm:mt-20 text-center px-4">
-    
-    <h2 className="text-lg sm:text-2xl font-semibold text-gray-700">
-      No Notifications Yet
-    </h2>
-    <p className="text-gray-500 mt-2 text-sm sm:text-base max-w-sm">
-      You currently don’t have any notifications. We’ll keep you posted!
-    </p>
-    <Link
-      href="/"
-      className="mt-6 bg-blue-600 hover:bg-slate-900 text-white px-5 sm:px-6 py-2 rounded-full text-sm sm:text-base transition shadow-md"
-    >
-      Back to Home
-    </Link>
-  </div>
-)}
-
-</div>
-
       </div>
     </div>
   );

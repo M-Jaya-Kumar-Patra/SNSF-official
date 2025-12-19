@@ -20,12 +20,6 @@ import { useAuth } from "../context/AuthContext";
 import SignInWithGoogle from "@/components/SignInWithGoogle";
 import { trackVisitor } from "@/lib/tracking";
 
-
-
-
-
-
-
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
 const poppins = Poppins({ subsets: ["latin"], weight: "300" });
 
@@ -46,7 +40,8 @@ export default function Signup() {
 
   const router = useRouter();
   const alert = useAlert();
-  const { login, isLogin, setIsLogin, isCheckingToken, setIsCheckingToken } = useAuth();
+  const { login, isLogin, setIsLogin, isCheckingToken, setIsCheckingToken } =
+    useAuth();
 
   const [emailError, setEmailError] = useState(false);
 
@@ -61,8 +56,6 @@ export default function Signup() {
       setCheckingAuth(false);
     }
   }, [isLogin, router]);
-
-   
 
   // Reset form on mount
   useEffect(() => {
@@ -80,7 +73,6 @@ export default function Signup() {
       ...prev,
       [field]: field === "email" ? value.toLowerCase() : value,
     }));
-    
   };
 
   const handleSubmit = async (e) => {
@@ -101,7 +93,7 @@ export default function Signup() {
     }
     if (!isValidEmail(email)) {
       setIsLoading(false);
-      setEmailError(true)
+      setEmailError(true);
       return;
     }
     if (!password.trim()) {
@@ -110,11 +102,11 @@ export default function Signup() {
       return;
     }
 
-    setEmailError(false)
+    setEmailError(false);
     const response = await postData("/api/user/register", formFields, false);
 
-    if(response?.popup){
-      setShowPopUp(response?.popup)
+    if (response?.popup) {
+      setShowPopUp(response?.popup);
     }
     if (!response.error) {
       const { email, name, _id } = response.user;
@@ -127,11 +119,11 @@ export default function Signup() {
       setFormFields({ name: "", email: "", password: "" });
       router.push("/verify-otp");
     } else {
-      if(!response?.popup){
+      if (!response?.popup) {
         alert.alertBox({
-        type: "error",
-        msg: response?.message || "Signup failed",
-      });
+          type: "error",
+          msg: response?.message || "Signup failed",
+        });
       }
     }
 
@@ -163,152 +155,165 @@ export default function Signup() {
     return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
   };
 
- return (
-  <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300">
-    <div className="w-full max-w-5xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300">
+      <div className="w-full max-w-5xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+        {/* ================= LEFT : VISUAL / BRAND ================= */}
+        <div className="hidden lg:flex relative">
+          <Image
+            src="/images/signup-furniture.png" // sofa / bed / interior image
+            alt="Luxury Furniture"
+            fill
+            className="object-cover"
+            priority
+          />
 
-      {/* ================= LEFT : VISUAL / BRAND ================= */}
-      <div className="hidden lg:flex relative">
-        <Image
-          src="/images/signup-furniture.png" // sofa / bed / interior image
-          alt="Luxury Furniture"
-          fill
-          className="object-cover"
-          priority
-        />
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-transparent" />
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-transparent" />
-
-        {/* Brand text */}
-        <div className="relative z-10 p-10 flex flex-col justify-end text-white">
-          <h1 className={`text-4xl font-bold ${righteous.className}`}>
-            Join SNSF
-          </h1>
-          <p className="mt-2 text-lg text-slate-200">
-            Crafted furniture for refined living
-          </p>
-        </div>
-      </div>
-
-      {/* ================= RIGHT : SIGNUP FORM ================= */}
-      <div className="flex items-center justify-center p-6 sm:p-10">
-        <div className="w-full max-w-sm">
-
-          {/* Logo */}
-          <div className="flex justify-center mb-4">
-            <Image
-              src={getOptimizedCloudinaryUrl("/images/logo.png")}
-              alt="SNSF Logo"
-              width={70}
-              height={70}
-              className="rounded-full"
-            />
-          </div>
-
-          {/* Title */}
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-slate-900">
-              Sign up to{" "}
-              <span
-                className={`${righteous.className} bg-gradient-to-r from-slate-700 via-slate-900 to-black bg-clip-text text-transparent`}
-              >
-                SNSF
-              </span>
-            </h2>
-            <p className="text-sm text-slate-500 mt-1">
-              Create your premium account
+          {/* Brand text */}
+          <div className="relative z-10 p-10 flex flex-col justify-end text-white">
+            <h1 className={`text-4xl font-bold ${righteous.className}`}>
+              Join SNSF
+            </h1>
+            <p className="mt-2 text-lg text-slate-200">
+              Crafted furniture for refined living
             </p>
           </div>
+        </div>
 
-          {/* Dummy hidden inputs */}
-          <form autoComplete="off" className="w-full">
-            <input type="text" name="fake_username" style={{ display: "none" }} />
-            <input type="password" name="fake_password" style={{ display: "none" }} />
-
-            {/* Full Name */}
-            <TextField
-              label="Full name"
-              variant="outlined"
-              margin="dense"
-              size="small"
-              fullWidth
-              disabled={isLoading}
-              value={formFields.name}
-              onChange={(e) => handleInputChange("name", e.target.value)}
-            />
-
-            {/* Email */}
-            <TextField
-              label="Email"
-              variant="outlined"
-              margin="dense"
-              size="small"
-              fullWidth
-              disabled={isLoading}
-              value={formFields.email}
-              error={emailError}
-              helperText={emailError ? "Please enter a valid email address" : ""}
-              onChange={(e) => handleInputChange("email", e.target.value)}
-            />
-
-            {/* Password */}
-            <FormControl size="small" fullWidth margin="dense" variant="outlined">
-              <InputLabel>Password</InputLabel>
-              <OutlinedInput
-                type={showPassword ? "text" : "password"}
-                disabled={isLoading}
-                value={formFields.password}
-                onChange={(e) => {
-                  handleInputChange("password", e.target.value);
-                  checkPasswordStrength(e.target.value);
-                }}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Password"
+        {/* ================= RIGHT : SIGNUP FORM ================= */}
+        <div className="flex items-center justify-center p-6 sm:p-10">
+          <div className="w-full max-w-sm">
+            {/* Logo */}
+            <div className="flex justify-center mb-4">
+              <Image
+                src={getOptimizedCloudinaryUrl("/images/logo.png")}
+                alt="SNSF Logo"
+                width={70}
+                height={70}
+                className="rounded-full"
               />
-            </FormControl>
+            </div>
 
-            {/* Password strength */}
-            {formFields.password.length > 0 && (
-              <div className="w-full mt-2">
-                <div className="w-full h-1.5 rounded bg-gray-200 overflow-hidden">
-                  <div
-                    className="h-full transition-all duration-300"
-                    style={{
-                      width:
-                        passwordStrength.label === "Weak"
-                          ? "33%"
-                          : passwordStrength.label === "Medium"
-                          ? "66%"
-                          : "100%",
-                      backgroundColor: passwordStrength.color,
-                    }}
-                  />
-                </div>
-                <p
-                  className="text-xs mt-1 font-medium"
-                  style={{ color: passwordStrength.color }}
+            {/* Title */}
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-slate-900">
+                Sign up to{" "}
+                <span
+                  className={`${righteous.className} bg-gradient-to-r from-slate-700 via-slate-900 to-black bg-clip-text text-transparent`}
                 >
-                  {passwordStrength.label} Password
-                </p>
-              </div>
-            )}
+                  SNSF
+                </span>
+              </h2>
+              <p className="text-sm text-slate-500 mt-1">
+                Create your premium account
+              </p>
+            </div>
 
-            {/* Submit */}
-            <button
-              type="submit"
-              onClick={handleSubmit}
-              disabled={isLoading}
-              className="
+            {/* Dummy hidden inputs */}
+            <form autoComplete="off" className="w-full">
+              <input
+                type="text"
+                name="fake_username"
+                style={{ display: "none" }}
+              />
+              <input
+                type="password"
+                name="fake_password"
+                style={{ display: "none" }}
+              />
+
+              {/* Full Name */}
+              <TextField
+                label="Full name"
+                variant="outlined"
+                margin="dense"
+                size="small"
+                fullWidth
+                disabled={isLoading}
+                value={formFields.name}
+                onChange={(e) => handleInputChange("name", e.target.value)}
+              />
+
+              {/* Email */}
+              <TextField
+                label="Email"
+                variant="outlined"
+                margin="dense"
+                size="small"
+                fullWidth
+                disabled={isLoading}
+                value={formFields.email}
+                error={emailError}
+                helperText={
+                  emailError ? "Please enter a valid email address" : ""
+                }
+                onChange={(e) => handleInputChange("email", e.target.value)}
+              />
+
+              {/* Password */}
+              <FormControl
+                size="small"
+                fullWidth
+                margin="dense"
+                variant="outlined"
+              >
+                <InputLabel>Password</InputLabel>
+                <OutlinedInput
+                  type={showPassword ? "text" : "password"}
+                  disabled={isLoading}
+                  value={formFields.password}
+                  onChange={(e) => {
+                    handleInputChange("password", e.target.value);
+                    checkPasswordStrength(e.target.value);
+                  }}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Password"
+                />
+              </FormControl>
+
+              {/* Password strength */}
+              {formFields.password.length > 0 && (
+                <div className="w-full mt-2">
+                  <div className="w-full h-1.5 rounded bg-gray-200 overflow-hidden">
+                    <div
+                      className="h-full transition-all duration-300"
+                      style={{
+                        width:
+                          passwordStrength.label === "Weak"
+                            ? "33%"
+                            : passwordStrength.label === "Medium"
+                            ? "66%"
+                            : "100%",
+                        backgroundColor: passwordStrength.color,
+                      }}
+                    />
+                  </div>
+                  <p
+                    className="text-xs mt-1 font-medium"
+                    style={{ color: passwordStrength.color }}
+                  >
+                    {passwordStrength.label} Password
+                  </p>
+                </div>
+              )}
+
+              {/* Submit */}
+              <button
+                type="submit"
+                onClick={handleSubmit}
+                disabled={isLoading}
+                className="
                 w-full h-[44px] mt-6
                 bg-gradient-to-r from-slate-800 to-slate-900
                 text-white rounded-lg
@@ -319,60 +324,60 @@ export default function Signup() {
                 active:scale-[0.98]
                 transition
               "
+              >
+                {isLoading ? (
+                  <CircularProgress size={22} sx={{ color: "white" }} />
+                ) : (
+                  "Create Account"
+                )}
+              </button>
+            </form>
+
+            {/* Login */}
+            <p className="text-center text-sm text-slate-600 mt-4">
+              Already have an account?{" "}
+              <span
+                onClick={() => router.push("/login")}
+                className="text-slate-900 font-medium cursor-pointer hover:underline"
+              >
+                Log in
+              </span>
+            </p>
+
+            {/* Divider */}
+            <div className="flex items-center my-5">
+              <div className="flex-1 h-px bg-slate-300" />
+              <span className="px-3 text-sm text-slate-500">or</span>
+              <div className="flex-1 h-px bg-slate-300" />
+            </div>
+
+            <div className="w-full flex justify-center items-center">
+              <SignInWithGoogle />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ================= GOOGLE POPUP (UNCHANGED) ================= */}
+      {showPopUp && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-[90%] max-w-md p-6 relative">
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">
+              Continue with Google
+            </h2>
+            <p className="text-sm text-gray-600 mb-5">{showPopUp}</p>
+            <div className="flex justify-center mb-4">
+              <SignInWithGoogle />
+            </div>
+            <button
+              onClick={() => setShowPopUp(false)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
             >
-              {isLoading ? (
-                <CircularProgress size={22} sx={{ color: "white" }} />
-              ) : (
-                "Create Account"
-              )}
+              ✕
             </button>
-          </form>
-
-          {/* Login */}
-          <p className="text-center text-sm text-slate-600 mt-4">
-            Already have an account?{" "}
-            <span
-              onClick={() => router.push("/login")}
-              className="text-slate-900 font-medium cursor-pointer hover:underline"
-            >
-              Log in
-            </span>
-          </p>
-
-          {/* Divider */}
-          <div className="flex items-center my-5">
-            <div className="flex-1 h-px bg-slate-300" />
-            <span className="px-3 text-sm text-slate-500">or</span>
-            <div className="flex-1 h-px bg-slate-300" />
           </div>
-
-          {/* Google */}
-          <SignInWithGoogle />
         </div>
-      </div>
+      )}
     </div>
-
-    {/* ================= GOOGLE POPUP (UNCHANGED) ================= */}
-    {showPopUp && (
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
-        <div className="bg-white rounded-xl shadow-xl w-[90%] max-w-md p-6 relative">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
-            Continue with Google
-          </h2>
-          <p className="text-sm text-gray-600 mb-5">{showPopUp}</p>
-          <div className="flex justify-center mb-4">
-            <SignInWithGoogle />
-          </div>
-          <button
-            onClick={() => setShowPopUp(false)}
-            className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
-          >
-            ✕
-          </button>
-        </div>
-      </div>
-    )}
-  </div>
-);
-
+  );
 }

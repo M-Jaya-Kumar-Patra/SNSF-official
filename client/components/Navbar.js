@@ -326,16 +326,14 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                           <Link href="/notifications" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
                             <Bell size={18} /> Notifications
                           </Link>
-                          <Link href="/address" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                          <Link href="/address" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 pt-2 pb-[2px] rounded transition">
                             <MapPin size={18} /> Manage Address
                           </Link>
                           {/* <Link href="/payments" onClick={() => setMenuOpen(false)} className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
                         <CreditCard size={18} /> Payments
                       </Link> */}
-                          <div className="pt-2">
-                            <div className="pt-0">
+                          <div className="pt-0">
                           <LogoutBTN onLogout={() => setMenuOpen(false)} />
-                        </div>
                           </div>
                         </>
                       )}
@@ -428,13 +426,13 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                         <Link href="/notifications" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
                           <Bell size={18} /> Notifications
                         </Link>
-                        <Link href="/address" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
+                        <Link href="/address" className="flex items-center gap-2 hover:bg-gray-100 px-3 pt-2 pb-[2px] rounded transition">
                           <MapPin size={18} /> Manage Address
                         </Link>
                         {/* <Link href="/payments" className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition">
             <CreditCard size={18} /> Payments
           </Link> */}
-                        <div className="pt-0">
+                        <div className="">
                           <LogoutBTN onLogout={() => setMenuOpen(false)} />
                         </div>
                       </>
