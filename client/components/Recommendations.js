@@ -48,7 +48,7 @@ const Recommendations = ({ limit = 10 }) => {
 
 
   return (
-    <div className="w-full lg:max-w-[50%] p-3 sm:p-6 pb-2 border rounded-xl shadow-2xl bg-white">
+    <div className=" p-3 sm:p-6 pb-2 border rounded-xl shadow-2xl bg-white">
       <h1
 className="section-title"    >
         Recommended for You

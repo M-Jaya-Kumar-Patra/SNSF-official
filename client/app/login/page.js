@@ -323,9 +323,12 @@ return (
           </div>
 
           {/* Google Login */}
-          <div className="w-full flex justify-center items-center">
-            <SignInWithGoogle />
-          </div>
+          <div className="w-full flex justify-center items-center mt-2 pb-2">
+  <div className="overflow-hidden rounded-lg">
+    <SignInWithGoogle />
+  </div>
+</div>
+
         </div>
       </div>
     </div>

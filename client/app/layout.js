@@ -17,7 +17,7 @@ import Script from "next/script";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import VisitorTracker from "@/components/VisitorTracker";
 import { ScreenWidthProvider } from "./context/ScreenWidthContext";
-
+import AppToaster from "@/components/ToastProvider";
 
 import { Inter, Montserrat, Poppins } from "next/font/google";
 
@@ -153,7 +153,7 @@ export default function RootLayout({ children }) {
                           </GoogleOAuthProvider>
                           <BottomNav />
                           <Footer />
-                          <Toaster position="top-right" />
+                          <AppToaster/>
                         </PrdProvider>
                       </WishlistProvider>
                     </CatProvider>

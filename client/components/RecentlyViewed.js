@@ -45,11 +45,16 @@ export default function RecentlyViewed() {
 
 
   return (
-    <div className=" mx-auto 
-      mt-2 sm:mt-4 md:mt-6 lg:mt-0  
-      px-2 sm:px-4 md:px-6  w-full lg:max-w-[50%] p-3 sm:p-6 pb-2 border rounded-xl shadow-2xl bg-white ">
+    <div
+  className={
+    products.length > 0
+      ? "mx-auto mt-2 sm:mt-4 md:mt-6 lg:mt-0 px-2 sm:px-4 md:px-6  p-3 sm:p-6 pb-2 border rounded-xl shadow-2xl bg-white"
+      : "hidden"
+  }
+>
+
       <h2 className="section-title">
-  Customer Favorites
+  Recently Viewed
 </h2>
 
       {/* SCROLL AREA */}
