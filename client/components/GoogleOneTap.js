@@ -2,10 +2,17 @@
 
 import { useEffect } from "react";
 import { postData } from "@/utils/api";
+import { useAlert } from "@/app/context/AlertContext";
+import { useAuth } from "@/app/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function GoogleOneTap() {
+  const router = useRouter();
+  const alert = useAlert();
+  const { login } = useAuth();
+
   useEffect(() => {
-    // 🔒 GLOBAL LOCK (survives re-mounts)
+    // 🔒 GLOBAL LOCK (prevents multiple One Tap prompts)
     if (window.__ONE_TAP_ACTIVE__) return;
     window.__ONE_TAP_ACTIVE__ = true;
 
@@ -22,7 +29,7 @@ export default function GoogleOneTap() {
         cancel_on_tap_outside: false,
       });
 
-      // 🚫 NO callback here (FedCM-safe)
+      // ✅ FedCM-safe prompt
       window.google.accounts.id.prompt();
     };
 
@@ -30,8 +37,38 @@ export default function GoogleOneTap() {
   }, []);
 
   const handleCredentialResponse = async (response) => {
-    await postData("/api/user/authWithGoogle", { token: response.credential }, false);
+    try {
+      const res = await postData(
+        "/api/user/authWithGoogle",
+        { token: response.credential },
+        false
+      );
 
-  }
-  return null;
+      // ✅ postData returns res.success (not res.data.success)
+      if (res?.success) {
+        const { accessToken, refreshToken, user } = res;
+
+        // ✅ update auth FIRST
+        login(user, accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+
+        alert.alertBox({
+          type: "success",
+          msg: "Logged in successfully",
+        });
+
+        router.push("/profile");
+      } else {
+        throw new Error(res?.message || "Google login failed");
+      }
+    } catch (err) {
+      console.error("Google One Tap error:", err);
+      alert.alertBox({
+        type: "error",
+        msg: "Login failed",
+      });
+    }
+  };
+
+  return null; // 👈 One Tap has no UI
 }

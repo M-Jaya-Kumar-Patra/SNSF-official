@@ -12,7 +12,7 @@ const SignInWithGoogle = () => {
     useAuth();
 
   return (
-    <div className="w-full max-w-[230px]">
+    <div className="">
       <GoogleLogin
         onSuccess={async (cred) => {
           try {

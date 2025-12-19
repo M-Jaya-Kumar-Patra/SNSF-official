@@ -231,7 +231,7 @@ return (
             <p className="text-sm text-slate-500 mt-1">
               Access your personalized experience
             </p>
-          </div>
+          </div>  
 
           {/* Email */}
           <TextField
