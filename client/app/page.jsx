@@ -120,6 +120,13 @@ export default function Home() {
       </section>
 
           {!userData && !isCheckingToken && <GoogleOneTap />}
+      
+
+      <section className="flex  justify-center max-w-[1600px] max-auto lg:hidden mt-3  mb-4 sm:mt-4 md:mt-6  
+      px-2 sm:px-4 md:px-6 ">
+
+        <Shopbycat/>
+      </section>
 
       
       <section

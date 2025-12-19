@@ -73,14 +73,14 @@ const Shopbycat = () => {
     ));
 
   return (
-    <div className="flex flex-col items-center bg-slate-100 w-full pb-4 sm:pb-8">
+    <div className="flex flex-col items-center bg-slate-100 w-full ">
       <h1
-        className={`text-2xl sm:text-3xl  lg:text-5xl xl:text-8xl  font-bold text-black mt-4 sm:mt-8 mb-4 sm:mb-8 ${joSan.className}`}
+        className={`section-title`}
       >
         Shop by Category
       </h1>
 
-      <div className="flex flex-col items-center justify-center w-full gap-4">
+      <div className="flex flex-col items-center justify-center w-full gap-4 mt-4 sm:mt-6 md:mt-8">
         {/* Top Row */}
         <div className="flex justify-center flex-wrap gap-2 sm:gap-5">
           {(isCheckingToken || !hydrated || catLength === 0)
