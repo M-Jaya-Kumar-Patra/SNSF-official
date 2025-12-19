@@ -177,10 +177,10 @@ export default function Login() {
 
 return (
   <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300">
- <div className="w-full max-w-5xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+ <div className="w-full max-w-5xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
 
       {/* ================= LEFT : VISUAL / BRAND ================= */}
-      <div className="hidden lg:flex relative">
+      <div className="hidden md:flex relative">
         <Image
           src="/images/login-furniture.png" // 👉 sofa / bed / interior image
           alt="Premium Furniture"
