@@ -151,7 +151,7 @@
     /* ================= RENDER ================= */
     if (!showLarge) {
     return (
-      <nav className={`fixed w-full top-0 z-[300] bg-slate-900    ${isMd ? " h-[90px] ":"h-[80px]  sm:h-[90px] "}    ` }>
+      <nav className={`fixed w-full top-0 z-[1000] bg-slate-900    ${isMd ? " h-[90px] ":"h-[80px]  sm:h-[90px] "}    ` }>
 
         <div className="  bg-slate-900 text-white ">
           {/* ================= TOP BAR ================= */}
@@ -472,7 +472,7 @@
 { pathName === "/" && isMd && isScrolled  && (
   <div
     className={`
-      w-full bg-slate-900 h-[48px]
+      w-full bg-slate-900 h-[48px] border-0
       transition-all duration-500
       ease-[cubic-bezier(0.22,1,0.36,1)]
      opacity-100 translate-y-0
@@ -519,6 +519,10 @@
           ))}
         </div>
       </div>
+
+
+
+
     </div>
   </div>
 )}
@@ -530,7 +534,7 @@
 
   <div
     className={`
-      w-full bg-slate-900 h-[48px]
+      w-full bg-slate-900 h-[48px] border-0
       transition-all duration-500
       ease-[cubic-bezier(0.22,1,0.36,1)]
       opacity-100 translate-y-0
@@ -597,8 +601,8 @@
 
   {/* ================= CATEGORY CARDS ================= */}
   <div
-    className={`
-      hidden md:block
+    className={` 
+      hidden md:block 
       transition-[opacity,transform]
       duration-[500ms]
       ease-[cubic-bezier(0.22,1,0.36,1)]

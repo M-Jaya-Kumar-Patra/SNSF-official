@@ -24,6 +24,14 @@ const BottomNav = () => {
   const [expandedCat, setExpandedCat] = useState(null);
   const [expandedSubCat, setExpandedSubCat] = useState(null);
 
+
+  const [mobileQuery, setMobileQuery] = useState("");
+const [mobileResults, setMobileResults] = useState([]);
+const [loadingSearch, setLoadingSearch] = useState(false);
+
+
+
+
   const menuRef = useRef(null);
 
 
@@ -97,6 +105,31 @@ const BottomNav = () => {
     { label: 'Contact us', value: 'support', icon: <PhoneIcon sx={{ fontSize: 20 }} /> }
   ];
 
+
+  const handleMobileSearch = async (q) => {
+  setMobileQuery(q);
+
+  if (!q.trim()) {
+    setMobileResults([]);
+    return;
+  }
+
+  try {
+    setLoadingSearch(true);
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/product/search/get?q=${q}`
+    );
+    const data = await res.json();
+    setMobileResults(data?.products || []);
+  } catch (err) {
+    console.error("Mobile search error", err);
+    setMobileResults([]);
+  } finally {
+    setLoadingSearch(false);
+  }
+};
+
+
   return (
     <>
       {/* Bottom Navigation */}
@@ -153,32 +186,90 @@ const BottomNav = () => {
       </div>
 
       {/* Search Overlay */}
-      {showSearch && (
-        <div className="fixed inset-0 z-[300] bg-white/80 backdrop-blur-sm flex flex-col">
-          {/* Top Bar */}
-          <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 backdrop-blur-sm bg-white/60 shadow-md">
-            <h2 className="text-xl font-semibold text-indigo-900 tracking-tight">Search Products</h2>
-            <button
-              onClick={() => {
-                setShowSearch(false);
-                setValue("home");
+    {/* Search Overlay */}
+{/* ===== MOBILE SEARCH OVERLAY (SEPARATE) ===== */}
+{showSearch && (
+  <div className="fixed inset-0 z-[1000] bg-white flex flex-col md:hidden">
 
-              }}
-              className="text-gray-500 hover:text-indigo-600 transition p-2 rounded-full hover:bg-gray-100"
-              aria-label="Close search"
-            >
-              <CloseIcon className="w-6 h-6" />
-            </button>
-          </div>
+    {/* TOP BAR */}
+    <div className="sticky top-0 bg-white z-[1100] border-b px-4 py-3 flex items-center gap-3">
+      <button
+        onClick={() => {
+          setShowSearch(false);
+          setValue("home");
+          setMobileQuery("");
+          setMobileResults([]);
+        }}
+        className="p-2 rounded-full hover:bg-gray-100"
+      >
+        <CloseIcon />
+      </button>
 
-          {/* Search Input & Results */}
-          <div className="flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-10">
-            <div className="max-w-2xl mx-auto">
-              <Search onClose={() => setShowSearch(false)} />
-            </div>
-          </div>
-        </div>
+      {/* MOBILE SEARCH INPUT */}
+      <input
+        type="text"
+        value={mobileQuery}
+        onChange={(e) => handleMobileSearch(e.target.value)}
+        placeholder="Search products, categories…"
+        className="
+          w-full
+          border border-gray-300
+          rounded-full
+          px-4 py-3
+          text-[18px]
+          outline-none
+          focus:ring-1 focus:ring-indigo-400
+        "
+        autoFocus
+      />
+    </div>
+
+    {/* RESULTS */}
+    <div className="flex-1 overflow-y-auto px-4 py-3">
+      {loadingSearch && (
+        <p className="text-sm text-gray-500">Searching…</p>
       )}
+
+      {!loadingSearch && mobileResults.length === 0 && mobileQuery && (
+        <p className="text-sm text-gray-500">No products found</p>
+      )}
+
+      <ul className="space-y-3">
+        {mobileResults.map((item) => (
+          <li
+            key={item._id}
+            onClick={() => {
+              setShowSearch(false);
+              setValue("home");
+
+              if (item.thirdSubCatId) {
+                router.push(`/ProductListing?thirdSubCatId=${item.thirdSubCatId}`);
+              } else if (item.subCatId) {
+                router.push(`/ProductListing?subCatId=${item.subCatId}`);
+              } else if (item.catId) {
+                router.push(`/ProductListing?catId=${item.catId}`);
+              }
+            }}
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 cursor-pointer"
+          >
+            {item.images?.[0] && (
+              <img
+                src={item.images[0]}
+                alt={item.name}
+                className="w-12 h-12 object-cover rounded-md"
+              />
+            )}
+            <span className="text-slate-800 font-medium text-sm">
+              {item.name}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+)}
+
+
 
       {/* Mobile Category Menu with toggle sub-category and third-sub-category */}
       {mobileMenuOpen && (

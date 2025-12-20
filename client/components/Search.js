@@ -170,11 +170,9 @@ useEffect(() => {
 
   return (
 
-    <div
-
-     ref={containerRef}
-
-  className="flex items-center w-full cursor-text"
+<div
+  ref={containerRef}
+  className="relative flex items-center w-full cursor-text z-[1200]"
   onClick={() => {
     if (!deskSearch) setDeskSearch(true);
   }}
