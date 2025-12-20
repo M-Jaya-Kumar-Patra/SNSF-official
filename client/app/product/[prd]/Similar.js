@@ -84,7 +84,7 @@ const Similar = (props) => {
 
   return (
     <div className="flex flex-col items-center mt-3 pb-5 sm:pb-8 bg-slate-100 w-full">
-      <h1 className={`text-2xl sm:text-3xl font-bold text-black mt-4 mb-4 sm:mt-8 sm:mb-8 ${joSan.className}`}>
+      <h1 className={`section-title mt-4 mb-4 sm:mt-8 sm:mb-8 ${joSan.className}`}>
         Similar Products
       </h1>
 

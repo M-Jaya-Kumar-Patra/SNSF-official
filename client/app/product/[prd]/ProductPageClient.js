@@ -199,7 +199,7 @@ const ProductPageClient = ({ prdId }) => {
         {/* Left: Image Section */}
         <div className="image sm:sticky lg:top-[110px] w-full sm:w-[400px] sm:h-[310px] sm:p-[2px] sm:border sm:border-slate-400 sm:m-3 mr-4 flex gap-[2px] flex-col sm:flex-row">
           {/* Mobile Carousel */}
-          <div className="block lg:hidden w-full relative">
+          <div className="block md:hidden w-full relative">
             <Swiper
               cssMode={true}
               spaceBetween={10}
@@ -337,7 +337,7 @@ const ProductPageClient = ({ prdId }) => {
           )}
 
           {/* Desktop Thumbnail + Main Image */}
-          <div className="hidden lg:flex gap-2 h-auto">
+          <div className="hidden md:flex gap-2 h-auto">
             <div className="w-[75px] overflow-y-auto h-full p-[2px] border scrollbar-hide">
               <ul className="space-y-1">
                 {productImages?.map((src, idx) => (

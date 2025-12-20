@@ -20,6 +20,8 @@ import {
   LifeBuoy,
   LogOut,
 } from "lucide-react";
+import { useScreen } from "@/app/context/ScreenWidthContext";
+
 
 const Account = () => {
   const router = useRouter();
@@ -27,6 +29,8 @@ const Account = () => {
 
   const [enquiries, setEnquiries] = useState([]);
   const [loading, setLoading] = useState(false);
+  const {isSm, isMd, isLg, isXl} = useScreen();
+  
 
   useEffect(() => {
     if (!userData?._id) return;
@@ -55,7 +59,7 @@ const Account = () => {
   return (
     <>
       <div className="flex w-full min-h-screen justify-center bg-slate-100">
-        <div className="w-full sm:w-[1020px] sm:my-3 mx-auto flex justify-between">
+        <div className={`w-full sm:w-[1020px]   ${isMd ? "my-8": "sm:my-3"} !mx-auto sm:flex justify-between gap-3 `}>
           {/* Left Sidebar */}
           <div className="hidden sm:block left h-fit sticky top-8">
             <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5 gap-3 flex flex-col justify-center items-center">
@@ -128,7 +132,7 @@ const Account = () => {
           </div>
 
           {/* Right Section */}
-          <div className="right h-full w-full sm:w-[750px] bg-slate-100 sm:bg-white shadow-xl sm:p-6">
+          <div className="right h-full w-full lg:w-[750px] bg-slate-100 sm:bg-white shadow-xl sm:p-6">
             <div className="mb-2 sm:border-b border-gray-200 py-2 pl-3 sm:py-0 sm:pl-0 sm:pb-4 bg-white">
               <h2 className="section-title">My Enquiries</h2>
             </div>

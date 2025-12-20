@@ -109,6 +109,7 @@ const Bestsellers = ({ posterIndex }) => {
           lg:border-r-0
           rounded-lg lg:rounded-r-none
           lg:my-4
+
           
         "
       >
@@ -143,10 +144,13 @@ const Bestsellers = ({ posterIndex }) => {
             ref={scrollRef}
             className="
     overflow-y-auto 
+    sm:overflow-y-hidden
+
     sm:overflow-x-auto
     scroll-smooth
     scrollbar-hide
     pb-2 sm:pb-2
+
   "
           >
             {productsForGrid.length > 0 ? (

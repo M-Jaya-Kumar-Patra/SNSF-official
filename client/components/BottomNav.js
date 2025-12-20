@@ -100,7 +100,7 @@ const BottomNav = () => {
   return (
     <>
       {/* Bottom Navigation */}
-      <div className="fixed bottom-0 w-screen z-50 lg:hidden">
+      <div className="fixed bottom-0 w-screen z-50 md:hidden">
         <BottomNavigation
           value={value}
           onChange={handleChange}

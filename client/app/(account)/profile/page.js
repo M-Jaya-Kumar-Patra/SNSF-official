@@ -20,6 +20,7 @@ import { RxCross2 } from "react-icons/rx";
 import Image from "next/image";
 import { getDeviceId } from "@/utils/deviceId";
 import Loading from "@/components/Loading";
+import { ScreenWidthProvider, useScreen } from "@/app/context/ScreenWidthContext";
 
 const Account = () => {
   const router = useRouter();
@@ -47,7 +48,7 @@ const Account = () => {
     confirmPassword: "",
   });
   const [uploadProgress, setUploadProgress] = useState(0);
-
+const {isSm, isMd, isLg, isXl} = useScreen();
   if (isCheckingToken)
     return <div className="text-center mt-10">Checking session...</div>;
   useEffect(() => {
@@ -314,7 +315,7 @@ const Account = () => {
 
   return (
     <div className="flex w-full min-h-screen justify-center bg-slate-100">
-      <div className="w-full sm:w-[1020px]  sm:my-3 mx-auto sm:flex justify-between">
+      <div className={`w-full sm:w-[1020px]   ${isMd ? "my-8": "sm:my-3"} !mx-auto sm:flex justify-between gap-3 `}>
         {/* Sidebar */}
         <div className="left sm:h-full">
           <div className="flex sm:hidden w-full pl-3 items-center justify-start mb-2 bg-white shadow-lg py-2">
@@ -419,7 +420,7 @@ const Account = () => {
         </div>
 
         {/* Main Panel */}
-        <div className="w-full sm:w-[750px] bg-white shadow-lg p-2 sm:p-5">
+        <div className="w-full lg:w-[750px]  bg-white shadow-lg p-2 sm:p-5">
           <div className="hidden sm:flex items-center justify-between">
             <span className="section-title">Profile Information</span>
           </div>

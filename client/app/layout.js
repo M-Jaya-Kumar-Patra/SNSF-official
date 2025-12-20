@@ -20,6 +20,7 @@ import { ScreenWidthProvider } from "./context/ScreenWidthContext";
 import AppToaster from "@/components/ToastProvider";
 
 import { Inter, Montserrat, Poppins } from "next/font/google";
+import MainWrapper from "@/components/MainWrapper";
 
 
 const inter = Inter({
@@ -142,14 +143,9 @@ export default function RootLayout({ children }) {
                             clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
                           >
                             <VisitorTracker />
-                            <main className="pt-[70px] mt-[10px] sm:mt-0 sm:pt-[90px] min-h-screen flex flex-col">
-                              {children}
-
-                               <Script
-          src="https://accounts.google.com/gsi/client"
-          strategy="afterInteractive"
-        />
-                            </main>
+                           <MainWrapper>
+  {children}
+</MainWrapper>
                           </GoogleOAuthProvider>
                           <BottomNav />
                           <Footer />

@@ -53,9 +53,9 @@ useEffect(() => {
 
 
   const collapsedWidth = pathName === "/" ? isScrolled ?
-isSm?"hidden" : isMd? "w-[200px] ": isLg? "w-[37.2px]" : isXl1440? "w-[110px]":is2Xl? "w-[110px]":"hidden":
+isSm?"hidden" : isMd? "w-[37.2px] ": isLg? "w-[37.2px]" : isXl? "w-[110px]": isXl1440? "w-[110px]":is2Xl? "w-[110px]":"hidden":
  isSm?"hidden " : isMd? "w-[200px]" : isGELg? "w-[200px] "  :    "hidden"
-:isLg?"w-[37.2px]":  isXl? "w-[110px]":isXl1440 || is2Xl?"w-[200px]":"hidden";
+:isMd?"w-[37.2px]":isLg?"w-[37.2px]":  isXl? "w-[110px]":isXl1440 || is2Xl?"w-[200px]":"hidden";
 
   // 🔹 Reset search state
   const resetSearch = () => {
@@ -272,13 +272,13 @@ isSm?"hidden" : isMd? "w-[200px] ": isLg? "w-[110px]" : isXl1440? "w-[110px]":is
   placeholder={
     pathName === "/" ? isScrolled ? 
     
-   isMd?"Search Products" :isLg?"": isXl1440? "Search":is2Xl? "Search":""// '/' scrolled                   //// if any error  seach-->""
+   isMd?"" :isLg?"": isXl? "Search":isXl1440? "Search":is2Xl? "Search":""// '/' scrolled                   //// if any error  seach-->""
 
     :  isMd ?"Search Products": isSm? "" :"Search Products"// '/' not scrolled -------
 
     :  
     
-    isLg ? " " : isXl?"Search" : isXl1440 || is2Xl?"Search Products":""//not '/' scrolled
+    isMd ? " " :isLg ? " " : isXl?"Search" : isXl1440 || is2Xl?"Search Products":""//not '/' scrolled
 
     
   }

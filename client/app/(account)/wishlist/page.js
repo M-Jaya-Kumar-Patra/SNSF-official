@@ -13,11 +13,16 @@ import { useWishlist } from "@/app/context/WishlistContext";
 import { MdDelete } from "react-icons/md";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { trackVisitor } from "@/lib/tracking";
+import { useScreen } from "@/app/context/ScreenWidthContext";
 
 const Account = () => {
   const router = useRouter();
   const { userData, isLogin, isCheckingToken, setIsCheckingToken } = useAuth();
   const { wishlistData, removeFromWishlist } = useWishlist();
+  const {isSm, isMd, isLg, isXl} = useScreen();
+  
+
+
   if (isCheckingToken)
     return <div className="text-center mt-10">Checking session...</div>;
 
@@ -35,7 +40,7 @@ const Account = () => {
 
   return (
     <div className="flex w-full min-h-screen justify-center bg-slate-100">
-      <div className="w-full sm:w-[1020px] sm:my-3 mx-auto flex justify-between">
+      <div className={`w-full sm:w-[1020px]   ${isMd ? "my-8": "sm:my-3"} !mx-auto sm:flex justify-between gap-3 `}>
         {/* Sidebar */}
         <div className="hidden sm:block left h-full">
           <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5 gap-3 flex flex-col justify-center items-center">
@@ -115,7 +120,7 @@ const Account = () => {
         </div>
 
         {/* Wishlist Section */}
-        <div className="right h-full w-full sm:w-[750px] bg-slate-100 sm:bg-white shadow-xl sm:p-6">
+        <div className="right h-full w-full lg:w-[750px] bg-slate-100 sm:bg-white shadow-xl sm:p-6">
           <div className="mb-2 sm:border-b border-gray-200 py-2 pl-3 sm:py-0 sm:pl-0 sm:pb-4 bg-white">
             <h2 className="section-title ">My Wishlist</h2>
           </div>

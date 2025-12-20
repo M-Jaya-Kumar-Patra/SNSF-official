@@ -27,31 +27,30 @@ import videoRouter from './route/video.route.js';
 const app = express();
 
 console.log('Starting server setup...');
+const allowedOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",")
+  : [];
 
-// Middleware
-app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'https://www.snsteelfabrication.com',
-    'https://snsf-o5mp.onrender.com',
-    'https://snsteelfabrication.com',
-    'https://snsf-admin.onrender.com',
-    'https://snsteelfabrication.com',
-    'https://snsf-ar3m.onrender.com',
-    'https://snsf-admin-jrst.onrender.com',
-    'https://snsf-ydwh.onrender.com',
-    'https://snsf-admin-n27n.onrender.com',
-    
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
 
-    'https://snsf-official-vi9q.onrender.com',
-    'https://snsf-server-4b7o.onrender.com',
-    'https://snsf-admin-tucj.onrender.com',
-    'http://172.24.80.1:3000/'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true,
-}));
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(
+        new Error(`CORS blocked for origin: ${origin}`),
+        false
+      );
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);
+
+
 console.log('CORS middleware configured');
 
 
