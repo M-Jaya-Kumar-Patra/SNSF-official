@@ -21,23 +21,23 @@ export const AuthProvider = ({ children }) => {
   const [isCheckingToken, setIsCheckingToken] = useState(true);
 
   const logout = useCallback(async () => {
-  try {
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/logout`, {
-      method: "GET",
-      credentials: "include",
-    });
-  } catch (err) {
-    console.log("Logout API failed:", err);
-  }
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/logout`, {
+        method: "GET",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.log("Logout API failed:", err);
+    }
 
-  localStorage.clear();
+    localStorage.clear();
 
-  setUserData(null);
-  setIsLogin(false);
-  setIsCheckingToken(false);
+    setUserData(null);
+    setIsLogin(false);
+    setIsCheckingToken(false);
 
-  router.push("/login");
-}, [router]);
+    router.push("/login");
+  }, [router]);
 
   const fetchUserDetails = useCallback(async () => {
     try {
@@ -57,20 +57,23 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   }, [logout]);
+  const login = useCallback(
+    async (data, token) => {
+      if (!data || !token) return;
 
-  const login = useCallback((data, token) => {
-    if (data && token) {
-      setUserData(data);
-      setIsLogin(true);
       localStorage.setItem("accessToken", token);
       localStorage.setItem("userId", data._id || data.id || "");
       localStorage.setItem("email", data.email || "");
-      console.log("User dataaaaaaaaaaaaaaaaaaaaaa: ", data);
-    }
-  }, []);
+
+      setIsLogin(true);
+      setUserData(data);
+
+      await fetchUserDetails();
+    },
+    [fetchUserDetails]
+  );
 
   useEffect(() => {
-    
     const token = localStorage.getItem("accessToken");
 
     if (!token) {
@@ -116,7 +119,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         fetchUserDetails,
-        isCheckingToken, // ✅ exposed to context
+        isCheckingToken,
         setIsCheckingToken,
       }}
     >

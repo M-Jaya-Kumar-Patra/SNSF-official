@@ -1,10 +1,7 @@
-import React from 'react';
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import React from "react";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { trackVisitor } from "@/lib/tracking";
 import { useEffect } from "react";
-
-
-
 
 const Empty = () => {
   return (
@@ -16,5 +13,4 @@ const Empty = () => {
   );
 };
 
-
-export default Empty
+export default Empty;

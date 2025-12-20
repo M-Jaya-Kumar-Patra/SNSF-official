@@ -126,7 +126,6 @@ export const uploadImage = async (url, updatedData, authRequired = true) => {
     });
 
     const data = await response.json();
-    console.log("uploadImage response:", data);
     return data;
 
   } catch (error) {
@@ -137,7 +136,6 @@ export const uploadImage = async (url, updatedData, authRequired = true) => {
 
 // editData (PUT with JSON body)
 export const editData = async (url, updatedData, authRequired = true) => {
-  console.log("Sending PUT request to:", apiUrl + url);
 
   try {
     const token = localStorage.getItem("accessToken")
@@ -150,10 +148,8 @@ export const editData = async (url, updatedData, authRequired = true) => {
       },
       body: JSON.stringify(updatedData),
     });
-    console.log(response.status, response.headers.get("Content-Type"));
 
     const data = await response.json();
-    console.log(data);
     return data;
   } catch (error) {
     console.error("PUT (editData) error:", error);
@@ -263,7 +259,6 @@ export const deleteItem = async (url, body) => {
 export const getUserEnquiries = async () => {
   try {
     const token = localStorage.getItem("accessToken");
-    console.log("🔐 Token:", token);
 
     if (!token) {
       return { error: true, message: "Access token is missing or expired" };

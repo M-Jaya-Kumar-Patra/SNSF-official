@@ -25,7 +25,6 @@ const Footer = () => {
     try {
       const res = await fetchDataFromApi("/api/visit/getVisit", false);
       if (res?.success) {
-        console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee,",res?.data?.total)
         setTotalVisitors(res?.data?.total);
       }
     } catch (err) {

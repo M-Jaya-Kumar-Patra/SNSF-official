@@ -21,28 +21,18 @@ const SignInWithGoogle = () => {
               { token: cred.credential },
               { withCredentials: true }
             );
-            
+
             if (res.data.success) {
-              alert.alertBox({ type: "success", msg: "Logged in successfully" });
+              alert.alertBox({
+                type: "success",
+                msg: "Logged in successfully",
+              });
 
               router.push("/profile");
-              // update context if needed
-              // setIsLogin(true)
 
               const { accessToken, refreshToken, user } = res.data;
-login(user, accessToken);
-localStorage.setItem('refreshToken', refreshToken);
-
-
-
-              // localStorage.setItem("accessToken", token);
-              // localStorage.setItem("refreshToken", res.data.user.refreshToken);
-              // localStorage.setItem("email", res.data.user.email);
-
-              // setFormFields({ email: "", password: "" });
-              // setIsLogin(true);
-
-              // window.location.reload();
+              login(user, accessToken);
+              localStorage.setItem("refreshToken", refreshToken);
             }
           } catch (err) {
             alert.alertBox({ type: "error", msg: "Login failed" });
@@ -52,5 +42,4 @@ localStorage.setItem('refreshToken', refreshToken);
     </div>
   );
 };
-
 export default SignInWithGoogle;

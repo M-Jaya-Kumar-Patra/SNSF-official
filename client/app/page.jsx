@@ -30,13 +30,9 @@ import VideoGrid from "@/components/VideoGrid";
 
 import { useScreen } from "./context/ScreenWidthContext";
 
-
-
 import { Josefin_Sans } from "next/font/google";
 import GoogleOneTap from "@/components/GoogleOneTap";
 const joSan = Josefin_Sans({ subsets: ["latin"] });
-
-
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#fff",
@@ -52,28 +48,23 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function Home() {
   const { isCheckingToken, userData } = useAuth();
 
-  const { isXs, isSm, isMd, isLg, isXl, isXl1440, is2Xl, isGELg } = useScreen()
+  const { isXs, isSm, isMd, isLg, isXl, isXl1440, is2Xl, isGELg } = useScreen();
 
   const [isScrolled, setIsScrolled] = useState(false);
 
-  const res = fetchDataFromApi("/api/get");
-
-  console.log("fffffffffffffffffffffffffffffffffffff", res);
-
   const [videosLength, setVideosLength] = useState(0);
 
-
   useEffect(() => {
-      const load = async () => {
-        try {
-          const res = await fetchDataFromApi("/api/videos/getAll", false);
-          if (!res?.error) setVideosLength(res.data.length || []);
-        } catch (e) {
-          console.error("Video fetch error", e);
-        }
-      };
-      load();
-    }, []);
+    const load = async () => {
+      try {
+        const res = await fetchDataFromApi("/api/videos/getAll", false);
+        if (!res?.error) setVideosLength(res.data.length || []);
+      } catch (e) {
+        console.error("Video fetch error", e);
+      }
+    };
+    load();
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -86,7 +77,7 @@ export default function Home() {
 
   useEffect(() => {
     const today = new Date().toDateString();
-    const lastVisit = localStorage.getItem("last-snsf-visit-date");
+    const lastVisit = localStorage.getItem("l20dec25kjf34u85");
 
     if (lastVisit !== today) {
       const deviceId = getDeviceId();
@@ -99,7 +90,7 @@ export default function Home() {
         false
       );
 
-      localStorage.setItem("last-snsf-visit-date", today);
+      localStorage.setItem("l20dec25kjf34u85", today);
     }
   }, []);
 
@@ -110,25 +101,26 @@ export default function Home() {
       <Toaster position="top-right" />
 
       <section
-        className={` bg-slate-100 ${isMd ? "h-[96px]" :"h-[96px]"} hidden md:block transition-opacity duration-500 ${
+        className={` bg-slate-100 ${
+          isMd ? "h-[96px]" : "h-[96px]"
+        } hidden md:block transition-opacity duration-500 ${
           isScrolled ? "opacity-0" : "opacity-100"
-          }`}
+        }`}
       />
 
       <section className="flex justify-center">
         <Slider />
       </section>
 
-          {!userData && !isCheckingToken && <GoogleOneTap />}
-      
+      {!userData && !isCheckingToken && <GoogleOneTap />}
 
-      <section className="flex  justify-center max-w-[1600px] max-auto lg:hidden mt-3  mb-4 sm:mt-4 md:mt-6  
-      px-2 sm:px-4 md:px-6 ">
-
-        <Shopbycat/>
+      <section
+        className="flex  justify-center max-w-[1600px] max-auto lg:hidden mt-3  mb-4 sm:mt-4 md:mt-6  
+      px-2 sm:px-4 md:px-6 "
+      >
+        <Shopbycat />
       </section>
 
-      
       <section
         className="flex justify-center 
       max-w-[1600px] 
@@ -148,107 +140,92 @@ export default function Home() {
       mt-2 sm:mt-4 md:mt-6   bg-white  pb-2  sm:pb-6 pt-4 sm:pt-6 md:pt-8
       "
       >
-<div  className="w-full">
-  
-        <div className="flex items-center gap-4 mb-3 sm:mb-4 md:mb-6">
-          <div className="h-[1px] bg-slate-300 flex-1 "></div>
-          <h2 className={`section-title tracking-wide uppercase`}>
-            Explore Aesthetics
-          </h2>
-          <div className="h-[1px] bg-slate-300 flex-1"></div>
+        <div className="w-full">
+          <div className="flex items-center gap-4 mb-3 sm:mb-4 md:mb-6">
+            <div className="h-[1px] bg-slate-300 flex-1 "></div>
+            <h2 className={`section-title tracking-wide uppercase`}>
+              Explore Aesthetics
+            </h2>
+            <div className="h-[1px] bg-slate-300 flex-1"></div>
+          </div>
+          {/* Single poster */}
+          <PosterGrid
+            rows={`${isXs ? "3" : "1"}`}
+            cols={`${isXs ? "1" : "3"}`}
+            posterIndex={[1, 4]}
+            aspect={"5 /3"}
+            gap={"gap-2 sm:gap-0"}
+            darkFade={true}
+            showText={true}
+            rounded={"none"}
+          />
         </div>
-        {/* Single poster */}
-        <PosterGrid
-          rows={`${isXs? "3" : "1"}`}
-          cols={`${isXs? "1" : "3"}`}
-          posterIndex={[1, 4]}
-          aspect={"5 /3"}
-          gap={"gap-2 sm:gap-0"}
-          darkFade={true}
-          showText={true}
-          rounded={"none"}
-        />
-</div>
       </section>
 
-
       <section className="w-full">
-  <div className="max-w-[1600px] mx-auto  mt-2 sm:mt-4 md:mt-6 ">
-    <StyleYourSpaceSection />
-  </div>
-</section>
+        <div className="max-w-[1600px] mx-auto  mt-2 sm:mt-4 md:mt-6 ">
+          <StyleYourSpaceSection />
+        </div>
+      </section>
 
-
-
-{videosLength >= 5 && (
-
-      <section
-        className="w-full flex
+      {videosLength >= 5 && (
+        <section
+          className="w-full flex
       max-w-[1600px] 
       mx-auto 
       mt-2 sm:mt-4 md:mt-6   bg-white px-4 sm:px-8 py-4 sm:py-6
       "
-      >
-      
-      {/* SCROLL CONTAINER */}
-      <div
-        className="
+        >
+          {/* SCROLL CONTAINER */}
+          <div
+            className="
           overflow-x-auto
           scroll-smooth
           scrollbar-hide
           pb-2
         "
-      >
-        <VideoGrid
-          cols={5}
-          videoIndex={[1, 5]}
-          aspect="9/16"
-          autoplay={false}
-          rounded="xl"
-        />
-      </div>
-  </section>
-)}
+          >
+            <VideoGrid
+              cols={5}
+              videoIndex={[1, 5]}
+              aspect="9/16"
+              autoplay={false}
+              rounded="xl"
+            />
+          </div>
+        </section>
+      )}
 
-
-
- 
       <section className="flex justify-center max-w-[1600px] mx-auto mt-2 sm:mt-4 md:mt-6  ">
         <New />
       </section>
 
-
- <section
+      <section
         className="hidden  justify-center 
       max-w-[1600px] 
       mx-auto 
       mt-2 sm:mt-4 md:mt-6   bg-white  pb-2  sm:pb-6 pt-4 sm:pt-6 md:pt-8
       "
       >
-<div  className="w-full ">
-  
-         <div className="flex items-center gap-4 mb-3 sm:mb-4 md:mb-6">
-          <div className="h-[1px] bg-slate-300 flex-1"></div>
+        <div className="w-full ">
+          <div className="flex items-center gap-4 mb-3 sm:mb-4 md:mb-6">
+            <div className="h-[1px] bg-slate-300 flex-1"></div>
 
-          <h2 className="section-title">
-            Craftsmanship & Quality
-          </h2>
-          <div className="h-[1px] bg-slate-300 flex-1"></div>
+            <h2 className="section-title">Craftsmanship & Quality</h2>
+            <div className="h-[1px] bg-slate-300 flex-1"></div>
+          </div>
+          {/* Single poster */}
+          <div className="w-full  lg:w-[1/2] px-4 ">
+            <VideoGrid
+              cols={1} // 4 columns for "Shorts" look
+              videoIndex={[0, 1]} // Next 4 videos
+              aspect="16/9" // Vertical Phone Ratio
+              autoplay={true} // Auto-play muted to grab attention
+              rounded="xl"
+            />
+          </div>
         </div>
-        {/* Single poster */}
-        <div className="w-full  lg:w-[1/2] px-4 ">
-          <VideoGrid
-          cols={1} // 4 columns for "Shorts" look
-          videoIndex={[0, 1]} // Next 4 videos
-          aspect="16/9" // Vertical Phone Ratio
-          autoplay={true} // Auto-play muted to grab attention
-          rounded="xl"
-        />
-        </div>
-</div>
       </section>
-
-
 
       <section
         className="flex justify-center max-w-[1600px] mx-auto 
@@ -257,10 +234,6 @@ export default function Home() {
       >
         <CurratedLooks />
       </section>
-
-    
-
-      
 
       <section className="lg:flex justify-center max-w-[1600px] mx-auto  my-2 sm:my-4 md:my-6 px-2 sm:px-4 md:px-6 gap-4  ">
         <Recommendations limit={8} />

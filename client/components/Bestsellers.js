@@ -59,7 +59,6 @@ const Bestsellers = ({ posterIndex }) => {
     try {
       const res = await fetchDataFromApi("/api/poster/getAll", false);
 
-      console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ", res);
       if (!res.error) setPoster(res?.data[posterIndex]);
     } catch (err) {
       console.log("Best sellers fetch error:", err);

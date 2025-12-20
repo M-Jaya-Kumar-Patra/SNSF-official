@@ -53,7 +53,6 @@ const CurratedLooks = () => {
     try {
       const res = await fetchDataFromApi("/api/poster/getAll", false);
 
-      console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ", res);
       if (!res.error) setPoster(res?.data[4]);
     } catch (err) {
       console.log("Best sellers fetch error:", err);

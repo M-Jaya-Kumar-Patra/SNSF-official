@@ -59,7 +59,7 @@ const ProductListing = () => {
           return;
         }
         const res = await fetchDataFromApi(url, false);
-                console.log("Product:", res?.data);
+            
 
         setProducts(res?.data || []);
       } catch (err) {

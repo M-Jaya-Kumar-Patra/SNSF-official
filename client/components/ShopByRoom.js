@@ -56,9 +56,6 @@ const ShopByRoom = () => {
   const loadShopByRoom = async () => {
     try {
       const res = await fetchDataFromApi("/api/style-your-space/getAll", false);
-
-      console.log("((((((((((((((((((((((((object))))))))))))))))))))))))", res)
-
       if (!res.error) setData(res?.data|| []);
     } catch (err) {
       console.log("Best sellers fetch error:", err);  

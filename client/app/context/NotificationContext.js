@@ -12,10 +12,9 @@ const NoticeProviders = ({ children }) => {
   const [notices, setNotices] = useState([]);
   const { isLogin, setIsCheckingToken } = useAuth();
 
-  // Fetch notifications only if user is logged in
   useEffect(() => {
     if (isLogin) {
-      setIsCheckingToken(false)
+      setIsCheckingToken(false);
       getNotifications();
     }
   }, [isLogin]);
@@ -24,7 +23,7 @@ const NoticeProviders = ({ children }) => {
     try {
       const res = await fetchDataFromApi(`/api/notice/get`);
       if (!res.error) {
-        setNotices(res.data);  // Assuming API returns { data: [...] }
+        setNotices(res.data);
       } else {
         console.log(res.message || "Failed to fetch notifications");
       }
@@ -34,29 +33,22 @@ const NoticeProviders = ({ children }) => {
     }
   };
 
-
-
   const markAllUnreadAsRead = async () => {
-  try {
-    // Call backend to update only unread notifications
-    await fetch("/api/notice/markUnreadRead", {
-      method: "PUT",
-    });
+    try {
+      await fetch("/api/notice/markUnreadRead", {
+        method: "PUT",
+      });
 
-    // Update context state (optional but recommended)
-    setNotices((prev) =>
-      prev.map((n) => ({ ...n, read: true }))
-    );
-  } catch (err) {
-    console.error("Failed to mark notifications as read:", err);
-  }
-};
-  
-
+      setNotices((prev) => prev.map((n) => ({ ...n, read: true })));
+    } catch (err) {
+      console.error("Failed to mark notifications as read:", err);
+    }
+  };
 
   return (
-  <NoticeContext.Provider value={{ notices, getNotifications, markAllUnreadAsRead }}>
-
+    <NoticeContext.Provider
+      value={{ notices, getNotifications, markAllUnreadAsRead }}
+    >
       {children}
     </NoticeContext.Provider>
   );

@@ -119,7 +119,6 @@ export const addVisitCount = async (req, res) => {
       req.socket.remoteAddress;
 
 
-      console.log(">>>>>>>>>>>>>>>>>>>>>>>>", deviceId, ip);
       
       if (!deviceId) {
         return res.status(400).json({

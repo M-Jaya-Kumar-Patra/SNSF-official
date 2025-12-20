@@ -18,11 +18,6 @@ import { useAuth } from "../context/AuthContext";
 
 import { trackVisitor } from "@/lib/tracking";
 
-
-
-
-
-
 export default function ResetPasswordPage() {
   const [formFields, setFormFields] = useState({
     email: "",
@@ -36,20 +31,20 @@ export default function ResetPasswordPage() {
 
   const router = useRouter();
   const alert = useAlert();
- const { isCheckingToken } = useAuth()
-    if (isCheckingToken) return <div className="text-center mt-10">Checking session...</div>;
+  const { isCheckingToken } = useAuth();
+  if (isCheckingToken)
+    return <div className="text-center mt-10">Checking session...</div>;
   useEffect(() => {
     setIsClient(true);
     if (typeof window !== "undefined") {
       const storedEmail = localStorage.getItem("userEmail");
-      if(!storedEmail){
-        router.push("/")
+      if (!storedEmail) {
+        router.push("/");
       }
       setFormFields((prev) => ({ ...prev, email: storedEmail || "" }));
     }
   }, []);
 
-  
   if (!isClient) return null;
 
   const onChangeInput = (e) => {
@@ -77,9 +72,16 @@ export default function ResetPasswordPage() {
 
     setIsSubmitting(true);
     try {
-      const response = await postData("/api/user/reset-password", formFields, false);
+      const response = await postData(
+        "/api/user/reset-password",
+        formFields,
+        false
+      );
       if (!response.error) {
-        alert.alertBox({ type: "success", msg: "Password changed successfully" });
+        alert.alertBox({
+          type: "success",
+          msg: "Password changed successfully",
+        });
         setFormFields({ newPassword: "", confirmPassword: "", email: "" });
         localStorage.removeItem("userEmail");
         localStorage.removeItem("actionType");
@@ -88,7 +90,10 @@ export default function ResetPasswordPage() {
         alert.alertBox({ type: "error", msg: response?.message });
       }
     } catch (err) {
-      alert.alertBox({ type: "error", msg: err?.message || "Something went wrong" });
+      alert.alertBox({
+        type: "error",
+        msg: err?.message || "Something went wrong",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -98,7 +103,9 @@ export default function ResetPasswordPage() {
     <div className="flex justify-center items-center w-full h-screen bg-gray-100">
       <div className="w-[300px] h-auto border border-gray-200 rounded-md shadow bg-white py-4 px-5 flex flex-col items-center">
         <div className="w-full gap-3 text-center">
-          <h1 className="text-[#131e30] my-2 font-bold text-lg">Reset Your Password</h1>
+          <h1 className="text-[#131e30] my-2 font-bold text-lg">
+            Reset Your Password
+          </h1>
         </div>
 
         <Box sx={{ display: "flex", flexWrap: "wrap", width: "100%" }}>
@@ -123,7 +130,12 @@ export default function ResetPasswordPage() {
             />
           </FormControl>
 
-          <FormControl size="small" fullWidth margin="normal" variant="outlined">
+          <FormControl
+            size="small"
+            fullWidth
+            margin="normal"
+            variant="outlined"
+          >
             <InputLabel>Confirm Password</InputLabel>
             <OutlinedInput
               name="confirmPassword"

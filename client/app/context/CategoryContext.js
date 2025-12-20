@@ -7,16 +7,14 @@ const CatContext = createContext();
 
 const CatProvider = ({ children }) => {
   const [catData, setCatData] = useState();
-  
 
-   useEffect(() => {
-      fetchDataFromApi("/api/category/getCategories", false).then((response) => {
-        if (!response.error) {
-          setCatData(response?.data)
-        }
-      })
-    }, [])
-  
+  useEffect(() => {
+    fetchDataFromApi("/api/category/getCategories", false).then((response) => {
+      if (!response.error) {
+        setCatData(response?.data);
+      }
+    });
+  }, []);
 
   return (
     <CatContext.Provider value={{ catData, setCatData }}>
@@ -25,8 +23,6 @@ const CatProvider = ({ children }) => {
   );
 };
 
-// Export both provider and hook
 export { CatProvider };
 
-// Custom hook
 export const useCat = () => useContext(CatContext);

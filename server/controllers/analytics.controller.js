@@ -1170,7 +1170,6 @@ export const getActiveUsers = async (req, res) => {
       lastActivity: { $gte: new Date(now - TEN_MIN) }
     });
 
-    console.log("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", activeSessions)
 
     const visitorIds = activeSessions.map(s => s.visitorId);
 
@@ -1274,9 +1273,7 @@ export const getLiveUsers = async (req, res) => {
       .select("name avatar")
       .lean();
 
-      console.log("UUUUUUUUUUUUUUUUUUUUUUUUUUUUU, ", users
-        
-      )
+   
 
     // Fetch latest page for each session
     const lastPages = await PageView.aggregate([

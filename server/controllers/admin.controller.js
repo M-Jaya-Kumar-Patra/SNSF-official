@@ -439,12 +439,10 @@ export async function removeImageFromCloudinary(request, response) {
 }
 
 export async function updateAdminDetails(request, response) {
-    console.log("0")
 
     try {
 
         const adminId = request.adminId
-        console.log("1")
         const { name, email, phone, password } = request.body
 
         const adminExist = await AdminModel.findById(adminId);
@@ -466,7 +464,6 @@ export async function updateAdminDetails(request, response) {
         }
 
         let hashPassword = ""
-        console.log("11")
 
         if (password) {
             const salt = await bcryptjs.genSalt(10)
@@ -474,7 +471,6 @@ export async function updateAdminDetails(request, response) {
         } else {
             hashPassword = adminExist.password
         }
-        console.log("111")
 
         const updateAdmin = await AdminModel.findByIdAndUpdate(
             adminId,
@@ -489,7 +485,6 @@ export async function updateAdminDetails(request, response) {
             },
             { new: true }
         );
-        console.log("1111")
 
         if (email !== adminExist.email) {
             await sendEmailFun({
@@ -500,7 +495,6 @@ export async function updateAdminDetails(request, response) {
             });
         }
 
-        console.log("11111")
 
         return response.status(200).json({
             message: "Admin updated successfully",
@@ -514,10 +508,8 @@ export async function updateAdminDetails(request, response) {
                 avatar: updateAdmin?.avatar
             }
         });
-        console.log("111111")
 
     } catch (error) {
-        console.log("1111111")
 
         return response.status(500).json({
             message: error.message || error,
@@ -530,7 +522,6 @@ export async function updateAdminDetails(request, response) {
 export async function forgotPasswordController(request, response) {
     try {
         const { email } = request.body
-        console.log("tttttttttttttttttttttttttttttttttttttt", email)
 
         const admin = await AdminModel.findOne({ email: email })
 

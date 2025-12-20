@@ -259,8 +259,6 @@ export const reorderPoster = async (req, res) => {
   try {
     const { posters } = req.body; // [{ id, index }]
 
-    console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&, ", posters)
-
     if (!posters || !Array.isArray(posters)) {
       return res.status(400).json({
         success: false,

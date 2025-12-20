@@ -206,9 +206,7 @@ export default function Signup() {
                   SNSF
                 </span>
               </h2>
-              <p className="text-sm text-slate-500 mt-1">
-                Create your premium account
-              </p>
+             
             </div>
 
             {/* Dummy hidden inputs */}
@@ -313,8 +311,8 @@ export default function Signup() {
                 type="submit"
                 onClick={handleSubmit}
                 disabled={isLoading}
-                className="
-                w-full h-[44px] mt-6
+                className=
+                {`w-full h-[44px] mt-6
                 bg-gradient-to-r from-slate-800 to-slate-900
                 text-white rounded-lg
                 font-medium
@@ -322,8 +320,7 @@ export default function Signup() {
                 shadow-lg
                 hover:opacity-95
                 active:scale-[0.98]
-                transition
-              "
+                transition ${isLoading ? "cursor-not-allowed" : "cursor-pointer"}`}
               >
                 {isLoading ? (
                   <CircularProgress size={22} sx={{ color: "white" }} />

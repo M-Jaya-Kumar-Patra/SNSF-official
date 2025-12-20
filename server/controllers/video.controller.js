@@ -72,7 +72,6 @@ export const uploadVideoFile = async (req, res) => {
     try {
         configureCloudinary();
 
-        console.log("📂 Request File Info:", req.file); // <--- DEBUG LOG
 
         if (!req.file) {
             return res.status(400).json({ success: false, message: "No video file provided" });
@@ -80,7 +79,6 @@ export const uploadVideoFile = async (req, res) => {
 
         // Safety Check: Ensure buffer exists
         if (!req.file.buffer) {
-            console.error("❌ Buffer is missing! Multer configuration is likely wrong.");
             return res.status(500).json({ success: false, message: "Server misconfiguration: File buffer missing" });
         }
 
@@ -183,7 +181,6 @@ export const deleteVideo = async (req, res) => {
     try {
         const { id } = req.params;
 
-        console.log("HHHHHHHHHHHHHHHHH, ", id)
         const video = await VideoModel.findById(id);
 
         if (!video) {

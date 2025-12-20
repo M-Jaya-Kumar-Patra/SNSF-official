@@ -19,17 +19,15 @@ const Account = () => {
   const router = useRouter();
   const { userData, isLogin, isCheckingToken, setIsCheckingToken } = useAuth();
   const { wishlistData, removeFromWishlist } = useWishlist();
-  const {isSm, isMd, isLg, isXl} = useScreen();
-  
-
+  const { isSm, isMd, isLg, isXl } = useScreen();
 
   if (isCheckingToken)
     return <div className="text-center mt-10">Checking session...</div>;
 
   useEffect(() => {
-    if (!isLogin) {
-      setIsCheckingToken(false);
+    if (isCheckingToken || !isLogin) {
       router.push("/login");
+      return;
     }
   }, [isLogin, router]);
 
@@ -40,7 +38,11 @@ const Account = () => {
 
   return (
     <div className="flex w-full min-h-screen justify-center bg-slate-100">
-      <div className={`w-full sm:w-[1020px]   ${isMd ? "my-8": "sm:my-3"} !mx-auto sm:flex justify-between gap-3 `}>
+      <div
+        className={`w-full sm:w-[1020px]   ${
+          isMd ? "my-8" : "sm:my-3"
+        } !mx-auto sm:flex justify-between gap-3 `}
+      >
         {/* Sidebar */}
         <div className="hidden sm:block left h-full">
           <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5 gap-3 flex flex-col justify-center items-center">

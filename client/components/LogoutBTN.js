@@ -17,8 +17,6 @@ export default function LogoutBTN({ onLogout, className = "" }) {
     e?.preventDefault();
     e?.stopPropagation();
 
-    console.log("Logout clicked (mobile-safe)");
-
     setOpen(false);
     await logout();
     if (onLogout) onLogout();
@@ -28,7 +26,7 @@ export default function LogoutBTN({ onLogout, className = "" }) {
     <>
       <button
         type="button"
-       className={`h-[50px] w-full flex items-center font-semibold text-red-600 gap-2 pl-[14px] ${className}`}
+        className={`h-[50px] w-full flex items-center font-semibold text-red-600 gap-2 pl-[14px] ${className}`}
         onClick={() => setOpen(true)}
       >
         <LogOut size={18} />

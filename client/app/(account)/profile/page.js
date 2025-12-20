@@ -20,7 +20,10 @@ import { RxCross2 } from "react-icons/rx";
 import Image from "next/image";
 import { getDeviceId } from "@/utils/deviceId";
 import Loading from "@/components/Loading";
-import { ScreenWidthProvider, useScreen } from "@/app/context/ScreenWidthContext";
+import {
+  ScreenWidthProvider,
+  useScreen,
+} from "@/app/context/ScreenWidthContext";
 
 const Account = () => {
   const router = useRouter();
@@ -48,7 +51,7 @@ const Account = () => {
     confirmPassword: "",
   });
   const [uploadProgress, setUploadProgress] = useState(0);
-const {isSm, isMd, isLg, isXl} = useScreen();
+  const { isSm, isMd, isLg, isXl } = useScreen();
   if (isCheckingToken)
     return <div className="text-center mt-10">Checking session...</div>;
   useEffect(() => {
@@ -74,7 +77,7 @@ const {isSm, isMd, isLg, isXl} = useScreen();
 
   useEffect(() => {
     const today = new Date().toDateString();
-    const lastVisit = localStorage.getItem("last-snsf-visit-date");
+    const lastVisit = localStorage.getItem("l20dec25kjf34u85");
 
     if (lastVisit !== today) {
       const deviceId = getDeviceId();
@@ -87,7 +90,7 @@ const {isSm, isMd, isLg, isXl} = useScreen();
         false
       );
 
-      localStorage.setItem("last-snsf-visit-date", today);
+      localStorage.setItem("l20dec25kjf34u85", today);
     }
   }, []);
 
@@ -140,7 +143,6 @@ const {isSm, isMd, isLg, isXl} = useScreen();
     }
   };
 
-  console.log("UUUUUUUUUUUserData: ", userData);
 
   const onChangeInput = (e) => {
     const { name, value } = e.target;
@@ -315,7 +317,11 @@ const {isSm, isMd, isLg, isXl} = useScreen();
 
   return (
     <div className="flex w-full min-h-screen justify-center bg-slate-100">
-      <div className={`w-full sm:w-[1020px]   ${isMd ? "my-8": "sm:my-3"} !mx-auto sm:flex justify-between gap-3 `}>
+      <div
+        className={`w-full sm:w-[1020px]   ${
+          isMd ? "my-8" : "sm:my-3"
+        } !mx-auto sm:flex justify-between gap-3 `}
+      >
         {/* Sidebar */}
         <div className="left sm:h-full">
           <div className="flex sm:hidden w-full pl-3 items-center justify-start mb-2 bg-white shadow-lg py-2">

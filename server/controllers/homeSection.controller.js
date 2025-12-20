@@ -73,7 +73,6 @@ export const getHomeSectionItems = async (req, res) => {
     .sort({ index: 1, pinned: -1, dateCreated: -1 })
     .lean();
     
-    console.log("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT", items)
     // Collect product IDs from items
     const productIds = items.map(i => i.productId).filter(Boolean);
 
@@ -94,7 +93,6 @@ export const getHomeSectionItems = async (req, res) => {
       product: productsById[item.productId?.toString()] || null
     }));
 
-    console.log("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK", mergedItems)
 
     return res.status(200).json({ success: true, data: mergedItems });
 

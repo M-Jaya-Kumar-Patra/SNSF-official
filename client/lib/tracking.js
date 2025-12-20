@@ -63,7 +63,6 @@ export async function trackVisitor(
     referrer: document.referrer || "direct",
   };
 
-  console.log("TRACK DATA SENT:", body);
 
   await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/visitor/track`, {
     method: "POST",
@@ -89,7 +88,6 @@ export async function trackProductEvent(productId, eventType = "view", timeSpent
     timeSpent,
   };
 
-  console.log("PRODUCT EVENT SENT:", body);
 
   await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/productEvent/trackEvent`, {
     method: "POST",

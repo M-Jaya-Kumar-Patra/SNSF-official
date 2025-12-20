@@ -23,10 +23,6 @@ import SignInWithGoogle from "@/components/SignInWithGoogle";
 import { trackVisitor } from "@/lib/tracking";
 import Loading from "@/components/Loading";
 
-
-
-
-
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
 const poppins = Poppins({ subsets: ["latin"], weight: "300" });
 
@@ -42,7 +38,11 @@ export default function Login() {
   const [showPopUp, setShowPopUp] = useState(null);
 
   if (isCheckingToken)
-    return <div className="text-center mt-10"><Loading/></div>;
+    return (
+      <div className="text-center mt-10">
+        <Loading />
+      </div>
+    );
 
   const router = useRouter();
   const alert = useAlert();
@@ -56,7 +56,6 @@ export default function Login() {
     }
   }, [isLogin, router]);
 
-   
   useEffect(() => {
     const alertData = sessionStorage.getItem("alert");
     if (alertData) {
@@ -113,59 +112,68 @@ export default function Login() {
       }
       if (!response.error && response.data?.accessToken) {
         alert.alertBox({ type: "success", msg: "Logged in successfully" });
-        
+
         router.push("/profile");
         const token = response.data.accessToken;
         setFormFields({ email: "", password: "" });
         setIsLogin(true);
         login(response.data, token);
-        
+
         localStorage.setItem("accessToken", token);
         localStorage.setItem("refreshToken", response.data.refreshToken);
         localStorage.setItem("email", response.data.email);
-        
-        
       } else {
-         if (!response?.popup) {
-        alert.alertBox({
-          type: "error",
-          msg: response?.message || "Login failed",
-        });
-      }
+        if (!response?.popup) {
+          alert.alertBox({
+            type: "error",
+            msg: response?.message || "Login failed",
+          });
+        }
         setFormFields({ email: "", password: "" });
       }
     } catch (error) {
-  console.error("Login error:", error);
-  alert.alertBox({
-    type: "error",
-    msg: "Something went wrong. Please try again.",
-  });
-}
- finally {
+      console.error("Login error:", error);
+      alert.alertBox({
+        type: "error",
+        msg: "Something went wrong. Please try again.",
+      });
+    } finally {
       setLoading(false);
       setBtnLoading(false);
     }
   };
 
-  const forgotPassword = async () => {
+  const forgotPassword = async (e) => {
+    e.preventDefault();
+    setLoading(true)
+    e.preventDefault()
+
+    const { email } = formFields;
+
     if (!formFields.email) {
       alert.alertBox({ type: "error", msg: "Please enter your email" });
+      setLoading(false);
+      return;
+    }
+    
+    if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+      alert.alertBox({ type: "error", msg: "Invalid email format" });
+      setLoading(false);
       return;
     }
 
-    alert.alertBox({ type: "success", msg: `OTP Sent to ${formFields.email}` });
-
+    
     localStorage.setItem("userEmail", formFields.email);
     localStorage.setItem("actionType", "forgot-password");
-
+    
     const response = await postData(
       "/api/user/forgot-password",
       { email: formFields.email },
       false
     );
-
+    
     if (!response.error) {
-      // alert.alertBox({ type: "success", msg: response.message });
+      alert.alertBox({ type: "success", msg: `OTP Sent to ${formFields.email}` });
       router.push("/verify-otp");
     } else {
       alert.alertBox({
@@ -175,186 +183,183 @@ export default function Login() {
     }
   };
 
-return (
-  <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300">
- <div className="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
-
-      {/* ================= LEFT : VISUAL / BRAND ================= */}
-      <div className="hidden md:flex relative">
-        <Image
-          src="/images/login-furniture.png" // 👉 sofa / bed / interior image
-          alt="Premium Furniture"
-          fill
-          className="object-cover"
-          priority
-        />
-
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/30 to-transparent" />
-
-        {/* Brand text */}
-        <div className="relative z-10 p-10 flex flex-col justify-end text-white">
-          <h1 className={`text-4xl font-bold ${righteous.className}`}>
-            Welcome Back
-          </h1>
-          <p className="mt-2 text-lg text-slate-200">
-            Premium furniture for modern living
-          </p>
-        </div>
-      </div>
-
-      {/* ================= RIGHT : LOGIN FORM ================= */}
-      <div className="flex items-center justify-center p-6 sm:p-10">
-        <div className="w-full max-w-sm">
-
-          {/* Logo */}
-          <div className="flex justify-center mb-4">
-            <Image
-              src="/images/logo.png"
-              alt="SNSF Logo"
-              width={70}
-              height={70}
-              className="rounded-full"
-            />
-          </div>
-
-          {/* Title */}
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-slate-900">
-              Log in to{" "}
-              <span
-                className={`${righteous.className} bg-gradient-to-r from-slate-700 via-slate-900 to-black bg-clip-text text-transparent`}
-              >
-                SNSF
-              </span>
-            </h2>
-            <p className="text-sm text-slate-500 mt-1">
-              Access your personalized experience
-            </p>
-          </div>  
-
-          {/* Email */}
-          <TextField
-            label="Email"
-            variant="outlined"
-            size="small"
-            fullWidth
-            margin="dense"
-            value={formFields.email}
-            onChange={(e) => handleInputChange("email", e.target.value)}
-            disabled={loading}
-            autoComplete="off"
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300">
+      <div className="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+        <div className="hidden md:flex relative">
+          <Image
+            src="/images/login-furniture.png" 
+            alt="Premium Furniture"
+            fill
+            className="object-cover"
+            priority
           />
 
-          {/* Password */}
-          <FormControl size="small" fullWidth margin="dense" variant="outlined">
-            <InputLabel>Password</InputLabel>
-            <OutlinedInput
-              type={showPassword ? "text" : "password"}
-              value={formFields.password}
-              onChange={(e) =>
-                handleInputChange("password", e.target.value)
-              }
-              disabled={loading}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              }
-              label="Password"
-            />
-          </FormControl>
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/30 to-transparent" />
 
-          {/* Forgot password */}
-          <div className="text-right mt-2">
-            <button
-              onClick={forgotPassword}
-              disabled={loading}
-              className="text-sm text-slate-600 hover:text-slate-900 transition"
-            >
-              Forgot password?
-            </button>
+          {/* Brand text */}
+          <div className="relative z-10 p-10 flex flex-col justify-end text-white">
+            <h1 className={`text-4xl font-bold ${righteous.className}`}>
+              Welcome Back
+            </h1>
+            <p className="mt-2 text-lg text-slate-200">
+              Premium furniture for modern living
+            </p>
           </div>
+        </div>
 
-          {/* Login Button */}
-          <button
-            onClick={handleLogin}
-            disabled={loading}
-            className="
-              w-full h-[44px] mt-5
-              bg-gradient-to-r from-slate-800 to-slate-900
-              text-white rounded-lg
+        <div className="flex items-center justify-center p-6 sm:p-10">
+          <div className="w-full max-w-sm">
+            {/* Logo */}
+            <div className="flex justify-center mb-4">
+              <Image
+                src="/images/logo.png"
+                alt="SNSF Logo"
+                width={70}
+                height={70}
+                className="rounded-full"
+              />
+            </div>
+
+            {/* Title */}
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold text-slate-900">
+                Log in to{" "}
+                <span
+                  className={`${righteous.className} bg-gradient-to-r from-slate-700 via-slate-900 to-black bg-clip-text text-transparent`}
+                >
+                  SNSF
+                </span>
+              </h2>
+              <p className="text-sm text-slate-500 mt-1">
+                Access your personalized experience
+              </p>
+            </div>
+
+            {/* Email */}
+            <TextField
+              label="Email"
+              variant="outlined"
+              size="small"
+              fullWidth
+              margin="dense"
+              value={formFields.email}
+              onChange={(e) => handleInputChange("email", e.target.value)}
+              disabled={loading}
+              autoComplete="off"
+            />
+
+            {/* Password */}
+            <FormControl
+              size="small"
+              fullWidth
+              margin="dense"
+              variant="outlined"
+            >
+              <InputLabel>Password</InputLabel>
+              <OutlinedInput
+                type={showPassword ? "text" : "password"}
+                value={formFields.password}
+                onChange={(e) => handleInputChange("password", e.target.value)}
+                disabled={loading}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Password"
+              />
+            </FormControl>
+
+            {/* Forgot password */}
+            <div className="text-right mt-2">
+              <button
+                onClick={forgotPassword}
+                disabled={loading}
+                className="text-sm text-slate-600 hover:text-slate-900 transition active:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+
+            {/* Login Button */}
+            <button
+              onClick={handleLogin}
+              disabled={loading}
+              className=
+             {` w-full h-[44px] mt-5
+               rounded-lg
               font-medium
               flex items-center justify-center
               shadow-lg
               hover:opacity-95
               active:scale-[0.98]
               transition
-            "
-          >
-            {btnLoading ? (
-              <CircularProgress size={22} color="inherit" />
-            ) : (
-              "Log In"
-            )}
-          </button>
 
-          {/* Signup */}
-          <p className="text-center text-sm text-slate-600 mt-4">
-            Don&apos;t have an account?{" "}
-            <span
-              onClick={() => router.push("/signup")}
-              className="text-slate-900 font-medium cursor-pointer hover:underline"
+              ${!loading ? "cursor-pointer" : "cursor-not-allowed"}
+              
+              ${loading ? 
+              
+              "bg-gray-400 text-white" :
+              " bg-gradient-to-r from-slate-800 to-slate-900 text-white"}`} >
+              {btnLoading ? (
+                <CircularProgress size={22} color="inherit" />
+              ) : (
+                "Log In"
+              )}
+            </button>
+
+            {/* Signup */}
+            <p className="text-center text-sm text-slate-600 mt-4">
+              Don&apos;t have an account?{" "}
+              <span
+                onClick={() => router.push("/signup")}
+                className="text-slate-900 font-medium cursor-pointer hover:underline"
+              >
+                Sign up
+              </span>
+            </p>
+
+            {/* Divider */}
+            <div className="flex items-center my-5">
+              <div className="flex-1 h-px bg-slate-300" />
+              <span className="px-3 text-sm text-slate-500">or</span>
+              <div className="flex-1 h-px bg-slate-300" />
+            </div>
+
+            {/* Google Login */}
+            <div className="w-full flex justify-center items-center mt-2 pb-2">
+              <SignInWithGoogle />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {showPopUp && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-[90%] max-w-md p-6 relative">
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">
+              Continue with Google
+            </h2>
+            <p className="text-sm text-gray-600 mb-5">{showPopUp}</p>
+            <div className="flex justify-center mb-4">
+              <SignInWithGoogle />
+            </div>
+            <button
+              onClick={() => setShowPopUp(false)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
             >
-              Sign up
-            </span>
-          </p>
-
-          {/* Divider */}
-          <div className="flex items-center my-5">
-            <div className="flex-1 h-px bg-slate-300" />
-            <span className="px-3 text-sm text-slate-500">or</span>
-            <div className="flex-1 h-px bg-slate-300" />
+              ✕
+            </button>
           </div>
-
-          {/* Google Login */}
-          <div className="w-full flex justify-center items-center mt-2 pb-2">
-  <div className="overflow-hidden rounded-lg py-1 ">
-    <SignInWithGoogle />
-  </div>
-</div>
-
         </div>
-      </div>
+      )}
     </div>
-
-    {/* ================= GOOGLE POPUP (UNCHANGED) ================= */}
-    {showPopUp && (
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50">
-        <div className="bg-white rounded-xl shadow-xl w-[90%] max-w-md p-6 relative">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
-            Continue with Google
-          </h2>
-          <p className="text-sm text-gray-600 mb-5">{showPopUp}</p>
-          <div className="flex justify-center mb-4">
-            <SignInWithGoogle />
-          </div>
-          <button
-            onClick={() => setShowPopUp(false)}
-            className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
-          >
-            ✕
-          </button>
-        </div>
-      </div>
-    )}
-  </div>
-);
-
-
+  );
 }

@@ -308,103 +308,6 @@ export async function loginController(request, response) {
   }
 }
 
-// export async function authWithGoogle(request, response) {
-//     try {
-//         const { name, email, password, avatar, phone, signUpWithGoogle, role } = request.body;
-//         const existingUser = await UserModel.findOne({ email: email })
-
-//         if (!existingUser) {
-//             const user = await UserModel.create({
-//                 name: name,
-//                 phone: phone,
-//                 email: email,
-//                 password: null,
-//                 avatar: avatar,
-//                 role: role,
-//                 verify_email: true,
-//                 emailVerified: true,
-//                 signUpWithGoogle: true
-
-//             });
-
-//             await user.save()
-//             const accessToken = await generatedAccessToken(user._id);
-//             const refreshToken = await generatedRefreshToken(user._id);
-
-//             await UserModel.findByIdAndUpdate(user._id, {
-//                 last_login_date: new Date()
-//             });
-
-//             const cookieOptions = {
-//                 httpOnly: true,
-//                 secure: process.env.NODE_ENV === "production",
-//                 sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-//                 maxAge: 5 * 60 * 60 * 1000 // 5 hours
-//             };
-
-//             console.log(user?.body?.name)
-//             response.cookie("accessToken", accessToken, cookieOptions);
-//             response.cookie("refreshToken", refreshToken, cookieOptions);
-
-//             return response.json({
-//                 message: "Login successfully",
-//                 error: false,
-//                 success: true,
-//                 data: {
-//                     accessToken,
-//                     refreshToken
-//                 },
-//                 user: {
-//                     id: request.userId,
-//                     email: email,
-//                     name: user.name
-//                 }
-//             });
-//         }
-
-//         else {
-//             const accessToken = await generatedAccessToken(existingUser._id);
-//             const refreshToken = await generatedRefreshToken(existingUser._id);
-
-//             await UserModel.findByIdAndUpdate(existingUser._id, {
-//                 last_login_date: new Date()
-//             });
-
-//             const cookieOptions = {
-//                 httpOnly: true,
-//                 secure: process.env.NODE_ENV === "production",
-//                 sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-//                 maxAge: 5 * 60 * 60 * 1000 // 5 hours
-//             };
-
-//             console.log(user?.body?.name)
-//             response.cookie("accessToken", accessToken, cookieOptions);
-//             response.cookie("refreshToken", refreshToken, cookieOptions);
-
-//             return response.json({
-//                 message: "Login successfully",
-//                 error: false,
-//                 success: true,
-//                 data: {
-//                     accessToken,
-//                     refreshToken
-//                 },
-//                 user: {
-//                     id: request.userId,
-//                     email: email,
-//                     name: user.name
-//                 }
-//             });
-//         }
-//     } catch (error) {
-//         return response.status(500).json({
-//             message: error.message || error,
-//             error: true,
-//             success: false
-//         });
-//     }
-// }
-
 export async function authWithGoogle(req, res) {
   try {
     const { token } = req.body;
@@ -412,10 +315,6 @@ export async function authWithGoogle(req, res) {
     if (!token) {
       return res.status(400).json({ error: true, message: "Token missing." });
     }
-
-
-    console.log("GOOGLE ID TOKEN:", req.body.token);
-console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
     // 1. Verify Google Token
     const ticket = await client.verifyIdToken({
       idToken: token,
@@ -473,21 +372,6 @@ console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
     res.cookie("accessToken", accessToken, cookieOptions);
     res.cookie("refreshToken", refreshToken, cookieOptions);
 
-    // return response.json({
-    //     message: "Login successful",
-    //     success: true,
-    //     error: false,
-    //     data: {
-    //         accessToken,
-    //         refreshToken
-    //     },
-    //     user: {
-    //         id: user._id,
-    //         email: user.email,
-    //         name: user.name,
-    //         avatar: user.avatar
-    //     }
-    // });
 
     user.access_token = accessToken;
     user.refresh_token = refreshToken;
@@ -549,7 +433,6 @@ export async function userAvatarController(request, response) {
   try {
     console.log("userAvatarController Triggered");
     const userId = request.userId;
-    console.log("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu", userId)
     console.log("User ID from token:", userId);
     console.log("Is valid ObjectId:", mongoose.Types.ObjectId.isValid(userId));
 
@@ -561,9 +444,6 @@ export async function userAvatarController(request, response) {
         success: false,
       });
     }
-
-    console.log("UserIddddddddddddddddddddddddd", userId)
-
 
     const user = await UserModel.findById(userId);
     if (!user) {
@@ -717,11 +597,9 @@ export async function removeImageFromCloudinary(request, response) {
 }
 
 export async function updateUserDetails(request, response) {
-  console.log("0");
 
   try {
     const userId = request.userId;
-    console.log("1");
     const { name, email, phone, password, signUpWithGoogle } = request.body;
 
     const userExist = await UserModel.findById(userId);
@@ -743,7 +621,6 @@ export async function updateUserDetails(request, response) {
     }
 
     let hashPassword = "";
-    console.log("11");
 
     if (password) {
       const salt = await bcryptjs.genSalt(10);
@@ -751,7 +628,6 @@ export async function updateUserDetails(request, response) {
     } else {
       hashPassword = userExist.password;
     }
-    console.log("111");
 
     const updateUser = await UserModel.findByIdAndUpdate(
       userId,
@@ -767,7 +643,6 @@ export async function updateUserDetails(request, response) {
       },
       { new: true }
     );
-    console.log("1111");
 
     if (email !== userExist.email) {
       await sendEmailFun({
@@ -778,7 +653,6 @@ export async function updateUserDetails(request, response) {
       });
     }
 
-    console.log("11111");
 
     return response.status(200).json({
       message: "User updated successfully",
@@ -792,9 +666,7 @@ export async function updateUserDetails(request, response) {
         avatar: updateUser?.avatar,
       },
     });
-    console.log("111111");
   } catch (error) {
-    console.log("1111111");
 
     return response.status(500).json({
       message: error.message || error,
@@ -1375,18 +1247,19 @@ export async function updateUserAddress(request, response) {
 
 export async function resendOTP(request, response) {
   try {
-    const { email, name, userId } = request.body;
+    const { email } = request.body;
     console.log("resendOTP triggered");
 
-    if (!email || !name || !userId) {
+    if (!email) {
       return response.status(400).json({
-        message: "Provide email, name, and userId",
+        message: "Provide email",
         error: true,
         success: false,
       });
     }
 
-    const user = await UserModel.findById(userId);
+    const user = await UserModel.findOne({ email });
+
     if (!user) {
       return response.status(404).json({
         message: "User not found",
@@ -1395,26 +1268,33 @@ export async function resendOTP(request, response) {
       });
     }
 
-    if (user.verify_email) {
-      return response.status(400).json({
-        message: "Email already verified. No need to resend OTP.",
-        error: true,
-        success: false,
-      });
-    }
-
     const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     user.otp = verifyCode;
-    user.otpExpires = Date.now() + 600000; // 10 minutes
+    user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 min
     await user.save();
 
-    await sendEmailFun(
-      email,
-      "Verify your email – S N Steel Fabrication",
+    const safeEmail = String(email)
+  .normalize("NFKD")
+  .replace(/[^\x00-\x7F]/g, "")
+  .trim()
+  .toLowerCase();
+
+  
+    const emailSent = await sendEmailFun(
+      safeEmail,
+      "Your OTP – S N Steel Fabrication",
       "",
-      verificationEmail(name, verifyCode)
+      verificationEmail(user.name || "User", verifyCode)
     );
+
+    if (!emailSent) {
+  return res.status(500).json({
+    success: false,
+    error: true,
+    message: "Failed to send OTP. Please try again later.",
+  });
+}
 
     return response.status(200).json({
       message: `OTP resent to ${email}`,
@@ -1430,11 +1310,11 @@ export async function resendOTP(request, response) {
   }
 }
 
+
 export async function getRelatedProductsByCategory(req, res) {
   try {
     const { productId } = req.query;
 
-    console.log("-----------------------------------------");
 
     if (!productId) {
       return res.status(400).json({

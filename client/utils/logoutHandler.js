@@ -3,7 +3,6 @@ import { fetchDataFromApi } from "./api";
 export const handleLogout = async ({ logout, router }) => {
   try {
     const token = localStorage.getItem("accessToken");
-    console.log("Token on logout:", token);
 
     if (token) {
       try {

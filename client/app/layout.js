@@ -22,7 +22,6 @@ import AppToaster from "@/components/ToastProvider";
 import { Inter, Montserrat, Poppins } from "next/font/google";
 import MainWrapper from "@/components/MainWrapper";
 
-
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
@@ -35,16 +34,11 @@ const montserrat = Montserrat({
   variable: "--font-heading",
 });
 
-
 const poppins = Montserrat({
   subsets: ["cyrillic"],
   weight: ["600", "700", "800"],
   variable: "--poppins",
 });
-
-
-
-
 
 export const viewport = {
   themeColor: "#000000",
@@ -102,6 +96,15 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+
+  if (process.env.NODE_ENV === "production") {
+  console.log = () => {};
+  console.warn = () => {};
+  console.error = () => {};
+  console.info = () => {};
+  console.debug = () => {};
+}
+
   return (
     <html lang="en">
       <head>
@@ -143,13 +146,11 @@ export default function RootLayout({ children }) {
                             clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
                           >
                             <VisitorTracker />
-                           <MainWrapper>
-  {children}
-</MainWrapper>
+                            <MainWrapper>{children}</MainWrapper>
                           </GoogleOAuthProvider>
                           <BottomNav />
                           <Footer />
-                          <AppToaster/>
+                          <AppToaster />
                         </PrdProvider>
                       </WishlistProvider>
                     </CatProvider>

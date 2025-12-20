@@ -126,7 +126,6 @@ export async function getAllSlides(request, response) {
 export async function deleteSlide(request, response) {
     try {
 
-        console.log("cccccccccccccccccccccccccccccccccccc          ccccccccccccccccccccccccccccccccccccccccccccccccc",request.params.id)
         const slider = await HomeSliderModel.findById(request.params.id);
 
         if (!slider) {

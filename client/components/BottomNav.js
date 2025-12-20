@@ -15,6 +15,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useCat } from '@/app/context/CategoryContext';
 import Link from 'next/link';
 
+import { searchWithTracking } from "@/utils/searchWithTracking";
 import Search from './Search';
 
 const BottomNav = () => {
@@ -116,11 +117,10 @@ const [loadingSearch, setLoadingSearch] = useState(false);
 
   try {
     setLoadingSearch(true);
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/product/search/get?q=${q}`
-    );
-    const data = await res.json();
-    setMobileResults(data?.products || []);
+
+const res = await searchWithTracking(q, "mobile");
+setMobileResults(res?.products || []);
+
   } catch (err) {
     console.error("Mobile search error", err);
     setMobileResults([]);

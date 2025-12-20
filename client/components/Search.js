@@ -7,6 +7,7 @@ import { fetchDataFromApi, searchAPI } from "@/utils/api";
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { useScreen } from "@/app/context/ScreenWidthContext";
 import CloseIcon from "@mui/icons-material/Close";
+import SearchDropdownPortal from "./SearchDropdownPortal";
 
 
 
@@ -17,6 +18,9 @@ const Search = ({ onClose }) => {
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathName = usePathname();
+
+  const inputWrapperRef = useRef(null);
+const [dropdownStyle, setDropdownStyle] = useState({});
 
 
 
@@ -29,6 +33,23 @@ const Search = ({ onClose }) => {
 
 
   const inputRef = useRef(null);
+
+  useEffect(() => {
+  if (isDropdownVisible && inputWrapperRef.current) {
+    const rect = inputWrapperRef.current.getBoundingClientRect();
+
+    setDropdownStyle({
+      position: "fixed",
+      top: rect.bottom + 8,
+      left: rect.left,
+      width: rect.width,
+      zIndex: 99999,
+    });
+  }
+}, [isDropdownVisible]);
+
+
+
 
 useEffect(() => {
   if (deskSearch) containerRef.current?.focus();
@@ -96,7 +117,7 @@ useEffect(() => {
 
   const fetchResults = async () => {
     try {
-      const res = await searchAPI(`/api/product/search/get?q=${debouncedQuery}`, false);
+     const res = await searchWithTracking(debouncedQuery, "desktop");
       setResults(res?.products ?? []);
       setIsDropdownVisible(true);
     } catch (err) {
@@ -216,6 +237,8 @@ const isGELg = screenWidth>=1024;
 
       {/* Search Box */}
       <div
+
+      ref={inputWrapperRef}
   className={`
     flex items-center w-full sm:bg-white
     px-2 py-[6px]   /* height locked */
@@ -310,32 +333,50 @@ isSm?"hidden" : isMd? "w-[200px] ": isLg? "w-[110px]" : isXl1440? "w-[110px]":is
 
 
       {/* Dropdown */}
-      {isDropdownVisible && searchQuery.trim() && (
-        <ul className="absolute z-50 top-full left-0 w-full bg-white rounded-lg shadow-lg max-h-[320px] overflow-y-auto border border-gray-200 mt-2 scrollbar-hide">
-          {results.length ? (
-            results.map((item) => (
-              <li
-                key={item._id}
-                onClick={() => handleClickResult(item)}
-                className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-indigo-50 rounded-lg"
-              >
-                {item.images && (
-                  <Image
-                    src={getOptimizedCloudinaryUrl(item.images[0] || item.images)}
-                    alt={item.name}
-                    width={40}
-                    height={40}
-                    className="rounded-md object-cover"
-                  />
-                )}
-                <span className="text-indigo-900 font-medium text-sm truncate">{item.name}</span>
-              </li>
-            ))
-          ) : (
-            <li className="py-4 px-4 text-gray-500 text-sm italic">No products found</li>
-          )}
-        </ul>
+     {isDropdownVisible && searchQuery.trim() && (
+  <SearchDropdownPortal>
+    <ul
+      style={dropdownStyle}
+      className="
+        bg-white
+        rounded-xl
+        shadow-2xl
+        max-h-[320px]
+        overflow-y-auto
+        border border-gray-200
+        scrollbar-hide
+      "
+    >
+      {results.length ? (
+        results.map((item) => (
+          <li
+            key={item._id}
+            onClick={() => handleClickResult(item)}
+            className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-indigo-50"
+          >
+            {item.images && (
+              <Image
+                src={getOptimizedCloudinaryUrl(item.images[0] || item.images)}
+                alt={item.name}
+                width={40}
+                height={40}
+                className="rounded-md object-cover"
+              />
+            )}
+            <span className="text-indigo-900 font-medium text-sm truncate">
+              {item.name}
+            </span>
+          </li>
+        ))
+      ) : (
+        <li className="py-4 px-4 text-gray-500 text-sm italic">
+          No products found
+        </li>
       )}
+    </ul>
+  </SearchDropdownPortal>
+)}
+
     </div>
     </div>
 

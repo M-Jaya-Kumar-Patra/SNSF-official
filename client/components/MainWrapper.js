@@ -28,7 +28,7 @@ export default function MainWrapper({ children }) {
 
   return (
     <main
-      className={`
+      className={` 
         pt-[70px]
         mt-[10px]
         sm:mt-0

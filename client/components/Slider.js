@@ -17,7 +17,6 @@ const Slider = () => {
   const router = useRouter()
 
   useEffect(() => {
-    console.log("Slider", isCheckingToken)
     if (isCheckingToken) return; // ✅ Prevent fetching too early
 
     const getSlides = async () => {

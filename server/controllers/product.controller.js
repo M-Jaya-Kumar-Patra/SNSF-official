@@ -1116,7 +1116,6 @@ export async function getSuggestions(req, res) {
     const final = results.slice(0, desiredLimit).filter((p) => String(p._id) !== String(productId));
 
 
-    console.log("finannnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnl: ", final, final.length)
     return res.status(200).json({
       error: false,
       success: true,
