@@ -187,7 +187,7 @@ export default function Home() {
           >
             <VideoGrid
               cols={5}
-              videoIndex={[1, 5]}
+              videoIndex={[0, videosLength]}
               aspect="9/16"
               autoplay={false}
               rounded="xl"
