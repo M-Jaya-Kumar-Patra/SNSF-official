@@ -8,6 +8,7 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import { useScreen } from "@/app/context/ScreenWidthContext";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchDropdownPortal from "./SearchDropdownPortal";
+import { searchWithTracking } from "@/utils/searchWithTracking";
 
 
 

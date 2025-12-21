@@ -15,7 +15,7 @@ import ProductModel from "../models/product.model.js";
 import welcomeEmail from "../utils/EmailTemplates/welcomeEmailTemplate.js";
 import forgotPasswordEmail from "../utils/EmailTemplates/forgotPasswordTemplate.js";
 import passwordResetSuccessEmail from "../utils/EmailTemplates/passwordResetSuccessEmail.js";
-import newLoginEmail from "../utils/EmailTemplates/loginTemplate.js";
+import {newLoginEmail, newGoogleLoginEmail} from "../utils/EmailTemplates/loginTemplate.js";
 import { OAuth2Client } from "google-auth-library";
 import Session from "../models/session.model.js";
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -376,6 +376,13 @@ export async function authWithGoogle(req, res) {
     user.access_token = accessToken;
     user.refresh_token = refreshToken;
     await user.save();
+
+    await sendEmailFun(
+      email,
+      "New Login Detected – SNSF",
+      "",
+      newGoogleLoginEmail(user?.name)
+    );
 
     return res.json({
       success: true,
