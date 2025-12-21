@@ -122,6 +122,7 @@ const CurratedLooks = () => {
               sx={{
                 position: "absolute",
                 inset: 0,
+                height: "100%",
                 bgcolor: "rgba(203,213,225,0.5)",
               }}
             />

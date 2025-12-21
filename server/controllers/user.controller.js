@@ -362,6 +362,7 @@ export async function authWithGoogle(req, res) {
     });
 
     
+    
     const cookieOptions = {
       httpOnly: true,
       secure: false,

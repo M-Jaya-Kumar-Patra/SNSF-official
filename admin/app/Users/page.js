@@ -16,6 +16,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CloseIcon from '@mui/icons-material/Close';
 import { fetchDataFromApi } from '@/utils/api';
 import { IoMdClose } from "react-icons/io";
+import { formatToIST } from '@/utils/dateFormater';
 
 
 
@@ -84,6 +85,7 @@ const Admins = () => {
               <th className="px-3 py-2 text-left">Avatar</th>
               <th className="px-3 py-2 text-left">Name</th>
               <th className="px-3 py-2 text-left">Contact</th>
+              <th className="px-3 py-2 text-left">User since</th>
               <th className="px-3 py-2 text-left">Last Login</th>
               <th className="px-3 py-2 text-left">Last Activity</th>
               <th className="px-3 py-2 text-center">Wishlist</th>
@@ -104,32 +106,19 @@ const Admins = () => {
                 </td>
                 <td className="px-3 py-3 font-medium text-slate-800">{user.name}</td>
                 <td className="px-3 py-3 text-slate-600">{user.email} {user.phone}</td>
+                
+       <td className="px-3 py-3 text-slate-600 whitespace-nowrap">
+   {formatToIST(user.createdAt)}
+</td>
+
+
+                 <td className="px-3 py-3 text-slate-600 whitespace-nowrap">
+   {formatToIST(user.last_login_date)}
+</td>
+
+
                 <td className="px-3 py-3 text-slate-600 whitespace-nowrap">
-                  {user.last_login_date && (
-                    <>
-                      {new Date(user.last_login_date).toLocaleDateString("en-IN", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}{" "}
-                      {new Date(user.last_login_date).toLocaleTimeString("en-IN", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        hour12: true,
-                      })}
-                    </>
-                  )}
-                </td>
-                <td className="px-3 py-3 text-slate-600 whitespace-nowrap">
-  {user?.lastActivity
-    ? new Date(user.lastActivity).toLocaleString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    : "—"}
+  {formatToIST(user.lastActivity)}
 </td>
 
                 <td className="px-3 py-3 text-center text-slate-900 font-semibold">{user.wishlist.length}</td>

@@ -184,7 +184,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300">
+    <div className="min-h-screen py-5 w-full flex items-center justify-center bg-gradient-to-br from-slate-100 via-slate-200 to-slate-300">
       <div className="w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
         <div className="hidden md:flex relative">
           <Image

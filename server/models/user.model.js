@@ -47,10 +47,11 @@ const userSchema = new mongoose.Schema({
      type: String, 
      default: ""
     },
-  last_login_date: {
-    type: Date,
-    default: () => new Date(Date.now() + IST_OFFSET),
-  },
+  
+    last_login_date: {
+      type: Date,   // ← keep Date
+      default: null // ← no IST math
+    },
   status: {
     type: String,
     enum: ["Active", "Inactive", "Suspended"],
@@ -80,13 +81,6 @@ const userSchema = new mongoose.Schema({
   googleId: { type: String, unique: true, sparse: true },
 }, { timestamps: true });
 
-// Pre-save hook to update last_login_date to IST if modified or new
-userSchema.pre("save", function (next) {
-  if (this.isModified("last_login_date") || !this.last_login_date) {
-    this.last_login_date = new Date(Date.now() + IST_OFFSET);
-  }
-  next();
-});
 
 const UserModel = mongoose.models.User || mongoose.model("User", userSchema);
 

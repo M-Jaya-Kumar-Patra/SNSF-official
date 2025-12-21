@@ -140,8 +140,8 @@ const StyleYourSpaceSection = () => {
                         overflow-hidden
                       "
                           >
-                            <div className="relative w-full aspect-[3/5] md:aspect-[5/3] lg:aspect-[2/1] xl:aspect-video">
-                              <Skeleton
+                            <div className="relative !w-full aspect-[3/5] md:!aspect-[5/3] lg:!aspect-[2/1] xl:!aspect-video">
+                              <Skeleton 
                                 variant="rectangular"
                                 sx={{
                                   position: "absolute",

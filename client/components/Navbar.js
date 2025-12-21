@@ -679,21 +679,20 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
             <ul className="flex items-start gap-4  scrollbar-hide">
               {!catData || catData.length === 0
                 ? Array.from({ length: 7 }).map((_, index) => (
-                    <li
-                      key={`skeleton-${index}`}
-                      className=" h-[70px] md:w-[85px] lg:w-[110px] xl:w-[130px]"
-                    >
-                      <Skeleton
-                        variant="rectangular"
-                        animation="wave"
-                        width={72}
-                        height={72}
-                        sx={{
-                          bgcolor: "rgba(203,213,225,0.5)",
-                          borderRadius: "12px",
-                        }}
-                      />
-                    </li>
+                   <li
+  key={`skeleton-${index}`}
+  className="h-[70px] md:w-[85px] lg:w-[110px] xl:w-[130px]"
+>
+  <Skeleton
+    variant="rectangular"
+    animation="wave"
+    className="!h-[70px] !md:w-[85px] !lg:w-[110px] !xl:w-[130px] !rounded-xl"
+    sx={{
+      bgcolor: "rgba(203,213,225,0.5)",
+    }}
+  />
+</li>
+
                   ))
                 : [...catData]
                     .sort((a, b) => a.sln - b.sln)
