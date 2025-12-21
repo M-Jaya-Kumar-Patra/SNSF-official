@@ -79,7 +79,25 @@ const userSchema = new mongoose.Schema({
     },
   },
   googleId: { type: String, unique: true, sparse: true },
+
+  lastRecommendationEmailAt: {
+  type: Date,
+  default: null,
+},
+
+lastRecommendationSignature: {
+  type: String,
+  default: null,
+},
+
+lastRecommendedProductIds: {
+  type: [String],
+  default: [],
+}
+
+
 }, { timestamps: true });
+
 
 
 const UserModel = mongoose.models.User || mongoose.model("User", userSchema);

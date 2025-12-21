@@ -1,3 +1,5 @@
+import dns from "dns";
+dns.setDefaultResultOrder("ipv4first");
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -23,6 +25,9 @@ import styleSpaceRouter from './route/styleYourSpace.route.js';
 import posterRouter from './route/poster.route.js';
 import analyticsRouter from './route/analytics.route.js';
 import videoRouter from './route/video.route.js';
+import { startRecommendationCron } from "./cron/recommendation.cron.js";
+
+
 
 const app = express();
 
@@ -112,6 +117,7 @@ connectDB().then(() => {
   const port = process.env.PORT || 8000;
   app.listen(port, () => {
     console.log(`✅ Server is running on port ${port}`);
+    startRecommendationCron();
   });
 }).catch(err => {
   console.error('❌ Failed to connect to database:', err);

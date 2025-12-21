@@ -900,3 +900,27 @@ export async function resendOTP(request, response){
 
 
 
+
+import promotionalTemplate from "../utils/EmailTemplates/prommotionalEmail.js";
+
+export async function promotionalEmail(req, res) {
+  try {
+    const { to, name, subject, content, isHtml } = req.body;
+
+    const html = promotionalTemplate(name, content, isHtml);
+
+    await sendEmailFun(
+      to,
+      subject,
+      isHtml ? "" : content,
+      html
+    );
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
+
+
+

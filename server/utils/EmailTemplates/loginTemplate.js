@@ -1,6 +1,3 @@
-// =====================
-// NORMAL LOGIN EMAIL
-// =====================
 const newLoginEmail = (
   name = "Valued Customer",
   time = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })
@@ -52,24 +49,45 @@ const newLoginEmail = (
       If you don’t recognize this activity, please secure your account immediately.
     </p>
 
+    <!-- CTA Buttons -->
     <div style="text-align:center;">
       <a href="https://snsteelfabrication.com/profile" target="_blank"
         style="display:inline-block;background:#0f172a;color:#ffffff;text-decoration:none;
-        padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;">
+        padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;margin-bottom:10px;">
         Review Account Activity
       </a>
+
+      <br />
+
+      <a href="https://snsteelfabrication.com/address" target="_blank"
+        style="display:inline-block;background:#ffffff;color:#0f172a;text-decoration:none;
+        padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;
+        border:1px solid #0f172a;">
+        Add Delivery Address
+      </a>
     </div>
+
   </div>
 
   <!-- Footer -->
   <div style="background:#f9fafb;padding:22px 24px;text-align:center;font-size:12px;color:#6b7280;">
-    <p style="margin:0 0 6px;">S N Steel Fabrication — Crafted Furniture for Modern Living</p>
-    <p style="margin:0;">Ganjam, Odisha – 761146</p>
-    <p style="margin:6px 0 0;">📞 +91 9776501230 | ✉️ support@snsteelfabrication.com</p>
+    <p style="margin:0 0 6px;">
+      S N Steel Fabrication — Crafted Furniture for Modern Living
+    </p>
+    <p style="margin:0;">
+      New Burupada, Near Hanuman Temple, Via-Hinjilicut, Ganjam, Odisha – 761146
+    </p>
+    <p style="margin:6px 0 0;">
+      📞 +91 9776501230 | ✉️ support@snsteelfabrication.com
+    </p>
+    <p style="margin-top:14px;font-size:11px;color:#9ca3af;">
+      You’re receiving this email because your SNSF account was accessed.
+    </p>
   </div>
 
 </div>
 `;
+
 
 
 // =====================
@@ -137,9 +155,18 @@ const newGoogleLoginEmail = (
 
   <!-- Footer -->
   <div style="background:#f9fafb;padding:22px 24px;text-align:center;font-size:12px;color:#6b7280;">
-    <p style="margin:0 0 6px;">S N Steel Fabrication — Crafted Furniture for Modern Living</p>
-    <p style="margin:0;">Ganjam, Odisha – 761146</p>
-    <p style="margin:6px 0 0;">📞 +91 9776501230 | ✉️ support@snsteelfabrication.com</p>
+    <p style="margin:0 0 6px;">
+      S N Steel Fabrication — Crafted Furniture for Modern Living
+    </p>
+    <p style="margin:0;">
+      New Burupada, Near Hanuman Temple, Via-Hinjilicut, Ganjam, Odisha – 761146
+    </p>
+    <p style="margin:6px 0 0;">
+      📞 +91 9776501230 | ✉️ support@snsteelfabrication.com
+    </p>
+    <p style="margin-top:14px;font-size:11px;color:#9ca3af;">
+      You’re receiving this email because your SNSF account was accessed.
+    </p>
   </div>
 
 </div>

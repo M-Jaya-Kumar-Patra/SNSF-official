@@ -6,6 +6,8 @@ import { fetchDataFromApi } from "@/utils/api";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Josefin_Sans } from "next/font/google";
+import { useAuth } from "@/app/context/AuthContext";
+
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
@@ -14,7 +16,12 @@ const Recommendations = ({ limit = 10 }) => {
   const [hydrated, setHydrated] = useState(false);
   const [loading, setLoading] = useState(true);
 
+
+
   const router = useRouter();
+
+
+  const {userData} = useAuth();
 
   useEffect(() => setHydrated(true), []);
 
@@ -26,14 +33,18 @@ const Recommendations = ({ limit = 10 }) => {
 
     const visitorId = getOrCreateVisitorId();
     const sessionId = getOrCreateSessionId();
+    const userId = userData?._id;
+
 
     try {
       const res = await fetchDataFromApi(
-        `/api/recommendations/getRecommendations?visitorId=${visitorId}&sessionId=${sessionId}&limit=${limit}`,
+        `/api/recommendations/getRecommendations?userId=${userId}&visitorId=${visitorId}&sessionId=${sessionId}&limit=${limit}`,
         false
       );
 
       if (!res?.error) {
+    console.log("EEEEEEEEEEEEEEEEEEEE",res.data)
+
         setRecommended(res.data || []);
       }
     } catch (err) {
@@ -48,7 +59,17 @@ const Recommendations = ({ limit = 10 }) => {
 
 
   return (
-    <div className=" p-3 sm:p-6 pb-2 border rounded-xl shadow-2xl bg-white">
+    <div
+  className="
+    w-full
+    bg-white
+    p-3 sm:p-6
+    pb-2
+    border
+    rounded-xl
+    shadow-2xl
+  "
+>
       <h1
 className="section-title"    >
         Recommended for You
@@ -57,16 +78,17 @@ className="section-title"    >
       {/* SCROLL AREA */}
       <div className="mt-2 sm:mt-4 overflow-x-auto scrollbar-hide scroll-smooth">
         <div
-          className="
-            grid gap-4 sm:gap-6
-            grid-rows-1
-            grid-flow-col
-            auto-cols-[minmax(100px,1fr)]
-            sm:-cols-[minmax(120px,1fr)]
+  className="
+    grid
+    grid-flow-col
+    auto-cols-[minmax(120px,180px)]
+    sm:auto-cols-[minmax(160px,220px)]
+    lg:auto-cols-[minmax(200px,240px)]
+    gap-4 sm:gap-6
+    pb-1 sm:pb-4
+  "
+>
 
-            pb-1 sm:pb-4
-          "
-        >
   {loading ? (
   /* ===== RECOMMENDATIONS SKELETON ===== */
   Array.from({ length: limit }).map((_, i) => (

@@ -39,6 +39,11 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { MdOutlineMessage } from "react-icons/md";
 import { trackVisitor } from "@/lib/tracking";
 import { useScreen } from "@/app/context/ScreenWidthContext";
+import Skeleton from "@mui/material/Skeleton";
+import AddressCardSkeleton from "@/components/AddressCardSkeleton";
+
+
+
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -113,6 +118,10 @@ const Account = () => {
 
   const { isSm, isMd, isLg, isXl } = useScreen();
 
+  const [showDeliveryPopup, setShowDeliveryPopup] = useState(false);
+const [isDeliverable, setIsDeliverable] = useState(null);
+
+
   const [address, setAddress] = useState({
     name: "",
     phone: "",
@@ -168,6 +177,8 @@ const Account = () => {
     }
   };
 
+  
+
   const handleChangeSelectInput = (event) => {
     setState(event.target.value);
   };
@@ -194,6 +205,8 @@ const Account = () => {
     if (!response.error) {
       alert.alertBox({ type: "success", msg: "Address saved" });
       setShowAddAddressForm(false);
+      setIsDeliverable(response.deliverable);
+      setShowDeliveryPopup(true);
       setAddress({
         name: "",
         phone: "",
@@ -272,8 +285,11 @@ const Account = () => {
       );
 
       if (!response.error) {
-        alert.alertBox({ type: "success", msg: "Address updated" });
         setShowEditModal(false);
+        if (response.pinChanged) {
+          setIsDeliverable(response.deliverable);
+          setShowDeliveryPopup(true);
+        }
         fetchAddresses();
       } else {
         alert.alertBox({ type: "error", msg: "Failed to update address" });
@@ -294,6 +310,23 @@ const Account = () => {
     if (!url?.includes("/upload/")) return url;
     return url.replace("/upload/", "/upload/w_140,h_140,c_fill,f_auto,q_90/");
   };
+
+  const formatAddress = (address) => {
+  if (!address) return "";
+
+  const line = [
+    address.locality,
+    address.city,
+    address.state,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  return address.pin ? `${line} - ${address.pin}` : line;
+};
+
+
+
 
   return (
     <>
@@ -397,84 +430,97 @@ const Account = () => {
                   Add Address
                 </button>
               )}
-              {addressArray && addressArray.length > 0 ? (
-                addressArray.reverse().map((address, index) => (
-                  <div
-                    key={index}
-                    className="border p-3 sm:p-5 my-2 sm:my-4 rounded-md sm:rounded-xl shadow-md bg-white flex justify-between hover:shadow-lg transition duration-300"
-                  >
-                    <div>
-                      <h3 className="text-md sm:text-lg font-bold text-black mb-[2px] sm:mb-1">
-                        {address?.name}
-                      </h3>
-                      <p className="text-gray-800 text-sm sm:text-md mb-[2px] sm:mb-1">
-                        {address.address}
-                      </p>
-                      <p className="text-gray-700 text-sm sm:text-md mb-[2px] sm:mb-1">
-                        {address.locality && `${address.locality}, `}
-                        {address.city && `${address.city}, `}
-                        {address.state && `${address.state}`} - {address.pin}
-                      </p>
-                      <p className="text-gray-600 mb-[2px] sm:mb-1">
-                        Phone: {address.phone}{" "}
-                        {address.altPhone && `| Alt: ${address.altPhone}`}
-                      </p>
-                      {address.landmark && (
-                        <p className="text-gray-500 italic mb-[2px] sm:mb-1">
-                          {address.landmark}
-                        </p>
-                      )}
-                      <p className="text-xs sm:text-sm text-gray-500">
-                        {address.addressType}
-                      </p>
-                    </div>
-                    <div className="flex gap-3 sm:gap-4 pr-1 sm:pr-2 pt-1">
-                      <button
-                        onClick={(e) => toggleEditAddress(e, address)}
-                        className="p-1 rounded transition hover:scale-105 active:scale-95"
-                        aria-label="Edit Address"
-                      >
-                        <FaEdit size={18} className="text-gray-700" />
-                      </button>
-                      <button
-                        onClick={(e) =>
-                          handleClickOpenDeleteAlert(e, address._id)
-                        }
-                        className="p-1 rounded transition hover:scale-105 active:scale-95 "
-                        aria-label="Delete Address"
-                      >
-                        <MdDelete size={18} className="text-red-600" />
-                      </button>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="flex flex-col items-center justify-center mt-20 text-center">
-                  {/* Lottie Animation */}
-                  <div className="w-[200px] sm:w-[260px] mb-4">
-                    <DotLottieReact
-                      src="https://lottie.host/809b66b0-6413-4599-8b83-250f2a2d4a5f/ck8wkMMQRM.lottie"
-                      loop
-                      autoplay
-                    />
-                  </div>
+              {isLoading ? (
+  Array.from({ length: 2 }).map((_, i) => (
+    <AddressCardSkeleton key={i} />
+  ))
+) : addressArray.length > 0 ? (
+  addressArray
+    .slice()
+    .reverse()
+    .map((address, index) => (
+      <div
+        key={index}
+        className="border p-3 sm:p-5 my-2 sm:my-4 rounded-md sm:rounded-xl shadow-md bg-white flex justify-between hover:shadow-lg transition duration-300"
+      >
+        <div>
+          <h3 className="text-md sm:text-lg font-bold text-black mb-[2px] sm:mb-1">
+            {address?.name}
+          </h3>
 
-                  {/* Heading */}
-                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-700">
-                    No Addresses Added
-                  </h2>
+          <p className="text-gray-800 text-sm sm:text-md mb-[2px] sm:mb-1">
+            {address.address}
+          </p>
 
-                  {/* Subtext */}
-                  <p className="text-gray-500 mt-2 text-sm sm:text-base max-w-sm">
-                    You haven’t added any addresses yet. Add a delivery address
-                    to make your future orders faster and easier!
-                  </p>
-                </div>
+          <p className="text-gray-700 text-sm sm:text-md mb-[2px] sm:mb-1">
+            {[address.locality, address.city, address.state]
+              .filter(Boolean)
+              .join(", ")}
+            {address.pin && ` - ${address.pin}`}
+          </p>
+
+          <p className="text-gray-600 mb-[2px] sm:mb-1">
+            Phone: {address.phone}
+            {address.altPhone && ` | Alt: ${address.altPhone}`}
+          </p>
+
+          {address.landmark && (
+            <p className="text-gray-500 italic mb-[2px] sm:mb-1">
+              {address.landmark}
+            </p>
+          )}
+
+          <p className="text-xs sm:text-sm text-gray-500">
+            {address.addressType}
+          </p>
+        </div>
+
+        <div className="flex gap-3 sm:gap-4 pr-1 sm:pr-2 pt-1">
+          <button
+            onClick={(e) => toggleEditAddress(e, address)}
+            className="p-1 rounded transition hover:scale-105 active:scale-95"
+          >
+            <FaEdit size={18} className="text-gray-700" />
+          </button>
+
+          <button
+            onClick={(e) =>
+              handleClickOpenDeleteAlert(e, address._id)
+            }
+            className="p-1 rounded transition hover:scale-105 active:scale-95"
+          >
+            <MdDelete size={18} className="text-red-600" />
+          </button>
+        </div>
+      </div>
+    ))
+) : (
+                  <div className="flex flex-col items-center justify-center mt-20 text-center">
+                    {/* Lottie Animation */}
+                    <div className="w-[200px] sm:w-[260px] mb-4">
+                      <DotLottieReact
+                        src="https://lottie.host/809b66b0-6413-4599-8b83-250f2a2d4a5f/ck8wkMMQRM.lottie"
+                        loop
+                        autoplay
+                      />
+                    </div>
+
+                    {/* Heading */}
+                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-700">
+                      No Addresses Added
+                    </h2>
+
+                    {/* Subtext */}
+                    <p className="text-gray-500 mt-2 text-sm sm:text-base max-w-sm">
+                      You haven’t added any addresses yet. Add a delivery address
+                      to make your future orders faster and easier!
+                    </p>
+                  </div>
               )}
             </div>
 
             {showAddAddressForm && (
-              <div className="fixed inset-0 z-[300] flex justify-center items-start bg-black bg-opacity-50 overflow-y-auto">
+              <div className="fixed inset-0 z-[1000] flex justify-center items-start bg-black bg-opacity-50 overflow-y-auto">
                 <div className="modal-form w-[850px] relative max-h-[90vh] my-9 p-5 rounded-md bg-white overflow-y-auto scrollbar-hide">
                   <div className="text-black  flex justify-between pb-2 border-b-2 border-slate-400 text-[23px] font-semibold">
                     Add address
@@ -681,7 +727,7 @@ const Account = () => {
             </Dialog>
 
             {showEditModal && (
-              <div className="fixed inset-0 z-[300] flex justify-center items-start bg-black bg-opacity-50 overflow-y-auto">
+              <div className="fixed inset-0 z-[1000] flex justify-center items-start bg-black bg-opacity-50 overflow-y-auto">
                 <div className="modal-form w-[850px] relative max-h-[90vh] my-9 p-5 rounded-md bg-white overflow-y-auto scrollbar-hide">
                   <div className="text-black  flex justify-between pb-2 border-b-2 border-slate-400 text-[23px] font-semibold">
                     Edit address
@@ -845,6 +891,49 @@ const Account = () => {
                 </div>
               </div>
             )}
+
+            {showDeliveryPopup && (
+  <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60">
+    <div className="w-[90%] sm:w-[420px] bg-white rounded-xl shadow-2xl p-6 text-center">
+
+      <div
+        className={`mx-auto mb-4 w-16 h-16 flex items-center justify-center rounded-full ${
+          isDeliverable ? "bg-green-100" : "bg-red-100"
+        }`}
+      >
+        <span className={`text-3xl font-bold ${
+          isDeliverable ? "text-green-600" : "text-red-600"
+        }`}>
+          {isDeliverable ? "✓" : "✕"}
+        </span>
+      </div>
+
+      <h2 className="text-xl font-semibold text-gray-900">
+        {isDeliverable
+          ? "Delivery Available 🎉"
+          : "Delivery Not Available"}
+      </h2>
+
+      <p className="text-gray-600 mt-2 text-sm">
+        {isDeliverable
+          ? "Good news! We deliver furniture to this address."
+          : "Sorry, we currently do not deliver to this pincode."}
+      </p>
+
+      <button
+        onClick={() => setShowDeliveryPopup(false)}
+        className={`mt-6 w-full py-2 rounded-lg font-medium text-white ${
+          isDeliverable
+            ? "bg-green-600 hover:bg-green-700"
+            : "bg-gray-700 hover:bg-gray-800"
+        }`}
+      >
+        OK, Got it
+      </button>
+    </div>
+  </div>
+)}
+
           </div>
         </div>
       </div>

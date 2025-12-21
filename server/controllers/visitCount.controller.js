@@ -129,6 +129,7 @@ export const addVisitCount = async (req, res) => {
 
     // ❌ Ignore your own devices
     const IGNORED_DEVICE_IDS = [
+      "c56a8cdb-0a17-4cb5-b3f9-5c0180b5857f",
     ];
     if (IGNORED_DEVICE_IDS.includes(deviceId)) {
       return res.status(200).json({

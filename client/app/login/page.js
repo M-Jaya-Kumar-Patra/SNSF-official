@@ -22,6 +22,7 @@ import { useAuth } from "../context/AuthContext";
 import SignInWithGoogle from "@/components/SignInWithGoogle";
 import { trackVisitor } from "@/lib/tracking";
 import Loading from "@/components/Loading";
+import { getOrCreateVisitorId } from "@/lib/tracking";
 
 const righteous = Righteous({ subsets: ["latin"], weight: ["400"] });
 const poppins = Poppins({ subsets: ["latin"], weight: "300" });
@@ -36,6 +37,9 @@ export default function Login() {
     useAuth();
 
   const [showPopUp, setShowPopUp] = useState(null);
+
+  const visitorId = getOrCreateVisitorId();
+
 
   if (isCheckingToken)
     return (
@@ -103,7 +107,7 @@ export default function Login() {
     try {
       const response = await postData(
         "/api/user/login",
-        { email, password },
+        { email, password, visitorId },
         false
       );
 

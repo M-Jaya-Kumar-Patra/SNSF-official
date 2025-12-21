@@ -15,8 +15,7 @@ export default function RecentlyViewed() {
 
  useEffect(() => {
   const fetchRecentlyViewed = async () => {
-    const viewed =
-      JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+    const viewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
 
     if (viewed.length === 0) {
       setLoading(false);
@@ -31,7 +30,12 @@ export default function RecentlyViewed() {
       );
 
       if (!res?.error) {
-        setProducts(res?.data || []);
+        // 🔥 FIX: maintain correct order
+        const orderedProducts = viewed
+          .map(id => res.data.find(p => p._id === id))
+          .filter(Boolean);
+
+        setProducts(orderedProducts);
       }
     } catch (err) {
       console.error(err);
@@ -48,26 +52,29 @@ export default function RecentlyViewed() {
     <div
   className={
     products.length > 0
-      ? "mx-auto mt-2 sm:mt-4 md:mt-6 lg:mt-0 px-2 sm:px-4 md:px-6  p-3 sm:p-6 pb-2 border rounded-xl shadow-2xl bg-white"
-      : "hidden"
+      ? "w-full bg-white p-3 sm:p-6 pb-2 border rounded-xl shadow-2xl"  : "hidden"
   }
 >
+
 
       <h2 className="section-title">
   Recently Viewed
 </h2>
 
       {/* SCROLL AREA */}
-      <div className="mt-2 sm:mt-4  overflow-x-auto scrollbar-hide scroll-smooth">
+      <div className="mt-2  sm:mt-4  overflow-x-auto scrollbar-hide scroll-smooth">
         <div
-          className="
-            grid gap-4 sm:gap-6 
-            grid-rows-1
-            grid-flow-col
-            auto-cols-[minmax(100px,1fr)]
-            sm:-cols-[minmax(120px,1fr)]
-            pb-1 sm:pb-4
-          ">
+  className="
+    grid
+    grid-flow-col
+    auto-cols-[minmax(120px,160px)]
+    sm:auto-cols-[minmax(160px,200px)]
+    lg:auto-cols-[minmax(200px,220px)]
+    gap-4 sm:gap-6
+    pb-1 sm:pb-4
+  "
+>
+
           {loading ? (
   /* ===== RECENTLY VIEWED SKELETON ===== */
   Array.from({ length: 6 }).map((_, i) => (

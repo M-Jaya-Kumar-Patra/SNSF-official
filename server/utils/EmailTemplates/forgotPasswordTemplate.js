@@ -8,14 +8,14 @@ const forgotPasswordEmail = (
   <div style="background:#0f172a;padding:28px 24px;text-align:center;">
     <img
       src="https://snsteelfabrication.com/images/logo.png"
-      alt="SNSF"
+      alt="S N Steel Fabrication"
       style="height:56px;margin-bottom:14px;"
     />
     <h1 style="margin:0;font-size:22px;font-weight:600;color:#ffffff;">
-      Password Reset Request
+      Reset Your Password
     </h1>
     <p style="margin:6px 0 0;font-size:14px;color:#cbd5f5;">
-      Secure access to your account
+      Secure access to your S N Steel Fabrication account
     </p>
   </div>
 
@@ -51,11 +51,11 @@ const forgotPasswordEmail = (
 
     <p style="font-size:14px;line-height:1.6;color:#4b5563;margin:0 0 22px;">
       This OTP is valid for <strong>10 minutes</strong>.
-      For your security, please do not share this code with anyone.
+      For security reasons, please do not share this code with anyone.
     </p>
 
     <p style="font-size:14px;line-height:1.6;color:#6b7280;margin:0 0 26px;">
-      If you did not request a password reset, you can safely ignore this email.
+      If you did not request this password reset, you can safely ignore this email.
       Your account will remain secure.
     </p>
 
@@ -73,10 +73,9 @@ const forgotPasswordEmail = (
           border-radius:8px;
           font-size:14px;
           font-weight:600;
-          letter-spacing:0.3px;
         "
       >
-        Return to Website
+        Visit Our Website
       </a>
     </div>
 

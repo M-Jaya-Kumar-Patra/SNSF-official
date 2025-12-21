@@ -1,6 +1,8 @@
 import { Router } from "express";
   
-import { registerAdminController, verifyEmailController, loginController, logoutController, adminAvatarController, removeImageFromCloudinary, updateAdminDetails, forgotPasswordController, verifyForgotPasswordOtp, resetPassword, refreshToken, adminDetails, changePassword, resendOTP} from "../controllers/admin.controller.js";
+import { registerAdminController, verifyEmailController, loginController, logoutController, adminAvatarController, removeImageFromCloudinary, updateAdminDetails, forgotPasswordController, verifyForgotPasswordOtp, resetPassword, refreshToken, adminDetails, changePassword, resendOTP, } from "../controllers/admin.controller.js";
+
+import { promotionalEmail } from "../controllers/admin.controller.js";
 
 import auth from "../middlewares/auth.js"; // Adjust the path as necessary
 import upload from "../middlewares/multer.js";
@@ -24,6 +26,8 @@ adminRouter.post('/refresh-token', refreshToken)
 adminRouter.get('/admin-details', auth, adminDetails)
 adminRouter.post('/changePassword', auth, changePassword)
 adminRouter.post("/resendOTP", resendOTP)
+adminRouter.post("/send-promotional-email", promotionalEmail)
+
 
 
 adminRouter.get("/admin/stats", getAdminStats);

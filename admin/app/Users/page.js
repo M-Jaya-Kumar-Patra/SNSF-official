@@ -14,7 +14,7 @@ import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CloseIcon from '@mui/icons-material/Close';
-import { fetchDataFromApi } from '@/utils/api';
+import { fetchDataFromApi, postData } from '@/utils/api';
 import { IoMdClose } from "react-icons/io";
 import { formatToIST } from '@/utils/dateFormater';
 
@@ -25,7 +25,32 @@ const Admins = () => {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selectedUser, setSelectedUser] = useState(null)
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showPromoMail, setShowPromoMail] = useState(false);
+
+const [promoSubject, setPromoSubject] = useState("");
+const [promoContent, setPromoContent] = useState("");
+const [isHtml, setIsHtml] = useState(false);
+
+const sendPromotionalMail = async () => {
+  if (!promoSubject || !promoContent) {
+    alert("Subject and content required");
+    return;
+  }
+
+  await postData("/api/admin/send-promotional-email", {
+      to: selectedUser.email,
+      name: selectedUser.name,
+      subject: promoSubject,
+      content: promoContent,
+      isHtml,
+    },
+  );
+
+  setShowPromoMail(false);
+};
+
+
 
   useEffect(() => {
     fetchDataFromApi(`/api/user/getAllUsers`).then((res) => {
@@ -38,6 +63,14 @@ const Admins = () => {
     });
   }, []);
 
+  useEffect(() => {
+  if (showPromoMail) {
+    setPromoSubject("");
+    setPromoContent("");
+    setIsHtml(false);
+  }
+}, [showPromoMail]);
+
   const handleChangePage = (_, newPage) => setPage(newPage);
   const handleChangeRowsPerPage = (e) => {
     setRowsPerPage(+e.target.value);
@@ -47,6 +80,37 @@ const Admins = () => {
   const handleSelectUser = (user)=>{
     setSelectedUser(user)
   }
+
+const Section = ({ title, children }) => (
+  <div className="bg-white border rounded-xl p-6 shadow-sm">
+    <h3 className="text-lg font-semibold text-slate-900 mb-4">
+      {title}
+    </h3>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {children}
+    </div>
+  </div>
+);
+
+const Info = ({ label, value }) => (
+  <div className="flex justify-between items-center text-sm">
+    <span className="text-slate-600">{label}</span>
+    <span className="font-medium text-slate-900">
+      {value ?? "—"}
+    </span>
+  </div>
+);
+
+
+const Field = ({ label, children }) => (
+  <div>
+    <label className="block text-sm font-semibold text-slate-700 mb-1">
+      {label}
+    </label>
+    {children}
+  </div>
+);
+
 
 
   return (
@@ -96,7 +160,7 @@ const Admins = () => {
           </thead>
           <tbody>
             {users?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => (
-              <tr key={user._id} className="bg-slate-50 hover:bg-slate-100 rounded-lg shadow-sm transition"
+              <tr key={user._id} className="bg-slate-50 hover:bg-slate-100 rounded-lg shadow-sm transition cursor-pointer"
               
                       onClick={()=>handleSelectUser(user)}
               >
@@ -133,12 +197,18 @@ const Admins = () => {
                     {user.status}
                   </span>
                 </td>
-                <td className="px-3 py-3 flex gap-2 items-center">
-                  <ModeEditOutlineIcon
-                    className="text-sky-600 hover:text-sky-800 cursor-pointer"
-                  />
-                  <DeleteOutlineIcon className="text-rose-600 hover:text-rose-800 cursor-pointer" />
-                </td>
+                <td
+  className="px-3 py-3 flex gap-2 items-center"
+  onClick={(e) => e.stopPropagation()}
+>
+  <ModeEditOutlineIcon
+    className="text-sky-600 hover:text-sky-800 cursor-pointer"
+  />
+  <DeleteOutlineIcon
+    className="text-rose-600 hover:text-rose-800 cursor-pointer"
+  />
+</td>
+
               </tr>
             ))}
           </tbody>
@@ -158,79 +228,223 @@ const Admins = () => {
       />
 
 
-            {selectedUser && (
-              <div className='flex w-full h-full justify-center items-center bg-black bg-opacity-50 fixed top-0 left-0 z-50'
-              >
-                    <div className='w-[90%] h-[90%] bg-white rounded-md text-black py-3 px-6 overflow-auto scrollbar-hide'>
+      {selectedUser && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+    <div className="relative w-[96%] md:w-[85%] xl:w-[70%] h-[92%] bg-white rounded-2xl shadow-2xl overflow-hidden">
 
-                      <div className='borderf  flex justify-between items-center'>
+      {/* ================= HEADER ================= */}
+      <div className="flex items-center justify-between px-6 py-4 border-b bg-slate-50">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-900">
+            User Details
+          </h2>
+          <p className="text-sm text-slate-600 mt-1">
+            User ID: <span className="font-mono text-slate-800">{selectedUser._id}</span>
+          </p>
+        </div>
 
-                        <h1 className='text-black text-lg '>_id: <span className='text-indigo-900 text-lg
-                         font-semibold'>{selectedUser._id}</span></h1>
-                         <IoMdClose className='hover:bg-slate-100 rounded-full text-red-600 text-4xl p-1' onClick={()=>setSelectedUser(null)}/>
-                         
+        <button
+          onClick={() => setSelectedUser(null)}
+          className="p-2 rounded-full hover:bg-slate-200 transition"
+        >
+          <IoMdClose className="text-3xl text-slate-800" />
+        </button>
+      </div>
 
-                      </div>
+      {/* ================= BODY ================= */}
+      <div className="h-[calc(100%-80px)] overflow-y-auto px-6 py-6 space-y-8">
+<button
+  onClick={() => setShowPromoMail(true)}
+  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow"
+>
+  Send Promotional Email
+</button>
 
-                     <div className='flex justify-between h-auto my-3'>
-                      <div> <p className='py-1 text-black font-semibold font-sans text-xl'>User name: <span className='text-blue-900'>{selectedUser.name}</span></p>
-                      <p className='py-1 text-black font-semibold font-sans text-xl'>Phone: <span className='py-1 text-blue-900'>{selectedUser.phone}</span></p><p className='py-1 text-black font-semibold font-sans text-xl'>User email: <span className='py-1 text-blue-900'>{selectedUser.email}</span></p> </div>
+        {/* ================= PROFILE CARD ================= */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 bg-white border rounded-xl p-6 shadow-sm">
+          <img
+            src={selectedUser.avatar || "/images/account.png"}
+            alt="avatar"
+            className="w-24 h-24 rounded-full border-2 border-slate-300 object-cover"
+          />
+
+          <div className="flex-1 space-y-1">
+            <p className="text-xl font-semibold text-slate-900">
+              {selectedUser.name}
+            </p>
+            <p className="text-slate-700">{selectedUser.email}</p>
+            <p className="text-slate-700">
+              {selectedUser.phone || "No phone number"}
+            </p>
+          </div>
+
+          <span
+            className={`px-4 py-1.5 text-sm font-semibold rounded-full
+              ${
+                selectedUser.status === "Active"
+                  ? "bg-green-100 text-green-800"
+                  : selectedUser.status === "Inactive"
+                  ? "bg-yellow-100 text-yellow-800"
+                  : "bg-red-100 text-red-800"
+              }`}
+          >
+            {selectedUser.status}
+          </span>
+        </div>
+
+        {/* ================= ACCOUNT INFO ================= */}
+        <Section title="Account Information">
+          <Info label="User since" value={formatToIST(selectedUser.createdAt)} />
+          <Info label="Last login" value={formatToIST(selectedUser.last_login_date)} />
+          <Info label="Updated at" value={formatToIST(selectedUser.updatedAt)} />
+          <Info label="Email verified" value={selectedUser.verify_email ? "Yes" : "No"} />
+          <Info label="Wishlist items" value={selectedUser.wishlist?.length || 0} />
+          <Info label="Cart items" value={selectedUser.shopping_cart?.length || 0} />
+        </Section>
+
+        {/* ================= ADDRESS ================= */}
+        <Section title="Addresses">
+          {selectedUser.address_details?.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {selectedUser.address_details.map((address, index) => (
+                <div
+                  key={index}
+                  className="border rounded-lg p-4 bg-slate-50 text-sm space-y-1"
+                >
+                  <p className="font-semibold text-slate-900">{address.name}</p>
+                  <p className="text-slate-700">
+                    {address.phone} {address.altPhone && `, ${address.altPhone}`}
+                  </p>
+                  <p className="text-slate-700">
+                    {address.address}, {address.city}
+                  </p>
+                  <p className="text-slate-700">
+                    {address.state} - {address.pin}
+                  </p>
+                  <p className="text-xs text-slate-600 mt-2">
+                    Created: {formatToIST(address.createdAt)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-slate-600">No address added</p>
+          )}
+        </Section>
+
+      </div>
+    </div>
+  </div>
+)}
 
 
-                      <div className='w-[100px] h-auto] border-2 border-slate-40-'>
-                        <img src={selectedUser?.avatar || "/images/account.png"} alt="" className='w-full h-auto'/>
-                      </div>
-                     </div>
-                     <div className="grid grid-cols-2 gap-3">
-                      <h1 className="text-black font-semibold">Address</h1>
-                      <p></p>
-                      {selectedUser?.address_details.length>0 && selectedUser?.address_details?.map((address, index)=>{
-                        return(
-                          <div key={index} className="border border-gray-400  rounded-md p-3">
-                              <p><b>_id: </b>{address?._id}</p>
-                              <p><b>{address?.name}</b></p>
-                              <p>{address?.phone}, {address?.altPhone}</p> 
-                              <p>{address?.address}, {address?.city}</p> 
-                              <p>{address?.locality}</p> 
-                              <p>{address?.landmark}</p> 
-                              <p>{address?.state}-{address?.pin}</p> 
-                              <p>createdAt: {address?.createdAt}</p> 
-                              <p>updatedAt: {address?.updatedAt}</p> 
+{showPromoMail && (
+  <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60">
+    <div className="w-[95%] md:w-[700px] bg-white rounded-xl shadow-2xl overflow-hidden text-slate-900"  onClick={(e) => e.stopPropagation()} >
+
+      {/* ================= HEADER ================= */}
+      <div className="flex justify-between items-center px-6 py-4 border-b bg-slate-50">
+        <h2 className="text-lg font-bold text-slate-900">
+          Send Promotional Email
+        </h2>
+        <IoMdClose
+          className="text-2xl cursor-pointer text-slate-800 hover:text-red-600"
+          onClick={() => setShowPromoMail(false)}
+        />
+      </div>
+
+      {/* ================= BODY ================= */}
+      <div className="p-6 space-y-4">
+
+        {/* To */}
+        <Field label="To">
+          <input
+            value={selectedUser.email}
+            disabled
+            className="input text-slate-900 bg-slate-100 cursor-not-allowed"
+          />
+        </Field>
+
+        {/* Name */}
+        <Field label="User Name">
+          <input
+            value={selectedUser.name}
+            disabled
+            className="input text-slate-900 bg-slate-100 cursor-not-allowed"
+          />
+        </Field>
+
+        {/* Subject */}
+       <Field label="Subject">
+  <input
+    value={promoSubject}
+    placeholder="Enter email subject"
+    className="input text-slate-900 placeholder:text-slate-400"
+    onChange={(e) => setPromoSubject(e.target.value)}
+  />
+</Field>
+
+
+        {/* Type */}
+        <div className="flex gap-6 text-sm font-medium text-slate-800">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              checked={!isHtml}
+              onChange={() => setIsHtml(false)}
+              className="accent-indigo-600"
+            />
+            Plain Text
+          </label>
+
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              checked={isHtml}
+              onChange={() => setIsHtml(true)}
+              className="accent-indigo-600"
+            />
+            HTML
+          </label>
+        </div>
+
+        {/* Content */}
+        <Field label="Email Content">
+  <textarea
+    rows={6}
+    value={promoContent}
+    placeholder={isHtml ? "<p>Your HTML here</p>" : "Write your message"}
+    className="input text-slate-900 placeholder:text-slate-400 resize-none"
+    onChange={(e) => setPromoContent(e.target.value)}
+  />
+</Field>
+
+      </div>
+
+      {/* ================= FOOTER ================= */}
+      <div className="flex justify-end gap-3 px-6 py-4 border-t bg-slate-50">
+        <button
+          onClick={() => setShowPromoMail(false)}
+          className="px-4 py-2 text-sm font-medium text-slate-700 border rounded-lg hover:bg-slate-100"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={sendPromotionalMail}
+          className="px-4 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow"
+        >
+          Send Email
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
 
 
 
 
 
-
-                      </div>
-                        )
-                      })}
-                     </div>
-                     <div  className="border border-gray-400  rounded-md p-3 mt-3">
-                              <p><b>User since: </b> {selectedUser?.createdAt}</p>
-                              <p><b>Last Log in: </b>{selectedUser?.last_login_date}</p>
-                              <p><b>OTP: </b>{selectedUser?.otp}</p>  
-                              <p><b>OTP expires: </b>{selectedUser?.otpExpires}</p>  
-                              <p><b>Email verified: </b>{selectedUser?.verify_email}</p>  
-                              <p><b>Updated at: </b>{selectedUser?.updatedAt}</p> 
-                              <p><b>Order: </b>{selectedUser}</p>  
-                              <p><b>Cart: </b>{selectedUser?.shopping_cart?.length}</p>  
-                              <p><b>Wishlist: </b>{selectedUser?.wishlist?.length}</p>  
-
-
-
-
-
-
-
-
-
-                      </div>
-
-                      </div>
-
-              </div>
-            )}
 
       
     </div>

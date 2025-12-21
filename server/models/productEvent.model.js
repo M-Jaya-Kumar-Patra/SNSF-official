@@ -5,9 +5,15 @@ const productEventSchema = new mongoose.Schema(
     sessionId: { type: String, required: true },
     visitorId: { type: String, required: true },
 
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
     productId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "product",
+      ref: "Product",
       required: true,
     },
 

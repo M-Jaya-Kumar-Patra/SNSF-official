@@ -15,7 +15,7 @@ const sendEmailFun = async (to, subject, text, html) => {
       console.error("❌ Email failed:", result.error);
       return false;
     }
-
+    
     console.log("✅ Email sent successfully:", result.messageId);
     return true;
   } catch (error) {

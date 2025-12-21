@@ -233,10 +233,28 @@ export default function Home() {
         <CurratedLooks />
       </section>
 
-      <section className="lg:flex justify-center max-w-[1600px] mx-auto  my-2 sm:my-4 md:my-6 px-2 sm:px-4 md:px-6 gap-4  ">
-        <Recommendations limit={8} />
-        <RecentlyViewed />
-      </section>
+      <section
+  className="
+    max-w-[1600px]
+    mx-auto
+    my-2 sm:my-4 md:my-6
+    px-2 sm:px-4 md:px-6
+  "
+>
+  <div
+    className="
+      grid
+      grid-cols-1
+      lg:grid-cols-2
+      gap-4
+      items-start
+    "
+  >
+    <Recommendations limit={20} />
+    <RecentlyViewed />
+  </div>
+</section>
+
     </div>
   );
 }

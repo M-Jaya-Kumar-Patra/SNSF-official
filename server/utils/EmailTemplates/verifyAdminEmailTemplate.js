@@ -62,12 +62,12 @@ const verificationAdminEmail = (
   </div>
 
   <!-- Footer -->
-  <div style="background:#f9fafb;padding:20px 24px;text-align:center;font-size:12px;color:#6b7280;">
+  <<div style="background:#f9fafb;padding:22px 24px;text-align:center;font-size:12px;color:#6b7280;">
     <p style="margin:0 0 6px;">
-      S N Steel Fabrication — Admin Security Notification
+      S N Steel Fabrication — Crafted Furniture for Modern Living
     </p>
     <p style="margin:0;">
-      Ganjam, Odisha – 761146
+      New Burupada, Near Hanuman Temple, Via-Hinjilicut, Ganjam, Odisha – 761146
     </p>
     <p style="margin:6px 0 0;">
       📞 +91 9776501230 | ✉️ support@snsteelfabrication.com

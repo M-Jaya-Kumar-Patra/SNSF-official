@@ -18,6 +18,7 @@ import passwordResetSuccessEmail from "../utils/EmailTemplates/passwordResetSucc
 import {newLoginEmail, newGoogleLoginEmail} from "../utils/EmailTemplates/loginTemplate.js";
 import { OAuth2Client } from "google-auth-library";
 import Session from "../models/session.model.js";
+import ProductEventModel from "../models/productEvent.model.js";
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 cloudinary.config({
@@ -203,8 +204,10 @@ import LoginHistoryModel from "../models/loginHistory.model.js";
 
 export async function loginController(request, response) {
   try {
-    const { email, password } = request.body;
-    console.log("loginController triggered");
+    const { email, password, visitorId } = request.body;
+    console.log("loginController triggered", email, password);
+
+
 
     if (!email || !password) {
       return response.status(400).json({
@@ -278,12 +281,25 @@ export async function loginController(request, response) {
     response.cookie("refreshToken", refreshToken, cookieOptions);
     console.log("accessToken: ", accessToken, "refreshToken: ", refreshToken);
 
+
     await sendEmailFun(
       email,
       "New Login Detected – SNSF",
-      "",
+      undefined,
       newLoginEmail(user?.name)
     );
+
+
+    await ProductEventModel.updateMany(
+  {
+    visitorId,
+    userId: null,
+  },
+  {
+    $set: { userId: user._id },
+  }
+);
+
 
     return response.json({
       message: "Login successfully",
@@ -1052,6 +1068,8 @@ export async function userDetails(request, response) {
   }
 }
 
+import { isPincodeServiceable } from "../utils/checkPincode.js";
+
 export async function addAddress(request, response) {
   try {
     const {
@@ -1070,8 +1088,6 @@ export async function addAddress(request, response) {
 
     console.log("addAddressController triggered");
 
-    console.log(name, pin, userId);
-
     if (!name || !pin || !userId) {
       return response.status(400).json({
         message: "Name, Pin, and User ID are required.",
@@ -1079,6 +1095,9 @@ export async function addAddress(request, response) {
         success: false,
       });
     }
+
+    // ✅ CHECK PINCODE
+    const deliverable = isPincodeServiceable(pin);
 
     const newAddress = new AddressModel({
       name,
@@ -1107,6 +1126,7 @@ export async function addAddress(request, response) {
       error: false,
       success: true,
       address: savedAddress,
+      deliverable, // ✅ IMPORTANT
     });
   } catch (error) {
     console.error("Error in addAddressController:", error);
@@ -1186,6 +1206,7 @@ export async function deleteAddress(request, response) {
   }
 }
 
+
 export async function updateUserAddress(request, response) {
   try {
     const { id: userId, addressId } = request.params;
@@ -1202,7 +1223,6 @@ export async function updateUserAddress(request, response) {
       addressType,
     } = request.body;
 
-    // Check if user exists
     const userExist = await UserModel.findById(userId);
     if (!userExist) {
       return response.status(404).json({
@@ -1212,7 +1232,21 @@ export async function updateUserAddress(request, response) {
       });
     }
 
-    // Update address by ID
+    // 🔍 Fetch old address to compare pin
+    const oldAddress = await AddressModel.findById(addressId);
+    if (!oldAddress) {
+      return response.status(404).json({
+        message: "Address not found",
+        error: true,
+        success: false,
+      });
+    }
+
+    const isPinChanged = String(oldAddress.pin) !== String(pin);
+    const deliverable = isPinChanged
+      ? isPincodeServiceable(pin)
+      : null; // null means no popup needed
+
     const updatedAddress = await AddressModel.findByIdAndUpdate(
       addressId,
       {
@@ -1230,19 +1264,13 @@ export async function updateUserAddress(request, response) {
       { new: true }
     );
 
-    if (!updatedAddress) {
-      return response.status(404).json({
-        message: "Address not found or failed to update",
-        error: true,
-        success: false,
-      });
-    }
-
     return response.status(200).json({
       message: "Address updated successfully",
       error: false,
       success: true,
       updatedAddress,
+      pinChanged: isPinChanged,
+      deliverable, // ✅ only meaningful if pinChanged === true
     });
   } catch (error) {
     return response.status(500).json({
@@ -1252,7 +1280,6 @@ export async function updateUserAddress(request, response) {
     });
   }
 }
-
 export async function resendOTP(request, response) {
   try {
     const { email } = request.body;
