@@ -676,12 +676,12 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
               pathName === "/" ? "block" : "hidden"
             }`}
           >
-            <ul className="flex items-start gap-4  ">
+            <ul className="flex items-start gap-4  scrollbar-hide">
               {!catData || catData.length === 0
                 ? Array.from({ length: 7 }).map((_, index) => (
                     <li
                       key={`skeleton-${index}`}
-                      className=" w-[80px] h-[60px] sm:w-[80px] sm:h-[80px] xl:w-[100px] 2xl:w-[120px]"
+                      className=" h-[70px] md:w-[85px] lg:w-[110px] xl:w-[130px]"
                     >
                       <Skeleton
                         variant="rectangular"
@@ -708,7 +708,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                         {/* CATEGORY CARD */}
                         <div
                           className="
-                  w-[80px] h-[60px] sm:w-[120px] sm:h-[80px] xl:w-[100px] 2xl:w-[120px]
+                h-[70px] md:w-[85px] lg:w-[110px] xl:w-[130px]
                   bg-white rounded-xl
 
 
@@ -729,8 +729,10 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                             {getCategoryIcon(cat.name)}
                           </div>
 
-                          <span className="card-title text-nowrap font-medium text-slate-900 text-center">
-                            {cat.name}
+                          <span className="  md:text-[12px] lg:text-[14px] xl:text-[16px]
+      
+        text-slate-900 text-nowrap font-medium text-center">
+                            {cat.name}  
                           </span>
                         </div>
 

@@ -101,9 +101,7 @@ export default function Home() {
       <Toaster position="top-right" />
 
       <section
-        className={` bg-slate-100 ${
-          isMd ? "h-[96px]" : "h-[96px]"
-        } hidden md:block transition-opacity duration-500 ${
+        className={` bg-slate-100 h-[86px] hidden md:block transition-opacity duration-500 ${
           isScrolled ? "opacity-0" : "opacity-100"
         }`}
       />
