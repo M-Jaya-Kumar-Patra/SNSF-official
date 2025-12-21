@@ -15,12 +15,35 @@ const New = () => {
   const scrollRef = useRef(null);
   const { setLoading, isCheckingToken } = useAuth();
 
+  const [isAtStart, setIsAtStart] = useState(true);
+const [isAtEnd, setIsAtEnd] = useState(false);
+
+
+
   const [data, setData] = useState([]);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     setHydrated(true);
   }, []);
+
+  
+useEffect(() => {
+  const el = scrollRef.current;
+  if (!el) return;
+
+  const handleScroll = () => {
+    setIsAtStart(el.scrollLeft <= 5);
+    setIsAtEnd(
+      Math.ceil(el.scrollLeft + el.clientWidth) >= el.scrollWidth - 5
+    );
+  };
+
+  handleScroll();
+  el.addEventListener("scroll", handleScroll);
+  return () => el.removeEventListener("scroll", handleScroll);
+}, []);
+
 
   const loadNewArrivals = async () => {
     try {

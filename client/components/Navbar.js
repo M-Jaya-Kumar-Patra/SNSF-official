@@ -708,7 +708,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                         {/* CATEGORY CARD */}
                         <div
                           className="
-                  w-[80px] h-[60px] sm:w-[80px] sm:h-[80px] xl:w-[100px] 2xl:w-[120px]
+                  w-[80px] h-[60px] sm:w-[120px] sm:h-[80px] xl:w-[100px] 2xl:w-[120px]
                   bg-white rounded-xl
 
 
@@ -729,7 +729,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                             {getCategoryIcon(cat.name)}
                           </div>
 
-                          <span className="card-title font-medium text-slate-900 text-center">
+                          <span className="card-title text-nowrap font-medium text-slate-900 text-center">
                             {cat.name}
                           </span>
                         </div>

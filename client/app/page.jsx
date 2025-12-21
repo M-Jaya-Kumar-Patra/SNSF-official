@@ -181,7 +181,7 @@ export default function Home() {
             className="
           overflow-x-auto
           scroll-smooth
-          scrollbar-hide
+          horizontal-scroll
           pb-2
         "
           >

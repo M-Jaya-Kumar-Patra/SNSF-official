@@ -41,18 +41,21 @@ body {
 
 /* Horizontal Scrollbar Styling */
 .horizontal-scroll::-webkit-scrollbar {
-  height: 8px;
+  height: 6px;
 }
+
 .horizontal-scroll::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
+  background: #f8fafc;        /* slate-50 */
+  border-radius: 999px;
 }
+
 .horizontal-scroll::-webkit-scrollbar-thumb {
-  background: #adacac;
-  border-radius: 4px;
+  background: #94a3b8;        /* slate-400 */
+  border-radius: 999px;
 }
+
 .horizontal-scroll::-webkit-scrollbar-thumb:hover {
-  background: #868686;
+  background: #64748b;        /* slate-500 */
 }
 
 /* --- Animations --- */
