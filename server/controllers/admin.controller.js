@@ -907,7 +907,7 @@ export async function promotionalEmail(req, res) {
   try {
     const { to, name, subject, content, isHtml } = req.body;
 
-    const html = promotionalTemplate(name, content, isHtml);
+    const html = promotionalTemplate(name, subject, content, isHtml);
 
     await sendEmailFun(
       to,

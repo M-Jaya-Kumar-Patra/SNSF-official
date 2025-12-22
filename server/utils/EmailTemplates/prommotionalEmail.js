@@ -1,5 +1,6 @@
 const promotionalTemplate = (
   name = "Valued Customer",
+  subject,
   content,
   isHtml
 ) => `
@@ -14,11 +15,8 @@ overflow:hidden;border:1px solid #e5e7eb;font-family:Arial,Helvetica,sans-serif;
       style="height:56px;margin-bottom:14px;"
     />
     <h1 style="margin:0;font-size:22px;font-weight:600;color:#ffffff;">
-      Complete Your Delivery Address
+      ${subject}
     </h1>
-    <p style="margin:6px 0 0;font-size:14px;color:#cbd5f5;">
-      Check furniture delivery availability in your area
-    </p>
   </div>
 
   <!-- Body -->
@@ -36,35 +34,11 @@ overflow:hidden;border:1px solid #e5e7eb;font-family:Arial,Helvetica,sans-serif;
           </p>`
     }
 
-    <!-- CTA -->
-    <div style="text-align:center;margin:28px 0;">
-      <a
-        href="https://www.snsteelfabrication.com/address"
-        target="_blank"
-        style="
-          display:inline-block;
-          background:#0f172a;
-          color:#ffffff;
-          text-decoration:none;
-          padding:14px 28px;
-          border-radius:8px;
-          font-size:14px;
-          font-weight:600;
-          letter-spacing:0.3px;
-        "
-      >
-        Add Delivery Address
-      </a>
-    </div>
+   
 
-    <p style="font-size:14px;line-height:1.6;color:#4b5563;margin:0;">
-      Adding your address helps us confirm delivery availability
-      and provide accurate timelines for your location.
-    </p>
 
   </div>
 
-  <!-- Footer (MATCHES Forgot Password) -->
   <div style="background:#f9fafb;padding:22px 24px;text-align:center;font-size:12px;color:#6b7280;">
     <p style="margin:0 0 6px;">
       S N Steel Fabrication — Crafted Furniture for Modern Living
