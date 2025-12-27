@@ -357,7 +357,7 @@ py-10 md:py-12 pt-8 md:pt-12 lg:pt-12 overflow-hidden">
         className="w-full h-full flex items-center justify-center"
       >
         <Image
-          src={getOptimizedCloudinaryUrl(slides[currentIndex]?.images[0]) || "/images/placeholder.jpg"}
+          src={getOptimizedCloudinaryUrl(slides[currentIndex]?.images[0])}
           alt={slides[currentIndex]?.title || "Furniture"}
           width={420}
           height={420}
