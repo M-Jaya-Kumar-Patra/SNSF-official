@@ -91,9 +91,8 @@ const StyleYourSpaceSection = () => {
                 <div
                   ref={scrollRefStyle}
                   className="
-                overflow-x-auto
-                scroll-smooth
-                horizontal-scroll
+                overflow-hidden
+              
                 pb-2 sm:pb-4
               "
                 >
@@ -115,20 +114,57 @@ const StyleYourSpaceSection = () => {
                             cursor-pointer
                           "
                                 onClick={() =>
-                                  router.push(`/product/${prd?._id}`)
+                                  router.push(`${prd?.url}`)
                                 }
                               >
-                                <div className="relative w-full aspect-[3/5] md:aspect-[5/3] lg:aspect-[2/1] xl:aspect-video">
-                                  <Image
-                                    src={getOptimizedCloudinaryUrl(
-                                      prd?.image?.[0] || "/images/placeholder.jpg"
-                                    )}
-                                    alt={prd?.name || "Product Image"}
-                                    fill
-                                    className="object-cover"
-                                    unoptimized
-                                  />
-                                </div>
+                                
+                                <div className="relative w-full aspect-[3/5] md:aspect-[5/3] lg:aspect-[2/1] xl:aspect-video overflow-hidden group">
+
+  {/* IMAGE */}
+  <Image
+    src={getOptimizedCloudinaryUrl(
+      prd?.image?.[0] || "/images/placeholder.jpg"
+    )}
+    alt={prd?.name || "Product Image"}
+    fill
+    unoptimized
+    className="
+      object-cover
+      brightness-95
+      contrast-105
+      transition-transform duration-700 ease-out
+      group-hover:scale-105
+    "
+  />
+
+  {/* DARK GRADIENT OVERLAY */}
+  <div
+    className="
+      absolute inset-0
+      bg-gradient-to-t
+      from-black/65 via-black/30 to-black/0
+    "
+  />
+
+  {/* PRODUCT NAME */}
+  <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4">
+    <h3
+      className="
+        text-white
+        text-sm sm:text-base
+        font-semibold
+        leading-tight
+        drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]
+        line-clamp-2
+      "
+      title={prd?.name}
+    >
+      {prd?.name}
+    </h3>
+  </div>
+
+</div>
+
                               </div>
                             )
                         )

@@ -34,7 +34,9 @@ const Recommendations = ({ limit = 10, onEmpty }) => {
     const visitorId = getOrCreateVisitorId();
     const sessionId = getOrCreateSessionId();
     const userId = userData?._id;
-
+ if (!userData) {
+  onEmpty?.();
+}
 
    if(userId){ try {
       const res = await fetchDataFromApi(
@@ -42,13 +44,11 @@ const Recommendations = ({ limit = 10, onEmpty }) => {
         false
       );
 
-      console.log("ttttttttttttttttttttttttttttttttttt", res)
-      if (!res?.success || res.data.length === 0) {
+      if (!res?.success || res.data.length  === 0) {
   onEmpty?.();
 }
 
       if (res?.success) {
-    console.log("EEEEEEEEEEEEEEEEEEEE",res.data)
 
         setRecommended(res.data || []);
       }
