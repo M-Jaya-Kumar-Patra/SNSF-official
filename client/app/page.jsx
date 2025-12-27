@@ -274,13 +274,13 @@ from-slate-100 via-slate-50 to-slate-100 ">
     grid
     gap-2 sm:gap-4 md:gap-6
     items-start
-    ${hasRecommendations && hasRecentlyViewed  ? "lg:grid-cols-2" : "grid-cols-1"}
+    ${hasRecommendations && hasRecentlyViewed && userData  ? "lg:grid-cols-2" : "grid-cols-1"}
   `}
 >
-  <Recommendations
+ {userData &&  <Recommendations
     limit={20}
     onEmpty={() => setHasRecommendations(false)}
-  />
+  />}
 
   <RecentlyViewed
     onEmpty={() => setHasRecentlyViewed(false)}

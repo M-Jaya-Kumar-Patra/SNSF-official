@@ -355,9 +355,13 @@ py-10 md:py-12 pt-8 md:pt-12 lg:pt-12 overflow-hidden">
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="w-full h-full flex items-center justify-center"
+         onClick={() =>
+        slides[currentIndex]?.url &&
+        router.push(slides[currentIndex].url)
+      }
       >
         <Image
-          src={getOptimizedCloudinaryUrl(slides[currentIndex]?.images[0])}
+          src={getOptimizedCloudinaryUrl(slides[currentIndex]?.images[0]) || "/images/placeholder.jpg"}
           alt={slides[currentIndex]?.title || "Furniture"}
           width={420}
           height={420}
