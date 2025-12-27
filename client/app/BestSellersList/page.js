@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import { usePrd } from "@/app/context/ProductContext";
-import { postData } from "@/utils/api";
+import { fetchDataFromApi, postData } from "@/utils/api";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useWishlist } from "../context/WishlistContext";
@@ -30,6 +30,8 @@ const ProductListing = () => {
     isCheckingToken,
   } = useAuth();
   const router = useRouter();
+    const [data, setData] = useState([]);
+  
 
   useEffect(() => {
     setLoading(false);
@@ -38,6 +40,31 @@ const ProductListing = () => {
   useEffect(() => {
     trackVisitor("bestSellersList");
   }, []);
+
+
+  
+    const loadCustomerFavorites = async () => {
+      try {
+        const res = await fetchDataFromApi(
+          "/api/home-sections?sectionName=bestsellers",
+          false
+        );
+  
+        console.log("OOOOOOOOOOOOOOOOOOOOOOOO", res)
+  
+        if (!res.error) setData(res?.data || []);
+      } catch (err) {
+        console.log("Best sellers fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+
+     useEffect(() => {
+        loadCustomerFavorites();
+      }, []);
+    
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -57,7 +84,7 @@ const ProductListing = () => {
         <div className="container w-full sm:w-[90%]  sm:my-4 mx-auto ">
           <div className="flex-grow h-full bg-white p-2  sm:p-3 shadow-lg text-black">
             <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
-              {isCheckingToken || loading || !prdData
+              {isCheckingToken || loading || !data
                 ? Array.from({ length: 8 }).map((_, idx) => (
                     <div
                       key={idx}
@@ -84,25 +111,24 @@ const ProductListing = () => {
                       />
                     </div>
                   ))
-                : prdData
-                    ?.filter((prd) => prd?.isFeatured)
-                    .reverse()
+                : data
+                    ?.filter((prd) => prd?.enabled)
                     .map((prd, index) => (
                       <div
-                        key={prd?._id || index}
+                        key={prd?.product?._id || index}
                         className="relative group w-full"
                       >
                         <div className="w-full min-h-[260px] shadow-md flex flex-col items-center justify-between p-3 bg-white hover:shadow-[rgba(0,0,0,0.3)] sm:hover:shadow-xl transition duration-300">
                           <div className="w-full flex flex-col items-center">
-                            {prd?.images?.length > 0 && prd.images[0] && (
+                            {prd?.product?.images?.length > 0 && prd?.product?.images[0] && (
                               <div
                                 className="w-full aspect-[4/3] relative overflow-hidden cursor-pointer rounded-md"
                                 onClick={() =>
-                                  router.push(`/product/${prd?._id}`)
+                                  router.push(`/product/${prd?.product?._id}`)
                                 }
                               >
                                 <Image
-                                  src={getOptimizedCloudinaryUrl(prd.images[0])}
+                                  src={getOptimizedCloudinaryUrl(prd?.product?.images[0]) || "/images/placeholder.jpg"}
                                   alt={prd?.name || "Product"}
                                   fill
                                   className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
@@ -118,28 +144,28 @@ const ProductListing = () => {
                                 } else {
                                   const isAlreadyInWishlist =
                                     userData?.wishlist?.some(
-                                      (item) => item === String(prd._id)
+                                      (item) => item === String(prd?.product?._id)
                                     );
 
                                   if (isAlreadyInWishlist) {
                                     const wishItem = wishlistData?.find(
                                       (itemInWishData) =>
-                                        itemInWishData.productId === prd._id
+                                        itemInWishData.productId === prd?.product?._id
                                     );
                                     const itemId = wishItem?._id;
 
                                     if (itemId) {
-                                      removeFromWishlist(e, itemId, prd._id);
+                                      removeFromWishlist(e, itemId, prd?.product?._id);
                                     }
                                   } else {
-                                    addToWishlist(e, prd, userData._id);
+                                    addToWishlist(e, prd?.product, userData._id);
                                   }
                                 }
                               }}
                             >
                               {isLogin &&
                               userData?.wishlist?.some(
-                                (item) => item === String(prd._id)
+                                (item) => item === String(prd?.product._id)
                               ) ? (
                                 <MdFavorite className="!text-rose-600 text-[22px]" />
                               ) : (
@@ -149,7 +175,7 @@ const ProductListing = () => {
 
                             <div className="w-full ">
                               <h1 className="text-black sm:text-[18px] text-[18px] mt-3 font-medium font-sans truncate">
-                                {prd?.name}
+                                {prd?.product?.name}
                               </h1>
                             </div>
 
@@ -157,12 +183,12 @@ const ProductListing = () => {
                               <div className="w-full flex flex-col items-start">
                                 <h1
                                   className={
-                                    prd?.brand
+                                    prd?.product?.brand
                                       ? "text-gray-500 text-[16px] mt-1"
                                       : "text-white text-[16px] mt-1 cursor-default truncate"
                                   }
                                 >
-                                  {prd?.brand || "--- Not mentioned ---"}
+                                  {prd?.product?.brand || "--- Not mentioned ---"}
                                 </h1>
                               </div>
                             </div>
@@ -223,10 +249,10 @@ const ProductListing = () => {
                                       name: userData?.name,
                                       email: userData?.email,
                                       phone: userData?.phone,
-                                      productId: prd?._id,
-                                      message: `Direct call initiated for "${prd?.name}"`,
-                                      userMsg: `Enquiry for ${prd?.name} via Call`,
-                                      image: prd?.images[0],
+                                      productId: prd?.product?._id,
+                                      message: `Direct call initiated for "${prd?.product?.name}"`,
+                                      userMsg: `Enquiry for ${prd?.product?.name} via Call`,
+                                      image: prd?.product?.images[0],
                                     });
 
                                     window.open("tel:+919776501230");

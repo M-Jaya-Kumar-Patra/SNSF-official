@@ -66,7 +66,7 @@ export const fetchDataFromApi = async (url, authRequired = true) => {
 
 
 // GET request
-export const searchAPI = async (url, authRequired = true) => {
+export const searchAPI = async (url, authRequired = false) => {
   try {
     const headers = {
       "Content-Type": "application/json",
@@ -93,6 +93,11 @@ export const searchAPI = async (url, authRequired = true) => {
       method: "GET",
       headers,
     });
+
+    if (!response.ok) {
+  throw new Error(`HTTP ${response.status}`);
+}
+
 
     const data = await response.json();
     return data;

@@ -1,20 +1,61 @@
 import mongoose from "mongoose";
 
-const homeSliderSchema = new mongoose.Schema({
+const homeSliderSchema = new mongoose.Schema(
+  {
+    // 🔹 Main product image(s)
     images: {
-        type: [String],    // Array of strings for multiple image URLs
-        default: [],
-        required: true     // optional: add if you want images to be mandatory
+      type: [String],
+      required: true,
     },
-    url:{
-        type:String,
-        default:""
-    },
-    dateCreated: {
-        type: Date,
-        default: Date.now
-    }
-}, { timestamps: true });  // Fix option name from 'Timestamps' to 'timestamps'
 
-const HomeSliderModel = mongoose.model("HomeSlider", homeSliderSchema);
+    // 🔹 Hero text content
+    title: {
+      type: String,
+      required: true, // e.g. "Comfort Sofa Chair"
+      trim: true,
+    },
+
+    tagline: {
+      type: String,
+      default: "Premium Furniture",
+      trim: true,
+    },
+
+    description: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: 300,
+    },
+
+    // 🔹 CTA navigation
+    url: {
+      type: String,
+      default: "",
+    },
+
+    // 🔹 Optional button label
+    ctaText: {
+      type: String,
+      default: "View Details",
+    },
+
+    // 🔹 Slider control
+    order: {
+      type: Number,
+      default: 0,
+    },
+
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  { timestamps: true }
+);
+
+const HomeSliderModel =
+  mongoose.models.HomeSlider ||
+  mongoose.model("HomeSlider", homeSliderSchema);
+
 export default HomeSliderModel;

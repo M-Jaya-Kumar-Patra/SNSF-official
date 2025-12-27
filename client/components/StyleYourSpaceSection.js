@@ -20,6 +20,7 @@ const StyleYourSpaceSection = () => {
 
   const [trendingData, setTrendingData] = useState([]);
   const [shopByRoomData, setShopByRoomData] = useState([]);
+  
 
   const limit = isXs ? 8 : 12;
 
@@ -42,6 +43,7 @@ const StyleYourSpaceSection = () => {
         setLoading(false);
       }
     };
+
 
     const loadTrending = async () => {
       try {
@@ -75,13 +77,13 @@ const StyleYourSpaceSection = () => {
     : [];
 
  return (
-  <div className="flex flex-col lg:flex-row gap-2 lg:gap-4 w-full">
+  <div className="flex flex-col lg:flex-row gap-2 sm:gap-4 md:gap-6 lg:gap-4 w-full">
           {/* ================= LEFT : STYLE YOUR SPACE ================= */}
-          <div className="w-full lg:w-[420px] flex-shrink-0">
+          <div className="w-full lg:w-[420px] flex-shrink-0 ">
             <div
               className="bg-white p-4 sm:p-6 sm:pb-0 pb-3  
         
-        border rounded-none lg:rounded-r-lg h-full"
+        border rounded-none lg:rounded-r-lg h-full "
             >
               <h2 className="section-title mb-3 sm:mb-4">Style Your Space</h2>
 
@@ -119,7 +121,7 @@ const StyleYourSpaceSection = () => {
                                 <div className="relative w-full aspect-[3/5] md:aspect-[5/3] lg:aspect-[2/1] xl:aspect-video">
                                   <Image
                                     src={getOptimizedCloudinaryUrl(
-                                      prd?.image?.[0] || "/placeholder.jpg"
+                                      prd?.image?.[0] || "/images/placeholder.jpg"
                                     )}
                                     alt={prd?.name || "Product Image"}
                                     fill
@@ -157,6 +159,7 @@ const StyleYourSpaceSection = () => {
               </div>
             </div>
           </div>
+         
 
           {/* ================= RIGHT : TRENDING NOW ================= */}
           <div

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
-export default function RecentlyViewed() {
+export default function RecentlyViewed({ onEmpty }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -18,9 +18,11 @@ export default function RecentlyViewed() {
     const viewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
 
     if (viewed.length === 0) {
-      setLoading(false);
-      return;
-    }
+  setLoading(false);
+  onEmpty?.();
+  return;
+}
+
 
     try {
       const res = await postData(
@@ -46,15 +48,11 @@ export default function RecentlyViewed() {
 
   fetchRecentlyViewed();
 }, []);
+if (!loading && products.length === 0) return null;
 
+return (
+  <div className="w-full bg-white p-3 sm:p-6 pb-2 border rounded-xl shadow-2xl">
 
-  return (
-    <div
-  className={
-    products.length > 0
-      ? "w-full bg-white p-3 sm:p-6 pb-2 border rounded-xl shadow-2xl"  : "hidden"
-  }
->
 
 
       <h2 className="section-title">
@@ -109,7 +107,7 @@ export default function RecentlyViewed() {
       {/* IMAGE */}
       <div className="relative w-full aspect-[16/10] overflow-hidden rounded-xl">
         <Image
-          src={prd?.images?.[0] || "/placeholder.jpg"}
+          src={prd?.images?.[0]  || "/images/placeholder.jpg"}
           alt={prd?.name}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-110"

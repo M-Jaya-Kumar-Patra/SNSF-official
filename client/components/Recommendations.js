@@ -11,7 +11,7 @@ import { useAuth } from "@/app/context/AuthContext";
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
-const Recommendations = ({ limit = 10 }) => {
+const Recommendations = ({ limit = 10, onEmpty }) => {
   const [recommended, setRecommended] = useState([]);
   const [hydrated, setHydrated] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -36,13 +36,18 @@ const Recommendations = ({ limit = 10 }) => {
     const userId = userData?._id;
 
 
-    try {
+   if(userId){ try {
       const res = await fetchDataFromApi(
         `/api/recommendations/getRecommendations?userId=${userId}&visitorId=${visitorId}&sessionId=${sessionId}&limit=${limit}`,
         false
       );
 
-      if (!res?.error) {
+      console.log("ttttttttttttttttttttttttttttttttttt", res)
+      if (!res?.success || res.data.length === 0) {
+  onEmpty?.();
+}
+
+      if (res?.success) {
     console.log("EEEEEEEEEEEEEEEEEEEE",res.data)
 
         setRecommended(res.data || []);
@@ -51,12 +56,14 @@ const Recommendations = ({ limit = 10 }) => {
       console.error(err);
     } finally {
       setLoading(false);
-    }
+    }}
   };
 
   fetchRecommendations();
 }, [hydrated, limit]);
 
+
+if (!loading && recommended.length === 0) return null;
 
   return (
     <div
@@ -123,7 +130,7 @@ className="section-title"    >
       {/* IMAGE */}
       <div className="relative w-full aspect-[16/10] overflow-hidden rounded-xl">
         <Image
-          src={prd?.images?.[0] || "/placeholder.jpg"}
+          src={prd?.images?.[0] || "/images/placeholder.jpg"}
           alt={prd?.name}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-110"

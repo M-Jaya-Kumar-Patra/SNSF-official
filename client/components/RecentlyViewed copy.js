@@ -50,7 +50,7 @@ export default function RecentlyViewed() {
                     >
                         <div className="w-full h-32 relative mb-2">
                             <Image
-                                src={product.images?.[0] || "/placeholder.png"}
+                                src={product.images?.[0]  || "/images/placeholder.jpg"}
                                 alt={product.name}
                                 fill
                                 className="object-cover rounded"

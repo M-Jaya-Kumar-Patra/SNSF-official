@@ -61,7 +61,7 @@ const ImageUploader = () => {
         {previewUrls.map((url, idx) => (
           <Image
             key={idx}
-            src={getOptimizedCloudinaryUrl(url)}
+            src={getOptimizedCloudinaryUrl(url) || "/images/placeholder.jpg"}
             alt={`Preview ${idx}`}
             className="w-28 h-28 rounded border"
             width={100}

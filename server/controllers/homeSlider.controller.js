@@ -12,169 +12,155 @@ cloudinary.config({
 });
 let imagesArr = [];
 
-export async function createSlide(request, response) {
-    try {
-        const slide = new HomeSliderModel({
-            images: request.body.images,
-            url: request.body.url
-        });
-        await slide.save()
+export async function createSlide(req, res) {
+  try { 
 
-        if (!slide) {
-            response.status(500).json({
-                error: true,
-                success: false,
-                message: "slide Not Created"
-            })
-        }
-
-        imagesArr = [];
-        response.status(200).json({
-            error: false,
-            success: true,
-            message: "slide created successfully"
-        });
-
-
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        });
+    console.log("99999999999999999999999999999999999999")
+    const {
+      images,
+      title,
+      tagline,
+      description,
+      url,
+      ctaText,
+      order,
+      isActive
+    } = req.body;
+    
+        
+    if (!images || !images.length || !title) {
+      return res.status(400).json({
+        error: true,
+        success: false,
+        message: "Images and title are required"
+      });
     }
-}
-export async function uploadImages(request, response) {
-    try {
-        const image = request.files || [];
 
-        if (!image.length) {
-            return response.status(400).json({
-                message: "No images uploaded",
-                error: true,
-                success: false
-            });
-        }
+    const slide = new HomeSliderModel({
+      images,
+      title,
+      tagline,
+      description,
+      url,
+      ctaText,
+      order,
+      isActive
+    });
 
-        const options = {
-            use_filename: true,
-            unique_filename: false,
-            overwrite: false
-        };
+    await slide.save();
 
-        for (let i = 0; i < image.length; i++) {
-            const result = await cloudinary.uploader.upload(image[i].path, options);
-            imagesArr.push(result.secure_url);
-            fs.unlinkSync(image[i].path); // Delete the temp file
-        }
+    imagesArr = [];
 
-        return response.status(200).json({
-            images: imagesArr,
-            error: false,
-            success: true
-        });
+    return res.status(201).json({
+      error: false,
+      success: true,
+      message: "Slide created successfully",
+      data: slide
+    });
 
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || "Internal server error",
-            error: true,
-            success: false
-        });
-    }
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+      error: true,
+      success: false
+    });
+  }
 }
 
-export async function getAllSlides(request, response) {
-    try {
-        console.log("Request Query:", request.query);
-        const page = parseInt(request.query.page) || 1;
-        const perPage = parseInt(request.query.perPage) || 10;
+export async function uploadImages(req, res) {
+  try {
+    const files = req.files || [];
 
-        const totalPosts = await HomeSliderModel.countDocuments();
-        const totalPages = Math.ceil(totalPosts / perPage);
-
-        if (page > totalPages) {
-            return response.status(404).json({
-                message: "Page not found",
-                success: false,
-                error: true
-            });
-        }
-
-        const slides = await HomeSliderModel.find().skip((page - 1) * perPage)
-            .limit(perPage).exec();
-        if (!slides) {
-            response.status(500).json({
-                error: true,
-                success: false
-            })
-
-
-        }
-        return response.status(200).json({
-            error: false,
-            success: true,
-            data: slides
-        });
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        });
+    if (!files.length) {
+      return res.status(400).json({
+        message: "No images uploaded",
+        error: true,
+        success: false
+      });
     }
+
+    const options = {
+      use_filename: true,
+      unique_filename: false,
+      overwrite: false
+    };
+
+    for (const file of files) {
+      const result = await cloudinary.uploader.upload(file.path, options);
+      imagesArr.push(result.secure_url);
+      fs.unlinkSync(file.path);
+    }
+
+    return res.status(200).json({
+      images: imagesArr,
+      success: true,
+      error: false
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+      error: true,
+      success: false
+    });
+  }
 }
-export async function deleteSlide(request, response) {
-    try {
 
-        const slider = await HomeSliderModel.findById(request.params.id);
+export async function getAllSlides(req, res) {
+  try {
+    const slides = await HomeSliderModel
+      .find({ isActive: true })
+      .sort({ order: 1, createdAt: -1 });
 
-        if (!slider) {
-            return response.status(404).json({
-                message: "Product Not found",
-                error: true,
-                success: false
-            });
-        }
+    return res.status(200).json({
+      error: false,
+      success: true,
+      data: slides
+    });
 
-        // Step 1: Remove images from Cloudinary
-        const images = slider.images;
-        for (const img of images) {
-            const imgUrl = img;
-            const urlArr = imgUrl.split("/");
-            const image = urlArr[urlArr.length - 1];
-            const imageName = image.split(".")[0];
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+      error: true,
+      success: false
+    });
+  }
+}
 
-            if (imageName) {
-                cloudinary.uploader.destroy(imageName, (error, result) => {
-                    // Optional: console.log(error, result);
-                });
-            }
-        }
+export async function deleteSlide(req, res) {
+  try {
+    const slider = await HomeSliderModel.findById(req.params.id);
 
-        // Step 2: Now delete the product from DB
-        const deletedSlides = await HomeSliderModel.findByIdAndDelete(request.params.id);
-
-        if (!deletedSlides) {
-            return response.status(404).json({
-                message: "Slide not deleted!",
-                success: false,
-                error: true
-            });
-        }
-
-        return response.status(200).json({
-            success: true,
-            error: false,   
-            message: "Slide Deleted!"
-        });
-
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        });
+    if (!slider) {
+      return res.status(404).json({
+        message: "Slide not found",
+        error: true,
+        success: false
+      });
     }
+
+    for (const img of slider.images) {
+      const imageName = img.split("/").pop().split(".")[0];
+      if (imageName) {
+        await cloudinary.uploader.destroy(imageName);
+      }
+    }
+
+    await slider.deleteOne();
+
+    return res.status(200).json({
+      success: true,
+      error: false,
+      message: "Slide deleted successfully"
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+      error: true,
+      success: false
+    });
+  }
 }
 
 

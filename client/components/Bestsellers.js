@@ -34,13 +34,13 @@ const Bestsellers = ({ posterIndex }) => {
   const [isAtEnd, setIsAtEnd] = useState(false);
   const [localLoading, setLocalLoading] = useState(false);
 
-  const limit = isXs ? 8 : 12;
+  const limit = isXs ? 7 : 11;
 
   useEffect(() => {
     setHydrated(true);
   }, []);
 
-  const loadCurratedLooks = async () => {
+  const loadCustomerFavorites = async () => {
     try {
       const res = await fetchDataFromApi(
         "/api/home-sections?sectionName=bestsellers",
@@ -68,7 +68,7 @@ const Bestsellers = ({ posterIndex }) => {
   };
 
   useEffect(() => {
-    loadCurratedLooks();
+    loadCustomerFavorites();
     loadPoster();
   }, []);
 
@@ -92,16 +92,17 @@ const Bestsellers = ({ posterIndex }) => {
 
   return (
     <div
-      className="
-        w-full max-w-[1600px]
-        flex flex-col lg:flex-row
-        gap-6 lg:gap-0
-      "
-    >
+  className="
+    w-full max-w-[1600px]
+    flex flex-col lg:flex-row
+    gap-6 lg:gap-0
+  "
+>
+
       {/* ================= LEFT : Customer Favorites LIST ================= */}
       <div
         className="
-          w-full lg:w-[70%] 
+          w-full lg:w-[calc(100%-327px)]
           bg-white
           p-3 sm:p-6 pb-1 sm:pb-0
           border
@@ -148,7 +149,7 @@ const Bestsellers = ({ posterIndex }) => {
     sm:overflow-x-auto
     scroll-smooth
     scrollbar-hide
-    pb-2 sm:pb-2
+    pb-2 sm:pb-4
 
   "
           >
@@ -202,40 +203,40 @@ const Bestsellers = ({ posterIndex }) => {
       </div>
 
       {/* ================= RIGHT : POSTER ================= */}
-      <div
-        className="
-
-        hidden lg:block
-          w-full lg:w-[30%]
-          relative
-          overflow-hidden
-          rounded-xl lg:rounded-l-none
-          cursor-pointer
-        "
-        onClick={() => poster?.url && router.push(poster.url)}
-      >
-        {poster?.status ? (
-          <Image
-            src={getOptimizedCloudinaryUrl(poster?.image[0])}
-            alt="Promotional Poster"
-            fill
-            className="object-cover"
-            sizes="(max-width: 1024px) 100vw, 30vw"
-            priority
-            unoptimized
-          />
-        ) : (
-          <Skeleton
-            variant="rectangular"
-            sx={{
-              position: "absolute",
-              inset: 0,
-              height: "100%",
-              bgcolor: "rgba(203,213,225,0.5)",
-            }}
-          />
-        )}
-      </div>
+       <div
+                className="
+      
+              hidden lg:block
+                w-full lg:w-[327px]
+                relative
+                overflow-hidden
+                rounded-xl lg:rounded-l-none
+                cursor-pointer
+              "
+                onClick={() => poster?.url && router.push(poster.url)}
+              >
+                {poster?.status ? (
+                  <Image
+                    src={getOptimizedCloudinaryUrl(poster?.image[0]) || "/images/placeholder.jpg"}
+                    alt="Promotional Poster"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 30vw"
+                    priority
+                    unoptimized
+                  />
+                ) : (
+                  <Skeleton
+                    variant="rectangular"
+                    sx={{
+                      position: "absolute",
+                      inset: 0,
+                      height: "100%",
+                      bgcolor: "rgba(203,213,225,0.5)",
+                    }}
+                  />
+                )}
+              </div>
     </div>
   );
 };

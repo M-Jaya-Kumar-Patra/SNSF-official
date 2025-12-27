@@ -72,7 +72,7 @@ const ProductListing = () => {
                     <div className="w-full flex flex-col items-center">
                       <div className="w-full aspect-[4/3] relative overflow-hidden rounded-md">
                         <Image
-                          src={prd.images[0]}
+                          src={prd.images[0] || "/images/placeholder.jpg"}
                           alt={prd.name}
                           fill
                           unoptimized

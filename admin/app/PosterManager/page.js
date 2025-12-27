@@ -254,7 +254,7 @@ const PosterManager = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteDialog(false)}>Cancel</Button>
-          <Button color="error" onClick={confirmDelete}>
+          <Button color="error" onClick={()=>confirmDelete()}>
             Delete
           </Button>
         </DialogActions>

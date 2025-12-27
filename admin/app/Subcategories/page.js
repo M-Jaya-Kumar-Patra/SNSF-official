@@ -501,23 +501,167 @@
 
     {/* ADD SUB CATEGORY MODAL (UNCHANGED LOGIC, CLEAN UI) */}
     {showCategAddModal && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-        <div className="w-[700px] h-[90%] bg-white rounded-xl p-6 overflow-auto">
-          <div className="flex items-center gap-2 border-b pb-3 mb-4">
-            <ArrowBackIcon
-              onClick={() => setShowCategAddModal(false)}
-              className="cursor-pointer"
-            />
-            <h2 className="text-xl font-semibold text-slate-800">
-              Add New Sub Category
-            </h2>
-          </div>
+                    <div className='flex w-full h-full justify-center items-center bg-black bg-opacity-50 fixed top-0 left-0 z-50'>
+                        <div className='w-[700px] h-[90%] bg-white rounded-md text-black p-3 overflow-auto scrollbar-hide'>
+                            <div className="text-green-800 m-3 text-xl  border-b-2 border-slate-300 py-2 font-sans font-semibold flex gap-2 items-center"><ArrowBackIcon onClick={() => setShowCategAddModal(false)} className='cursor-pointer text-black' />Add New Sub Category</div>
 
-          {/* Your existing forms stay exactly the same here */}
-          {/* I did NOT touch your form logic intentionally */}
-        </div>
-      </div>
-    )}
+
+                            <form onSubmit={handleSubmit}>
+                                <h1 className='ml-4 text-gray-700 font-sans font-semibold text-[20px]'>Add sub category</h1>
+                                <div className='px-4'>
+                                    <Box
+                                        component="div"
+                                        sx={{ '& .MuiTextField-root': { m: 1, ml: 2, width: '250px' } }}
+                                        noValidate
+                                        autoComplete="off"
+                                    >
+                                        <div className='flex  items-center'>
+                                            <div className='left '>
+                                                <div className="text-black m-3 font-sans font-semibold">Product Category</div>
+                                                <Select
+                                                    labelId="demo-simple-select-label"
+                                                    id="productCatDrop"
+                                                    size="normal"
+                                                    className="w-[250px] m-2 ml-3"
+                                                    value={productCat || ''} // ✅ Fallback to empty string
+                                                    label="Category"
+                                                    onChange={handleChangeProductCat}
+                                                >
+                                                    {
+                                                        catData?.length !== 0 && catData?.map((item, index) => {
+                                                            return (
+                                                                <MenuItem key={index} value={item?._id} onClick={() => selectedCat(item.name)}>{item.name}</MenuItem>
+
+                                                            )
+
+                                                        }
+
+                                                        )
+                                                    }
+                                                </Select>
+                                            </div>
+
+
+                                            <div className='right'>
+                                                <div className="text-black m-3 ml-4 font-sans font-semibold">Sub Category Name</div>
+
+                                                <TextField
+                                                    label="Sub Category"
+                                                    onChange={onChangeInput}
+                                                    value={categs.name || ""}
+                                                    name='name'
+                                                />
+                                            </div>
+
+                                        </div>
+                                    </Box>
+                                    <div className="relative w-full flex gap-2 right-0  justify-end pr-5 mt-4">
+                                        <button className=' bg-white border border-black py-1  w-[90px] text-lg rounded-full  hover:border-red-600 hover:bg-slate-50 hover:text-red-600 font-medium' onClick={() => setShowCategAddModal(false)}
+                                            type='button'
+
+                                        >Cancel</button>
+                                        <button className=' bg-green-700  py-1  w-[90px] text-lg rounded-full hover:bg-green-500 hover:border-none text-white  font-medium'
+                                            type='submit'>Save</button>
+
+
+                                    </div>
+                                </div>
+                            </form>
+
+                            <form onSubmit={handleSubmit2}>
+
+
+                                <h1 className='ml-4 mt-4 text-gray-700 font-sans font-semibold text-[20px]'>Add third level category</h1>
+                                <div className='px-4 '>
+                                    <Box
+                                        component="div"
+                                        sx={{ '& .MuiTextField-root': { m: 1, ml: 2, width: '250px' } }}
+                                        noValidate
+                                        autoComplete="off"
+                                    >
+                                        <div className='flex  items-center '>
+                                            <div className='left '>
+                                                <div className="text-black m-3 font-sans font-semibold">Product Category</div>
+                                                {/* <Select
+                                                    labelId="demo-simple-select-label"
+                                                    id="productCatDrop"
+                                                    size="normal"
+                                                    className="w-[250px] m-2 ml-3"
+                                                    value={productCat2 || ''} // ✅ Fallback to empty string
+                                                    label="Category"
+                                                    onChange={handleChangeProductCat2}
+                                                >
+                                                    {
+                                                        catData?.length !== 0 && catData?.map((item, index) => {
+                                                            item?.children?.length !== 0 && item?.children?.map((item2, index)=>{
+                                                                return (
+                                                                <MenuItem key={index} value={item?._id} onClick={() => selectedCat2(item.name)}>{item.name}</MenuItem>
+
+                                                            )
+                                                            })
+                                                            
+
+                                                        }
+
+                                                        )
+                                                    }
+                                                </Select>  */}
+                                                <Select
+                                                    labelId="demo-simple-select-label"
+                                                    id="productCatDrop"
+                                                    size="normal"
+                                                    className="w-[250px] m-2 ml-3"
+                                                    value={productCat2 || ''}
+                                                    label="Category"
+                                                    onChange={handleChangeProductCat2}
+                                                >
+                                                    {
+                                                        catData?.length !== 0 &&
+                                                        catData.map((parent) =>
+                                                            parent?.children?.length !== 0 &&
+                                                            parent.children.map((child) => (
+                                                                <MenuItem
+                                                                    key={child._id}
+                                                                    value={child._id}
+                                                                    onClick={() => selectedCat2(`${child.name}`)}
+                                                                >
+                                                                    {child.name}
+                                                                </MenuItem>
+                                                            ))
+                                                        )}
+                                                </Select>
+
+                                            </div>
+
+
+                                            <div className='right'>
+                                                <div className="text-black m-3 ml-4 font-sans font-semibold">Sub Category Name</div>
+
+                                                <TextField
+                                                    label="Sub Category"
+                                                    onChange={onChangeInput2}
+                                                    value={categs2.name || ""}
+                                                    name='name'
+                                                />
+                                            </div>
+
+                                        </div>
+                                    </Box>
+                                    <div className="relative w-full flex gap-2 right-0  justify-end pr-5 mt-4">
+                                        <button className=' bg-white border border-black py-1  w-[90px] text-lg rounded-full  hover:border-red-600 hover:bg-slate-50 hover:text-red-600 font-medium' onClick={() => setShowCategAddModal(false)}
+                                            type='button'
+
+                                        >Cancel</button>
+                                        <button className=' bg-green-700  py-1  w-[90px] text-lg rounded-full hover:bg-green-500 hover:border-none text-white  font-medium'
+                                            type='submit'>Save</button>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                        </div>
+
+                  )}
   </>
 );
 

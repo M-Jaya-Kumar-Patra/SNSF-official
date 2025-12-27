@@ -147,9 +147,15 @@ const Footer = () => {
     </p>
 
     {/* Middle: Credits */}
+    <a
+              href="https://wa.me/917847911696"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
     <p className="text-center sm:text-right">
       Designed & Developed by <span className="font-bold text-nowrap">Jaya Kumar</span>
     </p>
+    </a>
 
   </div>
 </footer>

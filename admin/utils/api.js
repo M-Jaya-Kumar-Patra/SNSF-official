@@ -14,6 +14,7 @@ export const postData = async (url, formData, authRequired = true) => {
     };
 
     if (authRequired) {
+      console.log("IIIIIIIIIIIII")
       const token = localStorage.getItem("accessToken");
       if (!token) throw new Error("Access token is missing or expired");
       headers["Authorization"] = `Bearer ${token}`;
@@ -25,6 +26,8 @@ export const postData = async (url, formData, authRequired = true) => {
       credentials: "include",
       body: JSON.stringify(formData),
     });
+
+    console.log("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
 
     const data = await response.json(); // ✅ Only one read
     console.log("Response JSON:", data);

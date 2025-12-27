@@ -57,11 +57,11 @@ const PosterGrid = ({
               >
                 {/* IMAGE */}
                 <Image
-                  src={item.image?.[0]}
-                  alt={item.name}
+                  src={item.image?.[0]  || "/images/placeholder.jpg"}
+                  alt={item.name  || "Poster"}
                   fill
                   className="
-                    object-cover
+                    
                     transition-transform duration-[800ms] ease-out
                     group-hover:scale-[1.06]
                   "
@@ -69,7 +69,7 @@ const PosterGrid = ({
                 />
 
                 {/* DARK FADE */}
-                {darkFade && <div className="
+                {!darkFade && <div className="
                   absolute inset-0
                   bg-gradient-to-t
                   from-black/80
@@ -78,7 +78,7 @@ const PosterGrid = ({
                 " />}
 
                 {/* CONTENT */}
-                {showText && <div className="
+                {!showText && <div className="
                   absolute bottom-0 left-0 right-0
                   p-4
                 ">

@@ -16,7 +16,6 @@ const UploadBox = (props) => {
     const formData = new FormData();
     
     const  onChangeFile = async (e, apiEndPoint) =>{
-        console.log("0000000000000000000000000000000000000000")
         try {
             setPreviews([]);
             const files = e.target.files;
@@ -39,7 +38,6 @@ const UploadBox = (props) => {
                     return false
                 }
             }
-{console.log("tttttttttttttttttttttttttttttttttttttttttttttt")}
 
             
             uploadImages(apiEndPoint, formData).then((res) => {
@@ -72,8 +70,6 @@ const UploadBox = (props) => {
             multiple={props.multiple !== undefined ? props.multiple : false}
             className='absolute top-0 left-0 w-full h-full z-50 opacity-0'
             onChange={(e)=>{
-                {
-                    console.log("ffffffffffffffffff")}
                     onChangeFile(e, props?.url)}
                 }
                 name = {props?.name}

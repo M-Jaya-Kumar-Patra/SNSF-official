@@ -125,7 +125,7 @@ const Suggestions = ({ productId, catId, subCatId, thirdSubCatId, brand }) => {
                     onClick={() => router.push(`/product/${prd?._id}`)}
                   >
                     <Image
-                      src={cloud(prd?.images?.[0])}
+                      src={cloud(prd?.images?.[0]) || "/images/placeholder.jpg"}
                       alt="Product"
                       fill
                       className="object-cover"

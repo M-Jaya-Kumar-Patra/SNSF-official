@@ -105,7 +105,7 @@ className="section-title sm:ml-4" >
           "
         >
           {Array.isArray(data) && data.length > 0 ? (
-            data.slice(0, 12).map((prd) => (
+            data.map((prd) => (
               <article
                 key={prd._id}
                 onClick={() => router.push(`/product/${prd._id}`)}
@@ -127,7 +127,7 @@ className="section-title sm:ml-4" >
                 <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100">
                   <Image
                     src={getOptimizedCloudinaryUrl(
-                      prd?.images?.[0] || "/placeholder.jpg"
+                      prd?.images?.[0]  || "/images/placeholder.jpg"
                     )}
                     alt={prd?.name}
                     fill

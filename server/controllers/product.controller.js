@@ -3,6 +3,8 @@ import { v2 as cloudinary } from "cloudinary";
 import connectDB from "../config/connectDb.js";
 import slugify from "slugify";
 import fs from "fs";
+import mongoose from "mongoose";
+
 
 // Cloudinary Config
 cloudinary.config({

@@ -88,7 +88,7 @@ const Trending = () => {
             style={{ aspectRatio: "16 / 10" }}
           >
             <Image
-              src={prd?.product?.images?.[0] || "/placeholder.jpg"}
+              src={prd?.product?.images?.[0] || "/images/placeholder.jpg"}
               alt={prd?.product?.name}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-110"

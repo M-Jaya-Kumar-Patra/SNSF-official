@@ -81,7 +81,7 @@ const VideoGrid = ({
                         onClick={() => setPlayingId(item._id)}
                     >
                         <Image
-                            src={item.thumbnail || "/placeholder.jpg"}
+                            src={item.thumbnai || "/images/placeholder.jpg"}
                             alt={item.title}
                             fill
                             className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-90"

@@ -211,7 +211,7 @@ const ProductPageClient = ({ prdId }) => {
               {productImages?.map((src, idx) => (
                 <SwiperSlide key={idx}>
                   <Image
-                    src={getOptimizedCloudinaryUrl(src)}
+                    src={getOptimizedCloudinaryUrl(src) || "/images/placeholder.jpg"}
                     alt={`Slide ${idx + 1}`}
                     className="w-full h-[300px] object-contain"
                     width={500}
@@ -324,7 +324,7 @@ const ProductPageClient = ({ prdId }) => {
                   {productImages.map((img, idx) => (
                     <SwiperSlide key={idx}>
                       <Image
-                        src={getOptimizedCloudinaryUrl(img)}
+                        src={getOptimizedCloudinaryUrl(img) || "/images/placeholder.jpg"}
                         alt={`Slide ${idx + 1}`}
                         width={500}
                         height={500}
@@ -351,7 +351,7 @@ const ProductPageClient = ({ prdId }) => {
                     onClick={() => setSelectedImage(src)}
                   >
                     <Image
-                      src={getOptimizedCloudinaryUrl(src)}
+                      src={getOptimizedCloudinaryUrl(src) || "/images/placeholder.jpg"}
                       alt={`Thumbnail ${idx + 1}`}
                       className="w-[128px] h-[64px] object-contain"
                       width={100}
@@ -367,7 +367,7 @@ const ProductPageClient = ({ prdId }) => {
                 <Image
                   className="h-full w-full object-contain border cursor-zoom-in"
                   src={getOptimizedCloudinaryUrl(
-                    selectedImage || productImages?.[0] || "/"
+                    selectedImage || productImages?.[0] || "/images/placeholder.jpg"
                   )}
                   alt="Selected Product"
                   unoptimized
@@ -484,7 +484,7 @@ const ProductPageClient = ({ prdId }) => {
                   {productImages.map((img, idx) => (
                     <SwiperSlide key={idx}>
                       <Image
-                        src={getOptimizedCloudinaryUrl(img)}
+                        src={getOptimizedCloudinaryUrl(img) || "/images/placeholder.jpg"}
                         alt={`Slide ${idx + 1}`}
                         width={800}
                         height={800}

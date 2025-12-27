@@ -119,7 +119,7 @@ const ProductListing = () => {
                         onClick={() => router.push(`/product/${prd?._id}`)}
                       >
                         <Image
-                          src={getOptimizedCloudinaryUrl(prd.images[0])}
+                          src={getOptimizedCloudinaryUrl(prd.images[0]) || "/images/placeholder.jpg"}
                           alt={prd.name || "Product"}
                           fill
                           unoptimized

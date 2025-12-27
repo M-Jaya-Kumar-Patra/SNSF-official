@@ -25,7 +25,7 @@ const [dropdownStyle, setDropdownStyle] = useState({});
 
 
 
-
+const justNavigatedRef = useRef(false); 
   const containerRef = useRef(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -90,7 +90,7 @@ isSm?"hidden" : isMd? "w-[37.2px] ": isLg? "w-[37.2px]" : isXl? "w-[110px]": isX
 
   // 🔹 Clear search when route changes (except /ProductListing)
   useEffect(() => {
-    if (!pathname.startsWith("/ProductListing/")) {
+    if (!pathname.startsWith("/ProductListing")) {
       setSearchQuery("");
       setResults([]);
       setIsDropdownVisible(false);
@@ -112,17 +112,21 @@ useEffect(() => {
   return () => clearTimeout(handler);
 }, [searchQuery]);
 
-// Fetch search results whenever debounced query changes
+
 useEffect(() => {
+  if (justNavigatedRef.current) {
+    justNavigatedRef.current = false;
+    return;
+  }
+
   if (!debouncedQuery.trim()) return resetSearch();
 
   const fetchResults = async () => {
     try {
-     const res = await searchWithTracking(debouncedQuery, "desktop");
+      const res = await searchWithTracking(debouncedQuery, "desktop");
       setResults(res?.products ?? []);
       setIsDropdownVisible(true);
-    } catch (err) {
-      console.error("Search error:", err);
+    } catch {
       setResults([]);
     }
   };
@@ -130,21 +134,22 @@ useEffect(() => {
   fetchResults();
 }, [debouncedQuery]);
 
+
  const onChangeInput = (e) => {
   setSearchQuery(e.target.value);
 };
 
 
-  // 🔹 Navigate to product listing
- const handleClickResult = (item) => {
-  // ✅ 1. Show selected item in input
-  setSearchQuery(item.name);
+const handleClickResult = (item) => {
+  justNavigatedRef.current = true; // 🔒 lock search
 
-  // ✅ 2. Close dropdown
+  setSearchQuery("");
+  setResults([]);
   setIsDropdownVisible(false);
+  setDeskSearch(false);
+
   if (onClose) onClose();
 
-  // ✅ 3. Navigate
   if (item.thirdSubCatId) {
     router.push(`/ProductListing?thirdSubCatId=${item.thirdSubCatId}`);
   } else if (item.subCatId) {
@@ -153,6 +158,7 @@ useEffect(() => {
     router.push(`/ProductListing?catId=${item.catId}`);
   }
 };
+
 
   // 🔹 Handle Enter key
   const handleKeyDown = (e) => {
@@ -352,12 +358,17 @@ isSm?"hidden" : isMd? "w-[200px] ": isLg? "w-[110px]" : isXl1440? "w-[110px]":is
         results.map((item) => (
           <li
             key={item._id}
-            onClick={() => handleClickResult(item)}
+            onMouseDown={(e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleClickResult(item);
+    setIsDropdownVisible(false);
+  }}
             className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-indigo-50"
           >
             {item.images && (
               <Image
-                src={getOptimizedCloudinaryUrl(item.images[0] || item.images)}
+                src={getOptimizedCloudinaryUrl(item.images[0] || item.images) || "/images/placeholder.jpg"}
                 alt={item.name}
                 width={40}
                 height={40}

@@ -59,7 +59,7 @@ const VideoSlider = ({
               >
                 {/* Thumbnail */}
                 <Image
-                  src={video.thumbnail}
+                  src={video.thumbnail || "/images/placeholder.jpg"}
                   alt={video.title}
                   fill
                   className="

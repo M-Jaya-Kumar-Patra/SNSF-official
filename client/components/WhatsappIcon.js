@@ -12,7 +12,7 @@ const getOptimizedCloudinaryUrl = (url) => {
   return (
     <div className="!w-5 !h-5 mx-0 relative">
       <Image
-        src={getOptimizedCloudinaryUrl("/images/whatsapp.png")}
+        src={getOptimizedCloudinaryUrl("/images/whatsapp.png") || "/images/placeholder.jpg"}
         alt="WhatsApp Icon"
         layout="fill"
         objectFit="contain"

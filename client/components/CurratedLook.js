@@ -28,7 +28,7 @@ const CurratedLooks = () => {
   const [isAtEnd, setIsAtEnd] = useState(false);
   const [localLoading, setLocalLoading] = useState(false);
 
-  const limit = isXs ? 8 : 12;
+  const limit = isXs ? 7 : 12;
 
   useEffect(() => {
     setHydrated(true);
@@ -93,12 +93,12 @@ const CurratedLooks = () => {
         gap-6 lg:gap-0
       "
       >
-        {/* ================= LEFT : CURATED LIST ================= */}
+        {/* ================= LEFT : POSTER ================= */}
         <div
           className="
 
         hidden lg:block
-          w-full lg:w-[30%]
+          w-full lg:w-[327px]
           relative
           overflow-hidden
           rounded-xl lg:rounded-r-none
@@ -108,7 +108,7 @@ const CurratedLooks = () => {
         >
           {poster?.status ? (
             <Image
-              src={getOptimizedCloudinaryUrl(poster?.image[0])}
+              src={getOptimizedCloudinaryUrl(poster?.image[0]) || "/images/placeholder.jpg"}
               alt="Promotional Poster"
               fill
               className="object-cover"
@@ -129,10 +129,10 @@ const CurratedLooks = () => {
           )}
         </div>
 
-        {/* ================= RIGHT : POSTER ================= */}
+        {/* ================= RIGHT : CURATED ================= */}
         <div
           className="
-          w-full lg:w-[70%]
+          w-full lg:w-[calc(100%-327px)]
           bg-white
           p-3 sm:p-6 sm:pb-0
           border

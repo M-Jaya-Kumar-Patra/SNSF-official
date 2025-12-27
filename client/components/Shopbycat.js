@@ -36,7 +36,7 @@ const Shopbycat = () => {
       >
         {cat?.images?.[0]  ? (
           <Image
-            src={cat.images[0]}
+            src={cat.images[0] || "/images/placeholder.jpg"}
             width={100}
             height={100}
             className="rounded-full object-cover"
