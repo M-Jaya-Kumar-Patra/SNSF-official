@@ -105,7 +105,7 @@ className="section-title sm:ml-4" >
           "
         >
           {Array.isArray(data) && data.length > 0 ? (
-            data.map((prd) => (
+            data.slice(0, 12).map((prd) => (
               <article
                 key={prd._id}
                 onClick={() => router.push(`/product/${prd._id}`)}

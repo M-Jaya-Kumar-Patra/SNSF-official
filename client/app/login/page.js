@@ -35,21 +35,13 @@ export default function Login() {
   const [btnLoading, setBtnLoading] = useState(false);
   const { isLogin, login, setIsLogin, isCheckingToken, setIsCheckingToken } =
     useAuth();
+    const router = useRouter();
+    const alert = useAlert();
 
   const [showPopUp, setShowPopUp] = useState(null);
 
   const visitorId = getOrCreateVisitorId();
 
-
-  if (isCheckingToken)
-    return (
-      <div className="text-center mt-10">
-        <Loading />
-      </div>
-    );
-
-  const router = useRouter();
-  const alert = useAlert();
 
   useEffect(() => {
     if (isLogin) {
@@ -68,6 +60,16 @@ export default function Login() {
       sessionStorage.removeItem("alert");
     }
   }, [alert]);
+
+  
+  if (isCheckingToken)
+    return (
+      <div className="text-center mt-10">
+        <Loading />
+      </div>
+    );
+
+
 
   const handleInputChange = (field, value) => {
     setFormFields((prev) => ({
