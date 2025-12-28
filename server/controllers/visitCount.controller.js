@@ -140,11 +140,13 @@ export const addVisitCount = async (req, res) => {
     }
 
     // 📅 today range
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
+    const nowIST = toIST(new Date());
 
-    const endOfDay = new Date();
-    endOfDay.setHours(23, 59, 59, 999);
+const startOfDay = new Date(nowIST);
+startOfDay.setHours(0, 0, 0, 0);
+
+const endOfDay = new Date(nowIST);
+endOfDay.setHours(23, 59, 59, 999);
 
     // 🔁 already counted today?
     const alreadyVisited = await VisitCountModel.findOne({
@@ -210,7 +212,8 @@ export const addVisitCount = async (req, res) => {
 
 export const getVisitCount = async (req, res) => {
   try {
-    const now = new Date();
+    const now = toIST(new Date());
+
     const oneHour = new Date(now.getTime() - 1 * 60 * 60 * 1000);
     const twelveHours = new Date(now.getTime() - 12 * 60 * 60 * 1000);
     const oneDay = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -242,7 +245,7 @@ export const getVisitCount = async (req, res) => {
 export const getVisitsByRange = async (req, res) => {
   try {
     const type = (req.query.type || "1day").toString();
-    const now = new Date();
+    const now = toIST(new Date());
 
     let start;
     let bucketUnit;
@@ -337,14 +340,24 @@ export const getVisitsByRange = async (req, res) => {
  * custom range endpoint expects start and end as ISO strings or any Date-parsable strings
  * query: ?start=2025-12-10T00:00&end=2025-12-12T23:59
  */
+
+const parseISTDate = (value) => {
+  // value like "2025-12-28T09:30"
+  const d = new Date(value);
+  // convert IST → UTC
+  return new Date(d.getTime() - 5.5 * 60 * 60 * 1000);
+};
+
+
 export const getVisitsByCustomRange = async (req, res) => {
   try {
     let { start: startQ, end: endQ } = req.query;
     if (!startQ || !endQ) {
       return res.status(400).json({ success: false, message: "start and end required" });
     }
-    const startRaw = new Date(startQ);
-    const endRaw = new Date(endQ);
+    const startRaw = parseISTDate(startQ);
+const endRaw = parseISTDate(endQ);
+
     if (isNaN(startRaw) || isNaN(endRaw)) {
       return res.status(400).json({ success: false, message: "Invalid dates" });
     }
