@@ -142,7 +142,7 @@ const VisitsOverTime = () => {
         <ResponsiveContainer width="100%" height={320}>
           <AreaChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="time" />
+            <XAxis dataKey="time" type="category" />
             <YAxis domain={[0, "dataMax + 2"]} allowDecimals={false} />
             <Tooltip
               content={({ active, payload, label }) => {
