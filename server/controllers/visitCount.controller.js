@@ -4,6 +4,14 @@ import VisitCountModel from "../models/visitCount.model.js";
 /**
  * Helper: floor date to start of minute/hour/day/etc.
  */
+
+const toIST = (date) => {
+  // IST = UTC + 5:30
+  return new Date(date.getTime() + 5.5 * 60 * 60 * 1000);
+};
+
+
+
 const floorDate = (d, bucket) => {
   const dt = new Date(d);
   if (bucket === "minute") {
@@ -31,43 +39,29 @@ const floorDate = (d, bucket) => {
  */
 const generateBuckets = (start, endExclusive, bucket) => {
   const buckets = [];
-  let current = new Date(start)
+  let current = new Date(start);
 
   while (current < endExclusive) {
+    const istDate = toIST(current);
     let label;
 
     if (bucket === "minute" || bucket === "hour") {
-      label = current.toLocaleTimeString("en-IN", {
-        timeZone: "Asia/Kolkata",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
-      current = new Date(current.getTime() + 60 * 1000); // +1 minute
+      label = `${istDate.getHours().toString().padStart(2, "0")}:${istDate
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}`;
+      current = new Date(current.getTime() + 60 * 1000);
     } 
     else if (bucket === "day") {
-      label = current.toLocaleDateString("en-IN", {
-        timeZone: "Asia/Kolkata",
-        day: "2-digit",
-        month: "2-digit",
-      });
-      current = new Date(current.getTime() + 24 * 60 * 60 * 1000); // +1 day
-    } 
-    else if (bucket === "week") {
-      label = current.toLocaleDateString("en-IN", {
-        timeZone: "Asia/Kolkata",
-        day: "2-digit",
-        month: "2-digit",
-      });
-      current = new Date(current.getTime() + 7 * 24 * 60 * 60 * 1000); // +1 week
+      label = `${istDate.getDate().toString().padStart(2, "0")}/${(istDate.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}`;
+      current = new Date(current.getTime() + 24 * 60 * 60 * 1000);
     } 
     else {
-      // month
-      label = current.toLocaleDateString("en-IN", {
-        timeZone: "Asia/Kolkata",
-        month: "2-digit",
-        year: "numeric",
-      });
+      label = `${(istDate.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}/${istDate.getFullYear()}`;
       const next = new Date(current);
       next.setMonth(next.getMonth() + 1);
       current = next;
@@ -79,48 +73,37 @@ const generateBuckets = (start, endExclusive, bucket) => {
   return buckets;
 };
 
+
 /**
  * label formatter for a JS Date according to bucket type (must match generateBuckets)
  */
 const formatLabelFromDate = (bucket, dateObj) => {
-  const dt = new Date(dateObj);
-
-  const options = {
-    timeZone: "Asia/Kolkata",
-    hour12: false,
-  };
+  const istDate = toIST(new Date(dateObj));
 
   if (bucket === "minute" || bucket === "hour") {
-    return dt.toLocaleTimeString("en-IN", {
-      ...options,
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    const hh = istDate.getHours().toString().padStart(2, "0");
+    const mm = istDate.getMinutes().toString().padStart(2, "0");
+    return `${hh}:${mm}`;
   }
 
   if (bucket === "day") {
-    return dt.toLocaleDateString("en-IN", {
-      timeZone: "Asia/Kolkata",
-      day: "2-digit",
-      month: "2-digit",
-    });
+    const dd = istDate.getDate().toString().padStart(2, "0");
+    const mm = (istDate.getMonth() + 1).toString().padStart(2, "0");
+    return `${dd}/${mm}`;
   }
 
   if (bucket === "week") {
-    return dt.toLocaleDateString("en-IN", {
-      timeZone: "Asia/Kolkata",
-      day: "2-digit",
-      month: "2-digit",
-    });
+    const dd = istDate.getDate().toString().padStart(2, "0");
+    const mm = (istDate.getMonth() + 1).toString().padStart(2, "0");
+    return `${dd}/${mm}`;
   }
 
   // month
-  return dt.toLocaleDateString("en-IN", {
-    timeZone: "Asia/Kolkata",
-    month: "2-digit",
-    year: "numeric",
-  });
+  const mm = (istDate.getMonth() + 1).toString().padStart(2, "0");
+  const yy = istDate.getFullYear();
+  return `${mm}/${yy}`;
 };
+
 
 
 import crypto from "crypto";
