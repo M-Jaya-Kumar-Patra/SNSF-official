@@ -33,40 +33,41 @@ const generateBuckets = (start, endExclusive, bucket) => {
   const buckets = [];
   let current = new Date(start);
 
-  // avoid infinite loop safety
-  const safetyLimit = 10000;
-  let iter = 0;
+  while (current < endExclusive) {
+    let label;
 
-  while (current < endExclusive && iter++ < safetyLimit) {
-    let label = "";
-    if (bucket === "minute") {
-      const hh = current.getHours().toString().padStart(2, "0");
-      const mm = current.getMinutes().toString().padStart(2, "0");
-      label = `${hh}:${mm}`;
+    if (bucket === "minute" || bucket === "hour") {
+      label = current.toLocaleTimeString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
       current = new Date(current.getTime() + 60 * 1000); // +1 minute
-    } else if (bucket === "hour") {
-      const hh = current.getHours().toString().padStart(2, "0");
-      label = `${hh}:00`;
-      current = new Date(current.getTime() + 60 * 60 * 1000); // +1 hour
-    } else if (bucket === "day") {
-      const dd = current.getDate().toString().padStart(2, "0");
-      const mm = (current.getMonth() + 1).toString().padStart(2, "0");
-      label = `${dd}/${mm}`;
+    } 
+    else if (bucket === "day") {
+      label = current.toLocaleDateString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "2-digit",
+        month: "2-digit",
+      });
       current = new Date(current.getTime() + 24 * 60 * 60 * 1000); // +1 day
-    } else if (bucket === "week") {
-      // ISO week number (simple)
-      const tmp = new Date(current);
-      const firstJan = new Date(tmp.getFullYear(), 0, 1);
-      const days = Math.floor((tmp - firstJan) / (24 * 60 * 60 * 1000));
-      const weekNo = Math.ceil((days + firstJan.getDay() + 1) / 7);
-      label = `Wk ${weekNo}`;
+    } 
+    else if (bucket === "week") {
+      label = current.toLocaleDateString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        day: "2-digit",
+        month: "2-digit",
+      });
       current = new Date(current.getTime() + 7 * 24 * 60 * 60 * 1000); // +1 week
-    } else {
+    } 
+    else {
       // month
-      const mm = (current.getMonth() + 1).toString().padStart(2, "0");
-      const yy = current.getFullYear();
-      label = `${mm}/${yy}`;
-      // increment month safely
+      label = current.toLocaleDateString("en-IN", {
+        timeZone: "Asia/Kolkata",
+        month: "2-digit",
+        year: "numeric",
+      });
       const next = new Date(current);
       next.setMonth(next.getMonth() + 1);
       current = next;
@@ -83,93 +84,136 @@ const generateBuckets = (start, endExclusive, bucket) => {
  */
 const formatLabelFromDate = (bucket, dateObj) => {
   const dt = new Date(dateObj);
-  if (bucket === "minute") {
-    const hh = dt.getHours().toString().padStart(2, "0");
-    const mm = dt.getMinutes().toString().padStart(2, "0");
-    return `${hh}:${mm}`;
+
+  const options = {
+    timeZone: "Asia/Kolkata",
+    hour12: false,
+  };
+
+  if (bucket === "minute" || bucket === "hour") {
+    return dt.toLocaleTimeString("en-IN", {
+      ...options,
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }
-  if (bucket === "hour") {
-    const hh = dt.getHours().toString().padStart(2, "0");
-    return `${hh}:00`;
-  }
+
   if (bucket === "day") {
-    const dd = dt.getDate().toString().padStart(2, "0");
-    const mm = (dt.getMonth() + 1).toString().padStart(2, "0");
-    return `${dd}/${mm}`;
+    return dt.toLocaleDateString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      day: "2-digit",
+      month: "2-digit",
+    });
   }
+
   if (bucket === "week") {
-    const tmp = new Date(dt);
-    const firstJan = new Date(tmp.getFullYear(), 0, 1);
-    const days = Math.floor((tmp - firstJan) / (24 * 60 * 60 * 1000));
-    const weekNo = Math.ceil((days + firstJan.getDay() + 1) / 7);
-    return `Wk ${weekNo}`;
+    return dt.toLocaleDateString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      day: "2-digit",
+      month: "2-digit",
+    });
   }
+
   // month
-  const mm = (dt.getMonth() + 1).toString().padStart(2, "0");
-  const yy = dt.getFullYear();
-  return `${mm}/${yy}`; 
+  return dt.toLocaleDateString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    month: "2-digit",
+    year: "numeric",
+  });
 };
 
-/* ---------------------- controllers ---------------------- */
+
+import crypto from "crypto";
+import VisitorModel from "../models/visitor.model.js";
+
+// 🔐 hash IP for privacy
+const hashIp = (ip) =>
+  crypto.createHash("sha256").update(ip).digest("hex");
+
+/* ---------------------- ADD VISIT ---------------------- */
 export const addVisitCount = async (req, res) => {
   try {
-    const deviceId = req.body.deviceId;
-    const ip =
-      req.headers["x-forwarded-for"]?.split(",")[0] ||
-      req.socket.remoteAddress;
+    const visitorId = req.body.deviceId;
 
-
-      
-      if (!deviceId) {
-        return res.status(400).json({
-          success: false,
-          message: "Device ID missing",
-        });
-      }
-
-    // ❌ Ignore your own devices
-    const IGNORED_DEVICE_IDS = [
-      "c56a8cdb-0a17-4cb5-b3f9-5c0180b5857f",
-    ];
-    if (IGNORED_DEVICE_IDS.includes(deviceId)) {
-      return res.status(200).json({
-        success: true,
-        ignored: true,
-        message: "Visit ignored (admin device)",
+    if (!visitorId) {
+      return res.status(400).json({
+        success: false,
+        message: "Device ID missing",
       });
     }
 
-    // 📅 Today range
+    const rawIp =
+      req.headers["x-forwarded-for"]?.split(",")[0] ||
+      req.socket.remoteAddress;
+
+    const ipHash = hashIp(rawIp);
+
+    // ❌ Ignore admin devices
+    const IGNORED_VISITORS = [
+      "c56a8cdb-0a17-4cb5-b3f9-5c0180b5857f",
+    ];
+    if (IGNORED_VISITORS.includes(visitorId)) {
+      return res.json({ success: true, ignored: true });
+    }
+
+    // 📅 today range
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
     const endOfDay = new Date();
     endOfDay.setHours(23, 59, 59, 999);
 
-    // 🔁 Check if THIS DEVICE already visited today
-    const alreadyVisitedToday = await VisitCountModel.findOne({
-      deviceId,
+    // 🔁 already counted today?
+    const alreadyVisited = await VisitCountModel.findOne({
+      visitorId,
       visitedAt: { $gte: startOfDay, $lte: endOfDay },
     });
 
-    if (alreadyVisitedToday) {
-      return res.status(200).json({
+    if (alreadyVisited) {
+      // update lastVisit only
+      await VisitorModel.findOneAndUpdate(
+        { visitorId },
+        { $set: { lastVisit: new Date(), visitorType: "returning" } }
+      );
+
+      return res.json({
         success: true,
         message: "Visit already counted today",
       });
     }
 
-    // ✅ Record visit
+    // ✅ record visit
     await VisitCountModel.create({
-      deviceId,
-      ip,
+      visitorId,
+      ipHash,
+      userAgent: req.headers["user-agent"],
       visitedAt: new Date(),
     });
 
-    return res.status(200).json({
-      success: true,
-      message: "Visit recorded",
-    });
+    // 👤 create/update visitor
+    const existingVisitor = await VisitorModel.findOne({ visitorId });
+
+    if (!existingVisitor) {
+      await VisitorModel.create({
+        visitorId,
+        ipHash,
+        firstVisit: new Date(),
+        lastVisit: new Date(),
+        visitorType: "new",
+      });
+    } else {
+      await VisitorModel.updateOne(
+        { visitorId },
+        {
+          $set: {
+            lastVisit: new Date(),
+            visitorType: "returning",
+          },
+        }
+      );
+    }
+
+    return res.json({ success: true, message: "Visit recorded" });
 
   } catch (error) {
     console.error("addVisitCount error:", error);
