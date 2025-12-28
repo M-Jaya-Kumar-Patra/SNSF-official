@@ -31,7 +31,7 @@ const floorDate = (d, bucket) => {
  */
 const generateBuckets = (start, endExclusive, bucket) => {
   const buckets = [];
-  let current = new Date(start);
+  let current = new Date(start)
 
   while (current < endExclusive) {
     let label;
