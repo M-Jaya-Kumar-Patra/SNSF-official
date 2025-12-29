@@ -53,8 +53,8 @@ export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const [videosLength, setVideosLength] = useState(0);
-const [hasRecommendations, setHasRecommendations] = useState(true);
-const [hasRecentlyViewed, setHasRecentlyViewed] = useState(true);
+  const [hasRecommendations, setHasRecommendations] = useState(true);
+  const [hasRecentlyViewed, setHasRecentlyViewed] = useState(true);
 
   useEffect(() => {
     const load = async () => {
@@ -100,8 +100,10 @@ const [hasRecentlyViewed, setHasRecentlyViewed] = useState(true);
   if (isCheckingToken) return <Loading />;
 
   return (
-    <div className="bg-gradient-to-br 
-from-slate-100 via-slate-50 to-slate-100 ">
+    <div
+      className="bg-gradient-to-br 
+from-slate-100 via-slate-50 to-slate-100 "
+    >
       {/* <Toaster position="top-right" /> */}
 
       <section
@@ -198,8 +200,7 @@ from-slate-100 via-slate-50 to-slate-100 ">
         </section>
       )}
 
-
-<section
+      <section
         className="w-full lg:hidden flex justify-center 
       max-w-[1600px] 
       mx-auto 
@@ -207,7 +208,6 @@ from-slate-100 via-slate-50 to-slate-100 ">
       "
       >
         <div className="w-full">
-         
           {/* Single poster */}
           <PosterGrid
             rows={`${isXs ? "3" : "1"}`}
@@ -221,7 +221,6 @@ from-slate-100 via-slate-50 to-slate-100 ">
           />
         </div>
       </section>
-
 
       <section className="flex justify-center max-w-[1600px] mx-auto mt-2 sm:mt-4 md:mt-6  ">
         <New />
@@ -263,33 +262,35 @@ from-slate-100 via-slate-50 to-slate-100 ">
       </section>
 
       <section
-  className="
+        className="
     max-w-[1600px]
     mx-auto
     my-2 sm:my-4 md:my-6
     px-2 sm:px-4 md:px-6
   "
->
-  <div
-  className={`
+      >
+        <div
+          className={`
     grid
     gap-2 sm:gap-4 md:gap-6
     items-start
-    ${hasRecommendations && hasRecentlyViewed && userData  ? "lg:grid-cols-2" : "grid-cols-1"}
+    ${
+      hasRecommendations && hasRecentlyViewed && userData
+        ? "lg:grid-cols-2"
+        : "grid-cols-1"
+    }
   `}
->
- {userData &&  <Recommendations
-    limit={20}
-    onEmpty={() => setHasRecommendations(false)}
-  />}
+        >
+          {userData && (
+            <Recommendations
+              limit={20}
+              onEmpty={() => setHasRecommendations(false)}
+            />
+          )}
 
-  <RecentlyViewed
-    onEmpty={() => setHasRecentlyViewed(false)}
-  />
-</div>
-
-</section>
-
+          <RecentlyViewed onEmpty={() => setHasRecentlyViewed(false)} />
+        </div>
+      </section>
     </div>
   );
 }

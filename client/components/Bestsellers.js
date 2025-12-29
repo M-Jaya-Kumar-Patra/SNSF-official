@@ -153,7 +153,7 @@ const Bestsellers = ({ posterIndex }) => {
 
   "
           >
-            {productsForGrid.length < 0 ? (
+            {productsForGrid.length > 0 ? (
               <ProductGrid products={productsForGrid} row={2} />
             ) : (
               /* ===== GRID SKELETON ===== */

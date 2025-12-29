@@ -202,6 +202,8 @@ const typingWord = {
 
 
 
+
+
 return (
   <section className="relative w-full 
 py-10 md:py-12 pt-8 md:pt-12 lg:pt-12 overflow-hidden">

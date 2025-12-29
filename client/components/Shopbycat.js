@@ -73,7 +73,7 @@ const Shopbycat = () => {
     ));
 
   return (
-    <div className="flex flex-col items-center bg-slate-100 w-full ">
+    <div className="flex flex-col items-center w-full ">
       <h1
         className={`section-title`}
       >
