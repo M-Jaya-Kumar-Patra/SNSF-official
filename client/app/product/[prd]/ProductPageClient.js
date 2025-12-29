@@ -1,5 +1,4 @@
 "use client";
-import Head from "next/head";
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { fetchDataFromApi, postData } from "@/utils/api";
@@ -174,7 +173,6 @@ const ProductPageClient = ({ prdId }) => {
     <div className="flex flex-col w-full min-h-screen items-center bg-slate-100">
       {/* Structured Data Head Tag */}
       {openedProduct && (
-        <Head>
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
@@ -202,7 +200,6 @@ const ProductPageClient = ({ prdId }) => {
               }),
             }}
           />
-        </Head>
       )}
 
       <div className="w-full sm:w-[1020px] mb-2 sm:my-3 pt-2 sm:p-2 mx-auto lg:flex justify-between bg-white">
