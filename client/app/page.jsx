@@ -102,7 +102,7 @@ const [hasRecentlyViewed, setHasRecentlyViewed] = useState(true);
   return (
     <div className="bg-gradient-to-br 
 from-slate-100 via-slate-50 to-slate-100 ">
-      <Toaster position="top-right" />
+      {/* <Toaster position="top-right" /> */}
 
       <section
         className={` bg-slate-100 h-[86px] hidden md:block transition-opacity duration-500 ${
