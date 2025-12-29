@@ -10,7 +10,6 @@ import Skeleton from "@mui/material/Skeleton";
 import { motion, AnimatePresence, useReducedMotion  } from "framer-motion";
 
 const Slider = () => {
-  const { isCheckingToken } = useAuth(); // ✅ Get from context
   const [slides, setSlides] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [localLoading, setLocalLoading] = useState(false);
@@ -19,6 +18,9 @@ const Slider = () => {
   const prefersReducedMotion = useReducedMotion();
   const [isTabActive, setIsTabActive] = useState(true);
 const [isMobile, setIsMobile] = useState(false);
+
+const shouldAnimate = slides.length > 0 && !isMobile && !prefersReducedMotion;
+
 
 useEffect(() => {
   const check = () => setIsMobile(window.innerWidth < 768);
@@ -50,7 +52,6 @@ useEffect(() => {
 
 
   useEffect(() => {
-    if (isCheckingToken) return; // ✅ Prevent fetching too early
 
     const getSlides = async () => {
       try {
@@ -68,18 +69,9 @@ useEffect(() => {
     };
 
     getSlides();
-  }, [isCheckingToken]); // ✅ Only runs after token is checked
+  }, []); // ✅ Only runs after token is checked
 
-  useEffect(() => {
-    if (slides?.length) return;
-
-    const timer = setTimeout(() => {
-      setCurrentIndex((prev) => (prev + 1) % slides.length);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [currentIndex, slides]);
-
+  
   const handlePrev = () => {
   setDirection(-1);
   setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
@@ -90,16 +82,18 @@ const handleNext = () => {
   setCurrentIndex((prev) => (prev + 1) % slides.length);
 };
 
-  const getOptimizedCloudinaryUrl = (url) => {
-    if (!url?.includes("/upload/")) return url;
+  const getOptimizedCloudinaryUrl = (url, isMobile = false) => {
+  if (!url?.includes("/upload/")) return url;
 
-    return url.replace(
-      "/upload/",
-      "/upload/w_2400,h_600,c_fit,g_center,f_auto,q_90/"
-    );
-  };
+  return url.replace(
+    "/upload/",
+    isMobile
+      ? "/upload/w_900,h_900,c_fit,f_auto,q_80/"
+      : "/upload/w_1600,h_1600,c_fit,f_auto,q_90/"
+  );
+}
   // ✅ Render nothing while loading or waiting for token
-  if (isCheckingToken || localLoading) {
+  if (localLoading) {
   return (
     <section className="w-full py-10 md:py-12">
       <div className="max-w-[1400px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-[1.2fr_1fr_0.5fr] gap-14 items-center">
@@ -241,7 +235,7 @@ py-10 md:py-12 pt-8 md:pt-12 lg:pt-12 overflow-hidden">
 
     {/* TITLE — SOFT TYPING */}
    <motion.h1
-  variants={!isMobile && !prefersReducedMotion ? typingContainer : undefined}
+  variants={shouldAnimate ? typingContainer : undefined}
   initial={!isMobile && !prefersReducedMotion ? "hidden" : false}
   animate={!isMobile && !prefersReducedMotion ? "show" : false}
   className="
@@ -361,7 +355,7 @@ py-10 md:py-12 pt-8 md:pt-12 lg:pt-12 overflow-hidden">
       }
       >
         <Image
-          src={getOptimizedCloudinaryUrl(slides[currentIndex]?.images[0]) || "/images/placeholder.jpg"}
+          src={getOptimizedCloudinaryUrl(slides[currentIndex]?.images[0], isMobile) || "/images/placeholder.jpg"}
           alt={slides[currentIndex]?.title || "Furniture"}
           width={420}
           height={420}
@@ -441,7 +435,7 @@ py-10 md:py-12 pt-8 md:pt-12 lg:pt-12 overflow-hidden">
           "
         >
           <Image
-            src={getOptimizedCloudinaryUrl(slide?.images[0]) || "/images/placeholder.jpg"}
+            src={getOptimizedCloudinaryUrl(slide?.images[0], isMobile) || "/images/placeholder.jpg"}
             alt={slide?.title}
             width={48}
             height={48}

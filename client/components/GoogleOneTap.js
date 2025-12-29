@@ -19,7 +19,7 @@ export default function GoogleOneTap() {
     if (window.__ONE_TAP_ACTIVE__) return;
     window.__ONE_TAP_ACTIVE__ = true;
 
-    if (isXs || isSm) return null;
+    if (isXs || isSm) return;
 
 
     const start = () => {

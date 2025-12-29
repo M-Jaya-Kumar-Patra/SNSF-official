@@ -153,7 +153,7 @@ const Bestsellers = ({ posterIndex }) => {
 
   "
           >
-            {productsForGrid.length > 0 ? (
+            {productsForGrid.length < 0 ? (
               <ProductGrid products={productsForGrid} row={2} />
             ) : (
               /* ===== GRID SKELETON ===== */
@@ -166,7 +166,7 @@ const Bestsellers = ({ posterIndex }) => {
         pb-2
       "
               >
-                {Array.from({ length: limit }).map((_, i) => (
+                {Array.from({ length: limit+1 }).map((_, i) => (
                   <div
                     key={i}
                     className="

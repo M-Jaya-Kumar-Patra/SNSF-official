@@ -173,7 +173,7 @@ const CurratedLooks = () => {
       pb-2 sm:pb-4
     "
   >
-    {Array.from({ length: limit }).map((_, i) => (
+    {Array.from({ length: limit+1 }).map((_, i) => (
       <article
         key={i}
         className="
