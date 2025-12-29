@@ -41,17 +41,19 @@ const ProductPageClient = ({ prdId }) => {
 
   const [hideArrows, setHideArrows] = useState(null);
 
-  const params = useParams();
   const router = useRouter();
 
   useEffect(() => {
-    fetchDataFromApi(`/api/product/${prdId}`, false).then((res) => {
-      setOpenedProduct(res?.product);
-      setProductImages(res?.product?.images);
-      setSelectedImage(res?.product?.images[0]);
-      window.scrollTo(0, 0);
-    });
-  }, [prdId, userData]);
+  fetchDataFromApi(`/api/product/${prdId}`, false).then((res) => {
+    setOpenedProduct(res?.product);
+    setProductImages(res?.product?.images || []);
+    setSelectedImage(res?.product?.images?.[0] || null);
+
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  });
+}, [prdId]);
 
   useEffect(() => {
     if (!openedProduct?._id) return;
@@ -68,7 +70,7 @@ const ProductPageClient = ({ prdId }) => {
         userData?._id || null
       );
     };
-  }, [openedProduct]);
+  }, [openedProduct, userData?._id]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -76,32 +78,33 @@ const ProductPageClient = ({ prdId }) => {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [setShowLarge]);
 
-  useEffect(() => {
-    if (!openedProduct?._id) return;
+ useEffect(() => {
+  if (!openedProduct?._id) return;
+  if (typeof window === "undefined") return;
 
+  try {
     const viewedKey = "recentlyViewed";
     let viewed = JSON.parse(localStorage.getItem(viewedKey)) || [];
 
-    // remove if exists already
     viewed = viewed.filter((id) => id !== openedProduct._id);
-
-    // add at the top
     viewed.unshift(openedProduct._id);
-
-    // limit max items (optional)
     viewed = viewed.slice(0, 20);
 
     localStorage.setItem(viewedKey, JSON.stringify(viewed));
-  }, [openedProduct]);
+  } catch (e) {
+    console.warn("Recently viewed storage failed", e);
+  }
+}, [openedProduct]);
+
 
   const getOptimizedCloudinaryUrl = (url) => {
     if (!url?.includes("res.cloudinary.com")) return url;
     return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
   };
 
-  if (isCheckingToken || !openedProduct || !productImages) {
+  if (isCheckingToken || !openedProduct) {
     return (
       <div className="flex flex-col w-full min-h-screen sm:py-4 items-center bg-slate-100">
         <div className="w-full sm:w-[1020px] min-h-screen p-4 sm:flex justify-between bg-white">
@@ -159,6 +162,12 @@ const ProductPageClient = ({ prdId }) => {
       </div>
     );
   }
+
+  const initialIndex = Math.max(
+  0,
+  productImages.findIndex((img) => img === showLarge)
+);
+
 
   // ✅ Actual JSX rendering
   return (
@@ -316,9 +325,7 @@ const ProductPageClient = ({ prdId }) => {
                   pagination={{ clickable: true }}
                   navigation
                   className="w-full h-full"
-                  initialSlide={
-                    productImages.findIndex((img) => img === showLarge) || 0
-                  }
+                  initialSlide={initialIndex}
                 >
                   {productImages.map((img, idx) => (
                     <SwiperSlide key={idx}>
@@ -476,9 +483,7 @@ const ProductPageClient = ({ prdId }) => {
                   pagination={{ clickable: true }}
                   navigation
                   className="w-full h-full"
-                  initialSlide={
-                    productImages.findIndex((img) => img === showLarge) || 0
-                  }
+                  initialSlide={initialIndex}
                 >
                   {productImages.map((img, idx) => (
                     <SwiperSlide key={idx}>
