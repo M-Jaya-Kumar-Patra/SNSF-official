@@ -15,7 +15,7 @@ export default function AppToaster() {
 
   return (
     <Toaster
-      position={isMobile ? "top-center" : "top-right"}
+      position={"top-right"}
       containerStyle={{
         top: isMobile ? 85 : 105, // adjust to your navbar height
       }}
