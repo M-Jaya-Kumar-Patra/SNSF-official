@@ -75,7 +75,6 @@ export async function trackVisitor(
 // --- 5️⃣ Track Product Event
 export async function trackProductEvent(productId, eventType = "view", timeSpent = 0, userId = null) {
 
-  console.log("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII", productId, eventType, timeSpent, userId )
 
   
   if (typeof window === "undefined") return;

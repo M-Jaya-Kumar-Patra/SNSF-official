@@ -56,7 +56,6 @@ const ProductPageClient = ({ prdId }) => {
   useEffect(() => {
     if (!openedProduct?._id) return;
 
-    console.log("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU", userData?._id)
 
     let start = Date.now();
 

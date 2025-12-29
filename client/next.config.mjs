@@ -8,6 +8,13 @@ const nextConfig = withPWA({
   disable: isDev,
   register: true,
   skipWaiting: true,
+  workbox: {
+  exclude: [
+    ({ asset }) =>
+      asset.name.startsWith("app-build-manifest") ||
+      asset.name.includes("_next/"),
+  ],
+},
 })({
   reactStrictMode: false, // ✅ REQUIRED for Google One Tap (dev)
 

@@ -190,6 +190,7 @@ const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {
                 className="w-[140px] h-[50px] sm:w-[160px] sm:h-[60px] object-contain"
                 fetchPriority="high" // ✅ hints browser it's high-priority for LCP
                 quality={90}
+                priority
               />
             </div>
 

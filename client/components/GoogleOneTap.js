@@ -30,7 +30,7 @@ export default function GoogleOneTap() {
       
 
      window.google.accounts.id.initialize({
-  client_id: process.env.NEXT_PUBLIC_GOOGLE_ONE_TAP_CLIENT_ID,
+  client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
   callback: handleCredentialResponse,
   auto_select: false,
   cancel_on_tap_outside: true,
@@ -42,7 +42,7 @@ export default function GoogleOneTap() {
     };
 
     start();
-  }, []);
+  }, [handleCredentialResponse, isSm, isXs]);
 
   const handleCredentialResponse = async (response) => {
     try {
