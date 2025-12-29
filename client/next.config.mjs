@@ -8,26 +8,27 @@ const nextConfig = withPWA({
   disable: isDev,
   register: true,
   skipWaiting: true,
-
-  // ✅ CORRECT PLACE
-  pwa: {
-    workboxOptions: {
-      exclude: [
-        ({ asset }) =>
-          asset.name.startsWith("app-build-manifest") ||
-          asset.name.includes("_next/"),
-      ],
-    },
-  },
 })({
-  reactStrictMode: false,
+  reactStrictMode: false, // ✅ REQUIRED for Google One Tap (dev)
 
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "res.cloudinary.com" },
-      { protocol: "https", hostname: "snsteelfabrication.com" },
-      { protocol: "https", hostname: "lh3.googleusercontent.com" },
-      { protocol: "https", hostname: "img.youtube.com" },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+      {
+        protocol: "https",
+        hostname: "snsteelfabrication.com",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "img.youtube.com",
+      },
     ],
   },
 
