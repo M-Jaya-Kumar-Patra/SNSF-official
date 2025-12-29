@@ -78,6 +78,7 @@ const [hasRecentlyViewed, setHasRecentlyViewed] = useState(true);
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
     const today = new Date().toDateString();
     const lastVisit = localStorage.getItem("l20dec25kjf34u85");
 

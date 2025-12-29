@@ -5,6 +5,20 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 import axios from 'axios';
 import Cookies from "js-cookie";
 
+
+
+const safeLocalStorageGet = (key) => {
+  if (typeof window === "undefined") return null;
+  try {
+    return safeLocalStorageGet(key);
+  } catch {
+    return null;
+  }
+};
+
+
+
+
 // POST request
 export const postData = async (url, formData, authRequired = true) => {
 
@@ -14,7 +28,7 @@ export const postData = async (url, formData, authRequired = true) => {
     };
 
     if (authRequired) {
-      const token = localStorage.getItem("accessToken")
+      const token = safeLocalStorageGet("accessToken")
 
       if (!token) throw new Error("Access token is missing or expired");
       headers["Authorization"] = `Bearer ${token}`;
@@ -43,7 +57,7 @@ export const fetchDataFromApi = async (url, authRequired = true) => {
     };
 
     if (authRequired) {
-      const token = localStorage.getItem("accessToken")
+      const token = safeLocalStorageGet("accessToken")
 
       if (!token) {
         return { error: true, message: "Access token is missing or expired" };
@@ -75,12 +89,12 @@ export const searchAPI = async (url, authRequired = false) => {
       // 🔥 Extra Tracking Headers
       "x-visitor-id": Cookies.get("visitorId") || "",
       "x-session-id": Cookies.get("sessionId") || "",
-      "x-user-id": localStorage.getItem("userId") || "",   // <-- optional
+      "x-user-id": safeLocalStorageGet("userId") || "",   // <-- optional
     };
 
     // 🔐 Auth token (if required)
     if (authRequired) {
-      const token = localStorage.getItem("accessToken");
+      const token = safeLocalStorageGet("accessToken");
 
       if (!token) {
         return { error: true, message: "Access token is missing or expired" };
@@ -115,7 +129,7 @@ export const uploadImage = async (url, updatedData, authRequired = true) => {
     const headers = {};
 
     if (authRequired) {
-      const token = localStorage.getItem("accessToken");
+      const token = safeLocalStorageGet("accessToken");
 
       if (!token) {
         return { error: true, message: "Access token is missing or expired" };
@@ -143,7 +157,7 @@ export const uploadImage = async (url, updatedData, authRequired = true) => {
 export const editData = async (url, updatedData, authRequired = true) => {
 
   try {
-    const token = localStorage.getItem("accessToken")
+    const token = safeLocalStorageGet("accessToken")
 
     const response = await fetch(apiUrl + url, {
       method: "PUT",
@@ -169,7 +183,7 @@ export const getUserAddress = async (url, userId, authRequired = true) => {
     };
 
     if (authRequired) {
-      const token = localStorage.getItem("accessToken");
+      const token = safeLocalStorageGet("accessToken");
       if (!token) return { error: true, message: "Access token is missing or expired" };
       headers["Authorization"] = `Bearer ${token}`;
     }
@@ -196,7 +210,7 @@ export const deleteUserAddress = async (url, authRequired = true) => {
     };
 
     if (authRequired) {
-      const token = localStorage.getItem("accessToken");
+      const token = safeLocalStorageGet("accessToken");
       if (!token) return { error: true, message: "Access token is missing or expired" };
       headers["Authorization"] = `Bearer ${token}`;
     }
@@ -223,7 +237,7 @@ export const updateUserAddress = async (url, editAddressObj, authRequired = true
     };
 
     if (authRequired) {
-      const token = localStorage.getItem("accessToken");
+      const token = safeLocalStorageGet("accessToken");
       if (!token) return { error: true, message: "Access token is missing or expired" };
       headers["Authorization"] = `Bearer ${token}`;
     }
@@ -244,7 +258,7 @@ export const updateUserAddress = async (url, editAddressObj, authRequired = true
 
 export const deleteItem = async (url, body) => {
   try {
-    const token = localStorage.getItem("accessToken");
+    const token = safeLocalStorageGet("accessToken");
 
     const response = await axios.delete(apiUrl + url, {
       headers: {
@@ -263,7 +277,7 @@ export const deleteItem = async (url, body) => {
 
 export const getUserEnquiries = async () => {
   try {
-    const token = localStorage.getItem("accessToken");
+    const token = safeLocalStorageGet("accessToken");
 
     if (!token) {
       return { error: true, message: "Access token is missing or expired" };
@@ -302,7 +316,7 @@ export const uploadVideoToCloud = async (url, formData, authRequired = true) => 
     const headers = {};
 
     if (authRequired) {
-      const token = localStorage.getItem("accessToken");
+      const token = safeLocalStorageGet("accessToken");
       if (!token) return { error: true, message: "Access token missing" };
       headers["Authorization"] = `Bearer ${token}`;
     }
