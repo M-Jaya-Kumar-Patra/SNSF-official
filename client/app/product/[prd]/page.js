@@ -47,7 +47,7 @@ export async function generateMetadata({ params }) {
     description ||
     `Experience the perfect blend of style, durability, and functionality with ${name}.`;
 
-  const productImage = "/snsf-banner.jpg";
+  const productImage = images?.[0] || "https://www.snsteelfabrication.com/snsf-banner.jpg";
   const productUrl = `https://snsteelfabrication.com/product/${prd}`;
 
   /* ✅ BASE KEYWORDS */

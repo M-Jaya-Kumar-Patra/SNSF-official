@@ -45,8 +45,7 @@ export const metadata = {
     siteName: "S N Steel Fabrication", // ✅ Updated here
     images: [
       {
-        url: "https://snsteelfabrication.com/snsf-banner.jpg",
-        secureUrl: "https://snsteelfabrication.com/snsf-banner.jpg",
+        url: "/snsf-banner.jpg",
         width: 1200,
         height: 630,
         alt: "S N Steel Fabrication",
@@ -58,7 +57,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "S N Steel Fabrication",
     description: "Modern & customizable steel furniture.",
-    images: ["https://snsteelfabrication.com/snsf-banner.jpg"],
+    images: ["/snsf-banner.jpg"],
   },
   keywords: [
     "steel furniture",
