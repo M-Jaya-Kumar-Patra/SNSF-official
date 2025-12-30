@@ -1,24 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import GlobalLoader from "@/components/GlobalLoader";
 
 export default function AuthWrapper({ children }) {
-  const [hasMounted, setHasMounted] = useState(false);
-  const auth = useAuth();
+  const { isCheckingToken, loading } = useAuth();
 
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  if (!hasMounted) return null;
-
-  if (!auth || typeof auth !== "object") return <GlobalLoader />;
-
-  const { isCheckingToken, loading } = auth;
-
-  if (isCheckingToken || loading) return <GlobalLoader />;
+  // ✅ Always render something
+  if (isCheckingToken || loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <GlobalLoader />
+      </div>
+    );
+  }
 
   return children;
 }

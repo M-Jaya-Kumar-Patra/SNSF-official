@@ -21,6 +21,8 @@ import AppToaster from "@/components/ToastProvider";
 
 import { Inter, Montserrat, Poppins } from "next/font/google";
 import MainWrapper from "@/components/MainWrapper";
+import AppProviders from "@/components/AppProviders";
+import ClientRuntime from "@/components/ClientRuntime";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -124,35 +126,20 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${inter.variable} ${montserrat.variable}`}>
         <ServiceWorkerRegister />
-        <ScreenWidthProvider>
-          <AuthProvider>
-            <AuthWrapper>
-              <AlertProvider>
-                <NoticeProviders>
-                  <ItemProvider>
-                    <CatProvider>
-                      <WishlistProvider>
-                        <PrdProvider>
-                          <Navbar />
-                          <GlobalLoader />
-                          <GoogleOAuthProvider
-                            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
-                          >
-                            <VisitorTracker />
-                            <MainWrapper>{children}</MainWrapper>
-                          </GoogleOAuthProvider>
-                          <BottomNav />
-                          <Footer />
-                          <AppToaster />
-                        </PrdProvider>
-                      </WishlistProvider>
-                    </CatProvider>
-                  </ItemProvider>
-                </NoticeProviders>
-              </AlertProvider>
-            </AuthWrapper>
-          </AuthProvider>
-        </ScreenWidthProvider>
+
+        <AppProviders>
+          <Navbar />          {/* server + client split */}
+          <GlobalLoader />
+
+          {/* 👇 runtime-only logic */}
+          <ClientRuntime>
+            <MainWrapper>{children}</MainWrapper>
+          </ClientRuntime>
+
+          <BottomNav />
+          <Footer />
+          <AppToaster />
+        </AppProviders>
       </body>
     </html>
   );
