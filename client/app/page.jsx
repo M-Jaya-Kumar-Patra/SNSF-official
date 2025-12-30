@@ -97,16 +97,26 @@ export default function Home() {
     }
   }, []);
 
-  if (isCheckingToken) return <Loading />;
+  // if (isCheckingToken) return <Loading />;
+
+
 
   return (
     <div
       className="bg-gradient-to-br 
 from-slate-100 via-slate-50 to-slate-100 "
     >
-      {/* <Toaster position="top-right" /> */}
 
-      <section
+
+      {isCheckingToken && (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <Loading />
+      </div>
+    )}
+      {/* <Toaster position="top-right" /> */}
+ {!isCheckingToken && (
+      <>
+            <section
         className={` bg-slate-100 h-[86px] hidden md:block transition-opacity duration-500 ${
           isScrolled ? "opacity-0" : "opacity-100"
         }`}
@@ -291,6 +301,8 @@ from-slate-100 via-slate-50 to-slate-100 "
           <RecentlyViewed onEmpty={() => setHasRecentlyViewed(false)} />
         </div>
       </section>
+      </>
+    )}
     </div>
   );
 }

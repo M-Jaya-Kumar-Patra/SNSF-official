@@ -118,13 +118,6 @@ const clientNavbar = ({ fontClass, cartItems = [], minimized = false }) => {
     };
   }, [menuOpen]);
 
-  const getOptimizedCloudinaryUrl = (url) => {
-    if (!url?.includes("res.cloudinary.com")) return url;
-    return url.replace(
-      "/upload/",
-      "/upload/w_300,h_300,c_fit,fl_lossless,f_auto,q_100/"
-    );
-  };
   // if (!showLarge) return null;
   if (localLoading) return <Loading />;
 

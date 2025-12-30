@@ -1,22 +1,10 @@
 import "./globals.css";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
-import AuthWrapper from "@/components/AuthWrapper";
-import { AlertProvider } from "./context/AlertContext";
-import { AuthProvider } from "./context/AuthContext";
-import { Toaster } from "react-hot-toast";
-import { CatProvider } from "./context/CategoryContext";
-import { PrdProvider } from "./context/ProductContext";
-import { ItemProvider } from "./context/ItemContext";
-import { WishlistProvider } from "./context/WishlistContext";
-import { NoticeProviders } from "./context/NotificationContext";
+
 import GlobalLoader from "@/components/GlobalLoader";
 import BottomNav from "@/components/BottomNav";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
-import Script from "next/script";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import VisitorTracker from "@/components/VisitorTracker";
-import { ScreenWidthProvider } from "./context/ScreenWidthContext";
 import AppToaster from "@/components/ToastProvider";
 
 import { Inter, Montserrat, Poppins } from "next/font/google";
@@ -36,11 +24,6 @@ const montserrat = Montserrat({
   variable: "--font-heading",
 });
 
-const poppins = Montserrat({
-  subsets: ["cyrillic"],
-  weight: ["600", "700", "800"],
-  variable: "--poppins",
-});
 
 export const viewport = {
   themeColor: "#000000",
@@ -124,15 +107,15 @@ export default function RootLayout({ children }) {
           content="ca-pub-9814214172872974"
         ></meta>
       </head>
-      <body className={`${inter.variable} ${montserrat.variable}`}>
+      <body className={`${inter.variable} ${montserrat.variable} `}>
         <ServiceWorkerRegister />
 
         <AppProviders>
           <Navbar />          {/* server + client split */}
-          <GlobalLoader />
 
           {/* 👇 runtime-only logic */}
           <ClientRuntime>
+          <GlobalLoader />
             <MainWrapper>{children}</MainWrapper>
           </ClientRuntime>
 

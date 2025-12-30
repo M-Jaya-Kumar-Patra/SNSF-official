@@ -57,15 +57,7 @@ const getCategoryIcon = (name) => {
   return <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-900" />;
 };
 
-/* ---------------- STYLED BADGE ---------------- */
-const StyledBadge = styled(Badge)(({ theme }) => ({
-  "& .MuiBadge-badge": {
-    right: -3,
-    top: 13,
-    border: `2px solid ${theme.palette.background.paper}`,
-    padding: "0 4px",
-  },
-}));
+
 
 /* ================== NAVBAR ================== */
 const Navbar = ({ fontClass, cartItems = [], minimized = false }) => {

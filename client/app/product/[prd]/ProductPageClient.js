@@ -171,36 +171,7 @@ const ProductPageClient = ({ prdId }) => {
   // ✅ Actual JSX rendering
   return (
     <div className="flex flex-col w-full min-h-screen items-center bg-slate-100">
-      {/* Structured Data Head Tag */}
-      {openedProduct && (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org/",
-                "@type": "Product",
-                name: openedProduct?.name,
-                image: openedProduct?.images,
-                description: openedProduct?.description,
-                sku: openedProduct?._id,
-                brand: {
-                  "@type": "Brand",
-                  name: openedProduct?.brand || "-",
-                },
-                offers: {
-                  "@type": "Offer",
-                  priceCurrency: "INR",
-                  price: openedProduct?.price,
-                  availability:
-                    openedProduct?.countInStock > 0
-                      ? "https://schema.org/InStock"
-                      : "https://schema.org/OutOfStock",
-                  url: `https://snsteelfabrication.com/product/${openedProduct?._id}`,
-                },
-              }),
-            }}
-          />
-      )}
+      
 
       <div className="w-full sm:w-[1020px] mb-2 sm:my-3 pt-2 sm:p-2 mx-auto lg:flex justify-between bg-white">
         {/* Left: Image Section */}
