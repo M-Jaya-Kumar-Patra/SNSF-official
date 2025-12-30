@@ -47,8 +47,8 @@ export const metadata = {
       {
         url: "https://snsteelfabrication.com/snsf-banner.jpg",
         secureUrl: "https://snsteelfabrication.com/snsf-banner.jpg",
-        width: 1536,
-        height: 1024,
+        width: 1200,
+        height: 630,
         alt: "S N Steel Fabrication",
       },
     ],
