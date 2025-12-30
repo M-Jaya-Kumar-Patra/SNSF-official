@@ -114,6 +114,8 @@ const formatLabelFromDate = (bucket, dateObj) => {
 export const addVisitCount = async (req, res) => {
   try {
     const deviceId = req.body.deviceId;
+
+    console.log("The deviceId is here: ",deviceId)
     const ip =
       req.headers["x-forwarded-for"]?.split(",")[0] ||
       req.socket.remoteAddress;
