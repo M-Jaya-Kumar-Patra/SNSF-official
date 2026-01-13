@@ -124,6 +124,18 @@ const Footer = () => {
                   alt="WhatsApp"
                 />
               </a>
+              <a
+                href="https://www.instagram.com/snsteelfabrication"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Image
+                  src={getOptimizedCloudinaryUrl("/images/instagram.png")}
+                  width={30}
+                  height={30}
+                  alt="Instagram"
+                />
+              </a>
             </div>
           </div>
 
