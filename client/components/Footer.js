@@ -188,7 +188,7 @@ const Footer = () => {
 
             {/* Middle: Credits */}
             <a
-              href="https://wa.me/917847911696"
+              href="https://jaya-portfolio-five.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
             >
