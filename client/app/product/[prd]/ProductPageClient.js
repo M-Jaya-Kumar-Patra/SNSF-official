@@ -13,7 +13,7 @@ import ProductSpecs from "@/components/ProductSpecs";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { RxCross2 } from "react-icons/rx";
-import { Navigation, Pagination, A11y } from "swiper/modules";
+import { Navigation, Pagination, A11y, Zoom } from "swiper/modules";
 import WhatsappIcon from "@/components/WhatsappIcon";
 import { IoCall } from "react-icons/io5";
 
@@ -27,6 +27,8 @@ import Suggestions from "@/components/Suggestions";
 import { trackProductEvent } from "@/lib/tracking";
 import { usePrd } from "@/app/context/ProductContext";
 
+import "swiper/css/zoom";
+
 const ProductPageClient = ({ prdId }) => {
   const [productImages, setProductImages] = useState([]);
   const [openedProduct, setOpenedProduct] = useState(null);
@@ -37,26 +39,24 @@ const ProductPageClient = ({ prdId }) => {
   const { userData, setUserData, isLogin, isCheckingToken } = useAuth();
   const { showLarge, setShowLarge } = usePrd();
 
-
   const [hideArrows, setHideArrows] = useState(null);
 
   const router = useRouter();
 
   useEffect(() => {
-  fetchDataFromApi(`/api/product/${prdId}`, false).then((res) => {
-    setOpenedProduct(res?.product);
-    setProductImages(res?.product?.images || []);
-    setSelectedImage(res?.product?.images?.[0] || null);
+    fetchDataFromApi(`/api/product/${prdId}`, false).then((res) => {
+      setOpenedProduct(res?.product);
+      setProductImages(res?.product?.images || []);
+      setSelectedImage(res?.product?.images?.[0] || null);
 
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "auto" });
-    }
-  });
-}, [prdId]);
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }
+    });
+  }, [prdId]);
 
   useEffect(() => {
     if (!openedProduct?._id) return;
-
 
     let start = Date.now();
 
@@ -66,37 +66,56 @@ const ProductPageClient = ({ prdId }) => {
         openedProduct._id,
         "view",
         duration,
-        userData?._id || null
+        userData?._id || null,
       );
     };
   }, [openedProduct, userData?._id]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === "Escape") setShowLarge(null);
+      if (e.key === "Escape") window.history.back();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [setShowLarge]);
 
- useEffect(() => {
-  if (!openedProduct?._id) return;
-  if (typeof window === "undefined") return;
+  useEffect(() => {
+    if (!openedProduct?._id) return;
+    if (typeof window === "undefined") return;
 
-  try {
-    const viewedKey = "recentlyViewed";
-    let viewed = JSON.parse(localStorage.getItem(viewedKey)) || [];
+    try {
+      const viewedKey = "recentlyViewed";
+      let viewed = JSON.parse(localStorage.getItem(viewedKey)) || [];
 
-    viewed = viewed.filter((id) => id !== openedProduct._id);
-    viewed.unshift(openedProduct._id);
-    viewed = viewed.slice(0, 20);
+      viewed = viewed.filter((id) => id !== openedProduct._id);
+      viewed.unshift(openedProduct._id);
+      viewed = viewed.slice(0, 20);
 
-    localStorage.setItem(viewedKey, JSON.stringify(viewed));
-  } catch (e) {
-    console.warn("Recently viewed storage failed", e);
-  }
-}, [openedProduct]);
+      localStorage.setItem(viewedKey, JSON.stringify(viewed));
+    } catch (e) {
+      console.warn("Recently viewed storage failed", e);
+    }
+  }, [openedProduct]);
+  useEffect(() => {
+    const handlePopState = () => {
+      setShowLarge(null);
+      setHideArrows(false);
+    };
 
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  const openLargeView = (src) => {
+    openLargeView(src);
+    setHideArrows(true);
+
+    if (typeof window !== "undefined") {
+      if (!window.history.state?.largeView) {
+        window.history.pushState({ largeView: true }, "");
+      }
+    }
+  };
 
   const getOptimizedCloudinaryUrl = (url) => {
     if (!url?.includes("res.cloudinary.com")) return url;
@@ -163,16 +182,13 @@ const ProductPageClient = ({ prdId }) => {
   }
 
   const initialIndex = Math.max(
-  0,
-  productImages.findIndex((img) => img === showLarge)
-);
-
+    0,
+    productImages.findIndex((img) => img === showLarge),
+  );
 
   // ✅ Actual JSX rendering
   return (
     <div className="flex flex-col w-full min-h-screen items-center bg-slate-100">
-      
-
       <div className="w-full sm:w-[1020px] mb-2 sm:my-3 pt-2 sm:p-2 mx-auto lg:flex justify-between bg-white">
         {/* Left: Image Section */}
         <div className="image sm:sticky lg:top-[110px] w-full sm:w-[400px] sm:h-[310px] sm:p-[2px] sm:border sm:border-slate-400 sm:m-3 mr-4 flex gap-[2px] flex-col sm:flex-row">
@@ -187,13 +203,16 @@ const ProductPageClient = ({ prdId }) => {
               {productImages?.map((src, idx) => (
                 <SwiperSlide key={idx}>
                   <Image
-                    src={getOptimizedCloudinaryUrl(src) || "/images/placeholder.jpg"}
+                    src={
+                      getOptimizedCloudinaryUrl(src) ||
+                      "/images/placeholder.jpg"
+                    }
                     alt={`Slide ${idx + 1}`}
                     className="w-full h-[300px] object-contain"
                     width={500}
                     height={300}
                     onClick={() => {
-                      setShowLarge(src); // You still want to show original in modal
+                      openLargeView(src); // You still want to show original in modal
                       setHideArrows(true);
                     }}
                     loading="lazy"
@@ -210,12 +229,12 @@ const ProductPageClient = ({ prdId }) => {
                   router.push("/login");
                 } else {
                   const isAlreadyInWishlist = userData?.wishlist?.some(
-                    (item) => item === String(openedProduct?._id)
+                    (item) => item === String(openedProduct?._id),
                   );
                   if (isAlreadyInWishlist) {
                     const wishItem = wishlistData?.find(
                       (itemInWishData) =>
-                        itemInWishData.productId === openedProduct?._id
+                        itemInWishData.productId === openedProduct?._id,
                     );
                     const itemId = wishItem?._id;
                     if (itemId)
@@ -228,7 +247,7 @@ const ProductPageClient = ({ prdId }) => {
             >
               {isLogin &&
               userData?.wishlist?.some(
-                (item) => item === String(openedProduct?._id)
+                (item) => item === String(openedProduct?._id),
               ) ? (
                 <MdFavorite className="!text-rose-600 text-[22px] z-10" />
               ) : (
@@ -270,7 +289,7 @@ const ProductPageClient = ({ prdId }) => {
           {/* Fullscreen Modal for Mobile Large View */}
           {showLarge && (
             <div
-              className="flex lg:hidden fixed inset-0 bg-slate-100 bg-opacity-80 z-[999]  flex-col items-center justify-center px-4"
+              className="flex lg:hidden fixed inset-0 bg-slate-100  z-[999]  flex-col items-center justify-center px-4"
               style={{ touchAction: "pinch-zoom", overflow: "auto" }}
             >
               <div className="w-full flex justify-end">
@@ -278,6 +297,10 @@ const ProductPageClient = ({ prdId }) => {
                   onClick={() => {
                     setShowLarge(null);
                     setHideArrows(false);
+
+                    if (typeof window !== "undefined") {
+                      window.history.back();
+                    }
                   }}
                   className="!text-black text-3xl p-2"
                 >
@@ -287,7 +310,8 @@ const ProductPageClient = ({ prdId }) => {
 
               <div className="w-full max-w-[500px] h-[80vh] flex justify-center items-center">
                 <Swiper
-                  modules={[Navigation, Pagination, A11y]}
+                  modules={[Navigation, Pagination, A11y, Zoom]}
+                  zoom={{ maxRatio: 3, toggle: true }}
                   spaceBetween={10}
                   slidesPerView={1}
                   pagination={{ clickable: true }}
@@ -297,14 +321,16 @@ const ProductPageClient = ({ prdId }) => {
                 >
                   {productImages.map((img, idx) => (
                     <SwiperSlide key={idx}>
-                      <Image
-                        src={getOptimizedCloudinaryUrl(img) || "/images/placeholder.jpg"}
-                        alt={`Slide ${idx + 1}`}
-                        width={500}
-                        height={500}
-                        className="object-contain w-full h-full touch-auto"
-                        loading="lazy"
-                      />
+                      <div className="swiper-zoom-container">
+                        <img
+                          src={
+                            getOptimizedCloudinaryUrl(img) ||
+                            "/images/placeholder.jpg"
+                          }
+                          alt={`Slide ${idx + 1}`}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
                     </SwiperSlide>
                   ))}
                 </Swiper>
@@ -325,7 +351,10 @@ const ProductPageClient = ({ prdId }) => {
                     onClick={() => setSelectedImage(src)}
                   >
                     <Image
-                      src={getOptimizedCloudinaryUrl(src) || "/images/placeholder.jpg"}
+                      src={
+                        getOptimizedCloudinaryUrl(src) ||
+                        "/images/placeholder.jpg"
+                      }
                       alt={`Thumbnail ${idx + 1}`}
                       className="w-[128px] h-[64px] object-contain"
                       width={100}
@@ -341,7 +370,9 @@ const ProductPageClient = ({ prdId }) => {
                 <Image
                   className="h-full w-full object-contain border cursor-zoom-in"
                   src={getOptimizedCloudinaryUrl(
-                    selectedImage || productImages?.[0] || "/images/placeholder.jpg"
+                    selectedImage ||
+                      productImages?.[0] ||
+                      "/images/placeholder.jpg",
                   )}
                   alt="Selected Product"
                   unoptimized
@@ -361,12 +392,12 @@ const ProductPageClient = ({ prdId }) => {
                       router.push("/login");
                     } else {
                       const isAlreadyInWishlist = userData?.wishlist?.some(
-                        (item) => item === String(openedProduct?._id)
+                        (item) => item === String(openedProduct?._id),
                       );
                       if (isAlreadyInWishlist) {
                         const wishItem = wishlistData?.find(
                           (itemInWishData) =>
-                            itemInWishData.productId === openedProduct?._id
+                            itemInWishData.productId === openedProduct?._id,
                         );
                         const itemId = wishItem?._id;
                         if (itemId)
@@ -379,7 +410,7 @@ const ProductPageClient = ({ prdId }) => {
                 >
                   {isLogin &&
                   userData?.wishlist?.some(
-                    (item) => item === String(openedProduct?._id)
+                    (item) => item === String(openedProduct?._id),
                   ) ? (
                     <MdFavorite className="!text-rose-600 text-[22px] z-10" />
                   ) : (
@@ -406,7 +437,7 @@ const ProductPageClient = ({ prdId }) => {
                     } else {
                       try {
                         await navigator.clipboard.writeText(
-                          window.location.href
+                          window.location.href,
                         );
                         alert("Product URL copied to clipboard!");
                       } catch (err) {
@@ -426,16 +457,17 @@ const ProductPageClient = ({ prdId }) => {
 
           {/* Fullscreen Modal for Large Image View */}
           {showLarge && (
-            <div
-             className="hidden sm:flex fixed  inset-0 bg-slate-100 bg-opacity-80 z-[999]  flex-col items-center justify-center px-4">
-
-              
+            <div className="hidden sm:flex fixed  inset-0 bg-slate-100  z-[999]  flex-col items-center justify-center px-4">
               <div className="w-full flex justify-end">
                 <button
                   onClick={() => {
                     setShowLarge(null);
-                    
+
                     setHideArrows(false);
+
+                    if (typeof window !== "undefined") {
+                      window.history.back();
+                    }
                   }}
                   className="text-black text-3xl p-2"
                 >
@@ -456,7 +488,10 @@ const ProductPageClient = ({ prdId }) => {
                   {productImages.map((img, idx) => (
                     <SwiperSlide key={idx}>
                       <Image
-                        src={getOptimizedCloudinaryUrl(img) || "/images/placeholder.jpg"}
+                        src={
+                          getOptimizedCloudinaryUrl(img) ||
+                          "/images/placeholder.jpg"
+                        }
                         alt={`Slide ${idx + 1}`}
                         width={800}
                         height={800}
@@ -563,7 +598,6 @@ const ProductPageClient = ({ prdId }) => {
 
           {/* Product Specs */}
           <ProductSpecs specs={openedProduct?.specifications} />
-
         </div>
       </div>
 
