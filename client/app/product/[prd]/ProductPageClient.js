@@ -72,12 +72,16 @@ const ProductPageClient = ({ prdId }) => {
   }, [openedProduct, userData?._id]);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") window.history.back();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [setShowLarge]);
+  const handleKeyDown = (e) => {
+    if (e.key === "Escape" && showLarge) {
+      window.history.back();
+    }
+  };
+
+  window.addEventListener("keydown", handleKeyDown);
+  return () => window.removeEventListener("keydown", handleKeyDown);
+}, [showLarge]);
+
 
   useEffect(() => {
     if (!openedProduct?._id) return;
@@ -107,14 +111,12 @@ const ProductPageClient = ({ prdId }) => {
   }, []);
 
   const openLargeView = (src) => {
-    openLargeView(src);
+    setShowLarge(src);
     setHideArrows(true);
 
-    if (typeof window !== "undefined") {
       if (!window.history.state?.largeView) {
         window.history.pushState({ largeView: true }, "");
       }
-    }
   };
 
   const getOptimizedCloudinaryUrl = (url) => {
@@ -378,10 +380,7 @@ const ProductPageClient = ({ prdId }) => {
                   unoptimized
                   width={300}
                   height={300}
-                  onClick={() => {
-                    setShowLarge(selectedImage);
-                    setHideArrows(true);
-                  }}
+                 onClick={() => openLargeView(selectedImage)}
                 />
 
                 {/* Wishlist Button */}
