@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { fetchDataFromApi } from "@/utils/api";
 import Skeleton from "@mui/material/Skeleton";
+import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
 const VideoSlider = ({
   videoIndex = [0, 10],
@@ -59,15 +60,18 @@ const VideoSlider = ({
               >
                 {/* Thumbnail */}
                 <Image
-                  src={video.thumbnail || "/images/placeholder.jpg"}
+                  src={getCloudinaryImageUrl(video.thumbnail || "/images/placeholder.jpg", {
+                    width: 420,
+                    height: 747,
+                  })}
                   alt={video.title}
                   fill
+                  sizes="280px"
                   className="
                     object-cover
                     transition-transform duration-500
                     group-hover:scale-105
                   "
-                  unoptimized
                 />
 
                 {/* Play Icon */}

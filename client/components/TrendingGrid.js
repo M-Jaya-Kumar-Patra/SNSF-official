@@ -1,6 +1,7 @@
 // ProductGrid.jsx
 import React from "react";
 import { useRouter } from "next/navigation";
+import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
 
 export default function TrendingGrid({ products = [], row = 1, loading = false  }) {
@@ -11,7 +12,7 @@ export default function TrendingGrid({ products = [], row = 1, loading = false  
     <div className="max-w-[1400px] mx-auto ">
       <div
   className={`
-    grid gap-4 sm:gap-6
+    grid gap-3 sm:gap-5
 
     grid-rows-2 
 
@@ -40,11 +41,9 @@ sm:pb-4
       key={`skeleton-${idx}`}
       className="
         bg-white
-        rounded-xl
-        sm:rounded-2xl
         overflow-hidden
-        border border-gray-200
-        shadow-[0_2px_10px_rgba(0,0,0,0.04)]
+        border border-black/10
+        shadow-[0_10px_30px_rgba(7,16,19,0.06)]
         flex flex-col
         animate-pulse
         
@@ -69,21 +68,20 @@ sm:pb-4
       className="
         group
         bg-white
-        rounded-xl
-        sm:rounded-2xl
         overflow-hidden
-        border border-gray-200
-        shadow-[0_2px_10px_rgba(0,0,0,0.04)]
+        rounded-xl
+        border border-slate-200
+        shadow-sm
         transition-all duration-300 ease-out
-        sm:hover:shadow-[0_10px_10px_rgba(0,0,0,0.12)]
+        sm:hover:shadow-lg
         sm:hover:-translate-y-1
         flex flex-col
       "
     >
       {/* IMAGE */}
-      <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100">
+      <div className="relative w-full aspect-[4/3] overflow-hidden bg-slate-100">
         <img
-          src={p.image}
+          src={getCloudinaryImageUrl(p.image, { width: 420, height: 315 })}
           alt={p.title ?? "product image"}
           loading="lazy"
           className="
@@ -98,15 +96,15 @@ sm:pb-4
       </div>
 
       {/* CONTENT */}
-      <div className="p-1 sm:p-2 flex flex-col gap-2 flex-1 items-center">
+      <div className="flex min-h-[92px] flex-1 flex-col justify-between gap-3 p-3 sm:p-4">
         <h3
           className="
-            card-title
+            text-[14px] sm:text-[15px]
+            font-medium
             leading-snug
-            text-center
-            truncate
+            text-slate-800
+            line-clamp-2
             w-full
-            mx-10
           "
           title={p.title}
         >

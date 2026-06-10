@@ -1,18 +1,13 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { Josefin_Sans } from "next/font/google";
 import Image from "next/image";
-import Skeleton from "@mui/material/Skeleton";
-import Button from "@mui/material/Button";
 import { useRouter } from "next/navigation";
 import { fetchDataFromApi } from "@/utils/api";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 import { useScreen } from "@/app/context/ScreenWidthContext";
 import ProductGrid from "./ProductGrid";
-
-const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
+import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
 const CurratedLooks = () => {
   const router = useRouter();
@@ -42,8 +37,8 @@ const CurratedLooks = () => {
       );
 
       if (!res.error) setData(res?.data || []);
-    } catch (err) {
-      console.log("Best sellers fetch error:", err);
+    } catch {
+      setData([]);
     } finally {
       setLoading(false);
     }
@@ -54,8 +49,8 @@ const CurratedLooks = () => {
       const res = await fetchDataFromApi("/api/poster/getAll", false);
 
       if (!res.error) setPoster(res?.data[4]);
-    } catch (err) {
-      console.log("Best sellers fetch error:", err);
+    } catch {
+      setPoster(null);
     } finally {
       setLoading(false);
     }
@@ -66,20 +61,16 @@ const CurratedLooks = () => {
     loadPoster();
   }, []);
 
-  const getOptimizedCloudinaryUrl = (url) => {
-    if (!url?.includes("res.cloudinary.com")) return url;
-    return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
-  };
-
   const productsForGrid = Array.isArray(data)
     ? data
         .slice(0, limit + 1)
         .filter((prd) => prd?.enabled && prd?.product)
         .map((prd) => ({
           id: prd.product._id,
-          image: getOptimizedCloudinaryUrl(
-            prd.product.images?.[0] || "/placeholder.jpg"
-          ),
+          image: getCloudinaryImageUrl(prd.product.images?.[0] || "/placeholder.jpg", {
+            width: 420,
+            height: 315,
+          }),
           title: prd.product.name,
         }))
     : [];
@@ -101,32 +92,34 @@ const CurratedLooks = () => {
           w-full lg:w-[327px]
           relative
           overflow-hidden
-          rounded-xl lg:rounded-r-none
           cursor-pointer
+          bg-slate-900
         "
           onClick={() => poster?.url && router.push(poster.url)}
         >
           {poster?.status ? (
             <Image
-              src={getOptimizedCloudinaryUrl(poster?.image[0]) || "/images/placeholder.jpg"}
+              src={getCloudinaryImageUrl(
+                poster?.image?.[0] || "/images/placeholder.jpg",
+                { width: 480, crop: "limit" }
+              )}
               alt="Promotional Poster"
               fill
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 30vw"
-              priority
-              unoptimized
             />
           ) : (
-            <Skeleton
-              variant="rectangular"
-              sx={{
-                position: "absolute",
-                inset: 0,
-                height: "100%",
-                bgcolor: "rgba(203,213,225,0.5)",
-              }}
-            />
+            <div className="absolute inset-0 bg-slate-200 animate-pulse" />
           )}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+            <p className="text-sm font-semibold text-slate-200">
+              Curated range
+            </p>
+            <h3 className="mt-1 text-2xl font-semibold leading-tight">
+              Designs that work together.
+            </h3>
+          </div>
         </div>
 
         {/* ================= RIGHT : CURATED ================= */}
@@ -134,17 +127,15 @@ const CurratedLooks = () => {
           className="
           w-full lg:w-[calc(100%-327px)]
           bg-white
-          p-3 sm:p-6 sm:pb-0
-          border
+          p-4 sm:p-6
+          border border-slate-200
           lg:border-l-0
-          rounded-lg lg:rounded-l-none
           lg:my-4
         "
         >
-          <h1
-           className="section-title" >
-            Curated Looks
-          </h1>
+          <div>
+            <h2 className="section-title mt-1">Curated Looks</h2>
+          </div>
 
           <div className="relative w-full mt-2 sm:mt-4">
             <div
@@ -178,10 +169,10 @@ const CurratedLooks = () => {
         key={i}
         className="
           bg-white
-          rounded-xl sm:rounded-2xl
           overflow-hidden
-          border border-gray-200
-          shadow-[0_2px_10px_rgba(0,0,0,0.04)]
+          rounded-xl
+          border border-slate-200
+          shadow-sm
           flex flex-col
           animate-pulse
         "

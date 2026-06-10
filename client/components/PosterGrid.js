@@ -5,6 +5,7 @@ import Image from "next/image";
 import Skeleton from "@mui/material/Skeleton";
 import { useRouter } from "next/navigation";
 import { fetchDataFromApi } from "@/utils/api";
+import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
 const PosterGrid = ({
   rows = 1,
@@ -36,6 +37,7 @@ const PosterGrid = ({
     .filter((p) => p.status)
     .slice(posterIndex[0], posterIndex[1])
     .slice(0, total);
+  const posterWidth = Number(cols) > 1 ? 760 : 900;
 
   return (
     <div className="w-full ">
@@ -57,15 +59,18 @@ const PosterGrid = ({
               >
                 {/* IMAGE */}
                 <Image
-                  src={item.image?.[0]  || "/images/placeholder.jpg"}
+                  src={getCloudinaryImageUrl(
+                    item.image?.[0] || "/images/placeholder.jpg",
+                    { width: posterWidth, crop: "limit" }
+                  )}
                   alt={item.name  || "Poster"}
                   fill
+                  sizes={Number(cols) > 1 ? "(max-width: 768px) 100vw, 34vw" : "100vw"}
                   className="
-                    
+                    object-cover
                     transition-transform duration-[800ms] ease-out
                     group-hover:scale-[1.06]
                   "
-                  unoptimized
                 />
 
                 {/* DARK FADE */}

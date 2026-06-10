@@ -1,5 +1,5 @@
 import React from "react";
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
 import axios from "axios";
 import { useAuth } from "@/app/context/AuthContext";
 import { useAlert } from "@/app/context/AlertContext";
@@ -12,34 +12,36 @@ const SignInWithGoogle = () => {
     useAuth();
 
   return (
-    <div className="">
-      <GoogleLogin
-        onSuccess={async (cred) => {
-          try {
-            const res = await axios.post(
-              `${process.env.NEXT_PUBLIC_API_URL}/api/user/authWithGoogle`,
-              { token: cred.credential },
-              { withCredentials: true }
-            );
+    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}>
+      <div className="">
+        <GoogleLogin
+          onSuccess={async (cred) => {
+            try {
+              const res = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/user/authWithGoogle`,
+                { token: cred.credential },
+                { withCredentials: true }
+              );
 
-            if (res.data.success) {
-              alert.alertBox({
-                type: "success",
-                msg: "Logged in successfully",
-              });
+              if (res.data.success) {
+                alert.alertBox({
+                  type: "success",
+                  msg: "Logged in successfully",
+                });
 
-              router.push("/profile");
+                router.push("/profile");
 
-              const { accessToken, refreshToken, user } = res.data;
-              login(user, accessToken);
-              localStorage.setItem("refreshToken", refreshToken);
+                const { accessToken, refreshToken, user } = res.data;
+                login(user, accessToken);
+                localStorage.setItem("refreshToken", refreshToken);
+              }
+            } catch (err) {
+              alert.alertBox({ type: "error", msg: "Login failed" });
             }
-          } catch (err) {
-            alert.alertBox({ type: "error", msg: "Login failed" });
-          }
-        }}
-      />
-    </div>
+          }}
+        />
+      </div>
+    </GoogleOAuthProvider>
   );
 };
 export default SignInWithGoogle;

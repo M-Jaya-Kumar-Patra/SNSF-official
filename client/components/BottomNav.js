@@ -3,20 +3,18 @@
   import React, { useState, useEffect, useRef } from 'react';
   import { useRouter } from 'next/navigation';
 
-  import BottomNavigation from '@mui/material/BottomNavigation';
-  import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-
-  import SearchIcon from '@mui/icons-material/Search';
-  import CategoryIcon from '@mui/icons-material/Category';
-  import HomeIcon from '@mui/icons-material/Home';
-  import NotificationsIcon from '@mui/icons-material/Notifications';
-  import PhoneIcon from '@mui/icons-material/Phone';
-  import CloseIcon from '@mui/icons-material/Close';
+  import {
+    Bell as BellIcon,
+    Grid3X3,
+    Home as HomeIcon,
+    Phone as PhoneIcon,
+    Search as SearchIcon,
+    X,
+  } from 'lucide-react';
   import { useCat } from '@/app/context/CategoryContext';
   import Link from 'next/link';
 
   import { searchWithTracking } from "@/utils/searchWithTracking";
-  import Search from './Search';
 
   const BottomNav = () => {
     const [value, setValue] = useState('home');
@@ -99,11 +97,11 @@
     };
 
     const navItems = [
-      { label: 'Search', value: 'search', icon: <SearchIcon sx={{ fontSize: 20 }} /> },
-      { label: 'Category', value: 'category', icon: <CategoryIcon sx={{ fontSize: 20 }} /> },
-      { label: 'Home', value: 'home', icon: <HomeIcon sx={{ fontSize: 24 }} /> },
-      { label: 'Notifications', value: 'alerts', icon: <NotificationsIcon sx={{ fontSize: 20 }} /> },
-      { label: 'Contact us', value: 'support', icon: <PhoneIcon sx={{ fontSize: 20 }} /> }
+      { label: 'Search', value: 'search', Icon: SearchIcon },
+      { label: 'Category', value: 'category', Icon: Grid3X3 },
+      { label: 'Home', value: 'home', Icon: HomeIcon },
+      { label: 'Notifications', value: 'alerts', Icon: BellIcon },
+      { label: 'Contact us', value: 'support', Icon: PhoneIcon }
     ];
 
 
@@ -121,8 +119,7 @@
   const res = await searchWithTracking(q, "mobile");
   setMobileResults(res?.products || []);
 
-    } catch (err) {
-      console.error("Mobile search error", err);
+    } catch {
       setMobileResults([]);
     } finally {
       setLoadingSearch(false);
@@ -133,23 +130,18 @@
     return (
       <>
         {/* Bottom Navigation */}
-        <div className="fixed bottom-0 w-screen z-50 md:hidden">
-          <BottomNavigation
-            value={value}
-            onChange={handleChange}
-            showLabels
-            className="w-full !shadow-inner"
-            sx={{ height: 56 }}
-          >
+        <div className="fixed bottom-0 w-screen z-50 md:hidden bg-white shadow-[0_-2px_12px_rgba(15,23,42,0.14)] border-t border-slate-200">
+          <nav className="grid grid-cols-5 h-14" aria-label="Mobile navigation">
             {navItems.map((item) => {
     const isCategory = item.value === "category";
+    const selected = value === item.value;
+    const Icon = item.Icon;
     return (
-      <BottomNavigationAction
+      <button
+        type="button"
         key={item.value}
-        label={item.label}
-        value={item.value}
-        icon={item.icon}
         onClick={() => {
+          handleChange(null, item.value);
           if (isCategory) {
             // Always toggle when clicking category
             setMobileMenuOpen(prev => {
@@ -165,24 +157,17 @@
             setMobileMenuOpen(false);
           }
         }}
-        sx={{
-          minWidth: 0,
-          padding: '0 4px',
-          '&.Mui-selected': {
-            color: '#0f172a'
-          },
-          '.MuiBottomNavigationAction-label': {
-            fontSize: '10px',
-            '&.Mui-selected': {
-              color: '#0f172a'
-            }
-          }
-        }}
-      />
+        className={`flex min-w-0 flex-col items-center justify-center gap-0.5 px-1 text-[10px] font-bold ${
+          selected ? "text-slate-950" : "text-slate-500"
+        }`}
+      >
+        <Icon size={item.value === "home" ? 23 : 20} strokeWidth={2.1} />
+        <span className="truncate leading-none">{item.label}</span>
+      </button>
     );
   })}
 
-          </BottomNavigation>
+          </nav>
         </div>
 
         {/* Search Overlay */}
@@ -194,6 +179,8 @@
       {/* TOP BAR */}
       <div className="sticky top-0 bg-white z-[1100] border-b px-4 py-3 flex items-center gap-3">
         <button
+          type="button"
+          aria-label="Close search"
           onClick={() => {
             setShowSearch(false);
             setValue("home");
@@ -202,7 +189,7 @@
           }}
           className="p-2 rounded-full hover:bg-gray-100"
         >
-          <CloseIcon />
+          <X size={22} />
         </button>
 
         {/* MOBILE SEARCH INPUT */}

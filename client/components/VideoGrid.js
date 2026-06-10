@@ -5,6 +5,7 @@ import Image from "next/image";
 import Skeleton from "@mui/material/Skeleton";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { fetchDataFromApi } from "@/utils/api";
+import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
 const VideoGrid = ({
   rows = 1,
@@ -81,11 +82,14 @@ const VideoGrid = ({
                         onClick={() => setPlayingId(item._id)}
                     >
                         <Image
-                            src={item.thumbnai || "/images/placeholder.jpg"}
+                            src={getCloudinaryImageUrl(item.thumbnai || "/images/placeholder.jpg", {
+                              width: 420,
+                              height: 747,
+                            })}
                             alt={item.title}
                             fill
+                            sizes="260px"
                             className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-90"
-                            unoptimized
                         />
                         {/* Play Button Overlay */}
                         <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition">

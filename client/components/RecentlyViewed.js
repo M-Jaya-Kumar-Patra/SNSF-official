@@ -1,11 +1,10 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Josefin_Sans } from "next/font/google";
 import { postData } from "@/utils/api";
 import { useRouter } from "next/navigation";
-
-const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
+import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
 export default function RecentlyViewed({ onEmpty }) {
   const [products, setProducts] = useState([]);
@@ -13,115 +12,89 @@ export default function RecentlyViewed({ onEmpty }) {
 
   const router = useRouter();
 
- useEffect(() => {
-  const fetchRecentlyViewed = async () => {
-    const viewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+  useEffect(() => {
+    const fetchRecentlyViewed = async () => {
+      const viewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
 
-    if (viewed.length === 0) {
-  setLoading(false);
-  onEmpty?.();
-  return;
-}
-
-
-    try {
-      const res = await postData(
-        "/api/product/recently-viewed",
-        { ids: viewed },
-        false
-      );
-
-      if (!res?.error) {
-        // 🔥 FIX: maintain correct order
-        const orderedProducts = viewed
-          .map(id => res.data.find(p => p._id === id))
-          .filter(Boolean);
-
-        setProducts(orderedProducts);
+      if (viewed.length === 0) {
+        setLoading(false);
+        onEmpty?.();
+        return;
       }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  fetchRecentlyViewed();
-}, []);
-if (!loading && products.length === 0) return null;
+      try {
+        const res = await postData(
+          "/api/product/recently-viewed",
+          { ids: viewed },
+          false,
+        );
 
-return (
-  <div className="w-full bg-white p-3 sm:p-6 pb-2 border rounded-xl shadow-2xl">
+        if (!res?.error) {
+          const orderedProducts = viewed
+            .map((id) => res.data.find((p) => p._id === id))
+            .filter(Boolean);
 
+          setProducts(orderedProducts);
+        }
+      } catch {
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchRecentlyViewed();
+  }, [onEmpty]);
 
-      <h2 className="section-title">
-  Recently Viewed
-</h2>
+  if (!loading && products.length === 0) return null;
 
-      {/* SCROLL AREA */}
-      <div className="mt-2  sm:mt-4  overflow-x-auto scrollbar-hide scroll-smooth">
-        <div
-  className="
-    grid
-    grid-flow-col
-    auto-cols-[minmax(120px,160px)]
-    sm:auto-cols-[minmax(160px,200px)]
-    lg:auto-cols-[minmax(200px,220px)]
-    gap-4 sm:gap-6
-    pb-1 sm:pb-4
-  "
->
+  return (
+    <section className="w-full rounded-xl border border-slate-200 bg-white p-3 shadow-2xl shadow-slate-200/70 sm:p-6">
+      <h2 className="section-title mb-4">Recently Viewed</h2>
 
+      <div className="overflow-x-auto scroll-smooth scrollbar-hide">
+        <div className="grid grid-flow-col auto-cols-[minmax(120px,160px)] gap-3 pb-1 sm:auto-cols-[minmax(160px,200px)] sm:gap-5 sm:pb-4 lg:auto-cols-[minmax(200px,220px)]">
           {loading ? (
-  /* ===== RECENTLY VIEWED SKELETON ===== */
-  Array.from({ length: 6 }).map((_, i) => (
-    <article
-      key={i}
-      className="
-        bg-white
-        rounded-xl
-        border border-gray-200
-        shadow-md
-        overflow-hidden
-        animate-pulse
-      "
-    >
-      {/* IMAGE */}
-      <div className="relative w-full aspect-[16/10] bg-slate-200" />
-    </article>
-  ))
-) : products.length > 0 ? (
-  products.slice(0, 20).map((prd) => (
-    <article
-      key={prd._id}
-      onClick={() => router.push(`/product/${prd._id}`)}
-      className="
-        group cursor-pointer
-        bg-white rounded-xl
-        border border-gray-200
-        shadow-md hover:shadow-xl
-        transition
-      "
-    >
-      {/* IMAGE */}
-      <div className="relative w-full aspect-[16/10] overflow-hidden rounded-xl">
-        <Image
-          src={prd?.images?.[0]  || "/images/placeholder.jpg"}
-          alt={prd?.name}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-110"
-          unoptimized
-        />
-      </div>
-    </article>
-  ))
-) : (
-  <p className="text-gray-500 text-sm">No recently viewed products</p>
-)}
+            Array.from({ length: 6 }).map((_, i) => (
+              <article
+                key={i}
+                className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm animate-pulse"
+              >
+                <div className="relative aspect-[4/3] w-full bg-slate-200" />
+              </article>
+            ))
+          ) : products.length > 0 ? (
+            products.slice(0, 20).map((prd) => (
+              <article
+                key={prd._id}
+                onClick={() => router.push(`/product/${prd._id}`)}
+                className="group cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-lg"
+              >
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
+                  <Image
+                    src={getCloudinaryImageUrl(
+                      prd?.images?.[0] || "/images/placeholder.jpg",
+                      { width: 420, height: 315 },
+                    )}
+                    alt={prd?.name || "Product"}
+                    fill
+                    sizes="(max-width: 640px) 160px, 220px"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
 
+                <div className="min-h-[72px] p-3">
+                  <h3 className="line-clamp-2 text-sm font-medium leading-5 text-slate-800">
+                    {prd?.name}
+                  </h3>
+                </div>
+              </article>
+            ))
+          ) : (
+            <p className="text-sm text-gray-500">No recently viewed products</p>
+          )}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

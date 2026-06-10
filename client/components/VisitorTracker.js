@@ -14,6 +14,7 @@ export default function VisitorTracker() {
   useEffect(() => {
     let startTime = Date.now();
     let maxScrollDepth = 0;
+    let sent = false;
 
     const getScrollPercentage = () => {
       const scrollTop = window.scrollY;
@@ -31,18 +32,26 @@ export default function VisitorTracker() {
     window.addEventListener("scroll", updateScroll);
 
     const sendTrackingData = () => {
+      if (sent) return;
+      sent = true;
       const timeSpent = Math.round((Date.now() - startTime) / 1000);
 
       trackVisitor(pathname, maxScrollDepth, timeSpent, userData?._id);
     };
 
-    window.addEventListener("beforeunload", sendTrackingData);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") sendTrackingData();
+    };
+
+    window.addEventListener("pagehide", sendTrackingData);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       window.removeEventListener("scroll", updateScroll);
-      window.removeEventListener("beforeunload", sendTrackingData);
+      window.removeEventListener("pagehide", sendTrackingData);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [pathname]);
+  }, [pathname, userData?._id]);
 
   return null;
 }

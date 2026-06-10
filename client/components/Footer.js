@@ -3,48 +3,16 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth } from "@/app/context/AuthContext";
-import { fetchDataFromApi } from "@/utils/api";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const Footer = () => {
-  const { setLoading } = useAuth();
-  const [totalVisitors, setTotalVisitors] = useState(0);
-  const [ready, setReady] = useState(false);
-
-  const handleTelClick = () => {
-    window.location.href = "tel:+919776501230";
-  };
+  const [showMap, setShowMap] = useState(false);
 
   const getOptimizedCloudinaryUrl = (url) => {
     if (!url?.includes("res.cloudinary.com")) return url;
     return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
   };
 
-  useEffect(() => {
-    setReady(true);
-  }, []);
-
-  useEffect(() => {
-    const fetchVisitCount = async () => {
-      try {
-        const res = await fetchDataFromApi("/api/visit/getVisit", false);
-        if (res?.success) {
-          setTotalVisitors(res?.data?.total);
-        }
-      } catch (err) {
-        console.error("Failed to fetch visit count:", err);
-      }
-    };
-
-    fetchVisitCount();
-  }, []);
-
-  if (!ready) {
-    return (
-      <div className="min-h-[80vh]"></div> // reserve space
-    );
-  }
   return (
     <footer className="w-full bg-slate-900">
       <div className="max-w-[1600px] mx-auto  text-white px-6  pt-10 pb-6 font-sans">
@@ -52,7 +20,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-10 mb-10">
           {/* Company */}
           <div>
-            <h4 className="font-semibold text-lg mb-4">Company</h4>
+            <h2 className="font-semibold text-lg mb-4">Company</h2>
             <ul className="space-y-2 text-sm text-gray-300">
               <li>
                 <Link href="/about" className="hover:text-white">
@@ -74,18 +42,17 @@ const Footer = () => {
 
           {/* Support */}
           <div>
-            <h4 className="font-semibold text-lg mb-4">Support</h4>
+            <h2 className="font-semibold text-lg mb-4">Support</h2>
             <ul className="space-y-2 text-sm text-gray-300">
               <li>
                 <Link href="/profile" className="hover:text-white">
                   My Account
                 </Link>
               </li>
-              <li
-                className="cursor-pointer hover:text-white"
-                onClick={handleTelClick}
-              >
-                Contact Us
+              <li>
+                <a href="tel:+919776501230" className="hover:text-white">
+                  Contact Us
+                </a>
               </li>
               <li>
                 <Link href="/privacy" className="hover:text-white">
@@ -97,7 +64,7 @@ const Footer = () => {
 
           {/* Social Accounts */}
           <div>
-            <h4 className="font-semibold text-lg mb-4">Social Accounts</h4>
+            <h2 className="font-semibold text-lg mb-4">Social Accounts</h2>
             <div className="flex gap-5 mb-4">
               <a
                 href="https://youtube.com/@snsteelfabrication6716?si=v4pPQmEDtKmacpmN"
@@ -141,7 +108,7 @@ const Footer = () => {
 
           {/* Location */}
           <div>
-            <h4 className="font-semibold text-lg mb-4">Showroom Location</h4>
+            <h2 className="font-semibold text-lg mb-4">Showroom Location</h2>
             <p className="text-gray-400 text-sm mb-3">
               S N Steel Fabrication,
               <br />
@@ -149,7 +116,7 @@ const Footer = () => {
               <br />
               Via - Hinjilicut, Ganjam, Odisha - 761102, India
             </p>
-            <h5 className="font-semibold text-white">Working Hours</h5>
+            <h3 className="font-semibold text-white">Working Hours</h3>
             <p className="text-gray-400 text-sm">
               Sun – Sat: 9:00 AM – 8:00 PM
             </p>
@@ -157,16 +124,27 @@ const Footer = () => {
 
           {/* Map */}
           <div className="w-full h-[180px] md:h-full">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2218.4493224998296!2d84.72751407521596!3d19.49520888179757!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a22b3adb3fc343d%3A0x40ef673d768faef8!2sS%20N%20Steel%20Fabrication!5e1!3m2!1sen!2sin!4v1750775983485!5m2!1sen!2sin"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="S N Steel Fabrication Location"
-            ></iframe>
+            {showMap ? (
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2218.4493224998296!2d84.72751407521596!3d19.49520888179757!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a22b3adb3fc343d%3A0x40ef673d768faef8!2sS%20N%20Steel%20Fabrication!5e1!3m2!1sen!2sin!4v1750775983485!5m2!1sen!2sin"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="S N Steel Fabrication Location"
+              />
+            ) : (
+              <button
+                type="button"
+                aria-label="Load showroom map"
+                onClick={() => setShowMap(true)}
+                className="w-full h-full min-h-[180px] rounded-md border border-slate-600 bg-slate-800 text-sm font-semibold text-white hover:bg-slate-700 transition"
+              >
+                View map
+              </button>
+            )}
           </div>
         </div>
 

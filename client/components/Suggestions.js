@@ -1,16 +1,12 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
-import { Josefin_Sans } from "next/font/google";
+import React, { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import Image from "next/image";
-import Skeleton from "@mui/material/Skeleton";
 import { fetchDataFromApi } from "@/utils/api";
-
-const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
+import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
 const Suggestions = ({ productId, catId, subCatId, thirdSubCatId, brand }) => {
   const { setLoading, isCheckingToken } = useAuth();
@@ -20,7 +16,6 @@ const Suggestions = ({ productId, catId, subCatId, thirdSubCatId, brand }) => {
   const [data, setData] = useState([]);
   const [hydrated, setHydrated] = useState(false);
   const [localLoading, setLocalLoading] = useState(true);
-
   const [isAtStart, setIsAtStart] = useState(true);
   const [isAtEnd, setIsAtEnd] = useState(false);
 
@@ -28,41 +23,43 @@ const Suggestions = ({ productId, catId, subCatId, thirdSubCatId, brand }) => {
     setHydrated(true);
   }, []);
 
-  const loadSuggestions = async () => {
-    try {
-      const query = `productId=${productId}&catId=${catId}&subCatId=${subCatId}&thirdSubCatId=${thirdSubCatId}&brand=${brand}&limit=12`;
-
-      const res = await fetchDataFromApi(`/api/product/suggestions?${query}`, false);
-
-      if (!res.error) {
-        setData(res.data || []);
-      }
-    } catch (err) {
-      console.log("Suggestions fetch error:", err);
-    } finally {
-      setLocalLoading(false);
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const loadSuggestions = async () => {
+      try {
+        const query = `productId=${productId}&catId=${catId}&subCatId=${subCatId}&thirdSubCatId=${thirdSubCatId}&brand=${brand}&limit=12`;
+        const res = await fetchDataFromApi(
+          `/api/product/suggestions?${query}`,
+          false,
+        );
+
+        if (!res.error) setData(res.data || []);
+      } catch {
+        setData([]);
+      } finally {
+        setLocalLoading(false);
+        setLoading(false);
+      }
+    };
+
     loadSuggestions();
-  }, [productId]);
+  }, [brand, catId, productId, setLoading, subCatId, thirdSubCatId]);
 
   useEffect(() => {
     if (!hydrated || isCheckingToken) return;
-
-    if (Array.isArray(data)) {
-      setLoading(false);
-    }
-  }, [data, hydrated, isCheckingToken]);
+    if (Array.isArray(data)) setLoading(false);
+  }, [data, hydrated, isCheckingToken, setLoading]);
 
   useEffect(() => {
     const container = scrollRef.current;
     if (!container) return;
 
-    checkScrollLimits();
+    const checkScrollLimits = () => {
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      setIsAtStart(scrollLeft <= 0);
+      setIsAtEnd(scrollLeft + clientWidth >= scrollWidth - 5);
+    };
 
+    checkScrollLimits();
     container.addEventListener("scroll", checkScrollLimits);
     return () => container.removeEventListener("scroll", checkScrollLimits);
   }, []);
@@ -71,84 +68,78 @@ const Suggestions = ({ productId, catId, subCatId, thirdSubCatId, brand }) => {
     const container = scrollRef.current;
     if (!container) return;
 
-    const scrollAmount = container.clientWidth * 0.8;
-
     container.scrollBy({
-      left: direction === "left" ? -scrollAmount : scrollAmount,
+      left: direction === "left" ? -container.clientWidth * 0.8 : container.clientWidth * 0.8,
       behavior: "smooth",
     });
   };
 
-  const checkScrollLimits = () => {
-    const container = scrollRef.current;
-    if (!container) return;
-
-    const { scrollLeft, scrollWidth, clientWidth } = container;
-
-    setIsAtStart(scrollLeft <= 0);
-    setIsAtEnd(scrollLeft + clientWidth >= scrollWidth - 5);
-  };
-
-  const cloud = (url) =>
-    url?.includes("res.cloudinary.com")
-      ? url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/")
-      : url;
-
   return (
-    <div className="flex flex-col items-center mt-3 pb-5 bg-slate-100 w-full">
-      <h1 className={`text-2xl sm:text-3xl font-bold text-black mt-4 mb-4 sm:mt-8 sm:mb-8 ${joSan.className}`}>
+    <div className="flex w-full flex-col items-center bg-slate-100 pb-5 pt-3">
+      <h2 className="mb-4 mt-4 text-2xl font-bold text-black sm:mb-8 sm:mt-8 sm:text-3xl">
         Similar Products
-      </h1>
+      </h2>
 
-      <div className="relative w-full max-w-[1100px] mx-auto px-4">
+      <div className="relative mx-auto w-full max-w-[1100px] px-4">
         <button
+          type="button"
+          aria-label="Scroll similar products left"
           onClick={() => scroll("left")}
           disabled={isAtStart}
-          className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 p-1 sm:p-2 rounded-full shadow transition ${
-            isAtStart ? "bg-gray-300" : "bg-white/60 hover:bg-white"
+          className={`absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full p-1 shadow transition sm:p-2 ${
+            isAtStart ? "bg-gray-300" : "bg-white/80 hover:bg-white"
           }`}
         >
           <ChevronLeft />
         </button>
 
-        <div ref={scrollRef} className="overflow-x-auto whitespace-nowrap scroll-smooth scrollbar-hide py-5">
-          <div className="inline-flex gap-4 py-4 px-2">
+        <div
+          ref={scrollRef}
+          className="overflow-x-auto whitespace-nowrap scroll-smooth py-5 scrollbar-hide"
+        >
+          <div className="inline-flex gap-4 px-2 py-4">
             {Array.isArray(data) && data.length > 0 ? (
-              data.map((prd, i) => (
-                <div
-                  key={i}
-                  className="min-w-[256px] max-w-[256px] p-2 bg-white shadow-md flex flex-col items-center gap-3 hover:scale-105 transition"
+              data.map((prd) => (
+                <article
+                  key={prd?._id}
+                  className="flex min-w-[256px] max-w-[256px] flex-col items-center gap-3 bg-white p-2 shadow-md transition hover:scale-105"
                 >
-                  <div
-                    className="w-full relative rounded-md overflow-hidden cursor-pointer"
+                  <button
+                    type="button"
+                    aria-label={`Open ${prd?.name || "product"}`}
+                    className="relative w-full cursor-pointer overflow-hidden rounded-md"
                     style={{ aspectRatio: "4 / 3" }}
                     onClick={() => router.push(`/product/${prd?._id}`)}
                   >
                     <Image
-                      src={cloud(prd?.images?.[0]) || "/images/placeholder.jpg"}
-                      alt="Product"
+                      src={getCloudinaryImageUrl(
+                        prd?.images?.[0] || "/images/placeholder.jpg",
+                        { width: 320, height: 240 },
+                      )}
+                      alt={prd?.name || "Product"}
                       fill
+                      sizes="256px"
                       className="object-cover"
-                      unoptimized
                     />
-                  </div>
+                  </button>
 
-                  <h2
-                    className="text-sm w-full font-medium text-gray-800 text-center cursor-pointer px-2 truncate"
+                  <button
+                    type="button"
+                    className="w-full truncate px-2 text-center text-sm font-medium text-gray-800"
                     onClick={() => router.push(`/product/${prd?._id}`)}
                   >
                     {prd?.name}
-                  </h2>
-                </div>
+                  </button>
+                </article>
               ))
             ) : localLoading ? (
               Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="min-w-[256px] max-w-[256px] p-2 bg-white shadow-md flex flex-col items-center gap-3"
+                  className="flex min-w-[256px] max-w-[256px] flex-col items-center gap-3 bg-white p-2 shadow-md"
                 >
-                  <Skeleton variant="rectangular" width="100%" height={120} />
-                  <Skeleton variant="text" width="80%" />
+                  <div className="h-[150px] w-full animate-pulse rounded bg-slate-200" />
+                  <div className="h-4 w-4/5 animate-pulse rounded bg-slate-200" />
                 </div>
               ))
             ) : (
@@ -158,10 +149,12 @@ const Suggestions = ({ productId, catId, subCatId, thirdSubCatId, brand }) => {
         </div>
 
         <button
+          type="button"
+          aria-label="Scroll similar products right"
           onClick={() => scroll("right")}
           disabled={isAtEnd}
-          className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 p-1 sm:p-2 rounded-full shadow ${
-            isAtEnd ? "bg-gray-300" : "bg-white/60 hover:bg-white"
+          className={`absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full p-1 shadow sm:p-2 ${
+            isAtEnd ? "bg-gray-300" : "bg-white/80 hover:bg-white"
           }`}
         >
           <ChevronRight />

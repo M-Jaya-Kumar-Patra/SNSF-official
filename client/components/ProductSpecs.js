@@ -1,100 +1,51 @@
 "use client";
 
 import React from "react";
-import PropTypes from "prop-types";
-import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Typography,
-} from "@mui/material";
 
-export default function ProductSpecs({ specs, title = "Product Specifications" }) {
-  if (!specs || Object.keys(specs).length === 0) return null;
+export default function ProductSpecs({
+  specs,
+  title = "Product Specifications",
+}) {
+  const entries = Object.entries(specs || {}).filter(
+    ([, value]) => value !== undefined && value !== null && value !== "",
+  );
+
+  if (!entries.length) return null;
 
   const formatKey = (key) =>
     key
-      .replace(/([A-Z])/g, " $1") // camelCase to spaced words
-      .replace(/^./, (str) => str.toUpperCase()) // Capitalize first letter
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (str) => str.toUpperCase())
       .trim();
 
-  return (  
-    <Paper
-      elevation={3}
-      sx={{
-        width: "100%",
-        borderRadius: "1px",
-        backgroundColor: "#fff",
-        overflow: "hidden",
-        mt: 3,
-      }}
-    >
-      <Typography
-        variant="h6"
-        component="h3"
-        sx={{
-          px: 3,
-          py: 2,
-          borderBottom: "1px solid #e0e0e0",
-          fontWeight: 600,
-          fontSize: "18px",
-          color: "#333",
-          backgroundColor: "#f9fafb",
-        }}
-      >
+  return (
+    <section className="mt-6 w-full overflow-hidden border border-slate-200 bg-white shadow-sm">
+      <h3 className="border-b border-slate-200 bg-slate-50 px-4 py-3 text-[17px] font-semibold text-slate-800 sm:px-6 sm:text-[18px]">
         {title}
-      </Typography>
+      </h3>
 
-      <Table size="small" sx={{ minWidth: 300 }}>
-        <TableBody>
-          {Object.entries(specs)
-            .filter(([_, value]) => value && value !== "")
-            .map(([key, value], index) => (
-              <TableRow
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[300px] border-collapse text-left text-[14px] sm:text-[15px]">
+          <tbody>
+            {entries.map(([key, value], index) => (
+              <tr
                 key={key}
-                sx={{
-                  "&:not(:last-child)": {
-                    borderBottom: "1px solid #f0f0f0",
-                  },
-                  backgroundColor: index % 2 === 0 ? "#fcfcfc" : "#f8f8f8",
-                }}
+                className={index % 2 === 0 ? "bg-white" : "bg-slate-50"}
               >
-                <TableCell
-                  component="th"
+                <th
                   scope="row"
-                  sx={{
-                    fontWeight: 500,
-                    color: "#444",
-                    textTransform: "capitalize",
-                    width: "40%",
-                    px: 3,
-                    py: 1.5,
-                    fontSize: "15px",
-                  }}
+                  className="w-[42%] border-b border-slate-100 px-4 py-3 font-semibold capitalize text-slate-700 sm:px-6"
                 >
                   {formatKey(key)}
-                </TableCell>
-                <TableCell
-                  sx={{
-                    color: "#333",
-                    px: 3,
-                    py: 1.5,
-                    fontSize: "15px",
-                  }}
-                >
-                  {value}
-                </TableCell>
-              </TableRow>
+                </th>
+                <td className="border-b border-slate-100 px-4 py-3 font-medium text-slate-800 sm:px-6">
+                  {String(value)}
+                </td>
+              </tr>
             ))}
-        </TableBody>
-      </Table>
-    </Paper>
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }
-
-ProductSpecs.propTypes = {
-  specs: PropTypes.object.isRequired,
-  title: PropTypes.string,
-};

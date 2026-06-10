@@ -2,13 +2,13 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
-import Skeleton from "@mui/material/Skeleton";
 import { useRouter } from "next/navigation";
 import { fetchDataFromApi } from "@/utils/api";
 import { useAuth } from "@/app/context/AuthContext";
 import { useScreen } from "@/app/context/ScreenWidthContext";
 import ProductGrid from "./ProductGrid";
 import TrendingGrid from "./TrendingGrid";
+import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
 const StyleYourSpaceSection = () => {
   const router = useRouter();
@@ -24,11 +24,6 @@ const StyleYourSpaceSection = () => {
 
   const limit = isXs ? 8 : 12;
 
-  const getOptimizedCloudinaryUrl = (url) => {
-    if (!url?.includes("res.cloudinary.com")) return url;
-    return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
-  };
-
   useEffect(() => {
     const loadShopByRoom = async () => {
       try {
@@ -37,8 +32,8 @@ const StyleYourSpaceSection = () => {
           false
         );
         if (!res.error) setShopByRoomData(res?.data || []);
-      } catch (err) {
-        console.log(err);
+      } catch {
+        setShopByRoomData([]);
       } finally {
         setLoading(false);
       }
@@ -52,8 +47,8 @@ const StyleYourSpaceSection = () => {
           false
         );
         if (!res.error) setTrendingData(res?.data || []);
-      } catch (err) {
-        console.log(err);
+      } catch {
+        setTrendingData([]);
       } finally {
         setLoading(false);
       }
@@ -69,23 +64,24 @@ const StyleYourSpaceSection = () => {
         .filter((prd) => prd?.enabled && prd?.product)
         .map((prd) => ({
           id: prd.product._id,
-          image: getOptimizedCloudinaryUrl(
-            prd.product.images?.[0] || "/placeholder.jpg"
-          ),
+          image: getCloudinaryImageUrl(prd.product.images?.[0] || "/placeholder.jpg", {
+            width: 420,
+            height: 315,
+          }),
           title: prd.product.name,
         }))
     : [];
 
  return (
-  <div className="flex flex-col lg:flex-row gap-2 sm:gap-4 md:gap-6 lg:gap-4 w-full">
+  <div className="flex flex-col lg:flex-row gap-4 lg:gap-0 w-full">
           {/* ================= LEFT : STYLE YOUR SPACE ================= */}
           <div className="w-full lg:w-[420px] flex-shrink-0 ">
             <div
-              className="bg-white p-4 sm:p-6 sm:pb-0 pb-3  
-        
-        border rounded-none lg:rounded-r-lg h-full "
+              className="h-full rounded-xl border border-slate-200 bg-white p-4 pb-3 shadow-2xl shadow-slate-200/70 sm:p-6"
             >
-              <h2 className="section-title mb-3 sm:mb-4">Style Your Space</h2>
+              <h2 className="section-title mb-3 mt-1 sm:mb-4">
+                Style Your Space
+              </h2>
 
               <div className="relative w-full">
                 <div
@@ -106,8 +102,8 @@ const StyleYourSpaceSection = () => {
                                 className="
                             min-w-full
                             bg-white
-                            shadow-sm
                             rounded-lg
+                            shadow-sm
                             overflow-hidden
                             transition-transform duration-300
                             hover:scale-[1.03]
@@ -122,12 +118,14 @@ const StyleYourSpaceSection = () => {
 
   {/* IMAGE */}
   <Image
-    src={getOptimizedCloudinaryUrl(
-      prd?.image?.[0] || "/images/placeholder.jpg"
-    )}
+    src={getCloudinaryImageUrl(prd?.image?.[0] || "/images/placeholder.jpg", {
+      width: isXs ? 280 : 560,
+      height: isXs ? 420 : undefined,
+      crop: isXs ? "fill" : "limit",
+    })}
     alt={prd?.name || "Product Image"}
     fill
-    unoptimized
+    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 420px, 420px"
     className="
       object-cover
       brightness-95
@@ -178,15 +176,7 @@ const StyleYourSpaceSection = () => {
                         overflow-hidden
                       "
                           >
-                            <div className="relative !w-full aspect-[3/5] md:!aspect-[5/3] lg:!aspect-[2/1] xl:!aspect-video">
-                              <Skeleton 
-                                variant="rectangular"
-                                sx={{
-                                  position: "absolute",
-                                  inset: 0,
-                                  bgcolor: "rgba(203,213,225,0.5)",
-                                }}
-                              />
+                            <div className="relative !w-full aspect-[3/5] bg-slate-200 animate-pulse md:!aspect-[5/3] lg:!aspect-[2/1] xl:!aspect-video">
                             </div>
                           </div>
                         ))}
@@ -202,12 +192,13 @@ const StyleYourSpaceSection = () => {
             className="
           w-full lg:max-w-[1164px]
           bg-white
-          p-4 sm:p-6 sm:pb-0 pb-3  
-          border
-          rounded-none  lg:rounded-l-lg
+          p-4 sm:p-6
+          rounded-xl border border-slate-200 shadow-2xl shadow-slate-200/70
         "
           >
-            <h2 className="section-title mb-3 sm:mb-4">Trending Now</h2>
+            <h2 className="section-title mb-3 mt-1 sm:mb-4">
+              Trending Now
+            </h2>
 
             <div className="relative ">
               <div

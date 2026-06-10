@@ -1,42 +1,36 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import dynamic from "next/dynamic";
 import { fetchDataFromApi, postData } from "@/utils/api";
-import { Button } from "@mui/material";
-import Similar from "./Similar";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 import Image from "next/image";
 import { useWishlist } from "@/app/context/WishlistContext";
 import ProductSpecs from "@/components/ProductSpecs";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
 import { RxCross2 } from "react-icons/rx";
-import { Navigation, Pagination, A11y, Zoom } from "swiper/modules";
 import WhatsappIcon from "@/components/WhatsappIcon";
 import { IoCall } from "react-icons/io5";
-
-import Skeleton from "@mui/material/Skeleton";
-
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-
 import { PiShareFat } from "react-icons/pi";
-import Suggestions from "@/components/Suggestions";
 import { trackProductEvent } from "@/lib/tracking";
 import { usePrd } from "@/app/context/ProductContext";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
-import "swiper/css/zoom";
+const Suggestions = dynamic(() => import("@/components/Suggestions"), {
+  ssr: false,
+});
 
-const ProductPageClient = ({ prdId }) => {
-  const [productImages, setProductImages] = useState([]);
-  const [openedProduct, setOpenedProduct] = useState(null);
-  const [selectedImage, setSelectedImage] = useState();
-  const [quantity, setQuantity] = useState(1);
+const ProductPageClient = ({ initialProduct = null, prdId }) => {
+  const [productImages, setProductImages] = useState(initialProduct?.images || []);
+  const [openedProduct, setOpenedProduct] = useState(initialProduct);
+  const [selectedImage, setSelectedImage] = useState(
+    initialProduct?.images?.[0] || null
+  );
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist();
-  const { userData, setUserData, isLogin, isCheckingToken } = useAuth();
+  const { userData, isLogin, isCheckingToken } = useAuth();
   const { showLarge, setShowLarge } = usePrd();
 
   const [hideArrows, setHideArrows] = useState(null);
@@ -44,6 +38,17 @@ const ProductPageClient = ({ prdId }) => {
   const router = useRouter();
 
   useEffect(() => {
+    if (initialProduct?._id) {
+      setOpenedProduct(initialProduct);
+      setProductImages(initialProduct.images || []);
+      setSelectedImage(initialProduct.images?.[0] || null);
+
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }
+      return;
+    }
+
     fetchDataFromApi(`/api/product/${prdId}`, false).then((res) => {
       setOpenedProduct(res?.product);
       setProductImages(res?.product?.images || []);
@@ -53,6 +58,11 @@ const ProductPageClient = ({ prdId }) => {
         window.scrollTo({ top: 0, behavior: "auto" });
       }
     });
+  }, [initialProduct, prdId]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSuggestions(true), 2500);
+    return () => clearTimeout(timer);
   }, [prdId]);
 
   useEffect(() => {
@@ -96,8 +106,8 @@ const ProductPageClient = ({ prdId }) => {
       viewed = viewed.slice(0, 20);
 
       localStorage.setItem(viewedKey, JSON.stringify(viewed));
-    } catch (e) {
-      console.warn("Recently viewed storage failed", e);
+    } catch {
+      return;
     }
   }, [openedProduct]);
   useEffect(() => {
@@ -119,64 +129,38 @@ const ProductPageClient = ({ prdId }) => {
       }
   };
 
-  const getOptimizedCloudinaryUrl = (url) => {
-    if (!url?.includes("res.cloudinary.com")) return url;
-    return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
-  };
+  const getOptimizedCloudinaryUrl = (url, options = {}) =>
+    getCloudinaryImageUrl(url, {
+      width: 800,
+      height: 800,
+      crop: "fit",
+      ...options,
+    });
 
   if (isCheckingToken || !openedProduct) {
     return (
       <div className="flex flex-col w-full min-h-screen sm:py-4 items-center bg-slate-100">
         <div className="w-full sm:w-[1020px] min-h-screen p-4 sm:flex justify-between bg-white">
-          {/* Left Skeleton: Image */}
           <div className="w-full flex gap-2 sm:w-[420px] p-1">
             <div className="hidden sm:flex flex-col gap-1">
               {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton
+                <div
                   key={i}
-                  variant="rectangular"
-                  width={64}
-                  height={74}
+                  className="h-[74px] w-16 bg-slate-200/80 animate-pulse"
                 />
               ))}
             </div>
-            <Skeleton variant="rectangular" width="100%" height={310} />
+            <div className="h-[310px] w-full bg-slate-200/80 animate-pulse" />
           </div>
 
-          {/* Right Skeleton: Details */}
           <div className="sm:w-[600px] sm:p-5 sm:pl-6">
-            <Skeleton
-              variant="text"
-              width="80%"
-              height={40}
-              className="sm:!mb-3"
-            />
-            <Skeleton
-              variant="text"
-              width="60%"
-              height={25}
-              className="!mb-4 sm:!mb-8"
-            />
+            <div className="mb-3 h-10 w-4/5 rounded bg-slate-200/80 animate-pulse" />
+            <div className="mb-4 h-6 w-3/5 rounded bg-slate-200/80 animate-pulse sm:mb-8" />
             <div className="flex gap-[8px]">
-              <Skeleton
-                variant="rectangular"
-                width="50%"
-                height={35}
-                className="!mb-8"
-              />
-              <Skeleton
-                variant="rectangular"
-                width="50%"
-                height={35}
-                className="!mb-8"
-              />
+              <div className="mb-8 h-[35px] w-1/2 rounded bg-slate-200/80 animate-pulse" />
+              <div className="mb-8 h-[35px] w-1/2 rounded bg-slate-200/80 animate-pulse" />
             </div>
-            <Skeleton
-              variant="rectangular"
-              width="100%"
-              height={200}
-              className="!mb-8"
-            />
+            <div className="mb-8 h-[200px] w-full rounded bg-slate-200/80 animate-pulse" />
           </div>
         </div>
       </div>
@@ -188,44 +172,60 @@ const ProductPageClient = ({ prdId }) => {
     productImages.findIndex((img) => img === showLarge),
   );
 
-  // ✅ Actual JSX rendering
+  const showImageByOffset = (offset) => {
+    if (!productImages.length) return;
+
+    const nextIndex =
+      (initialIndex + offset + productImages.length) % productImages.length;
+    setShowLarge(productImages[nextIndex]);
+  };
+
+  // Actual JSX rendering
   return (
-    <div className="flex flex-col w-full min-h-screen items-center bg-slate-100">
-      <div className="w-full sm:w-[1020px] mb-2 sm:my-3 pt-2 sm:p-2 mx-auto lg:flex justify-between bg-white">
+    <div className="flex w-full min-h-screen flex-col items-center bg-slate-100">
+      <div className="mx-auto mb-2 w-full justify-between bg-white pt-2 sm:my-3 sm:w-[1020px] sm:p-2 lg:flex">
         {/* Left: Image Section */}
-        <div className="image sm:sticky lg:top-[110px] w-full sm:w-[400px] sm:h-[310px] sm:p-[2px] sm:border sm:border-slate-400 sm:m-3 mr-4 flex gap-[2px] flex-col sm:flex-row">
+        <div className="image mr-4 flex w-full flex-col gap-[2px] sm:sticky sm:m-3 sm:h-[310px] sm:w-[400px] sm:flex-row sm:border sm:border-slate-400 sm:p-[2px] lg:top-[110px]">
           {/* Mobile Carousel */}
           <div className="block md:hidden w-full relative">
-            <Swiper
-              cssMode={true}
-              spaceBetween={10}
-              slidesPerView={1}
-              className="w-full h-auto"
+            <div
+              className="flex w-full snap-x snap-mandatory overflow-x-auto scroll-smooth scrollbar-hide"
+              aria-label="Product images"
             >
               {productImages?.map((src, idx) => (
-                <SwiperSlide key={idx}>
+                <button
+                  key={src || idx}
+                  type="button"
+                  aria-label={`Open product image ${idx + 1}`}
+                  className="min-w-full snap-center bg-white"
+                  onClick={() => {
+                    openLargeView(src);
+                    setHideArrows(true);
+                  }}
+                >
                   <Image
                     src={
-                      getOptimizedCloudinaryUrl(src) ||
+                      getOptimizedCloudinaryUrl(src, {
+                        width: 700,
+                        height: 420,
+                      }) ||
                       "/images/placeholder.jpg"
                     }
-                    alt={`Slide ${idx + 1}`}
+                    alt={`${openedProduct?.name || "Product"} image ${idx + 1}`}
                     className="w-full h-[300px] object-contain"
                     width={500}
                     height={300}
-                    onClick={() => {
-                      openLargeView(src); // You still want to show original in modal
-                      setHideArrows(true);
-                    }}
-                    loading="lazy"
+                    priority={idx === 0}
                   />
-                </SwiperSlide>
+                </button>
               ))}
-            </Swiper>
+            </div>
 
             {/* Wishlist Button for mobile */}
-            <div
-              className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-3 right-3 cursor-pointer z-[90]"
+            <button
+              type="button"
+              aria-label="Toggle wishlist"
+              className="absolute right-3 top-3 z-[90] flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 border-opacity-50 bg-white shadow-md hover:shadow-inner"
               onClick={(e) => {
                 if (!isLogin) {
                   router.push("/login");
@@ -255,11 +255,13 @@ const ProductPageClient = ({ prdId }) => {
               ) : (
                 <MdFavoriteBorder className="text-slate-600 text-[22px]" />
               )}
-            </div>
+            </button>
 
             {/* Share Button for mobile (below Wishlist) */}
-            <div
-              className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-12 right-3 cursor-pointer z-[90]"
+            <button
+              type="button"
+              aria-label="Share product"
+              className="absolute right-3 top-12 z-[90] flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 border-opacity-50 bg-white shadow-md hover:shadow-inner"
               onClick={async () => {
                 const shareData = {
                   title: openedProduct?.name,
@@ -270,8 +272,8 @@ const ProductPageClient = ({ prdId }) => {
                 if (navigator.share) {
                   try {
                     await navigator.share(shareData);
-                  } catch (err) {
-                    console.error("Error sharing:", err);
+                  } catch {
+                    return;
                   }
                 } else {
                   try {
@@ -285,7 +287,7 @@ const ProductPageClient = ({ prdId }) => {
               title="Share product"
             >
               <PiShareFat className="text-slate-600 text-[21px]" />
-            </div>
+            </button>
           </div>
 
           {/* Fullscreen Modal for Mobile Large View */}
@@ -296,6 +298,8 @@ const ProductPageClient = ({ prdId }) => {
             >
               <div className="w-full flex justify-end">
                 <button
+                  type="button"
+                  aria-label="Close image view"
                   onClick={() => {
                     setShowLarge(null);
                     setHideArrows(false);
@@ -310,55 +314,67 @@ const ProductPageClient = ({ prdId }) => {
                 </button>
               </div>
 
-              <div className="w-full max-w-[500px] h-[80vh] flex justify-center items-center">
-                <Swiper
-                  modules={[Navigation, Pagination, A11y, Zoom]}
-                  zoom={{ maxRatio: 3, toggle: true }}
-                  spaceBetween={10}
-                  slidesPerView={1}
-                  pagination={{ clickable: true }}
-                  navigation
-                  className="w-full h-full"
-                  initialSlide={initialIndex}
-                >
-                  {productImages.map((img, idx) => (
-                    <SwiperSlide key={idx}>
-                      <div className="swiper-zoom-container">
-                        <img
-                          src={
-                            getOptimizedCloudinaryUrl(img) ||
-                            "/images/placeholder.jpg"
-                          }
-                          alt={`Slide ${idx + 1}`}
-                          className="w-full h-full object-contain"
-                        />
-                      </div>
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
+              <div className="relative w-full max-w-[500px] h-[80vh] flex justify-center items-center">
+                {productImages.length > 1 && (
+                  <button
+                    type="button"
+                    aria-label="Previous image"
+                    className="absolute left-0 z-10 rounded-full bg-white/80 p-2 text-slate-800 shadow"
+                    onClick={() => showImageByOffset(-1)}
+                  >
+                    <ChevronLeft />
+                  </button>
+                )}
+
+                <Image
+                  src={
+                    getOptimizedCloudinaryUrl(showLarge, {
+                      width: 900,
+                      height: 900,
+                    }) || "/images/placeholder.jpg"
+                  }
+                  alt={`${openedProduct?.name || "Product"} image ${initialIndex + 1}`}
+                  width={900}
+                  height={900}
+                  className="h-full w-full object-contain"
+                />
+
+                {productImages.length > 1 && (
+                  <button
+                    type="button"
+                    aria-label="Next image"
+                    className="absolute right-0 z-10 rounded-full bg-white/80 p-2 text-slate-800 shadow"
+                    onClick={() => showImageByOffset(1)}
+                  >
+                    <ChevronRight />
+                  </button>
+                )}
               </div>
             </div>
           )}
 
           {/* Desktop Thumbnail + Main Image */}
-          <div className="hidden md:flex gap-2 h-auto">
-            <div className="w-[75px] overflow-y-auto h-full p-[2px] border scrollbar-hide">
-              <ul className="space-y-1">
+          <div className="hidden h-auto gap-2 md:flex">
+            <div className="h-full w-[75px] overflow-y-auto border p-[2px] scrollbar-hide">
+              <ul className="space-y-2">
                 {productImages?.map((src, idx) => (
                   <li
                     key={idx}
-                    className={`border rounded cursor-pointer ${
+                    className={`cursor-pointer rounded border bg-white ${
                       selectedImage === src ? "ring-2 ring-blue-500" : ""
                     }`}
                     onClick={() => setSelectedImage(src)}
                   >
                     <Image
                       src={
-                        getOptimizedCloudinaryUrl(src) ||
+                        getOptimizedCloudinaryUrl(src, {
+                          width: 160,
+                          height: 120,
+                        }) ||
                         "/images/placeholder.jpg"
                       }
-                      alt={`Thumbnail ${idx + 1}`}
-                      className="w-[128px] h-[64px] object-contain"
+                      alt={`${openedProduct?.name || "Product"} thumbnail ${idx + 1}`}
+                      className="h-[64px] w-[128px] object-contain"
                       width={100}
                       height={100}
                     />
@@ -367,25 +383,31 @@ const ProductPageClient = ({ prdId }) => {
               </ul>
             </div>
 
-            <div className="w-full relative">
-              <div className="w-full sm:w-[319px] bg-gray-100 sm:h-full flex justify-center items-center relative">
+            <div className="relative w-full">
+              <div className="relative flex w-full items-center justify-center bg-gray-100 sm:h-full sm:w-[319px]">
                 <Image
-                  className="h-full w-full object-contain border cursor-zoom-in"
+                  className="h-full w-full cursor-zoom-in border object-contain"
                   src={getOptimizedCloudinaryUrl(
                     selectedImage ||
                       productImages?.[0] ||
                       "/images/placeholder.jpg",
+                    {
+                      width: 640,
+                      height: 640,
+                    },
                   )}
                   alt="Selected Product"
-                  unoptimized
                   width={300}
                   height={300}
+                  priority
                  onClick={() => openLargeView(selectedImage)}
                 />
 
                 {/* Wishlist Button */}
-                <div
-                  className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-4 right-3 cursor-pointer z-[500]"
+                <button
+                  type="button"
+                  aria-label="Toggle wishlist"
+                  className="absolute right-3 top-4 z-[500] flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 border-opacity-50 bg-white shadow-md hover:shadow-inner"
                   onClick={(e) => {
                     if (!isLogin) {
                       router.push("/login");
@@ -415,11 +437,13 @@ const ProductPageClient = ({ prdId }) => {
                   ) : (
                     <MdFavoriteBorder className="text-slate-600 text-[22px]" />
                   )}
-                </div>
+                </button>
 
                 {/* Share Button (below Wishlist) */}
-                <div
-                  className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-14 right-3 cursor-pointer z-[500]"
+                <button
+                  type="button"
+                  aria-label="Share product"
+                  className="absolute right-3 top-14 z-[500] flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 border-opacity-50 bg-white shadow-md hover:shadow-inner"
                   onClick={async () => {
                     const shareData = {
                       title: openedProduct?.name,
@@ -430,8 +454,8 @@ const ProductPageClient = ({ prdId }) => {
                     if (navigator.share) {
                       try {
                         await navigator.share(shareData);
-                      } catch (err) {
-                        console.error("Error sharing:", err);
+                      } catch {
+                        return;
                       }
                     } else {
                       try {
@@ -447,7 +471,7 @@ const ProductPageClient = ({ prdId }) => {
                   title="Share product"
                 >
                   <PiShareFat className="text-slate-600 text-[21px]" />
-                </div>
+                </button>
               </div>
 
               {/* Buttons */}
@@ -459,6 +483,8 @@ const ProductPageClient = ({ prdId }) => {
             <div className="hidden sm:flex fixed  inset-0 bg-slate-100  z-[999]  flex-col items-center justify-center px-4">
               <div className="w-full flex justify-end">
                 <button
+                  type="button"
+                  aria-label="Close image view"
                   onClick={() => {
                     setShowLarge(null);
 
@@ -474,53 +500,62 @@ const ProductPageClient = ({ prdId }) => {
                 </button>
               </div>
 
-              <div className="w-full max-w-[800px] h-[80vh] flex justify-center items-center">
-                <Swiper
-                  modules={[Navigation, Pagination, A11y]}
-                  spaceBetween={10}
-                  slidesPerView={1}
-                  pagination={{ clickable: true }}
-                  navigation
-                  className="w-full h-full"
-                  initialSlide={initialIndex}
-                >
-                  {productImages.map((img, idx) => (
-                    <SwiperSlide key={idx}>
-                      <Image
-                        src={
-                          getOptimizedCloudinaryUrl(img) ||
-                          "/images/placeholder.jpg"
-                        }
-                        alt={`Slide ${idx + 1}`}
-                        width={800}
-                        height={800}
-                        className="object-contain w-full h-full"
-                        unoptimized
-                      />
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
+              <div className="relative w-full max-w-[800px] h-[80vh] flex justify-center items-center">
+                {productImages.length > 1 && (
+                  <button
+                    type="button"
+                    aria-label="Previous image"
+                    className="absolute left-0 z-10 rounded-full bg-white/80 p-3 text-slate-800 shadow"
+                    onClick={() => showImageByOffset(-1)}
+                  >
+                    <ChevronLeft />
+                  </button>
+                )}
+
+                <Image
+                  src={
+                    getOptimizedCloudinaryUrl(showLarge, {
+                      width: 1000,
+                      height: 1000,
+                    }) || "/images/placeholder.jpg"
+                  }
+                  alt={`${openedProduct?.name || "Product"} image ${initialIndex + 1}`}
+                  width={1000}
+                  height={1000}
+                  className="h-full w-full object-contain"
+                />
+
+                {productImages.length > 1 && (
+                  <button
+                    type="button"
+                    aria-label="Next image"
+                    className="absolute right-0 z-10 rounded-full bg-white/80 p-3 text-slate-800 shadow"
+                    onClick={() => showImageByOffset(1)}
+                  >
+                    <ChevronRight />
+                  </button>
+                )}
               </div>
             </div>
           )}
         </div>
 
         {/* Right: Product Details */}
-        <div className="details sm:w-[600px] px-3 sm:p-4 sm:pt-6">
-          <h2 className="text-[18px] sm:text-[20px] font-medium mt-2 am:mt-0 mb-1 sm:mb-3 text-gray-800">
+        <div className="details px-3 sm:w-[600px] sm:p-4 sm:pt-6">
+          <h1 className="am:mt-0 mb-1 mt-2 text-[18px] font-medium text-gray-800 sm:mb-3 sm:text-[20px]">
             {openedProduct?.name}
-          </h2>
+          </h1>
 
-          <h2 className="text-[14px] sm:text-[16px] font-medium mb-2 sm:mb-3 text-gray-500">
+          <p className="mb-2 text-[14px] font-medium text-gray-500 sm:mb-3 sm:text-[16px]">
             {openedProduct?.brand}
-          </h2>
+          </p>
 
           {!hideArrows && (
             <>
-              <div className=" flex justify-around my-2 mt-10 gap-2">
-                <Button
-                  variant="outlined"
-                  className="!capitalize !text-slate-900 !border-slate-900 bg-gray-600 rounded-md px-1 py-1 text-base w-auto sm:!w-1/2 !text-nowrap flex items-center gap-2"
+              <div className="my-2 mt-10 flex justify-around gap-2">
+                <button
+                  type="button"
+                  className="flex w-auto items-center justify-center gap-2 rounded-md border border-slate-900 px-1 py-1 text-base font-medium text-slate-900 transition hover:bg-slate-900 hover:text-white sm:w-1/2"
                   onClick={async () => {
                     if (!isLogin) {
                       router.push("/login");
@@ -541,20 +576,19 @@ const ProductPageClient = ({ prdId }) => {
 
                         const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${openedProduct?.name}*.\nHere is the product link:\nhttps://snsteelfabrication.com/product/${openedProduct?._id}`;
                         window.open(whatsappURL, "_blank");
-                      } catch (err) {
-                        console.error("Enquiry failed:", err);
+                      } catch {
+                        return;
                       }
                     }
                   }}
                 >
                   <WhatsappIcon className="!w-5 !h-5" />
                   <span className="hidden sm:block">Get Price on WhatsApp</span>
-                </Button>
+                </button>
 
-                <Button
-                  variant="contained"
-                  className="!capitalize !bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-2 py-1 text-base w-full
-   sm:w-1/2 text-nowrap flex items-center gap-2"
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-center gap-2 rounded-md bg-rose-600 px-2 py-1 text-base font-medium text-white transition hover:bg-rose-700 sm:w-1/2"
                   onClick={async () => {
                     if (!isLogin) {
                       router.push("/login");
@@ -574,23 +608,23 @@ const ProductPageClient = ({ prdId }) => {
                         });
 
                         window.open("tel:+919776501230");
-                      } catch (err) {
-                        console.error("Call log failed:", err);
+                      } catch {
+                        return;
                       }
                     }
                   }}
                 >
                   <IoCall className="w-6 h-6 mx-2" />
                   <span>Call to Get Best Price</span>
-                </Button>
+                </button>
               </div>
             </>
           )}
 
           {/* Description */}
           {openedProduct?.description && (
-            <div className="flex gap-4 mt-4">
-              <h1 className="text-gray-500 font-semibold">Description</h1>
+            <div className="mt-4 flex gap-4">
+              <h2 className="font-semibold text-gray-500">Description</h2>
               <p className="text-black">{openedProduct?.description}</p>
             </div>
           )}
@@ -601,8 +635,8 @@ const ProductPageClient = ({ prdId }) => {
       </div>
 
       {/* similar products */}
-      {!showLarge && (
-        <div className=" w-full mx-10">
+      {!showLarge && showSuggestions && (
+        <div className="w-full mx-10">
           <Suggestions
             productId={openedProduct?._id}
             catId={openedProduct.catId}

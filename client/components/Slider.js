@@ -8,6 +8,7 @@ import { useAuth } from "@/app/context/AuthContext"; // ✅ Added
 import { useRouter } from "next/navigation";
 import Skeleton from "@mui/material/Skeleton";
 import { motion, AnimatePresence, useReducedMotion  } from "framer-motion";
+import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
 const Slider = () => {
   const [slides, setSlides] = useState([]);
@@ -82,16 +83,6 @@ const handleNext = () => {
   setCurrentIndex((prev) => (prev + 1) % slides.length);
 };
 
-  const getOptimizedCloudinaryUrl = (url, isMobile = false) => {
-  if (!url?.includes("/upload/")) return url;
-
-  return url.replace(
-    "/upload/",
-    isMobile
-      ? "/upload/w_900,h_900,c_fit,f_auto,q_80/"
-      : "/upload/w_1600,h_1600,c_fit,f_auto,q_90/"
-  );
-}
   // ✅ Render nothing while loading or waiting for token
   if (localLoading) {
   return (
@@ -357,12 +348,16 @@ py-10 md:py-12 pt-8 md:pt-12 lg:pt-12 overflow-hidden">
       }
       >
         <Image
-          src={getOptimizedCloudinaryUrl(slides[currentIndex]?.images[0], isMobile) || "/images/placeholder.jpg"}
+          src={getCloudinaryImageUrl(
+            slides[currentIndex]?.images[0] || "/images/placeholder.jpg",
+            { width: isMobile ? 520 : 760, crop: "limit" }
+          )}
           alt={slides[currentIndex]?.title || "Furniture"}
           width={420}
           height={420}
             className="object-contain scale-100 hover:scale-110 transition-transform duration-700 ease-out"
           priority
+          fetchPriority="high"
         />
       </motion.div>
     </AnimatePresence>
@@ -437,7 +432,10 @@ py-10 md:py-12 pt-8 md:pt-12 lg:pt-12 overflow-hidden">
           "
         >
           <Image
-            src={getOptimizedCloudinaryUrl(slide?.images[0], isMobile) || "/images/placeholder.jpg"}
+            src={getCloudinaryImageUrl(slide?.images[0] || "/images/placeholder.jpg", {
+              width: 96,
+              height: 96,
+            })}
             alt={slide?.title}
             width={48}
             height={48}

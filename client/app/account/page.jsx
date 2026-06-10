@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import LogoutBTN from "@/components/LogoutBTN";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "@/app/context/AuthContext";
 import {
   User,
   Package,
@@ -17,7 +17,6 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import Loading from "@/components/Loading";
-import { trackVisitor } from "@/lib/tracking";
 
 const Account = () => {
   const router = useRouter();
@@ -26,29 +25,31 @@ const Account = () => {
 
   useEffect(() => {
     if (!isLogin) {
-      setIsCheckingToken(false); // ✅ This is crucial
+      setIsCheckingToken(false);
       router.push("/login");
     }
-  }, [isLogin]);
+  }, [isLogin, router, setIsCheckingToken]);
 
   const getOptimizedCloudinaryUrl = (url) => {
     if (!url?.includes("/upload/")) return url;
-    return url.replace("/upload/", "/upload/w_140,h_140,c_fill,f_auto,q_90/");
+    return url.replace("/upload/", "/upload/w_140,h_140,c_fill,f_auto,q_auto/");
   };
 
   if (isCheckingToken) return <Loading />;
 
   return (
-    <div className="flex flex-col sm:flex-row w-full min-h-screen  ">
-      {/* Mobile Header */}
+    <div className="flex flex-col sm:flex-row w-full min-h-screen">
       <div className="sm:hidden flex items-center justify-between px-4 py-3 border-b shadow-md">
         <h2 className="text-lg font-semibold text-gray-800">Account</h2>
-        <button onClick={() => setSidebarOpen(!sidebarOpen)}>
+        <button
+          type="button"
+          aria-label="Toggle account menu"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
           <Menu size={24} />
         </button>
       </div>
 
-      {/* Sidebar */}
       <div
         className={`sm:block ${
           sidebarOpen ? "block" : "hidden"
@@ -88,35 +89,35 @@ const Account = () => {
             </Link>
           </li>
           <li>
-            <Link href="/account/address">
+            <Link href="/address">
               <div className="menu-item">
                 <MapPin size={18} className="mr-2" /> Manage Address
               </div>
             </Link>
           </li>
           <li>
-            <Link href="/account/wishfav">
+            <Link href="/wishlist">
               <div className="menu-item">
                 <Heart size={18} className="mr-2" /> Wishlist & Favorites
               </div>
             </Link>
           </li>
           <li>
-            <Link href="/account/retref">
+            <Link href="/payments">
               <div className="menu-item">
                 <RefreshCcw size={18} className="mr-2" /> Returns and Refunds
               </div>
             </Link>
           </li>
           <li>
-            <Link href="/account/notifications">
+            <Link href="/notifications">
               <div className="menu-item">
                 <Bell size={18} className="mr-2" /> Notifications
               </div>
             </Link>
           </li>
           <li>
-            <Link href="/account/support">
+            <Link href="/about">
               <div className="menu-item">
                 <LifeBuoy size={18} className="mr-2" /> Support and Help
               </div>
@@ -128,12 +129,11 @@ const Account = () => {
         </ul>
       </div>
 
-      {/* Content Area */}
       <div className="w-full flex-1">
-        <div className="min-h-10 w-full shadow-md text-black font-sans font-semibold flex items-center pl-4 text-lg bg-white ">
+        <div className="min-h-10 w-full shadow-md text-black font-sans font-semibold flex items-center pl-4 text-lg bg-white">
           Profile information
         </div>
-        <div className="p-4">{/* Actual dynamic content can go here */}</div>
+        <div className="p-4" />
       </div>
     </div>
   );

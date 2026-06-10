@@ -1,24 +1,38 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { fetchDataFromApi, postData } from "@/utils/api";
 import { useAuth } from "@/app/context/AuthContext";
 import { useWishlist } from "@/app/context/WishlistContext";
 import Image from "next/image";
-import Button from "@mui/material/Button";
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 import WhatsappIcon from "@/components/WhatsappIcon";
 import { IoCall } from "react-icons/io5";
-import Loading from "@/components/Loading";
-import Skeleton from "@mui/material/Skeleton";
-import { trackVisitor } from "@/lib/tracking";
+import { getCloudinaryImageUrl } from "@/utils/cloudinary";
+const ListingLoading = () => (
+  <div className="min-h-screen bg-slate-100 px-4 py-[110px] sm:px-6">
+    <div className="mx-auto max-w-[1200px]">
+      <div className="mb-6 h-8 w-64 rounded bg-slate-200 animate-pulse" />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+        {Array.from({ length: 8 }).map((_, idx) => (
+          <div
+            key={idx}
+            className="rounded-md bg-white p-3 shadow-md"
+          >
+            <div className="aspect-[4/3] w-full bg-slate-200 animate-pulse" />
+            <div className="mt-4 h-5 w-[80%] rounded bg-slate-200 animate-pulse" />
+            <div className="mt-2 h-4 w-[45%] rounded bg-slate-200 animate-pulse" />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
 
 
 
-
-
-const ProductListing = () => {
+const ProductListingContent = () => {
   const searchParams = useSearchParams();
   const catId = searchParams.get("catId");
   const subCatId = searchParams.get("subCatId");
@@ -62,8 +76,7 @@ const ProductListing = () => {
             
 
         setProducts(res?.data || []);
-      } catch (err) {
-        console.error("Failed to load products:", err);
+      } catch {
         setProducts([]);
       } finally {
         setLoadingProducts(false);
@@ -71,12 +84,6 @@ const ProductListing = () => {
     };
     fetchProducts();
   }, [catId, subCatId, thirdSubCatId]);
-
-
-  const getOptimizedCloudinaryUrl = (url) => {
-    if (!url?.includes("res.cloudinary.com")) return url;
-    return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
-  };
 
 
   const onClickHandler = (e, prdid, prd)=>{
@@ -91,44 +98,48 @@ const ProductListing = () => {
                         }
   }
 
-  if (isCheckingToken || loadingProducts) return <Loading />;
+  if (isCheckingToken || loadingProducts) return <ListingLoading />;
 
   return (
-    <div className="w-full bg-slate-100 min-h-screen flex justify-center">
-      <div className="container w-full sm:w-[90%]  sm:my-4 mx-auto">
-        <div className="bg-white min-h-screen p-2 sm:p-3 shadow-lg text-black">
-          
-          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
+    <div className="flex min-h-screen w-full justify-center bg-slate-100 px-3 pb-10 pt-[104px] sm:px-6 sm:pt-[120px]">
+      <div className="container mx-auto w-full sm:w-[90%]">
+        <div className="min-h-screen bg-white p-2 text-black shadow-lg sm:p-3">
+          <div className="relative z-0 mb-5 grid grid-cols-1 place-items-center gap-4 overflow-visible sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
            
 
             {(  isCheckingToken || loadingProducts)
   ? Array.from({ length: 8 }).map((_, idx) => (
-      <div key={idx} className="w-full min-h-[260px] shadow-md flex flex-col items-start justify-between p-3 bg-white ">
-        <Skeleton variant="rectangular" width="100%" height={260}  className="rounded-md !bg-slate-300/50"/>
-        <Skeleton variant="text" width="90%" height={25} sx={{ mt: 2 }} className=" !bg-slate-300/50" />
-        <Skeleton variant="text" width="60%" height={20} className=" !bg-slate-300/50" />
+      <div key={idx} className="flex min-h-[260px] w-full flex-col items-start justify-between bg-white p-3 shadow-md">
+        <div className="h-[260px] w-full bg-slate-200 animate-pulse" />
+        <div className="mt-4 h-5 w-[90%] rounded bg-slate-200 animate-pulse" />
+        <div className="mt-2 h-4 w-[60%] rounded bg-slate-200 animate-pulse" />
       </div>
     ))
   : products.length > 0 && products.slice().reverse().map((prd, index) => (
-                <div key={prd?._id || index} className="relative group w-full">
-                <div className="w-full min-h-[260px] shadow-md flex flex-col items-center justify-between p-3 bg-white hover:shadow-xl transition duration-300">
+                <article key={prd?._id || index} className="group relative w-full">
+                <div className="flex min-h-[260px] w-full flex-col items-center justify-between bg-white p-3 shadow-md transition duration-300 hover:shadow-xl">
                   <div className="w-full flex flex-col items-center">
                     {prd?.images?.[0] && (
                       <div
-                        className="w-full aspect-[4/3] relative overflow-hidden cursor-pointer rounded-md"
+                        className="relative aspect-[4/3] w-full cursor-pointer overflow-hidden rounded-md"
                         onClick={() => router.push(`/product/${prd?._id}`)}
                       >
                         <Image
-                          src={getOptimizedCloudinaryUrl(prd.images[0]) || "/images/placeholder.jpg"}
+                          src={getCloudinaryImageUrl(prd.images[0] || "/images/placeholder.jpg", {
+                            width: 520,
+                            height: 390,
+                          })}
                           alt={prd.name || "Product"}
                           fill
-                          unoptimized
+                          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
                           className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
                         />
                       </div>
                     )}
-                    <div
-                      className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 shadow-md absolute top-4 right-3 cursor-pointer"
+                    <button
+                      type="button"
+                      aria-label="Toggle wishlist"
+                      className="absolute right-3 top-4 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white shadow-md"
                       onClick={(e) =>
                         onClickHandler (e, prd._id, prd)
                       }
@@ -138,19 +149,19 @@ const ProductListing = () => {
                       ) : (
                         <MdFavoriteBorder className="text-slate-600 text-[22px]" />
                       )}
-                    </div>
+                    </button>
                     <div className="w-full mt-3">
-                      <h1 className="text-black text-[18px] font-medium truncate">{prd?.name}</h1>
+                      <h2 className="truncate text-[18px] font-medium text-black">{prd?.name}</h2>
                       <p className={(prd?.brand)?`text-gray-500 text-[16px] mt-1`:`text-white text-[16px] mt-1 cursor-default`}>{prd?.brand || "Not mentioned"}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="absolute left-0 top-full w-full z-50 pointer-events-none opacity-0 sm:group-hover:opacity-100 sm:group-hover:pointer-events-auto transition-opacity duration-300">
-                  <div className="bg-white shadow-lg p-2 flex gap-2 justify-center sm:justify-between flex-wrap">
-                    <Button
-                      variant="outlined"
-                      className="!capitalize !text-slate-900 !border-slate-900 bg-gray-600 rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
+                <div className="absolute left-0 top-full z-50 w-full opacity-100 transition-opacity duration-300 sm:pointer-events-none sm:opacity-0 sm:group-hover:pointer-events-auto sm:group-hover:opacity-100">
+                  <div className="flex flex-wrap justify-center gap-2 bg-white p-2 shadow-lg sm:justify-between">
+                    <button
+                      type="button"
+                      className="flex w-[48%] items-center justify-center gap-2 rounded-md border border-slate-900 px-3 py-[6px] text-sm font-medium text-slate-900 transition hover:bg-slate-900 hover:text-white sm:text-base"
                       onClick={async () => {
                         if (!isLogin) return router.push("/login");
                         try {
@@ -170,18 +181,18 @@ const ProductListing = () => {
                           const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${prd?.name}*.\nHere is the product link:\nhttps://snsteelfabrication.com/product/${prd?._id}`;
                           
                           window.open(whatsappURL, "_blank");
-                        } catch (err) {
-                          console.error("Enquiry failed:", err);
+                        } catch {
+                          return;
                         }
                       }}
                     >
                       <WhatsappIcon className="w-5 h-5" />
                       <span className="hidden sm:inline">WhatsApp</span>
-                    </Button>
+                    </button>
 
-                    <Button
-                      variant="contained"
-                      className="!capitalize !bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
+                    <button
+                      type="button"
+                      className="flex w-[48%] items-center justify-center gap-2 rounded-md bg-rose-600 px-3 py-[6px] text-sm font-medium text-white transition hover:bg-rose-700 sm:text-base"
                       onClick={async () => {
                         if (!isLogin) return router.push("/login");
                         try {
@@ -196,17 +207,17 @@ const ProductListing = () => {
                             image: prd?.images[0],
                           });
                           window.open("tel:+919776501230");
-                        } catch (err) {
-                          console.error("Enquiry failed:", err);
+                        } catch {
+                          return;
                         }
                       }}
                     >
                       <IoCall className="w-5 h-5" />
                       <span className="hidden sm:inline">Call</span>
-                    </Button>
+                    </button>
                   </div>
                 </div>
-              </div>
+              </article>
             ))}
 
             {products.length === 0 && (
@@ -221,4 +232,10 @@ const ProductListing = () => {
   );
 };
 
-export default ProductListing;
+export default function ProductListing() {
+  return (
+    <Suspense fallback={<ListingLoading />}>
+      <ProductListingContent />
+    </Suspense>
+  );
+}

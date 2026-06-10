@@ -4,10 +4,9 @@ import Navbar from "@/components/Navbar";
 
 import GlobalLoader from "@/components/GlobalLoader";
 import BottomNav from "@/components/BottomNav";
-import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import AppToaster from "@/components/ToastProvider";
 
-import { Inter, Montserrat, Poppins } from "next/font/google";
+import { Inter, Montserrat } from "next/font/google";
 import MainWrapper from "@/components/MainWrapper";
 import AppProviders from "@/components/AppProviders";
 import ClientRuntime from "@/components/ClientRuntime";
@@ -107,8 +106,6 @@ export default function RootLayout({ children }) {
         ></meta>
       </head>
       <body className={`${inter.variable} ${montserrat.variable} `}>
-        <ServiceWorkerRegister />
-
         <AppProviders>
           <Navbar />          {/* server + client split */}
 

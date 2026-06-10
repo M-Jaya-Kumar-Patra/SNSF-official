@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Button from "@mui/material/Button";
-import { usePrd } from "@/app/context/ProductContext";
 import { fetchDataFromApi, postData } from "@/utils/api";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
@@ -10,39 +8,23 @@ import { useWishlist } from "../context/WishlistContext";
 import { MdFavorite } from "react-icons/md";
 import { MdFavoriteBorder } from "react-icons/md";
 import Image from "next/image";
-import Skeleton from "@mui/material/Skeleton";
-import { trackVisitor } from "@/lib/tracking";
 
 import WhatsappIcon from "@/components/WhatsappIcon";
 import { IoCall } from "react-icons/io5";
+import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
 const ProductListing = () => {
-  const { prdData, productsData, setProductsData, getProductsData } = usePrd();
   const {
     userData,
     isLogin,
-    setIsLogin,
-    setUserData,
     loading,
     setLoading,
-    login,
-    logout,
     isCheckingToken,
   } = useAuth();
   const router = useRouter();
     const [data, setData] = useState([]);
   
 
-  useEffect(() => {
-    setLoading(false);
-    getProductsData();
-  }, [isLogin, userData, getProductsData]);
-  useEffect(() => {
-    trackVisitor("bestSellersList");
-  }, []);
-
-
-  
     const loadCustomerFavorites = async () => {
       try {
         const res = await fetchDataFromApi(
@@ -50,11 +32,9 @@ const ProductListing = () => {
           false
         );
   
-        console.log("OOOOOOOOOOOOOOOOOOOOOOOO", res)
-  
         if (!res.error) setData(res?.data || []);
-      } catch (err) {
-        console.log("Best sellers fetch error:", err);
+      } catch {
+        setData([]);
       } finally {
         setLoading(false);
       }
@@ -66,17 +46,7 @@ const ProductListing = () => {
       }, []);
     
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
   const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist();
-
-  const getOptimizedCloudinaryUrl = (url) => {
-    if (!url?.includes("res.cloudinary.com")) return url;
-    return url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/");
-  };
 
   return (
     <div className="w-full bg-slate-100 ">
@@ -90,25 +60,9 @@ const ProductListing = () => {
                       key={idx}
                       className="w-full min-h-[260px] shadow-md flex flex-col items-start justify-between p-3 bg-white "
                     >
-                      <Skeleton
-                        variant="rectangular"
-                        width="100%"
-                        height={260}
-                        className=" !bg-slate-300/50"
-                      />
-                      <Skeleton
-                        variant="text"
-                        width="90%"
-                        height={25}
-                        sx={{ mt: 2 }}
-                        className=" !bg-slate-300/50"
-                      />
-                      <Skeleton
-                        variant="text"
-                        width="60%"
-                        height={20}
-                        className=" !bg-slate-300/50"
-                      />
+                      <div className="h-[260px] w-full bg-slate-200/80 animate-pulse" />
+                      <div className="mt-4 h-6 w-[90%] rounded bg-slate-200/80 animate-pulse" />
+                      <div className="h-5 w-[60%] rounded bg-slate-200/80 animate-pulse" />
                     </div>
                   ))
                 : data
@@ -128,9 +82,13 @@ const ProductListing = () => {
                                 }
                               >
                                 <Image
-                                  src={getOptimizedCloudinaryUrl(prd?.product?.images[0]) || "/images/placeholder.jpg"}
+                                  src={getCloudinaryImageUrl(
+                                    prd?.product?.images?.[0] || "/images/placeholder.jpg",
+                                    { width: 520, height: 390 }
+                                  )}
                                   alt={prd?.name || "Product"}
                                   fill
+                                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
                                   className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
                                 />
                               </div>
@@ -201,8 +159,8 @@ const ProductListing = () => {
                         >
                           <div className="bg-white sm:shadow-lg p-2 flex gap-2 justify-center sm:justify-between flex-wrap">
                             {/* WhatsApp Button */}
-                            <Button
-                              variant="outlined"
+                            <button
+                              type="button"
                               className="!capitalize !text-slate-900 !border-slate-900 bg-gray-600 rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
                               onClick={async () => {
                                 if (!isLogin) {
@@ -216,28 +174,28 @@ const ProductListing = () => {
                                         email: userData?.email,
                                         phone: userData?.phone,
                                       },
-                                      productId: prd?._id,
-                                      message: `Customer opened WhatsApp for "${prd?.name}"`,
-                                      userMsg: `Enquiry for ${prd?.name} via WhatsApp`,
-                                      image: prd?.images[0],
+                                      productId: prd?.product?._id,
+                                      message: `Customer opened WhatsApp for "${prd?.product?.name}"`,
+                                      userMsg: `Enquiry for ${prd?.product?.name} via WhatsApp`,
+                                      image: prd?.product?.images?.[0],
                                     });
 
-                                    const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${prd?.name}*.\nHere is the product link:\nhttps://snsteelfabrication.com/product/${prd?._id}`;
+                                    const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${prd?.product?.name}*.\nHere is the product link:\nhttps://snsteelfabrication.com/product/${prd?.product?._id}`;
 
                                     window.open(whatsappURL, "_blank");
-                                  } catch (err) {
-                                    console.error("Enquiry failed:", err);
+                                  } catch {
+                                    return;
                                   }
                                 }
                               }}
                             >
                               <WhatsappIcon className="w-5 h-5" />
                               <span className="hidden sm:inline">WhatsApp</span>
-                            </Button>
+                            </button>
 
                             {/* Call Button */}
-                            <Button
-                              variant="contained"
+                            <button
+                              type="button"
                               className="!capitalize !bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
                               onClick={async () => {
                                 if (!isLogin) {
@@ -256,15 +214,15 @@ const ProductListing = () => {
                                     });
 
                                     window.open("tel:+919776501230");
-                                  } catch (err) {
-                                    console.error("Enquiry failed:", err);
+                                  } catch {
+                                    return;
                                   }
                                 }
                               }}
                             >
                               <IoCall className="w-5 h-5" />
                               <span className="hidden sm:inline">Call</span>
-                            </Button>
+                            </button>
                           </div>
                         </div>
                       </div>

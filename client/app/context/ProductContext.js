@@ -1,6 +1,6 @@
 // context/CartContext.js
 "use client";
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { fetchDataFromApi } from "@/utils/api";
 
 const PrdContext = createContext();
@@ -12,20 +12,15 @@ const PrdProvider = ({ children }) => {
 
   const [showLarge, setShowLarge] = useState(null);
 
-  const getProductsData = () => {
+  const getProductsData = useCallback(async () => {
     if ((prdData?.length ?? 0) > 0 || (productsData?.length ?? 0) > 0) return;
 
-    fetchDataFromApi("/api/product/gaps", false).then((response) => {
-      if (!response.error) {
-        setPrdData(response?.data);
-        setProductsData(response?.data);
-      }
-    });
-  };
-
-  useEffect(() => {
-    getProductsData();
-  }, []);
+    const response = await fetchDataFromApi("/api/product/gaps", false);
+    if (!response.error) {
+      setPrdData(response?.data);
+      setProductsData(response?.data);
+    }
+  }, [prdData, productsData]);
 
   return (
     <PrdContext.Provider

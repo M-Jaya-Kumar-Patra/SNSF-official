@@ -7,6 +7,7 @@ import Skeleton from "@mui/material/Skeleton";
 import { useRouter } from "next/navigation";
 import { fetchDataFromApi } from "@/utils/api";
 import { useAuth } from "@/app/context/AuthContext";
+import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
@@ -69,14 +70,14 @@ const HotDeal = () => {
                     style={{ aspectRatio: "16 / 10" }}
                   >
                     <Image
-                      src={
-                        prd?.product?.images?.[0] ||
-                        "/placeholder.jpg"
-                      }
+                      src={getCloudinaryImageUrl(
+                        prd?.product?.images?.[0] || "/placeholder.jpg",
+                        { width: 420, height: 263 }
+                      )}
                       alt={prd?.product?.name}
                       fill
+                      sizes="260px"
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
-                      unoptimized
                     />
                   </div>
                 </div>

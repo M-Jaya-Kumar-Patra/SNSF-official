@@ -9,6 +9,7 @@ import { useScreen } from "@/app/context/ScreenWidthContext";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchDropdownPortal from "./SearchDropdownPortal";
 import { searchWithTracking } from "@/utils/searchWithTracking";
+import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
 
 
@@ -189,8 +190,6 @@ useEffect(() => {
   };
 
   // 🔹 Optimize Cloudinary images
-  const getOptimizedCloudinaryUrl = (url) =>
-    url?.includes("res.cloudinary.com") ? url.replace("/upload/", "/upload/w_800,h_800,c_fit,f_auto,q_90/") : url;
 
 
   
@@ -297,6 +296,7 @@ isSm?"hidden" : isMd? "w-[200px] ": isLg? "w-[110px]" : isXl1440? "w-[110px]":is
  ref={inputRef}
  
   type="text"
+  aria-label="Search products"
   placeholder={
     pathName === "/" ? isScrolled ? 
     
@@ -324,6 +324,8 @@ isSm?"hidden" : isMd? "w-[200px] ": isLg? "w-[110px]" : isXl1440? "w-[110px]":is
 
 {deskSearch && (
   <button
+    type="button"
+    aria-label="Close search"
     onClick={(e) => {
       e.stopPropagation();   // 🔥 VERY IMPORTANT
       setDeskSearch(false);
@@ -368,7 +370,10 @@ isSm?"hidden" : isMd? "w-[200px] ": isLg? "w-[110px]" : isXl1440? "w-[110px]":is
           >
             {item.images && (
               <Image
-                src={getOptimizedCloudinaryUrl(item.images[0] || item.images) || "/images/placeholder.jpg"}
+                src={getCloudinaryImageUrl(item.images[0] || item.images || "/images/placeholder.jpg", {
+                  width: 80,
+                  height: 80,
+                })}
                 alt={item.name}
                 width={40}
                 height={40}

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useCallback, useContext, useState, useEffect } from "react";
 import { fetchDataFromApi } from "@/utils/api";
 import { useAlert } from "./AlertContext";
 import { useAuth } from "./AuthContext";
@@ -19,7 +19,7 @@ const NoticeProviders = ({ children }) => {
     }
   }, [isLogin]);
 
-  const getNotifications = async () => {
+  const getNotifications = useCallback(async () => {
     try {
       const res = await fetchDataFromApi(`/api/notice/get`);
       if (!res.error) {
@@ -31,7 +31,7 @@ const NoticeProviders = ({ children }) => {
       console.log("Error fetching notifications");
       console.error(error);
     }
-  };
+  }, []);
 
   const markAllUnreadAsRead = async () => {
     try {
