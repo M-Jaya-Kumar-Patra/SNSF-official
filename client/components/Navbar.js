@@ -174,12 +174,12 @@ const Navbar = () => {
 
           <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-3">
             <div
-              className={`hidden justify-end overflow-visible transition-[width] duration-300 md:flex ${
+              className={`hidden min-w-[44px] justify-end overflow-visible transition-[width] duration-300 md:flex ${
                 deskSearch
-                  ? "md:w-[260px] lg:w-[300px] xl:w-[320px] 2xl:w-[360px]"
+                  ? "md:w-[300px] lg:w-[320px] xl:w-[340px] 2xl:w-[360px]"
                   : showBottomCategories
-                  ? "md:w-[300px] lg:w-[360px] xl:w-[460px] 2xl:w-[540px]"
-                  : "md:w-[48px] lg:w-[48px] xl:w-[48px] 2xl:w-[48px]"
+                  ? "md:w-[300px] lg:w-[360px] xl:w-[460px] 2xl:w-[520px]"
+                  : "w-11"
               }`}
             >
               <Search navScrolled={isScrolled} />

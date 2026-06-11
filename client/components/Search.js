@@ -43,36 +43,10 @@ const Search = ({ onClose, navScrolled = null }) => {
   const isTopExpanded = pathName === "/" && !effectiveScrolled;
   const isSearchExpanded = deskSearch || isTopExpanded;
 
-  const largeExpandedWidth = is2Xl
-    ? "w-[520px]"
-    : isXl1440
-    ? "w-[440px]"
-    : isXl
-    ? "w-[380px]"
-    : isLg
-    ? "w-[320px]"
-    : isMd
-    ? "w-[280px]"
-    : "w-full";
-
-  const mediumExpandedWidth = is2Xl
-    ? "w-[360px]"
-    : isXl1440
-    ? "w-[340px]"
-    : isXl
-    ? "w-[320px]"
-    : isLg
-    ? "w-[300px]"
-    : isMd
-    ? "w-[260px]"
-    : "w-full";
-
-  const expandedWidth = effectiveScrolled
-    ? mediumExpandedWidth
-    : largeExpandedWidth;
-
-  const collapsedWidth =
-    isMd || isLg || isXl || isXl1440 || is2Xl ? "w-[42px]" : "hidden";
+  const topExpandedWidth = "w-full max-w-[520px]";
+  const activeExpandedWidth = "w-full max-w-[360px]";
+  const expandedWidth = isTopExpanded && !deskSearch ? topExpandedWidth : activeExpandedWidth;
+  const collapsedWidth = "w-11";
 
   const currentWidth = isSearchExpanded ? expandedWidth : collapsedWidth;
 
@@ -81,7 +55,7 @@ const Search = ({ onClose, navScrolled = null }) => {
 
     const rect = inputWrapperRef.current.getBoundingClientRect();
     const desiredWidth = Math.min(
-      Math.max(rect.width, 380),
+      Math.max(rect.width, isMd ? 320 : 380),
       window.innerWidth - 24,
     );
     const left = Math.min(
@@ -245,18 +219,18 @@ const Search = ({ onClose, navScrolled = null }) => {
   return (
     <div
       ref={containerRef}
-      className="relative z-[1200] flex w-full cursor-text items-center justify-end overflow-visible"
+      className="relative z-[1200] flex w-full min-w-[44px] cursor-text items-center justify-end overflow-visible"
       onClick={() => {
         if (!deskSearch) setDeskSearch(true);
         inputRef.current?.focus();
       }}
     >
       <div
-        className={`relative ml-auto transition-[width] duration-300 ease-out ${currentWidth}`}
+        className={`relative ml-auto transition-[width,max-width] duration-300 ease-out ${currentWidth}`}
       >
         <div
           ref={inputWrapperRef}
-          className={`group flex min-h-11 w-full items-center gap-2 rounded-full border bg-white px-3 shadow-sm transition duration-200 ${
+          className={`group flex h-11 w-full items-center gap-2 overflow-hidden rounded-full border bg-white px-3 shadow-sm transition duration-200 ${
             isSearchExpanded
               ? "border-slate-200 shadow-[0_10px_28px_rgba(15,23,42,0.16)] focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-white/60"
               : "border-white/20 hover:border-white/40 hover:bg-slate-50"
@@ -275,9 +249,7 @@ const Search = ({ onClose, navScrolled = null }) => {
             type="text"
             aria-label="Search products"
             placeholder={
-              isSearchExpanded
-                ? "Search products, sofas, beds..."
-                : ""
+              isSearchExpanded ? "Search products, sofas, beds..." : ""
             }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
