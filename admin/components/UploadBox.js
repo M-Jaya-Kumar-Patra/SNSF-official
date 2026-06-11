@@ -11,29 +11,22 @@ const UploadBox = (props) => {
     const alert = useAlert();
     
     
-    let selectedImages = [];
-    
-    const formData = new FormData();
-    
     const  onChangeFile = async (e, apiEndPoint) =>{
         try {
             setPreviews([]);
             const files = e.target.files;
-            console.log(files,"files")
-
-            console.log(files)
+            const formData = new FormData();
             setUploading(true);
 
             for(var i = 0; i<files.length; i++){    
                 if(files[i] && ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(files[i].type)){
                     const file = files[i];
                     
-                    selectedImages.push(file);
                     formData.append(props?.name, file)
                     
                     
                 }else{
-                    alert.alertBox("error", "Please select a valid JPG, PNG or webp image file.")
+                    alert.alertBox({ type: "error", msg: "Please select a valid JPG, PNG or webp image file." })
                     setUploading(false);
                     return false
                 }
@@ -41,14 +34,17 @@ const UploadBox = (props) => {
 
             
             uploadImages(apiEndPoint, formData).then((res) => {
-                console.log("res?.images",res)
                 setUploading(false);
-                props.setPreviewsFun( res?.images )
-                console.log("hii loop") 
+                if (res?.error) {
+                    alert.alertBox({ type: "error", msg: res.message || "Upload failed" });
+                    return;
+                }
+                props.setPreviewsFun(res?.images || [])
             }
             )
         } catch (error) {
-            console.log(error)
+            setUploading(false);
+            alert.alertBox({ type: "error", msg: error.message || "Upload failed" });
             
         }
     }

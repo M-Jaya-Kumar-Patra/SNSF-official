@@ -2,52 +2,45 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  CartesianGrid,
-  ResponsiveContainer,
 } from "recharts";
 import { fetchDataFromApi } from "@/utils/api";
+import { formatChartTime, formatTooltipTime, toApiDateTime } from "@/utils/chartTime";
+
+const ranges = {
+  "1hour": "1 Hour",
+  "12hour": "12 Hours",
+  "1day": "1 Day",
+  "7day": "7 Days",
+  "6month": "6 Months",
+  "1year": "1 Year",
+};
 
 export default function LoginActivityChart() {
   const [range, setRange] = useState("1day");
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
-
   const [customStart, setCustomStart] = useState("");
   const [customEnd, setCustomEnd] = useState("");
 
-  const ranges = {
-    "1hour": "1 Hour",
-    "12hour": "12 Hours",
-    "1day": "1 Day",
-    "7day": "7 Days",
-    "6month": "6 Months",
-    "1year": "1 Year",
-  };
-
-  const formatData = (list) =>
-    list.map((r) => ({
-      time: new Date(r.time).toLocaleString("en-IN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        day: "2-digit",
-        month: "short",
-      }),
-      logins: r.logins,
+  const formatData = (list, selectedRange = range) =>
+    list.map((row) => ({
+      timeRaw: row.time,
+      timeLabel: formatChartTime(row.time, selectedRange),
+      logins: row.logins,
     }));
 
   const loadPresetRange = async () => {
-    const res = await fetchDataFromApi(
-      `/api/analytics/logins/activity?type=${range}`,
-      false
-    );
+    const res = await fetchDataFromApi(`/api/analytics/logins/activity?type=${range}`);
     if (res?.success) {
       setTotal(res.total);
-      setData(formatData(res.data));
+      setData(formatData(res.data || [], range));
     }
   };
 
@@ -59,14 +52,13 @@ export default function LoginActivityChart() {
 
     const res = await fetchDataFromApi(
       `/api/analytics/logins/activity?start=${encodeURIComponent(
-        customStart
-      )}&end=${encodeURIComponent(customEnd)}`,
-      false
+        toApiDateTime(customStart)
+      )}&end=${encodeURIComponent(toApiDateTime(customEnd))}`
     );
 
     if (res?.success) {
       setTotal(res.total);
-      setData(formatData(res.data));
+      setData(formatData(res.data || [], "custom"));
     }
   };
 
@@ -75,84 +67,79 @@ export default function LoginActivityChart() {
   }, [range]);
 
   return (
-    <div className="w-full p-5 bg-white rounded-2xl border border-slate-200 shadow-md">
-      {/* Header */}
-      <div className="flex justify-between items-start mb-4">
+    <div className="w-full rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-sm">
+      <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-800">
+          <h2 className="text-lg font-semibold text-[var(--admin-text)]">
             Login Activity
           </h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-[var(--admin-muted)]">
             User login frequency across selected time range
           </p>
         </div>
-
-        <p className="text-lg text-slate-600">
-          Total Logins: <span className="font-bold">{total}</span>
+        <p className="text-sm font-semibold text-[var(--admin-muted)]">
+          Total Logins: <span className="text-[var(--admin-text)]">{total}</span>
         </p>
       </div>
 
-      {/* Preset Ranges */}
       <div className="mb-4 flex flex-wrap gap-2">
-        {Object.keys(ranges).map((r) => (
+        {Object.entries(ranges).map(([key, label]) => (
           <button
-            key={r}
-            onClick={() => setRange(r)}
-             className={`px-3 py-1 rounded ${
-              range === r
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+            key={key}
+            onClick={() => setRange(key)}
+            className={`rounded-xl px-3 py-1.5 text-sm font-semibold transition ${
+              range === key
+                ? "bg-[var(--admin-accent)] text-white"
+                : "bg-[var(--admin-surface-soft)] text-[var(--admin-muted)] hover:text-[var(--admin-text)]"
             }`}
           >
-            {ranges[r]}
+            {label}
           </button>
         ))}
       </div>
 
-      {/* Custom Range */}
-      <div className="flex flex-wrap items-end gap-3 mb-4">
-        <div>
-          <label className="block text-xs text-slate-500 mb-1">Start</label>
+      <div className="mb-4 flex flex-wrap items-end gap-3">
+        <label className="text-xs font-semibold text-[var(--admin-muted)]">
+          Start
           <input
             type="datetime-local"
             value={customStart}
             onChange={(e) => setCustomStart(e.target.value)}
-            className="border rounded-md p-1.5 text-sm text-black"
+            className="mt-1 block rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] px-3 py-2 text-sm text-[var(--admin-text)] outline-none"
           />
-        </div>
+        </label>
 
-        <div>
-          <label className="block text-xs text-slate-500 mb-1">End</label>
+        <label className="text-xs font-semibold text-[var(--admin-muted)]">
+          End
           <input
             type="datetime-local"
             value={customEnd}
             onChange={(e) => setCustomEnd(e.target.value)}
-            className="border rounded-md p-1.5 text-sm text-black"
+            className="mt-1 block rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] px-3 py-2 text-sm text-[var(--admin-text)] outline-none"
           />
-        </div>
+        </label>
 
         <button
           onClick={loadCustomRange}
-           className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+          className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
         >
           Show Range
         </button>
       </div>
 
-      {/* Chart */}
       <ResponsiveContainer width="100%" height={320}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="time" />
+          <XAxis dataKey="timeLabel" />
           <YAxis allowDecimals={false} />
           <Tooltip
             content={({ active, payload, label }) =>
               active && payload?.length ? (
-                <div className="bg-white border border-gray-300 shadow-md rounded-lg p-2 text-sm">
-                  <p className="font-semibold text-gray-800">🕒 {label}</p>
-                  <p className="text-blue-600">
-                    🔐 Logins: {payload[0].value}
+                <div className="rounded-lg border border-gray-300 bg-white p-2 text-sm shadow-md">
+                  <p className="font-semibold text-gray-800">
+                    Time: {formatTooltipTime(payload[0].payload?.timeRaw || label)}
                   </p>
+                  <p className="text-blue-600">Logins: {payload[0].value}</p>
                 </div>
               ) : null
             }

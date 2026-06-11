@@ -54,7 +54,6 @@ const sendPromotionalMail = async () => {
 
   useEffect(() => {
     fetchDataFromApi(`/api/user/getAllUsers`).then((res) => {
-      console.log(res)
       if (!res?.error) {
         setUsers(res?.users);
       } else {
@@ -114,7 +113,7 @@ const Field = ({ label, children }) => (
 
 
   return (
-    <div className="p-6 max-w-screen overflow-x-auto bg-gradient-to-tr from-white via-blue-50 to-cyan-50 min-h-screen font-sans">
+    <div className="admin-page p-6 max-w-screen overflow-x-auto font-sans">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-slate-900 tracking-wide">Manage Users</h1>

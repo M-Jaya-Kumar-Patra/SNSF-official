@@ -9,11 +9,8 @@ export const connectDB = async () => {
             dbname:'SNSF'
 
         })
-        console.log('MongoDB Connected')
-
-
-    } catch (error) {
-        console.log(error)
+    } catch {
+        throw new Error("MongoDB connection failed")
     }
 
 }

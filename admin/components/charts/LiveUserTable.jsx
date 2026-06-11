@@ -11,10 +11,8 @@ export default function LiveUserTable() {
 
   const loadUsers = async () => {
     setLoading(true);
-    const res = await fetchDataFromApi("/api/analytics/live/users", false);
+    const res = await fetchDataFromApi("/api/analytics/live/users");
 
-
-    console.log("Ressssssssssssssssssss", res)
     if (res?.success) {
       setUsers(res.users);
     }
@@ -32,13 +30,13 @@ export default function LiveUserTable() {
 
   return (
     <>
-      <div className="p-4 bg-white rounded-2xl shadow w-full">
+      <div className="w-full rounded-2xl bg-[var(--admin-surface)] p-4 shadow">
         <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold text-black mb-3">
+            <h3 className="mb-3 text-lg font-semibold text-[var(--admin-text)]">
           Live Users (Realtime)
         </h3>
             
-        <p className="text-black flex gap-1 text-[20px]"><p className="font-semibold">{users.length} </p>active users</p>
+        <p className="flex gap-1 text-[20px] text-[var(--admin-text)]"><span className="font-semibold">{users.length} </span>active users</p>
 
         </div>
         <div className="overflow-x-auto rounded-lg border">
@@ -78,12 +76,12 @@ export default function LiveUserTable() {
                         className="w-8 h-8 rounded-full border"
                         alt="avatar"
                       />
-                      <span className="font-medium text-black">
+                      <span className="font-medium text-[var(--admin-text)]">
                         {u.name || "Guest"}
                       </span>
                     </td>
 
-                    <td className="p-2 capitalize text-gray-700">
+                    <td className="p-2 capitalize text-[var(--admin-muted)]">
                       {u.device || "Unknown"}
                     </td>
 
@@ -91,7 +89,7 @@ export default function LiveUserTable() {
                       {u.currentPage}
                     </td>
 
-                    <td className="p-2 text-gray-700">
+                    <td className="p-2 text-[var(--admin-muted)]">
   {formatDurationUptoHour(u.timeActive)}
 </td>
                   </tr>

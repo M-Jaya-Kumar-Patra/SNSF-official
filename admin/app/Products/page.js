@@ -294,33 +294,26 @@ const Products = () => {
                     alert.alertBox({ type: "error", msg: response.message || "Failed to create product" });
                 }
             })
-            .catch((error) => {
+            .catch(() => {
                 setIsLoading(false);
-                console.error("Post error:", error);
                 alert.alertBox({ type: "error", msg: "Something went wrong. Please try again." });
             });
     }
 
     const removeImage = async (image, index) => {
         const publicId = image.split("/").pop().split(".")[0]; // Extract public_id from URL
-        console.log(previews, "previews")
-        var imageArr = []
-        imageArr = previews;
-        console.log(image, "image")
-        await deleteImages(`/api/product/deleteImg?img=${publicId}`).then((response) => {
-            console.log(response)
-            imageArr.splice(index, 1);
+        await deleteImages(`/api/product/deleteImg`, publicId).then((response) => {
+            if (response?.error) {
+                alert.alertBox({ type: "error", msg: response.message || "Failed to remove image" });
+                return;
+            }
 
-
-            setTimeout(() => {
-                setPreviews(imageArr);
-                setFormFields(previews => ({
-                    ...previews,
-                    images: imageArr
-                })
-                )
-            }, 100)
-            setPreviews([])
+            const imageArr = previews.filter((_, imageIndex) => imageIndex !== index);
+            setPreviews(imageArr);
+            setFormFields((prev) => ({
+                ...prev,
+                images: imageArr
+            }));
         })
     }
 
@@ -404,9 +397,8 @@ const Products = () => {
                     alert.alertBox({ type: "error", msg: response.message || "Failed to update product" });
                 }
             })
-            .catch((error) => {
+            .catch(() => {
                 setIsLoading(false);
-                console.error("Post error:", error);
                 alert.alertBox({ type: "error", msg: "Something went wrong. Please try again." });
             });
 
@@ -443,12 +435,13 @@ const Products = () => {
             return;
         }
 
-        console.log(sortedIds)
-
         try {
             await deleteMultipleData(`/api/product/deleteMultiple`, { ids: sortedIds },
             ).then((response) => {
-                console.log(response)
+                if (response?.error) {
+                    alert.alertBox({ type: "error", msg: response.message || "Failed to delete products" });
+                    return;
+                }
                 getProductsData();
                 alert.alertBox({ type: "success", msg: "Products deleted successfully" })
             })
@@ -489,8 +482,6 @@ const Products = () => {
             .sort((a, b) => a - b);
 
         setSortedIds(selectedIds);
-
-        console.log(selectedIds);
     };
     const [searchQuery, setSearchQuery] = useState('');
 

@@ -2,36 +2,35 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  AreaChart,
   Area,
-  XAxis,
-  YAxis,
-  Tooltip,
+  AreaChart,
   CartesianGrid,
   ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 import { fetchDataFromApi } from "@/utils/api";
+import { formatChartTime, formatTooltipTime, toApiDateTime } from "@/utils/chartTime";
+
+const ranges = {
+  "1hour": "1 Hour",
+  "12hour": "12 Hours",
+  "1day": "1 Day",
+  "7day": "7 Days",
+  "1month": "1 Month",
+  "6month": "6 Months",
+  "1year": "1 Year",
+};
 
 const UniqueVisitorsChart = () => {
   const [data, setData] = useState([]);
   const [range, setRange] = useState("1day");
   const [loading, setLoading] = useState(false);
   const [totalVisitors, setTotalVisitors] = useState(0);
-
   const [customStart, setCustomStart] = useState("");
   const [customEnd, setCustomEnd] = useState("");
 
-  const ranges = {
-    "1hour": "1 Hour",
-    "12hour": "12 Hours",
-    "1day": "1 Day",
-    "7day": "7 Days",
-    "1month": "1 Month",
-    "6month": "6 Months",
-    "1year": "1 Year",
-  };
-
-  /* ---------------- Range helpers ---------------- */
   const getPresetRange = () => {
     const now = new Date();
     const start = new Date(now);
@@ -68,135 +67,132 @@ const UniqueVisitorsChart = () => {
     };
   };
 
-  /* ---------------- Fetch ---------------- */
-  const fetchVisitors = async (url) => {
+  const fetchVisitors = async (url, selectedRange = range) => {
     setLoading(true);
     try {
-      const res = await fetchDataFromApi(url, false);
+      const res = await fetchDataFromApi(url);
 
       if (res?.success) {
-        const formatted = res.data.map((r) => ({
-          time: new Date(r.time).toLocaleTimeString("en-IN", {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          visitors: r.count,
+        const formatted = (res.data || []).map((row) => ({
+          timeRaw: row.time,
+          timeLabel: formatChartTime(row.time, selectedRange),
+          visitors: row.count,
         }));
 
         setData(formatted);
-        setTotalVisitors(
-          formatted.reduce((sum, x) => sum + x.visitors, 0)
-        );
+        setTotalVisitors(formatted.reduce((sum, item) => sum + item.visitors, 0));
       } else {
         setData([]);
         setTotalVisitors(0);
       }
-    } catch (err) {
-      console.error("Unique visitors error:", err);
+    } catch {
       setData([]);
       setTotalVisitors(0);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  };
-
-  const fetchPresetRange = () => {
-    const { startISO, endISO } = getPresetRange();
-    fetchVisitors(
-      `/api/analytics/visitors/bucketed?start=${startISO}&end=${endISO}`
-    );
   };
 
   const fetchCustomRange = () => {
-    if (!customStart || !customEnd)
-      return alert("Select both start and end!");
+    if (!customStart || !customEnd) {
+      alert("Select both start and end!");
+      return;
+    }
 
     fetchVisitors(
       `/api/analytics/visitors/bucketed?start=${encodeURIComponent(
-        customStart
-      )}&end=${encodeURIComponent(customEnd)}`
+        toApiDateTime(customStart)
+      )}&end=${encodeURIComponent(toApiDateTime(customEnd))}`,
+      "custom"
     );
   };
 
   useEffect(() => {
-    fetchPresetRange();
+    const { startISO, endISO } = getPresetRange();
+    fetchVisitors(`/api/analytics/visitors/bucketed?start=${startISO}&end=${endISO}`, range);
   }, [range]);
 
   return (
-    <div className="w-full p-5 bg-white rounded-2xl border border-slate-200 shadow-sm">
-
-      {/* Header */}
-      <div className="flex justify-between items-start mb-4">
+    <div className="w-full rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-sm">
+      <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-800">
+          <h2 className="text-lg font-semibold text-[var(--admin-text)]">
             Unique Visitors
           </h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-[var(--admin-muted)]">
             Distinct users over selected time period
           </p>
         </div>
-
-        <div className="text-lg font-semibold text-slate-900">
+        <div className="text-lg font-semibold text-[var(--admin-text)]">
           {totalVisitors}
         </div>
       </div>
 
-      {/* Preset Ranges */}
       <div className="mb-4 flex flex-wrap gap-2">
-        {Object.keys(ranges).map((r) => (
+        {Object.entries(ranges).map(([key, label]) => (
           <button
-            key={r}
-            onClick={() => setRange(r)}
-            className={`px-3 py-1 rounded text-sm ${
-              range === r
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+            key={key}
+            onClick={() => setRange(key)}
+            className={`rounded-xl px-3 py-1.5 text-sm font-semibold transition ${
+              range === key
+                ? "bg-[var(--admin-accent)] text-white"
+                : "bg-[var(--admin-surface-soft)] text-[var(--admin-muted)] hover:text-[var(--admin-text)]"
             }`}
           >
-            {ranges[r]}
+            {label}
           </button>
         ))}
       </div>
 
-      {/* Custom Range */}
-      <div className="flex flex-wrap items-end gap-3 mb-4">
-        <div>
-          <label className="block text-xs text-slate-600 mb-1">Start</label>
+      <div className="mb-4 flex flex-wrap items-end gap-3">
+        <label className="text-xs font-semibold text-[var(--admin-muted)]">
+          Start
           <input
             type="datetime-local"
             value={customStart}
             onChange={(e) => setCustomStart(e.target.value)}
-            className="border rounded px-2 py-1 text-sm text-black"
+            className="mt-1 block rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] px-3 py-2 text-sm text-[var(--admin-text)] outline-none"
           />
-        </div>
+        </label>
 
-        <div>
-          <label className="block text-xs text-slate-600 mb-1">End</label>
+        <label className="text-xs font-semibold text-[var(--admin-muted)]">
+          End
           <input
             type="datetime-local"
             value={customEnd}
             onChange={(e) => setCustomEnd(e.target.value)}
-            className="border rounded px-2 py-1 text-sm text-black"
+            className="mt-1 block rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] px-3 py-2 text-sm text-[var(--admin-text)] outline-none"
           />
-        </div>
+        </label>
 
         <button
           onClick={fetchCustomRange}
-          className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+          className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
         >
           Show Range
         </button>
       </div>
 
-      {/* Chart */}
       {loading ? (
-        <div className="text-sm text-slate-500">Loading…</div>
+        <div className="py-12 text-sm text-[var(--admin-muted)]">Loading...</div>
       ) : (
         <ResponsiveContainer width="100%" height={320}>
           <AreaChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="time" />
+            <XAxis dataKey="timeLabel" />
             <YAxis allowDecimals={false} />
-            <Tooltip />
+            <Tooltip
+              content={({ active, payload, label }) =>
+                active && payload?.length ? (
+                  <div className="rounded-lg border border-gray-300 bg-white p-2 text-sm shadow-md">
+                    <p className="font-semibold text-gray-800">
+                      Time: {formatTooltipTime(payload[0].payload?.timeRaw || label)}
+                    </p>
+                    <p className="text-blue-600">Visitors: {payload[0].value}</p>
+                  </div>
+                ) : null
+              }
+            />
             <Area
               type="monotone"
               dataKey="visitors"

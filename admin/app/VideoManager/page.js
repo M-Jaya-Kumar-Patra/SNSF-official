@@ -140,7 +140,6 @@ const VideoManager = () => {
       }
 
     } catch (error) {
-      console.error(error);
       alert.alertBox({ type: "error", msg: error.message || "Something went wrong" });
     } finally {
       setUploading(false);
@@ -155,9 +154,9 @@ const VideoManager = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 px-6 py-4">
+    <div className="admin-page px-6 py-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold text-black" >Video Manager</h1>
+        <h1 className="text-2xl font-semibold text-[var(--admin-text)]" >Video Manager</h1>
         <button onClick={() => setShowModal(true)} className="bg-slate-900 text-white px-4 py-2 rounded-lg flex items-center gap-2">
           <AddIcon /> Add Video
         </button>

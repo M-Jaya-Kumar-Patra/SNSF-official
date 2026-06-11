@@ -27,8 +27,8 @@ const Enquiries = () => {
     try {
       const res = await fetchDataFromApi("/api/enquiries/admin");
       if (res?.success) setEnquiries(res.data);
-    } catch (err) {
-      console.error("Failed to fetch enquiries", err);
+    } catch {
+      setEnquiries([]);
     } finally {
       setLoading(false);
     }
@@ -41,8 +41,8 @@ const Enquiries = () => {
       if (res?.success) {
         setEnquiries((prev) => prev.filter((e) => e._id !== id));
       }
-    } catch (err) {
-      console.error("Failed to delete enquiry", err);
+    } catch {
+      return;
     }
   };
 
@@ -140,7 +140,14 @@ const Enquiries = () => {
                   </TableCell>
 
                   <TableCell className="text-sm text-slate-500">
-                    {new Date(enq.createdAt).toLocaleString()}
+                    {new Intl.DateTimeFormat("en-IN", {
+                      timeZone: "Asia/Kolkata",
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }).format(new Date(enq.createdAt))}
                   </TableCell>
 
                   <TableCell align="center">

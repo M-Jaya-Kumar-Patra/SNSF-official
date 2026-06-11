@@ -1,10 +1,5 @@
-"use client"
+"use client";
 
+const SessionWrapper = ({ children }) => children;
 
-const SessionWrapper =  ({children}) => {
-  return (
-    <SessionProvider>{children}</SessionProvider>
-  )
-}
-
-export default SessionWrapper
+export default SessionWrapper;

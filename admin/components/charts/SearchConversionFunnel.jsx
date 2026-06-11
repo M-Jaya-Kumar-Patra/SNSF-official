@@ -14,7 +14,7 @@ export default function SearchConversionFunnel({ start, end }) {
       const q = `/api/analytics/search/funnel?start=${encodeURIComponent(
         start
       )}&end=${encodeURIComponent(end)}`;
-      const res = await fetchDataFromApi(q, false);
+      const res = await fetchDataFromApi(q);
       if (res?.success) setFunnel(res.funnel || []);
     })();
   }, [start, end]);
@@ -22,12 +22,12 @@ export default function SearchConversionFunnel({ start, end }) {
   const total = funnel.reduce((s, f) => s + f.value, 0) || 1;
 
   return (
-    <div className="w-full p-5 bg-white rounded-2xl border border-slate-200 shadow-sm">
+    <div className="w-full rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-sm">
       <div className="mb-4">
-        <h2 className="text-lg font-semibold text-slate-800">
+        <h2 className="text-lg font-semibold text-[var(--admin-text)]">
           Search Conversion Funnel
         </h2>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-[var(--admin-muted)]">
           How searches convert into actions
         </p>
       </div>
@@ -59,9 +59,9 @@ export default function SearchConversionFunnel({ start, end }) {
                   className="w-3 h-3 rounded "
                   style={{ background: COLORS[i % COLORS.length] }}
                 />
-                <span className="text-black">{f.stage}</span>
+                <span className="text-[var(--admin-text)]">{f.stage}</span>
               </div>
-              <span className="font-semibold text-black">
+              <span className="font-semibold text-[var(--admin-text)]">
                 {f.value} ({Math.round((f.value / total) * 100)}%)
               </span>
             </div>

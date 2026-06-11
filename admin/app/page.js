@@ -6,7 +6,6 @@ import { fetchDataFromApi } from "@/utils/api";
 
 import KpiCards from "@/components/charts/KpiCards";
 import VisitsOverTime from "@/components/charts/VisitChart";
-import LoginActivityChart from "@/components/charts/LoginActivityChart";
 import MostActiveUsers from "@/components/charts/MostActiveUsers";
 import AnalyticsDashboard from "@/components/charts/AnalyticsDashboard";
 import Enquiries from "@/components/Enquiries";
@@ -15,7 +14,7 @@ import Enquiries from "@/components/Enquiries";
 
 const Card = ({ children, className = "" }) => (
   <div
-    className={`bg-white rounded-2xl border border-slate-200 shadow-sm ${className}`}
+    className={`admin-card ${className}`}
   >
     {children}
   </div>
@@ -33,24 +32,37 @@ export default function Home() {
   });
 
   useEffect(() => {
-    fetchDataFromApi("/api/admin/admin/stats", false).then((res) => {
+    if (!isLogin) return;
+
+    fetchDataFromApi("/api/admin/admin/stats").then((res) => {
       if (res?.success) setStats(res.stats);
     });
-  }, []);
+  }, [isLogin]);
 
   if (!isLogin) return null;
 
   return (
-    <div className="bg-slate-50 min-h-screen p-6 space-y-8">
+    <div className="admin-page p-6 space-y-8">
 
       {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-semibold text-slate-900">
-          Admin Dashboard
-        </h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Overview of platform activity & performance
-        </p>
+      <div className="admin-card overflow-hidden p-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.22em] text-[var(--admin-accent)]">
+              Control center
+            </p>
+            <h1 className="text-3xl font-bold text-[var(--admin-text)]">
+              Admin Dashboard
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm text-[var(--admin-muted)]">
+              Track sales activity, product health, visitors, enquiries, and user behaviour from one clean workspace.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] px-4 py-3 text-sm text-[var(--admin-muted)]">
+            Live analytics are shown in Indian time
+          </div>
+        </div>
       </div>
 
       {/* KPI Cards */}

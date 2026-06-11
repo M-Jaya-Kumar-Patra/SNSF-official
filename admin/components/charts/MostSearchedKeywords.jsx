@@ -17,7 +17,7 @@ export default function MostSearchedKeywords() {
   const [top10, setTop10] = useState([]);
 
   const loadKeywords = async () => {
-    const res = await fetchDataFromApi("/api/analytics/search/most", false);
+    const res = await fetchDataFromApi("/api/analytics/search/most");
     if (res?.success) {
       setKeywords(res.data);
       setTop10(res.data.slice(0, 10));
@@ -29,13 +29,13 @@ export default function MostSearchedKeywords() {
   }, []);
 
   return (
-    <div className="w-full p-5 bg-white rounded-2xl border border-slate-200 shadow-sm">
+    <div className="w-full rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-sm">
       {/* Header */}
       <div className="mb-4">
-        <h2 className="text-lg font-semibold text-slate-800">
+        <h2 className="text-lg font-semibold text-[var(--admin-text)]">
           Most Searched Keywords
         </h2>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-[var(--admin-muted)]">
           What users are actively searching for
         </p>
       </div>

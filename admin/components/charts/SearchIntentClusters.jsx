@@ -12,18 +12,18 @@ export default function SearchIntentClusters({ start, end }) {
       const q = `/api/analytics/search/intents?start=${encodeURIComponent(
         start
       )}&end=${encodeURIComponent(end)}&limitClusters=50&minSize=2`;
-      const res = await fetchDataFromApi(q, false);
+      const res = await fetchDataFromApi(q);
       if (res?.success) setClusters(res.data || []);
     })();
   }, [start, end]);
 
   return (
-    <div className="w-full p-5 bg-white rounded-2xl border border-slate-200 shadow-sm">
+    <div className="w-full rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-sm">
       <div className="mb-4">
-        <h2 className="text-lg font-semibold text-slate-800">
+        <h2 className="text-lg font-semibold text-[var(--admin-text)]">
           Search Intent Clusters
         </h2>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-[var(--admin-muted)]">
           Grouped search intent patterns
         </p>
       </div>

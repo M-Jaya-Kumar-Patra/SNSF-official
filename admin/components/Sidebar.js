@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -7,7 +8,6 @@ import Inventory2Icon from "@mui/icons-material/Inventory2";
 import CategoryIcon from "@mui/icons-material/Category";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import SlideshowIcon from "@mui/icons-material/Slideshow";
 import ViewQuiltIcon from "@mui/icons-material/ViewQuilt";
 import ChairIcon from "@mui/icons-material/Chair";
@@ -23,7 +23,6 @@ const navItems = [
   { label: "Categories", path: "/Categories", icon: CategoryIcon },
   { label: "Subcategories", path: "/Subcategories", icon: AccountTreeIcon },
   { label: "Users", path: "/Users", icon: PeopleAltIcon },
-  { label: "Customers", path: "/Customers", icon: PersonOutlineIcon },
   { label: "Home Slider", path: "/HomeSlider", icon: SlideshowIcon },
   { label: "Homepage Manager", path: "/HomepageManager", icon: ViewQuiltIcon },
   { label: "Style Your Space", path: "/StyleYourSpace", icon: ChairIcon },
@@ -33,6 +32,7 @@ const navItems = [
 
 export default function Sidebar({ onNavigate }) {
   const router = useRouter();
+  const pathname = usePathname();
 
   const getOptimizedCloudinaryUrl = (url) => {
     if (!url?.includes("res.cloudinary.com")) return url;
@@ -43,10 +43,10 @@ export default function Sidebar({ onNavigate }) {
   };
 
   return (
-    <aside className="h-full bg-slate-900 text-slate-200 w-72 flex flex-col">
+    <aside className="flex h-full w-72 flex-col border-r border-white/10 bg-[var(--admin-sidebar)] text-slate-200">
 
       {/* LOGO */}
-      <div className="px-6 py-5 border-b border-slate-800">
+      <div className="border-b border-white/10 px-6 py-5">
         <div className="flex items-center gap-2">
           <Image
             src={getOptimizedCloudinaryUrl("/images/logo.png")}
@@ -68,40 +68,46 @@ export default function Sidebar({ onNavigate }) {
       </div>
 
       {/* MAIN NAV */}
-      <nav className="flex-1 py-4 space-y-1 overflow-y-auto scrollbar-hide">
-        {navItems.map(({ label, path, icon: Icon }) => (
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4 scrollbar-hide">
+        {navItems.map(({ label, path, icon: Icon }) => {
+          const active = pathname === path;
+          return (
           <button
             key={label}
             onClick={() => {
               router.push(path);
               onNavigate?.();
             }}
-            className="w-full flex items-center gap-3 px-6 py-2 text-sm hover:bg-slate-800 transition"
+            className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition ${
+              active
+                ? "bg-white text-slate-950 shadow-lg shadow-black/20"
+                : "text-slate-300 hover:bg-[var(--admin-sidebar-soft)] hover:text-white"
+            }`}
           >
-            <Icon className="w-5 h-5 text-slate-400" />
+            <Icon className={`h-5 w-5 ${active ? "text-slate-950" : "text-slate-400"}`} />
             <span>{label}</span>
           </button>
-        ))}
+        )})}
       </nav>
 
       {/* DIVIDER */}
-      <div className="border-t border-slate-800" />
+      <div className="border-t border-white/10" />
 
       {/* PROFILE & LOGOUT */}
-      <div className="py-3">
+      <div className="px-3 py-3">
         <button
           onClick={() => {
             router.push("/profile");
             onNavigate?.();
           }}
-          className="w-full flex items-center gap-3 px-6 py-2 text-sm hover:bg-slate-800 transition"
+          className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-slate-300 transition hover:bg-[var(--admin-sidebar-soft)] hover:text-white"
         >
           <AccountCircleIcon className="w-5 h-5 text-slate-400" />
           <span>Profile</span>
         </button>
 
         <button
-          className="w-full flex items-center gap-3 px-6 py-2 text-sm text-red-400 hover:bg-red-500/10 transition"
+          className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-red-300 transition hover:bg-red-500/10"
         >
           <span> <LogoutBTN /></span>
         </button>

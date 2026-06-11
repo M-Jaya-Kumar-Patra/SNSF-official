@@ -41,14 +41,12 @@ import { MdDeleteOutline } from "react-icons/md";
 const Categories = () => {
 
     const [categories, setCategories] = useState([]);
-    const [categs, setCateges] = useState([
-        {
-            name: "",
-            images: [],
-            parentCatName: "",
-            parentId: ""
-        }
-    ]);
+    const [categs, setCateges] = useState({
+        name: "",
+        images: [],
+        parentCatName: "",
+        parentId: ""
+    });
 
 
     const { catData, setCatData, getCategories } = useCat();
@@ -82,7 +80,6 @@ const Categories = () => {
 
 
     const handleCategEditClick = (id, product) => {
-        console.log("catId: ", id)
         setEditCategs(product);
         setEditCatObj(product);
         setPreviews(product.images || []); // <-- This line ensures previews are pre-filled
@@ -109,12 +106,9 @@ const Categories = () => {
         setRowsPerPage(+event.target.value);
         setPage(0); // Reset to first page
     };
-    console.log('categories:', categories);
-    console.log('Is categories an array?', Array.isArray(categories));
     const displayedCategs = categories.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
     const handleChangeAddInput = (e) => {
         setCateges({ ...categs, [e.target.name]: e.target.value })
-        setCategories([{ ...categories, [e.target.name]: e.target.value }])
     }
     const handleChangeEditInput = (e) => {
         setEditCatObj(prev => ({
@@ -155,8 +149,6 @@ const Categories = () => {
                 setPreviews([]); // ✅ clear previews
                 getCategories()
 
-                // Optionally refresh the category list
-                fetchCategoryData(); // If you have a function like this
             } else {
                 alert.alertBox({ type: "error", msg: response?.message || "Update failed" });
             }
@@ -168,28 +160,25 @@ const Categories = () => {
     };
     const setPreviewsFun = (previewsArr) => {
         setPreviews(previewsArr)
-        categs.images = previewsArr
+        setCateges((prev) => ({
+            ...prev,
+            images: previewsArr,
+        }));
 
     }
     const removeImage = async (image, index) => {
-        var imageArr = []
-        imageArr = previews;
-        deleteImages(`/api/category/remove-img?img=${image}`).then((response) => {
-            console.log(response)
-            imageArr.splice(index, 1);
+        deleteImages(`/api/category/remove-img`, image).then((response) => {
+            if (response?.error) {
+                alert.alertBox({ type: "error", msg: response.message || "Failed to remove image" });
+                return;
+            }
 
-            setPreviews([])
-
-            setTimeout(() => {
-                setPreviews(imageArr);
-                setCateges(previews => ({
-                    ...previews,
-                    images: imageArr
-                })
-                )
-            }, 100)
-            console.log(categs)
-            setPreviews([])
+            const imageArr = previews.filter((_, imageIndex) => imageIndex !== index);
+            setPreviews(imageArr);
+            setCateges((prev) => ({
+                ...prev,
+                images: imageArr
+            }));
         })
     }
     const handleSubmitAddForm = async (e) => {
@@ -224,9 +213,8 @@ const Categories = () => {
                     alert.alertBox({ type: "error", msg: response.message || "Failed to create category" });
                 }
             })
-            .catch((error) => {
+            .catch(() => {
                 setIsLoading(false);
-                console.error("Post error:", error);
                 alert.alertBox({ type: "error", msg: "Something went wrong. Please try again." });
             });
     }
@@ -235,7 +223,6 @@ const Categories = () => {
         setShowCategEditModal(true);  // open modal
     };
     const handleDeleteCategory = async (e, catId) => {
-        console.log(catId)
         e.preventDefault();
         try {
             const response = await deleteCategory(`/api/category/${catId}`, catId)

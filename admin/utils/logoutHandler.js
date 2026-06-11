@@ -1,5 +1,16 @@
 import { fetchDataFromApi } from "./api";
 
+const ADMIN_STORAGE_KEYS = [
+  "accessToken",
+  "refreshToken",
+  "email",
+  "adminId",
+  "adminEmail",
+  "adminName",
+  "adminAvatar",
+  "actionType",
+];
+
 export const handleLogout = async ({ logout, router, alert }) => {
   try {
     const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
@@ -8,8 +19,7 @@ export const handleLogout = async ({ logout, router, alert }) => {
       await fetchDataFromApi(`/api/admin/logout?accessToken=${token}`);
     }
 
-    // Clear all local/session storage items
-    localStorage.clear();
+    ADMIN_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
     sessionStorage.clear();
 
     // Optional feedback
@@ -20,14 +30,12 @@ export const handleLogout = async ({ logout, router, alert }) => {
 
     // Redirect to login or homepage
     router.push("/login");
-  } catch (error) {
-    console.error("Logout API failed:", error);
-
+  } catch {
     alert?.alertBox?.({ type: "error", msg: "Failed to logout properly. Please try again." });
 
     // Still fallback to logout for safety
     logout();
-    localStorage.clear();
+    ADMIN_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
     sessionStorage.clear();
     router.push("/login");
   }

@@ -44,20 +44,16 @@
     const Subcategories = () => {
 
         const [categories, setCategories] = useState([]);
-        const [categs, setCateges] = useState([
-            {
-                name: "",
-                parentCatName: "",
-                parentId: ""
-            }
-        ]);
-        const [categs2, setCateges2] = useState([
-            {
-                name: "",
-                parentCatName: "",
-                parentId: ""
-            }
-        ]);
+        const [categs, setCateges] = useState({
+            name: "",
+            parentCatName: "",
+            parentId: ""
+        });
+        const [categs2, setCateges2] = useState({
+            name: "",
+            parentCatName: "",
+            parentId: ""
+        });
 
 
         const { catData, setCatData, getCategories } = useCat()
@@ -149,14 +145,12 @@
             const catId = productCat
             setProductCat(catId)
             setCateges({ ...categs, [e.target.name]: e.target.value })
-            setCategories([{ ...categories, [e.target.name]: e.target.value }])
         }
 
         const onChangeInput2 = (e) => {
             const catId = productCat2
             setProductCat2(catId)
             setCateges2({ ...categs2, [e.target.name]: e.target.value })
-            setCategories([{ ...categories, [e.target.name]: e.target.value }])
         }
 
 
@@ -199,8 +193,6 @@
                     setPreviews([]); // ✅ clear previews
                     getCategories()
 
-                    // Optionally refresh the category list
-                    fetchCategoryData(); // If you have a function like this
                 } else {
                     alert.alertBox({ type: "error", msg: response?.message || "Update failed" });
                 }
@@ -212,26 +204,25 @@
         };
         const setPreviewsFun = (previewsArr) => {
             setPreviews(previewsArr)
-            categs.images = previewsArr
+            setCateges((prev) => ({
+                ...prev,
+                images: previewsArr,
+            }));
 
         }
         const removeImage = async (image, index) => {
-            var imageArr = []
-            imageArr = previews;
-            deleteImages(`/api/category/remove-img?img=${image}`).then((response) => {
-                imageArr.splice(index, 1);
+            deleteImages(`/api/category/remove-img`, image).then((response) => {
+                if (response?.error) {
+                    alert.alertBox({ type: "error", msg: response.message || "Failed to remove image" });
+                    return;
+                }
 
-                setPreviews([])
-
-                setTimeout(() => {
-                    setPreviews(imageArr);
-                    setCateges(previews => ({
-                        ...previews,
-                        images: imageArr
-                    })
-                    )
-                }, 100)
-                setPreviews([])
+                const imageArr = previews.filter((_, imageIndex) => imageIndex !== index);
+                setPreviews(imageArr);
+                setCateges((prev) => ({
+                    ...prev,
+                    images: imageArr
+                }));
             })
         }
 
@@ -336,27 +327,6 @@
                 alert.alertBox({ type: "error", msg: "Network issue. Try later" || error.message })
             }
         }
-
-
-        // const [isOpen, setIsOpen] = useState(0);
-        // const expand = (index) => {
-
-        //     console.log("object")
-        //     if (isOpen === index) {
-        //         console.log(isOpen, index, "1")
-
-        //         setIsOpen(!isOpen);
-        //         console.log(isOpen, index, "2")
-
-        //     } else {
-        //         console.log(isOpen, index, "3")
-
-        //         setIsOpen(index);
-        //         console.log(isOpen, index, "4")
-
-        //     }
-        // }
-
         const [isOpen, setIsOpen] = useState(null);
 
         const expand = (index) => {

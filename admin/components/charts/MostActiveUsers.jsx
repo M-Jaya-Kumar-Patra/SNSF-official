@@ -1,16 +1,27 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  BarChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from "recharts";
 import { fetchDataFromApi } from "@/utils/api";
+import { toApiDateTime } from "@/utils/chartTime";
+
+const ranges = {
+  "1hour": "1 Hour",
+  "12hour": "12 Hours",
+  "1day": "1 Day",
+  "7day": "7 Days",
+  "1month": "1 Month",
+  "6month": "6 Months",
+  "1year": "1 Year",
+};
 
 const MostActiveUsers = () => {
   const [data, setData] = useState([]);
@@ -20,37 +31,23 @@ const MostActiveUsers = () => {
   const [customStart, setCustomStart] = useState("");
   const [customEnd, setCustomEnd] = useState("");
 
-  const ranges = {
-    "1hour": "1 Hour",
-    "12hour": "12 Hours",
-    "1day": "1 Day",
-    "7day": "7 Days",
-    "1month": "1 Month",
-    "6month": "6 Months",
-    "1year": "1 Year",
-  };
-
   const fetchLogins = async (url) => {
     setLoading(true);
     try {
-      const res = await fetchDataFromApi(url, false);
+      const res = await fetchDataFromApi(url);
       if (res?.success) {
-        setData(res.data);
+        setData(res.data || []);
         setTotalLogins(res.totalLogins || 0);
       } else {
         setData([]);
         setTotalLogins(0);
       }
-    } catch (err) {
-      console.error("MostActiveUsers error:", err);
+    } catch {
       setData([]);
       setTotalLogins(0);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  };
-
-  const fetchPreset = () => {
-    fetchLogins(`/api/user/getMostActiveUsers?type=${range}`);
   };
 
   const fetchCustom = () => {
@@ -58,107 +55,94 @@ const MostActiveUsers = () => {
       alert("Select both start and end dates");
       return;
     }
+
     fetchLogins(
       `/api/user/getMostActiveUsers?start=${encodeURIComponent(
-        customStart
-      )}&end=${encodeURIComponent(customEnd)}`
+        toApiDateTime(customStart)
+      )}&end=${encodeURIComponent(toApiDateTime(customEnd))}`
     );
   };
 
   useEffect(() => {
-    fetchPreset();
+    fetchLogins(`/api/user/getMostActiveUsers?type=${range}`);
   }, [range]);
 
   return (
-    <div className="w-full p-5 bg-white rounded-2xl border border-slate-200 shadow-md">
-      {/* Header */}
-      <div className="flex justify-between items-start mb-4">
+    <div className="w-full rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-sm">
+      <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-800">
+          <h2 className="text-lg font-semibold text-[var(--admin-text)]">
             Most Active Users
           </h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-[var(--admin-muted)]">
             Users with highest login frequency
           </p>
         </div>
 
-        <p className="text-lg text-slate-600">
-          Total Logins:{" "}
-          <span className="font-bold text-slate-800">{totalLogins}</span>
+        <p className="text-sm font-semibold text-[var(--admin-muted)]">
+          Total Logins: <span className="text-[var(--admin-text)]">{totalLogins}</span>
         </p>
       </div>
 
-      {/* Preset Ranges */}
       <div className="mb-4 flex flex-wrap gap-2">
-        {Object.keys(ranges).map((r) => (
+        {Object.entries(ranges).map(([key, label]) => (
           <button
-            key={r}
-            onClick={() => setRange(r)}
-             className={`px-3 py-1 rounded ${
-              range === r
-                ? "bg-blue-600 text-white"
-                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+            key={key}
+            onClick={() => setRange(key)}
+            className={`rounded-xl px-3 py-1.5 text-sm font-semibold transition ${
+              range === key
+                ? "bg-[var(--admin-accent)] text-white"
+                : "bg-[var(--admin-surface-soft)] text-[var(--admin-muted)] hover:text-[var(--admin-text)]"
             }`}
           >
-            {ranges[r]}
+            {label}
           </button>
         ))}
       </div>
 
-      {/* Custom Range */}
-      <div className="flex flex-wrap items-end gap-3 mb-4">
-        <div>
-          <label className="block text-xs text-slate-500 mb-1">Start</label>
+      <div className="mb-4 flex flex-wrap items-end gap-3">
+        <label className="text-xs font-semibold text-[var(--admin-muted)]">
+          Start
           <input
             type="datetime-local"
             value={customStart}
-            onChange={(e) => setCustomStart(e.target.value)}
-            className="border rounded-md p-1.5 text-sm text-black"
+            onChange={(event) => setCustomStart(event.target.value)}
+            className="mt-1 block rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] px-3 py-2 text-sm text-[var(--admin-text)] outline-none"
           />
-        </div>
+        </label>
 
-        <div>
-          <label className="block text-xs text-slate-500 mb-1">End</label>
+        <label className="text-xs font-semibold text-[var(--admin-muted)]">
+          End
           <input
             type="datetime-local"
             value={customEnd}
-            onChange={(e) => setCustomEnd(e.target.value)}
-            className="border rounded-md p-1.5 text-sm text-black"
+            onChange={(event) => setCustomEnd(event.target.value)}
+            className="mt-1 block rounded-xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] px-3 py-2 text-sm text-[var(--admin-text)] outline-none"
           />
-        </div>
+        </label>
 
         <button
           onClick={fetchCustom}
-         className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+          className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
         >
           Show Range
         </button>
       </div>
 
-      {/* Chart */}
       {loading ? (
-        <div className="text-sm text-slate-500">Loading...</div>
+        <div className="py-12 text-sm text-[var(--admin-muted)]">Loading...</div>
       ) : (
         <ResponsiveContainer width="100%" height={340}>
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="name"
-              tick={{ fontSize: 11 }}
-              angle={-20}
-              textAnchor="end"
-            />
+            <XAxis dataKey="name" tick={{ fontSize: 11 }} angle={-20} textAnchor="end" />
             <YAxis allowDecimals={false} />
             <Tooltip
               content={({ active, payload, label }) =>
                 active && payload?.length ? (
-                  <div className="bg-white border border-gray-300 shadow-md rounded-lg p-2 text-sm">
-                    <p className="font-semibold text-gray-800">
-                      👤 {label}
-                    </p>
-                    <p className="text-blue-600">
-                      🔐 Logins: {payload[0].value}
-                    </p>
+                  <div className="rounded-lg border border-gray-300 bg-white p-2 text-sm shadow-md">
+                    <p className="font-semibold text-gray-800">{label}</p>
+                    <p className="text-blue-600">Logins: {payload[0].value}</p>
                   </div>
                 ) : null
               }

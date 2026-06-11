@@ -1,58 +1,56 @@
-import React, { useState, useRef } from 'react';
-import { FaImage } from 'react-icons/fa';
+import React, { useRef, useState } from "react";
+import { FaImage } from "react-icons/fa";
+import { uploadImages } from "@/utils/api";
 
-const ImageUploader = () => {
+const ImageUploader = ({ uploadUrl = "/api/image/upload", onUploaded }) => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef();
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
+  const handleImageChange = (event) => {
+    const files = Array.from(event.target.files || []);
 
-    const validFiles = files.filter(file => {
-      const isValidType = file.type.startsWith('image/');
-      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB max
+    const validFiles = files.filter((file) => {
+      const isValidType = file.type.startsWith("image/");
+      const isValidSize = file.size <= 5 * 1024 * 1024;
       return isValidType && isValidSize;
     });
 
-    if (validFiles.length !== files.length) {
-      setError('Some files were skipped due to size/type restrictions.');
-    } else {
-      setError('');
-    }
-
+    setError(
+      validFiles.length !== files.length
+        ? "Some files were skipped due to size/type restrictions."
+        : ""
+    );
     setSelectedImages(validFiles);
-    setPreviewUrls(validFiles.map(file => URL.createObjectURL(file)));
+    setPreviewUrls(validFiles.map((file) => URL.createObjectURL(file)));
   };
 
   const handleUpload = async () => {
     if (!selectedImages.length) {
-      setError('Please select atleast one image.');
+      setError("Please select at least one image.");
       return;
     }
-    
+
     const formData = new FormData();
-    selectedImages.forEach((file) => formData.append('images', file));
+    selectedImages.forEach((file) => formData.append("images", file));
 
-    try {
-      const res = await fetch('http://localhost:5000/upload', {
-        method: 'POST',
-        body: formData,
-      });
+    setUploading(true);
+    const response = await uploadImages(uploadUrl, formData);
+    setUploading(false);
 
-      const data = await res.json();
-      alert(`Uploaded successfully: ${data.files.join(', ')}`);
-    } catch (err) {
-      console.error(err);
-      setError('Upload failed. Try again.');
+    if (response?.error) {
+      setError(response.message || "Upload failed. Try again.");
+      return;
     }
+
+    setError("");
+    onUploaded?.(response);
   };
 
   return (
-    <div className="p-6 py-3 pt-1  mx-auto bg-white rounded-xl  space-x-4 flex">
-
-      {/* Hidden file input */}
+    <div className="flex gap-4 rounded-xl bg-[var(--admin-surface)] p-4">
       <input
         type="file"
         accept="image/*"
@@ -62,29 +60,40 @@ const ImageUploader = () => {
         className="hidden"
       />
 
-      {/* Stylized upload box */}
-      <div
-        className="border-2 border-dashed border-gray-300 rounded-lg p-6 h-28 w-28 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100"
-        onClick={() => fileInputRef.current.click()}
+      <button
+        type="button"
+        className="flex h-28 w-28 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-[var(--admin-border)] text-[var(--admin-muted)] transition hover:bg-[var(--admin-surface-soft)]"
+        onClick={() => fileInputRef.current?.click()}
       >
-        <FaImage className="text-4xl text-blue-500 mb-2" />
-        <span className="text-gray-600"></span>
+        <FaImage className="mb-2 text-4xl text-[var(--admin-accent)]" />
+        <span className="text-xs font-semibold">Images</span>
+      </button>
+
+      <div className="min-w-0 flex-1">
+        {error && <p className="mb-2 text-sm text-red-500">{error}</p>}
+
+        <div className="flex gap-2 overflow-auto">
+          {previewUrls.map((url, index) => (
+            <img
+              key={`${url}-${index}`}
+              src={url}
+              alt={`Preview ${index + 1}`}
+              className="h-28 w-28 rounded-xl border border-[var(--admin-border)] object-cover"
+            />
+          ))}
+        </div>
+
+        {selectedImages.length > 0 && (
+          <button
+            type="button"
+            onClick={handleUpload}
+            disabled={uploading}
+            className="mt-3 rounded-xl bg-[var(--admin-accent)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+          >
+            {uploading ? "Uploading..." : "Upload"}
+          </button>
+        )}
       </div>
-
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-
-      <div className="flex gap-2 overflow-auto scrollbar-hide">
-        {previewUrls.map((url, idx) => (
-          <img
-            key={idx}
-            src={url}
-            alt={`Preview ${idx}`}
-            className="w-28 h-28 rounded border"
-          />
-        ))}
-      </div>
-
-      
     </div>
   );
 };

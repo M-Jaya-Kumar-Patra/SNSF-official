@@ -7,7 +7,7 @@ export default function LiveTopPages() {
   const [data, setData] = useState([]);
 
   const load = async () => {
-    const res = await fetchDataFromApi("/api/analytics/live/pages", false);
+    const res = await fetchDataFromApi("/api/analytics/live/pages");
     if (res.success) {
       setData(res.pages.map(p => ({ page: p._id, views: p.views })));
     }
@@ -20,8 +20,8 @@ export default function LiveTopPages() {
   }, []);
 
   return (
-    <div className="p-4 bg-white rounded-2xl shadow w-full">
-      <h3 className="font-semibold mb-2 text-black">Top Pages (Live)</h3>
+    <div className="w-full rounded-2xl bg-[var(--admin-surface)] p-4 shadow">
+      <h3 className="mb-2 font-semibold text-[var(--admin-text)]">Top Pages (Live)</h3>
       <ResponsiveContainer width="100%" height={260}>
         <BarChart data={data}>
           <XAxis dataKey="page" />

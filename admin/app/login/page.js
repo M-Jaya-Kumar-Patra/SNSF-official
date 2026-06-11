@@ -1,19 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  FormControl,
-  InputLabel,
-  OutlinedInput,
-  InputAdornment,
-  IconButton,
   Box,
+  FormControl,
+  IconButton,
+  InputAdornment,
+  InputLabel,
   LinearProgress,
+  OutlinedInput,
   TextField,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import Image from "next/image";
+import AuthPanel from "@/components/AuthPanel";
 import { postData } from "@/utils/api";
 import { useAlert } from "../context/AlertContext";
 import { useAuth } from "../context/AuthContext";
@@ -27,39 +27,38 @@ export default function Login() {
   const alert = useAlert();
   const { isLogin, login, setIsLogin, setLoading, loading } = useAuth();
 
- useEffect(() => {
-  if (typeof window === "undefined") return;
-  
-  const token = localStorage.getItem("accessToken");
-  if (token && isLogin) {
-    router.replace("/profile");
-  } else {
-    setCheckingAuth(false);
-  }
-}, [isLogin]);
-
-
-  // ✅ Alert from previous page (safe SSR)
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const alertData = sessionStorage.getItem("alert");
-      if (alertData) {
-        const { type, msg } = JSON.parse(alertData);
-        alert.alertBox({ type, msg });
-        sessionStorage.removeItem("alert");
-      }
+    if (typeof window === "undefined") return;
+
+    const token = localStorage.getItem("accessToken");
+    if (token && isLogin) {
+      router.replace("/");
+      return;
     }
-  }, []);
+
+    setCheckingAuth(false);
+  }, [isLogin, router]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const alertData = sessionStorage.getItem("alert");
+    if (alertData) {
+      const { type, msg } = JSON.parse(alertData);
+      alert.alertBox({ type, msg });
+      sessionStorage.removeItem("alert");
+    }
+  }, [alert]);
 
   if (checkingAuth) return null;
 
-  const onChangeInput = (e) => {
-    const { name, value } = e.target;
+  const onChangeInput = (event) => {
+    const { name, value } = event.target;
     setFormFields((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleLogin = async (event) => {
+    event.preventDefault();
     setLoading(true);
 
     const { email, password } = formFields;
@@ -83,29 +82,26 @@ export default function Login() {
     }
 
     try {
-      const response = await postData("/api/admin/login", { email, password }, false);
+      const response = await postData("/api/admin/login", { email, password });
 
       if (!response.error && response.data?.accessToken) {
-        const { accessToken, refreshToken, email, name } = response.data;
+        const { accessToken, refreshToken, email: adminEmail, name } = response.data;
 
-        // ✅ safe for browser
-        if (typeof window !== "undefined") {
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
-          localStorage.setItem("email", email);
-        }
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        localStorage.setItem("email", adminEmail);
+        if (name) localStorage.setItem("adminName", name);
 
         login(response.data, accessToken);
         setFormFields({ email: "", password: "" });
         setIsLogin(true);
         alert.alertBox({ type: "success", msg: "Logged in successfully" });
-        router.push("/profile");
+        router.replace("/");
       } else {
         alert.alertBox({ type: "error", msg: response?.message || "Login failed" });
-        setFormFields({ email: "", password: "" });
+        setFormFields((prev) => ({ ...prev, password: "" }));
       }
-    } catch (error) {
-      console.error("Login error:", error);
+    } catch {
       alert.alertBox({ type: "error", msg: "Something went wrong. Please try again." });
     } finally {
       setLoading(false);
@@ -121,13 +117,10 @@ export default function Login() {
     }
 
     try {
-      if (typeof window !== "undefined") {
-        localStorage.setItem("adminEmail", email);
-        localStorage.setItem("actionType", "forgot-password");
-      }
+      localStorage.setItem("adminEmail", email);
+      localStorage.setItem("actionType", "forgot-password");
 
-      const response = await postData("/api/admin/forgot-password", { email }, false);
-      console.log("response;;;;;;;;;;;;;;;;;;;;", response)
+      const response = await postData("/api/admin/forgot-password", { email });
 
       if (!response.error) {
         alert.alertBox({ type: "success", msg: response.message });
@@ -135,96 +128,82 @@ export default function Login() {
       } else {
         alert.alertBox({ type: "error", msg: response?.message || "Failed to send OTP" });
       }
-    } catch (error) {
-      console.error("Forgot password error:", error);
+    } catch {
       alert.alertBox({ type: "error", msg: "Something went wrong. Please try again." });
     }
   };
 
   return (
-    <div className="flex justify-center items-center w-full h-screen bg-gray-100">
-      <div className="w-[300px] border rounded-md shadow overflow-hidden bg-white">
-        {loading && <Box><LinearProgress /></Box>}
+    <AuthPanel
+      title="Welcome back"
+      subtitle="Login to manage products, enquiries, homepage content, and analytics."
+      footer={
+        <button
+          type="button"
+          onClick={() => router.push("/signup")}
+          className="font-semibold text-blue-700 hover:text-blue-900"
+        >
+          Create admin account
+        </button>
+      }
+    >
+      {loading && (
+        <Box className="-mx-7 -mt-6 mb-5">
+          <LinearProgress />
+        </Box>
+      )}
 
-        <div className="w-full py-4 px-5 flex flex-col items-center">
-          <Image
-            className="w-16 h-16 rounded-full mt-4"
-            src="/images/logo.png"
-            alt="SNSF Logo"
-            width={64}
-            height={64}
-          />
+      <form className="space-y-4" onSubmit={handleLogin}>
+        <TextField
+          label="Email Id"
+          variant="outlined"
+          size="small"
+          fullWidth
+          name="email"
+          value={formFields.email}
+          onChange={onChangeInput}
+          disabled={loading}
+        />
 
-          <div className="w-full flex items-center gap-3 justify-center">
-            <h1 className="text-[#131e30] my-2 font-bold text-lg">Log in to</h1>
-            <h1 className="text-xl font-bold font-sans bg-gradient-to-b from-[#8ca4b4] via-[#4c6984] to-[#93b2c7] bg-clip-text text-transparent">
-              SNSF
-            </h1>
-          </div>
-
-          <TextField
-            label="Email Id"
-            variant="outlined"
-            size="small"
-            fullWidth
-            margin="dense"
-            name="email"
-            value={formFields.email}
+        <FormControl size="small" fullWidth variant="outlined">
+          <InputLabel>Password</InputLabel>
+          <OutlinedInput
+            name="password"
+            type={showPassword ? "text" : "password"}
+            value={formFields.password}
             onChange={onChangeInput}
             disabled={loading}
+            label="Password"
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  onMouseDown={(event) => event.preventDefault()}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
           />
+        </FormControl>
 
-          <FormControl size="small" fullWidth margin="dense" variant="outlined">
-            <InputLabel>Password</InputLabel>
-            <OutlinedInput
-              name="password"
-              type={showPassword ? "text" : "password"}
-              value={formFields.password}
-              onChange={onChangeInput}
-              disabled={loading}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    onMouseDown={(e) => e.preventDefault()}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              }
-              label="Password"
-            />
-          </FormControl>
+        <button
+          type="submit"
+          disabled={loading}
+          className="h-11 w-full rounded-xl bg-slate-950 text-sm font-bold text-white shadow-lg shadow-slate-900/20 transition hover:bg-blue-700 disabled:opacity-60"
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </form>
 
-          <button
-            className="relative bg-transparent border-none text-[#131e30] text-[14px] mt-2 right-0"
-            onClick={forgotPassword}
-            disabled={loading}
-          >
-            Forgot password?
-          </button>
-
-          <button
-            type="submit"
-            onClick={handleLogin}
-            className="hover:opacity-90 bg-gradient-to-l from-[#798ca8] via-[rgb(51,66,87)] to-[#131e30] text-white px-4 py-1 rounded-md mt-4 text-[15px]"
-            disabled={loading}
-          >
-            Log In
-          </button>
-
-          <div className="w-full text-center mt-3">
-            <h3
-              className="text-[#131e30] text-[14px] cursor-pointer"
-              onClick={() => router.push("/signup")}
-            >
-              Don&apos;t have an account?{" "}
-              <span className="hover:text-slate-900 hover:underline">Sign up</span>
-            </h3>
-          </div>
-        </div>
-      </div>
-    </div>
+      <button
+        type="button"
+        onClick={forgotPassword}
+        className="mt-5 w-full text-sm font-semibold text-blue-700 hover:text-blue-900"
+      >
+        Forgot password?
+      </button>
+    </AuthPanel>
   );
 }

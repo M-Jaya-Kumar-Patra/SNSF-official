@@ -9,7 +9,7 @@ export default function DevicePieChartLastActivity() {
   const [data, setData] = useState([]);
 
   const load = async () => {
-    const res = await fetchDataFromApi("/api/analytics/active-users/device", false);
+    const res = await fetchDataFromApi("/api/analytics/active-users/device");
     if (res.success) {
       setData(
         res.deviceStats.map((d, i) => ({
@@ -23,8 +23,8 @@ export default function DevicePieChartLastActivity() {
   useEffect(() => { load(); }, []);
 
   return (
-    <div className="p-4 bg-white rounded shadow w-full">
-      <h3 className="font-semibold mb-2 text-black">Devices (Live)</h3>
+    <div className="w-full rounded-2xl bg-[var(--admin-surface)] p-4 shadow">
+      <h3 className="mb-2 font-semibold text-[var(--admin-text)]">Devices (Live)</h3>
       <ResponsiveContainer width="100%" height={260}>
         <PieChart>
           <Pie

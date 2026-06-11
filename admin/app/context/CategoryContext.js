@@ -1,40 +1,38 @@
   "use client";
 
   import { createContext, useContext, useState, useEffect } from "react";
-import jwtDecode from "jwt-decode";
   import { fetchDataFromApi } from "@/utils/api";
-  import { useRouter } from "next/navigation";
+  import { useAuth } from "./AuthContext";
 
   const CategoryContext = createContext();
 
   export const CatProvider = ({ children }) => {
-    const router = useRouter()
-    const [adminData, setAdminData] = useState(null);
-    const [isLogin, setIsLogin] = useState(false);
     const [loading, setLoading] = useState(true);
-
-
     const [catData, setCatData] = useState([])
+    const { adminData, isLogin } = useAuth();
 
     const getCategories = () => {
-            fetchDataFromApi("/api/category/getCategories").then((response) => {
-                setCatData(response?.data);
-            });
+            setLoading(true);
+            fetchDataFromApi("/api/category/getCategories")
+              .then((response) => {
+                setCatData(response?.data || []);
+              })
+              .finally(() => setLoading(false));
         }
         
     useEffect(() => {
-            const id = localStorage.getItem("adminId");
-            if (id && id !== "undefined" && id !== "null") {
+            if (isLogin) {
                 getCategories();
             } else {
-                console.warn("Invalid or missing adminId in localStorage");
+                setCatData([]);
+                setLoading(false);
             }
-        }, []);
+        }, [isLogin]);
 
 
 
     return (
-      <CategoryContext.Provider value={{ adminData, isLogin, setIsLogin, setAdminData, loading, setLoading, catData, setCatData, getCategories }}>
+      <CategoryContext.Provider value={{ adminData, isLogin, loading, setLoading, catData, setCatData, getCategories }}>
         {children}
       </CategoryContext.Provider>
     );

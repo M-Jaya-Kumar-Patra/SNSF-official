@@ -8,7 +8,7 @@ export default function AdminShell({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-[var(--admin-bg)] text-[var(--admin-text)]">
 
       {/* Desktop Sidebar */}
       <aside className="hidden lg:block">
@@ -22,14 +22,14 @@ export default function AdminShell({ children }) {
         onClose={() => setMobileOpen(false)}
         onOpen={() => setMobileOpen(true)}
       >
-        <Sidebar />
+        <Sidebar onNavigate={() => setMobileOpen(false)} />
       </SwipeableDrawer>
 
       {/* Main Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar onMenuClick={() => setMobileOpen(true)} />
 
-        <main className="flex-1 overflow-y-auto ">
+        <main className="flex-1 overflow-y-auto bg-[var(--admin-bg)]">
           {children}
         </main>
       </div>

@@ -27,8 +27,7 @@ const SessionGuard = ({ children }) => {
       } else {
         setCheckingToken(false);
       }
-    } catch (err) {
-      console.error("Invalid token:", err);
+    } catch {
       localStorage.removeItem("accessToken");
       router.push("/login");
     }

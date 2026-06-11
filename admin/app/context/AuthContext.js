@@ -1,15 +1,52 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import jwtDecode from "jwt-decode";
 import { fetchDataFromApi } from "@/utils/api";
 
 const AuthContext = createContext();
 
+const ADMIN_STORAGE_KEYS = [
+  "accessToken",
+  "refreshToken",
+  "email",
+  "adminId",
+  "adminEmail",
+  "adminName",
+  "adminAvatar",
+  "actionType",
+];
+
 export const AuthProvider = ({ children }) => {
   const [adminData, setAdminData] = useState(null);
   const [isLogin, setIsLogin] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const logout = () => {
+    if (typeof window !== "undefined") {
+      ADMIN_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+    }
+
+    setAdminData(null);
+    setIsLogin(false);
+    setLoading(false);
+  };
+
+  const fetchAdminDetails = async () => {
+    try {
+      const response = await fetchDataFromApi("/api/admin/admin-details");
+      if (!response.error) {
+        setAdminData(response.data);
+        setIsLogin(true);
+      } else {
+        logout();
+      }
+    } catch {
+      logout();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -26,8 +63,7 @@ export const AuthProvider = ({ children }) => {
     let decoded;
     try {
       decoded = jwtDecode(token);
-    } catch (err) {
-      console.error("❌ Invalid JWT:", err);
+    } catch {
       logout();
       return;
     }
@@ -38,47 +74,19 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
-    // ⏰ Auto logout at token expiry
     const timeout = setTimeout(() => logout(), (decoded.exp - currentTime) * 1000);
-
-    // 👇 Fetch admin details
     fetchAdminDetails();
 
-    return () => clearTimeout(timeout); // cleanup
+    return () => clearTimeout(timeout);
   }, []);
-
-  const fetchAdminDetails = async () => {
-    try {
-      const response = await fetchDataFromApi("/api/admin/admin-details");
-      if (!response.error) {
-        setAdminData(response.data);
-        setIsLogin(true);
-      } else {
-        console.warn("⚠️ API error:", response.message);
-        logout();
-      }
-    } catch (err) {
-      console.error("❌ Failed to fetch admin:", err);
-      logout();
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const login = (data, token) => {
     if (typeof window !== "undefined") {
       localStorage.setItem("accessToken", token);
-      setAdminData(data);
-      setIsLogin(true);
     }
-  };
 
-  const logout = () => {
-    if (typeof window !== "undefined") {
-      localStorage.clear();
-    }
-    setAdminData(null);
-    setIsLogin(false);
+    setAdminData(data);
+    setIsLogin(true);
   };
 
   return (

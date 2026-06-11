@@ -1,23 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import LogoutBTN from "@/components/LogoutBTN";
 import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useAlert } from "@/app/context/AlertContext";
-import { uploadImage, editData, postData } from "@/utils/api";
-import { useAuth } from "@/app/context/AuthContext";
-import Button from "@mui/material/Button";
+import InputAdornment from "@mui/material/InputAdornment";
+import TextField from "@mui/material/TextField";
+import { Camera, LockKeyhole, Mail, Phone, ShieldCheck, User } from "lucide-react";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import { MdModeEdit } from "react-icons/md";
-import { RxCross2 } from "react-icons/rx";
-import Link from "next/link";
-import { User, Bell } from "lucide-react";
-import { RiLockPasswordFill } from "react-icons/ri";
-
+import { useAlert } from "@/app/context/AlertContext";
+import { useAuth } from "@/app/context/AuthContext";
+import { editData, postData, uploadImage } from "@/utils/api";
 
 const Account = () => {
   const router = useRouter();
@@ -28,7 +21,7 @@ const Account = () => {
   const [uploading, setUploading] = useState(false);
   const [adminId, setAdminId] = useState("");
   const [passLoading, setPassLoading] = useState(false);
-  const [showTopForm, setShowTopForm] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
 
   const [formFields, setFormFields] = useState({
     name: "",
@@ -42,75 +35,68 @@ const Account = () => {
     confirmPassword: "",
   });
 
-  // Redirect if not logged in
   useEffect(() => {
     if (!isLogin) {
       router.replace("/login");
-    } else {
-      setFormFields({
-        name: adminData?.name || "",
-        email: adminData?.email || "",
-        phone: adminData?.phone || "",
-      });
+      return;
     }
-  }, [isLogin, adminData]);
 
-  // Safe localStorage access
+    setFormFields({
+      name: adminData?.name || "",
+      email: adminData?.email || "",
+      phone: adminData?.phone || "",
+    });
+  }, [isLogin, adminData, router]);
+
   useEffect(() => {
     const id = adminData?._id || adminData?.id;
     if (id) {
       setAdminId(id);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("adminId", id);
-      }
+      localStorage.setItem("adminId", id);
     }
   }, [adminData]);
 
-  const onChangeFile = async (e) => {
-    e.preventDefault();
+  const onChangeFile = async (event) => {
+    event.preventDefault();
+    const file = event.target.files?.[0];
+
+    if (!file || !["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type)) {
+      alert.alertBox({ type: "error", msg: "Invalid image format" });
+      return;
+    }
+
     try {
-      const file = e.target.files?.[0];
-      if (
-        file &&
-        ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type)
-      ) {
-        setUploading(true);
-        const formData = new FormData();
-        formData.append("avatar", file);
+      setUploading(true);
+      const formData = new FormData();
+      formData.append("avatar", file);
 
-        const response = await uploadImage("/api/admin/admin-avatar", formData);
+      const response = await uploadImage("/api/admin/admin-avatar", formData);
 
-        if (response?.success && response.avatar) {
-          setAdminData((prev) => ({ ...prev, avatar: response.avatar }));
-          if (typeof window !== "undefined") {
-            localStorage.setItem("adminAvatar", response.avatar);
-          }
-        } else {
-          alert.alertBox({ type: "error", msg: response.message || "Failed to update avatar" });
-        }
+      if (response?.success && response.avatar) {
+        setAdminData((prev) => ({ ...prev, avatar: response.avatar }));
+        localStorage.setItem("adminAvatar", response.avatar);
       } else {
-        alert.alertBox({ type: "error", msg: "Invalid image format" });
+        alert.alertBox({ type: "error", msg: response.message || "Failed to update avatar" });
       }
-    } catch (error) {
-      console.error(error);
+    } catch {
       alert.alertBox({ type: "error", msg: "Something went wrong" });
     } finally {
       setUploading(false);
     }
   };
 
-  const onChangeInput = (e) => {
-    const { name, value } = e.target;
+  const onChangeInput = (event) => {
+    const { name, value } = event.target;
     setFormFields((prev) => ({ ...prev, [name]: value }));
   };
 
-  const onChangePassword = (e) => {
-    const { name, value } = e.target;
+  const onChangePassword = (event) => {
+    const { name, value } = event.target;
     setChangePasswordForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setIsLoading(true);
 
     const { name, email, phone } = formFields;
@@ -128,7 +114,7 @@ const Account = () => {
     }
 
     try {
-      const response = await editData(`/api/admin/${adminId}`, formFields, false);
+      const response = await editData(`/api/admin/${adminId}`, formFields);
 
       if (!response.error) {
         alert.alertBox({ type: "success", msg: "Profile updated successfully" });
@@ -137,20 +123,20 @@ const Account = () => {
           name: response.admin?.name || name,
           email: response.admin?.email || email,
           phone: response.admin?.phone || phone,
-          avatar: response.admin?.avatar || adminData.avatar,
+          avatar: response.admin?.avatar || adminData?.avatar,
         });
       } else {
         alert.alertBox({ type: "error", msg: response?.message || "Update failed" });
       }
-    } catch (err) {
+    } catch {
       alert.alertBox({ type: "error", msg: "Network error. Try again later." });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
+  const handlePasswordChange = async (event) => {
+    event.preventDefault();
     setPassLoading(true);
 
     const { oldPassword, newPassword, confirmPassword } = changePasswordForm;
@@ -162,19 +148,13 @@ const Account = () => {
     }
 
     if (oldPassword === newPassword) {
-      alert.alertBox({
-        type: "error",
-        msg: "New password cannot be same as old password",
-      });
+      alert.alertBox({ type: "error", msg: "New password cannot be same as old password" });
       setPassLoading(false);
       return;
     }
 
     if (confirmPassword !== newPassword) {
-      alert.alertBox({
-        type: "error",
-        msg: "New password and confirm password must match",
-      });
+      alert.alertBox({ type: "error", msg: "New password and confirm password must match" });
       setPassLoading(false);
       return;
     }
@@ -189,248 +169,242 @@ const Account = () => {
 
       if (!response.error) {
         alert.alertBox({ type: "success", msg: "Password changed successfully" });
-        setChangePasswordForm({
-          oldPassword: "",
-          newPassword: "",
-          confirmPassword: "",
-        });
+        setChangePasswordForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
+        setShowPasswordForm(false);
       } else {
-        alert.alertBox({ type: "error", msg: response?.message });
+        alert.alertBox({ type: "error", msg: response?.message || "Password update failed" });
       }
-    } catch (err) {
-      alert.alertBox({ type: "error", msg: err?.message });
+    } catch {
+      alert.alertBox({ type: "error", msg: "Password update failed" });
     } finally {
       setPassLoading(false);
     }
   };
 
-  if (!isLogin) return <div className="text-center mt-10">Loading...</div>;
-
-
+  if (!isLogin) {
+    return <div className="mt-10 text-center text-[var(--admin-muted)]">Loading...</div>;
+  }
 
   return (
-    <div className="flex w-full min-h-screen justify-center bg-slate-100">
-      <div className="w-[1020px] my-3 mx-auto flex justify-between">
-        {/* Sidebar */}
-        <div className="left h-full">
-          <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5 gap-3 flex flex-col justify-center items-center ">
-            <div className="mt-2 mr-2 w-[140px] h-[140px] relative group overflow-hidden border   rounded-full border-gray-300 shadow">
-            {!uploading && (
-              <img
-                src={adminData?.avatar || "/images/account.png"}
-                alt="avatar"
-                className="w-full h-full object-cover"
-              />
-            )}
-            <div
-              className={`absolute inset-0 z-50 flex items-center justify-center transition-all duration-300 ${uploading
-                  ? "bg-[rgba(0,0,0,0.7)] opacity-100"
-                  : "bg-[rgba(0,0,0,0.6)] opacity-0 group-hover:opacity-100"
-                }`}
-            >
-              {uploading ? (
-                <CircularProgress color="inherit" size={30} />
-              ) : (
-                <FaCloudUploadAlt className="text-white text-2xl" />
-              )}
-              <input
-                type="file"
-                name="avatar"
-                accept="image/*"
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                onChange={onChangeFile}
-              />
-            </div>
-          </div>
-            <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide">
-              {adminData?.name}
-            </h1>
+    <div className="admin-page px-6 py-6">
+      <div className="mx-auto max-w-6xl space-y-6">
+        <div className="admin-card overflow-hidden rounded-3xl">
+          <div className="bg-slate-950 px-7 py-8 text-white">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.24em] text-blue-300">
+              Admin profile
+            </p>
+            <h1 className="text-3xl font-bold">Account settings</h1>
+            <p className="mt-2 max-w-2xl text-sm text-slate-300">
+              Manage your admin identity, contact information, avatar, and password security.
+            </p>
           </div>
 
-          <div className="leftlower mt-3 w-[256px] bg-white shadow-lg">
-                            <ul className="text-gray-600 font-sans">
-                              
-                                
-                                <li>
-                                    <Link href="/profile">
-                                        <div className="h-[50px] flex items-center pl-5 font-semibold gap-2 border  border-l-8 border-y-0 border-r-0 border-slate-700  cursor-pointer  text-[#131e30] bg-slate-100 active:bg-slate-100">
-                                           <User size={18} /> Profile Information
-                                        </div>
-                                    </Link>
-                                </li>
-                                
-                                
-                                <li>
-                                    <Link href="/notifications">
-                                        <div className="h-[50px] flex items-center pl-7 font-semibold cursor-pointer gap-2  active:bg-slate-100">
-                                            <Bell size={18} /> Notifications
-                                        </div>
-                                    </Link>
-                                </li>
-                                
-                                <li>
-                                    <div>
-                                        <LogoutBTN />
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-        </div>
+          <div className="grid gap-6 p-6 lg:grid-cols-[320px_1fr]">
+            <aside className="rounded-3xl border border-[var(--admin-border)] bg-[var(--admin-surface-soft)] p-5">
+              <div className="flex flex-col items-center text-center">
+                <div className="group relative h-36 w-36 overflow-hidden rounded-full border border-[var(--admin-border)] bg-[var(--admin-surface)] shadow">
+                  {!uploading && (
+                    <img
+                      src={adminData?.avatar || "/images/account.png"}
+                      alt="Admin avatar"
+                      className="h-full w-full object-cover"
+                    />
+                  )}
 
-        {/* Main Panel */}
-        <div className="w-[750px] bg-white shadow-lg p-5">
-          <div className="flex items-center justify-between">
-            <span className="text-black font-semibold text-[25px]">Profile Information</span>
-          </div>
-
-          
-
-          {/* Profile Info Form */}
-          <form onSubmit={handleSubmit} className="  border-slate-400 rounded-md mt-4  pt-3">
-            <Box
-              component="div"
-              sx={{ "& .MuiTextField-root": { m: 1.5, width: "full" } }}
-              className=" w-full"
-            >
-                <div className="flex flex-col w-full ">
-                <TextField
-                  label="Full Name"
-                  variant="outlined"
-                  name="name"
-                  value={formFields.name}
-                  disabled={isLoading}
-                  onChange={onChangeInput}
-                />
-                <TextField
-                  label="Email"
-                  variant="outlined"
-                  name="email"
-                  value={formFields.email}
-                  disabled={true}
-                  onChange={onChangeInput}
-                />
-                <TextField
-                  label="Phone"
-                  variant="outlined"
-                  name="phone"
-                  value={formFields.phone}
-                  disabled={isLoading}
-                  onChange={onChangeInput}
-                  InputProps={{
-                    startAdornment: <InputAdornment position="start">+91</InputAdornment>,
-                  }}
-                />
-              </div>
-              <div>
-                
-              </div>
-                <div className="flex items-center gap-4 ">
-                  <button
-                    type="submit"
-                    
-                    disabled={isLoading}
-                    className={`btn-org btn-sm w-full bg-green-700 p-1 mx-3 mt-1 rounded-md ${
-                      (isLoading) ? 'opacity-50 cursor-not-allowed' : ''
+                  <div
+                    className={`absolute inset-0 flex items-center justify-center transition ${
+                      uploading
+                        ? "bg-black/70 opacity-100"
+                        : "bg-black/55 opacity-0 group-hover:opacity-100"
                     }`}
                   >
-                    {isLoading ? (
-                      <CircularProgress color="inherit" size={22} />
+                    {uploading ? (
+                      <CircularProgress color="inherit" size={30} />
                     ) : (
-                      <div className="flex items-center justify-center font-semibold gap-2"><MdModeEdit /><h1>Update Profile</h1></div>
+                      <FaCloudUploadAlt className="text-2xl text-white" />
                     )}
-                  </button>
-                  
+                    <input
+                      type="file"
+                      name="avatar"
+                      accept="image/*"
+                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                      onChange={onChangeFile}
+                    />
+                  </div>
                 </div>
-            </Box>
-          </form>
-          <form className="border border-slate-400 rounded-md mt-6 mx-3 p-2 pt-3 " onSubmit={handlePasswordChange}>
-  <div>
-  <div key={'top'}>
-    <div className="flex justify-between" onClick={() => setShowTopForm(prev => !prev)}>
-      <div className="text-gray-700 font-semibold text-lg">Change Password</div>
-      <button
-        // onClick={() => setShowTopForm(prev => !prev)}
-        className="mt-0 text-blue-500 font-sans font-bold text-md"
-        type="button"
-      >
-        CHANGE PASSWORD
-      </button>
-    </div>
 
-    {showTopForm && (
-      <div className="border-slate-500 rounded-md flex flex-col justify-center items-center">
-        <div className="mt-4  gap-x-3 w-2/3 ">
-        <Box
-              component="div"
-              sx={{ "& .MuiTextField-root": { m: 1.5, width: "full" } }}
-              className=" w-full"
-            >
-          <TextField
-            label="Old password"
-            variant="outlined"
-            size="small"
-            name="oldPassword"
-            margin="dense"
-            value={changePasswordForm.oldPassword}
-            fullWidth
-            onChange={onChangePassword}
-          />
-          <TextField
-            label="New password"
-            variant="outlined"
-            size="small"
-            name="newPassword"
-            margin="dense"
-            value={changePasswordForm.newPassword}
-            fullWidth
-            onChange={onChangePassword}
+                <h2 className="mt-4 text-xl font-bold text-[var(--admin-text)]">
+                  {adminData?.name || "Admin"}
+                </h2>
+                <p className="mt-1 text-sm text-[var(--admin-muted)]">
+                  {adminData?.email || "admin account"}
+                </p>
 
-          />
-          <TextField
-            label="Confirm password"
-            variant="outlined"
-            size="small"
-            name="confirmPassword"
-            margin="dense"
-            value={changePasswordForm.confirmPassword}
-            fullWidth
-            onChange={onChangePassword}
+                <div className="mt-5 grid w-full gap-3">
+                  <div className="flex items-center gap-3 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-3 text-left">
+                    <ShieldCheck className="h-5 w-5 text-emerald-500" />
+                    <div>
+                      <p className="text-sm font-semibold text-[var(--admin-text)]">Secure session</p>
+                      <p className="text-xs text-[var(--admin-muted)]">Protected admin access</p>
+                    </div>
+                  </div>
 
-          />
+                  <div className="flex items-center gap-3 rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-3 text-left">
+                    <Camera className="h-5 w-5 text-blue-500" />
+                    <div>
+                      <p className="text-sm font-semibold text-[var(--admin-text)]">Avatar upload</p>
+                      <p className="text-xs text-[var(--admin-muted)]">JPG, PNG, or WebP</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </aside>
 
-        <div className="flex w-full mx-3 gap-3 ">
-          <button
-          type="submit"
-          disabled={passLoading}
-          onClick={()=>setShowTopForm(prev => !prev)}
-          className={`btn-org btn-sm w-full bg-white p-1 mt-3 mb-2 border border-slate-400 rounded-md ${
-            passLoading ? 'opacity-50 cursor-not-allowed' : ''
-          }`}> 
-          
-          <div className="flex items-center justify-center font-semibold text-red-500  gap-2"><RxCross2 /><h1>Cancel</h1></div> 
-        </button>
-        <button
-          type="submit"
-          disabled={passLoading}
-          className={`btn-org btn-sm w-full bg-blue-600 p-1 mt-3 mb-2 rounded-md ${
-            passLoading ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-          >
-          {passLoading ? (
-            <CircularProgress color="inherit" size={22} />
-          ) : (
-            <div className="flex items-center justify-center font-semibold gap-2"><RiLockPasswordFill /><h1>Change Password</h1></div>
-          )}
-        </button>
-        </div>
-          </Box>
+            <main className="space-y-5">
+              <form
+                onSubmit={handleSubmit}
+                className="rounded-3xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5"
+              >
+                <div className="mb-5 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-bold text-[var(--admin-text)]">Profile information</h3>
+                    <p className="text-sm text-[var(--admin-muted)]">Update the public admin details.</p>
+                  </div>
+                  <User className="h-5 w-5 text-[var(--admin-muted)]" />
+                </div>
+
+                <Box className="grid gap-4 md:grid-cols-2">
+                  <TextField
+                    label="Full Name"
+                    variant="outlined"
+                    name="name"
+                    value={formFields.name}
+                    disabled={isLoading}
+                    onChange={onChangeInput}
+                    fullWidth
+                  />
+                  <TextField
+                    label="Email"
+                    variant="outlined"
+                    name="email"
+                    value={formFields.email}
+                    disabled
+                    onChange={onChangeInput}
+                    fullWidth
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Mail size={17} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                  <TextField
+                    label="Phone"
+                    variant="outlined"
+                    name="phone"
+                    value={formFields.phone}
+                    disabled={isLoading}
+                    onChange={onChangeInput}
+                    fullWidth
+                    className="md:col-span-2"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Phone size={17} />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Box>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="mt-5 h-11 rounded-xl bg-[var(--admin-accent)] px-5 text-sm font-bold text-white shadow-lg shadow-blue-900/10 transition hover:bg-blue-700 disabled:opacity-60"
+                >
+                  {isLoading ? <CircularProgress color="inherit" size={20} /> : "Update Profile"}
+                </button>
+              </form>
+
+              <form
+                onSubmit={handlePasswordChange}
+                className="rounded-3xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--admin-surface-soft)]">
+                      <LockKeyhole className="h-5 w-5 text-[var(--admin-accent)]" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-[var(--admin-text)]">Password security</h3>
+                      <p className="text-sm text-[var(--admin-muted)]">Change your password periodically.</p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordForm((prev) => !prev)}
+                    className="rounded-xl border border-[var(--admin-border)] px-4 py-2 text-sm font-bold text-[var(--admin-text)] transition hover:bg-[var(--admin-surface-soft)]"
+                  >
+                    {showPasswordForm ? "Close" : "Change"}
+                  </button>
+                </div>
+
+                {showPasswordForm && (
+                  <div className="mt-5 grid gap-4 md:grid-cols-3">
+                    <TextField
+                      label="Old password"
+                      variant="outlined"
+                      size="small"
+                      name="oldPassword"
+                      value={changePasswordForm.oldPassword}
+                      fullWidth
+                      onChange={onChangePassword}
+                      type="password"
+                    />
+                    <TextField
+                      label="New password"
+                      variant="outlined"
+                      size="small"
+                      name="newPassword"
+                      value={changePasswordForm.newPassword}
+                      fullWidth
+                      onChange={onChangePassword}
+                      type="password"
+                    />
+                    <TextField
+                      label="Confirm password"
+                      variant="outlined"
+                      size="small"
+                      name="confirmPassword"
+                      value={changePasswordForm.confirmPassword}
+                      fullWidth
+                      onChange={onChangePassword}
+                      type="password"
+                    />
+
+                    <div className="flex gap-3 md:col-span-3">
+                      <button
+                        type="button"
+                        onClick={() => setShowPasswordForm(false)}
+                        className="h-10 rounded-xl border border-[var(--admin-border)] px-5 text-sm font-bold text-[var(--admin-muted)]"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={passLoading}
+                        className="h-10 rounded-xl bg-slate-950 px-5 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60"
+                      >
+                        {passLoading ? <CircularProgress color="inherit" size={20} /> : "Save Password"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </form>
+            </main>
           </div>
-      </div>
-    )}
-  </div>
-</div>
-
-</form>
         </div>
       </div>
     </div>
@@ -438,4 +412,3 @@ const Account = () => {
 };
 
 export default Account;
-

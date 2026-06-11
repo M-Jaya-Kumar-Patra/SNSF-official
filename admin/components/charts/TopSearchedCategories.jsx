@@ -20,18 +20,18 @@ export default function TopSearchedCategories({ start, end, limit = 10 }) {
       const q = `/api/analytics/search/top-categories?start=${encodeURIComponent(
         start
       )}&end=${encodeURIComponent(end)}&limit=${limit}`;
-      const res = await fetchDataFromApi(q, false);
+      const res = await fetchDataFromApi(q);
       if (res?.success) setData(res.data || []);
     })();
   }, [start, end, limit]);
 
   return (
-    <div className="w-full p-5 bg-white rounded-2xl border border-slate-200 shadow-sm">
+    <div className="w-full rounded-2xl border border-[var(--admin-border)] bg-[var(--admin-surface)] p-5 shadow-sm">
       <div className="mb-4">
-        <h2 className="text-lg font-semibold text-slate-800">
+        <h2 className="text-lg font-semibold text-[var(--admin-text)]">
           Top Searched Categories
         </h2>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-[var(--admin-muted)]">
           Categories users are actively searching
         </p>
       </div>

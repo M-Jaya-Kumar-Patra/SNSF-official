@@ -12,12 +12,11 @@ const PDFUploadBox = (props) => {
       const file = e.target.files[0];
 
       if (!file || file.type !== "application/pdf") {
-        alert.alertBox("error", "Please select a valid PDF file.");
+        alert.alertBox({ type: "error", msg: "Please select a valid PDF file." });
         return;
       }
 
       const formData = new FormData();
-      console.log("KKKKkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk",file)
       formData.append(props?.name || "pdf", file);
 
       setUploading(true);
@@ -28,13 +27,12 @@ const PDFUploadBox = (props) => {
         alert.alertBox({ type: "success", msg: "PDF uploaded successfully" });
         props.setPreviewFun(res?.file || res?.url || res?.pdf);
       } else {
-        alert.alertBox("error", "Failed to upload PDF.");
+        alert.alertBox({ type: "error", msg: "Failed to upload PDF." });
       }
 
       setUploading(false);
-    } catch (err) {
-      console.error(err);
-      alert.alertBox("error", "Something went wrong during PDF upload.");
+    } catch {
+      alert.alertBox({ type: "error", msg: "Something went wrong during PDF upload." });
       setUploading(false);
     }
   };

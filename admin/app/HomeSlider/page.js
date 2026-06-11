@@ -63,8 +63,7 @@ const Slider = () => {
   const [slides, setSlides] = useState([]);
   const getSlides = async () => {
     const response = await fetchDataFromApi(`/api/homeSlider/getAllSlides`);
-    console.log(response?.data);
-    setSlides(response?.data);
+    setSlides(response?.data || []);
     return response?.data;
   };
 
@@ -146,8 +145,6 @@ const Slider = () => {
       return;
     }
 
-
-    console.log("FormFields: ", formFields)
     await postData("/api/homeSlider/create", formFields, true)
       .then((response) => {
         if (!response.error) {
@@ -173,8 +170,7 @@ const Slider = () => {
           });
         }
       })
-      .catch((error) => {
-        console.error("Post error:", error);
+      .catch(() => {
         alert.alertBox({
           type: "error",
           msg: "Something went wrong. Please try again.",
@@ -202,10 +198,10 @@ const Slider = () => {
           images: updatedPreviews,
         }));
       } else {
-        console.error("Image deletion failed:", response.message);
+        alert.alertBox({ type: "error", msg: response.message || "Failed to delete image" });
       }
-    } catch (err) {
-      console.error("Error deleting image:", err.message || err);
+    } catch {
+      alert.alertBox({ type: "error", msg: "Failed to delete image" });
     }
   };
 
@@ -213,7 +209,6 @@ const Slider = () => {
     e.preventDefault();
     try {
       const response = await deleteSlide(`/api/homeSlider/${slideId}`, slideId);
-      console.log("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
       if (!response.error) {
         alert.alertBox({ type: "success", msg: "Slide deleted" });
         // alert.alertBox({ type: "success", msg: "Product Created" });

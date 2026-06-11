@@ -15,8 +15,8 @@ const SuccessPage = () => {
   if (!isClient) return null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
-      <div className="bg-white shadow-md rounded-lg p-8 text-center max-w-sm">
+    <div className="auth-light flex min-h-screen items-center justify-center bg-[linear-gradient(135deg,#f8fafc,#eef2ff_52%,#f8fafc)] p-6 text-slate-950">
+      <div className="max-w-sm rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-2xl shadow-slate-900/10">
         <Image
           src="/images/check.png" // Replace with your image path or use a public URL
           alt="Success"
@@ -24,11 +24,11 @@ const SuccessPage = () => {
           height={80}
           className="mx-auto mb-4"
         />
-        <h1 className="text-2xl font-bold text-green-600 mb-2">Congratulations!</h1>
-        <p className="text-gray-700 mb-4">You have registered successfully.</p>
+        <h1 className="mb-2 text-2xl font-bold text-green-600">Congratulations!</h1>
+        <p className="mb-4 text-slate-600">You have registered successfully.</p>
         <button
           onClick={() => router.push("/login")}
-          className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded transition"
+          className="rounded-xl bg-slate-950 px-5 py-2.5 font-semibold text-white transition hover:bg-blue-700"
         >
           Go to Login
         </button>

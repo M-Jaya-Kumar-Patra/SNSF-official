@@ -4,14 +4,132 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --admin-bg: #f4f7fb;
+  --admin-surface: #ffffff;
+  --admin-surface-soft: #f8fafc;
+  --admin-text: #0f172a;
+  --admin-muted: #64748b;
+  --admin-border: #dbe3ef;
+  --admin-accent: #2563eb;
+  --admin-accent-strong: #0f172a;
+  --admin-sidebar: #07111f;
+  --admin-sidebar-soft: rgba(255, 255, 255, 0.07);
+}
+
+[data-admin-theme="dark"] {
+  --admin-bg: #020617;
+  --admin-surface: #0f172a;
+  --admin-surface-soft: #111827;
+  --admin-text: #e5edf8;
+  --admin-muted: #94a3b8;
+  --admin-border: #1e293b;
+  --admin-accent: #60a5fa;
+  --admin-accent-strong: #f8fafc;
+  --admin-sidebar: #020617;
+  --admin-sidebar-soft: rgba(148, 163, 184, 0.12);
+}
+
 .righteous {
   font-family: 'Righteous', sans-serif;
 }
 
 body {
-  color: white;
-  background: #ffffff;
+  color: var(--admin-text);
+  background: var(--admin-bg);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+[data-admin-theme="dark"] .bg-white {
+  background-color: var(--admin-surface) !important;
+}
+
+[data-admin-theme="dark"] .bg-slate-50,
+[data-admin-theme="dark"] .bg-slate-100 {
+  background-color: var(--admin-bg) !important;
+}
+
+[data-admin-theme="dark"] .bg-slate-200 {
+  background-color: #1e293b !important;
+}
+
+[data-admin-theme="dark"] .text-slate-900,
+[data-admin-theme="dark"] .text-slate-800,
+[data-admin-theme="dark"] .text-gray-800,
+[data-admin-theme="dark"] .text-black {
+  color: var(--admin-text) !important;
+}
+
+[data-admin-theme="dark"] .text-slate-700,
+[data-admin-theme="dark"] .text-slate-600,
+[data-admin-theme="dark"] .text-gray-600 {
+  color: #cbd5e1 !important;
+}
+
+[data-admin-theme="dark"] .text-slate-500,
+[data-admin-theme="dark"] .text-gray-500 {
+  color: var(--admin-muted) !important;
+}
+
+[data-admin-theme="dark"] .border-slate-200,
+[data-admin-theme="dark"] .border-gray-200 {
+  border-color: var(--admin-border) !important;
+}
+
+[data-admin-theme="dark"] input,
+[data-admin-theme="dark"] select,
+[data-admin-theme="dark"] textarea {
+  color: var(--admin-text);
+  background-color: var(--admin-surface-soft);
+}
+
+[data-admin-theme="dark"] .auth-light,
+[data-admin-theme="dark"] .auth-light .bg-white {
+  color: #0f172a !important;
+}
+
+[data-admin-theme="dark"] .auth-light {
+  background: linear-gradient(135deg, #f8fafc, #eef2ff 52%, #f8fafc) !important;
+}
+
+[data-admin-theme="dark"] .auth-light .bg-white {
+  background-color: #ffffff !important;
+}
+
+[data-admin-theme="dark"] .auth-light .bg-slate-50 {
+  background-color: #f8fafc !important;
+}
+
+[data-admin-theme="dark"] .auth-light .text-slate-950,
+[data-admin-theme="dark"] .auth-light .text-slate-900,
+[data-admin-theme="dark"] .auth-light .text-slate-800,
+[data-admin-theme="dark"] .auth-light .text-black {
+  color: #0f172a !important;
+}
+
+[data-admin-theme="dark"] .auth-light .text-slate-600,
+[data-admin-theme="dark"] .auth-light .text-slate-500 {
+  color: #64748b !important;
+}
+
+[data-admin-theme="dark"] .auth-light input,
+[data-admin-theme="dark"] .auth-light textarea {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+}
+
+.admin-page {
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.10), transparent 32rem),
+    var(--admin-bg);
+  color: var(--admin-text);
+}
+
+.admin-card {
+  border: 1px solid var(--admin-border);
+  background: var(--admin-surface);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
 }
 
 /* Remove spinner for number inputs in WebKit (Chrome, Safari, Edge) */

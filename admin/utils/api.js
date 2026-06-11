@@ -1,371 +1,143 @@
-"use client"
+"use client";
 
-// import { getTokenExpiration } from "@/lib/jwtUtils";
-import axios from 'axios';
+import axios from "axios";
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL
+const PUBLIC_ADMIN_ENDPOINTS = [
+  "/api/admin/login",
+  "/api/admin/register",
+  "/api/admin/forgot-password",
+  "/api/admin/reset-password",
+  "/api/user/resendOTP",
+];
 
+const isPublicEndpoint = (url) =>
+  PUBLIC_ADMIN_ENDPOINTS.some((endpoint) => url.startsWith(endpoint));
 
-export const postData = async (url, formData, authRequired = true) => {
-  try {
-    const headers = {
-      "Content-Type": "application/json",
+const getToken = () =>
+  typeof window === "undefined" ? null : localStorage.getItem("accessToken");
+
+const buildHeaders = ({ isFormData = false, authRequired = true, url = "" }) => {
+  const token = getToken();
+  const headers = {};
+
+  if (!isFormData) headers["Content-Type"] = "application/json";
+
+  const shouldAttachToken = !isPublicEndpoint(url) && (authRequired || token);
+
+  if (shouldAttachToken) {
+    if (!token && authRequired) {
+      throw new Error("Access token is missing or expired");
+    }
+    if (token) headers.Authorization = `Bearer ${token}`;
+  }
+
+  return headers;
+};
+
+const parseResponse = async (response) => {
+  const contentType = response.headers.get("content-type") || "";
+  const data = contentType.includes("application/json")
+    ? await response.json()
+    : { message: await response.text() };
+
+  if (!response.ok) {
+    return {
+      error: true,
+      success: false,
+      status: response.status,
+      message: data?.message || "Request failed",
+      data,
     };
-
-    if (authRequired) {
-      const token = localStorage.getItem("accessToken");
-      if (!token) throw new Error("Access token is missing or expired");
-      headers["Authorization"] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(apiUrl + url, {
-      method: "POST",
-      headers,
-      credentials: "include",
-      body: JSON.stringify(formData),
-    });
-
-
-    const data = await response.json(); // ✅ Only one read
-    console.log("Response JSON:", data);
-
-    return data;
-  } catch (error) {
-    console.error("POST request error:", error);
-    throw error;
   }
+
+  return data;
 };
 
-
-export const putData = async (url, formData, authRequired = true) => {
+const request = async (
+  method,
+  url,
+  body,
+  { authRequired = true, isFormData = false } = {},
+) => {
   try {
-    const headers = {
-      "Content-Type": "application/json",
+    const response = await fetch(apiUrl + url, {
+      method,
+      headers: buildHeaders({ isFormData, authRequired, url }),
+      credentials: "include",
+      body:
+        body === undefined
+          ? undefined
+          : isFormData
+          ? body
+          : JSON.stringify(body),
+    });
+
+    return await parseResponse(response);
+  } catch (error) {
+    return {
+      error: true,
+      success: false,
+      message: error?.message || "Network request failed",
     };
-
-    if (authRequired) {
-      const token = localStorage.getItem("accessToken");
-      if (!token) throw new Error("Access token is missing or expired");
-      headers["Authorization"] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(apiUrl + url, {
-      method: "PUT",
-      headers,
-      credentials: "include",
-      body: JSON.stringify(formData),
-    });
-
-    const data = await response.json(); // ✅ Only one read
-    console.log("Response JSON:", data);
-
-    return data;
-  } catch (error) {
-    console.error("POST request error:", error);
-    throw error;
   }
 };
 
+export const postData = (url, formData, authRequired = true) =>
+  request("POST", url, formData, { authRequired });
 
-export const putImage = async (url, formData, authRequired = true) => {
-  try {
-    // ⭐ IMPORTANT: NEVER set Content-Type manually for FormData
-    const headers = {};
+export const putData = (url, formData, authRequired = true) =>
+  request("PUT", url, formData, { authRequired });
 
-    if (authRequired) {
-      const token = localStorage.getItem("accessToken");
-      if (!token) throw new Error("Access token missing or expired");
+export const putImage = (url, formData, authRequired = true) =>
+  request("PUT", url, formData, { authRequired, isFormData: true });
 
-      headers["Authorization"] = `Bearer ${token}`;
-    }
+export const fetchDataFromApi = (url, authRequired = true) =>
+  request("GET", url, undefined, { authRequired });
 
-    const response = await fetch(apiUrl + url, {
-      method: "PUT",
-      headers,
-      credentials: "include",
-      body: formData, // ⭐ send raw FormData
-    });
+export const uploadImage = (url, updatedData, authRequired = true) =>
+  request("PUT", url, updatedData, { authRequired, isFormData: true });
 
-    const data = await response.json();
-    console.log("putImage response:", data);
-    return data;
-  } catch (error) {
-    console.error("PUT IMAGE error:", error);
-    throw error;
-  }
-};
+export const uploadImages = (url, formData, authRequired = true) =>
+  request("POST", url, formData, { authRequired, isFormData: true });
 
-// GET request
-export const fetchDataFromApi = async (url, authRequired = true) => {
-  try {
-    const headers = {
-      "Content-Type": "application/json", 
-      'Cache-Control': 'no-cache',
-    };
-    
-    
-    if (authRequired) {
-      const token = localStorage.getItem("accessToken")
-      
-      if (!token) {
-        return { error: true, message: "Access token is missing or expired" };
-      }
-      headers["Authorization"] = `Bearer ${token}`;
-    }
-    
-    const response = await fetch(apiUrl + url, {
-      method: "GET",
-      headers,
-    });
-    
-    const data = await response.json();
-    console.log("hii")    
-    return data;
-  } catch (error) {
-    console.error("GET request error:", error);
-    return { error: true, message: error.message };
-  }
-};
-
-// uploadImage (PUT with FormData)
-export const uploadImage = async (url, updatedData, authRequired = true) => {
-  try {
-    const headers = {};
-
-    if (authRequired) {
-      const token = localStorage.getItem("accessToken")
-
-      if (!token) {
-        return { error: true, message: "Access token is missing or expired" };
-      }
-      headers["Authorization"] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(apiUrl + url, {
-      method: "PUT",
-      headers,
-      body: updatedData, // FormData object
-    });
-
-    const data = await response.json();
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.error("PUT (uploadImage) error:", error);
-    return { error: true, message: error.message };
-  }
-};
-
-export const uploadImages = async (url, formData, authRequired = true) => {
-  try {
-    const headers = {};
-    
-    if (authRequired) {
-      const token = localStorage.getItem("accessToken");
-      
-      if (!token) {
-        return { error: true, message: "Access token is missing or expired" };
-      }
-      
-      headers["Authorization"] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(apiUrl + url, {
-      method: "POST",
-      headers, // No 'Content-Type' here!
-      body: formData,
-    });
-
-
-    const data = await response.json();
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.error("uploadImages error:", error);
-    return { error: true, message: error.message };
-  }
-};
-
-// editData (PUT with JSON body)
-export const editData = async (url, updatedData, authRequired = true) => {
-  console.log("Sending PUT request to:", apiUrl + url);
-
-            console.log("GONEEEE")
-
-
-  try {
-    const token = localStorage.getItem("accessToken")
-
-    const response = await fetch(apiUrl + url, {
-      method: "PUT",
-      headers:{
-        Authorization:`Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedData),
-    });
-    console.log(response.status, response.headers.get("Content-Type"));
-
-    const data = await response.json();
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.error("PUT (editData) error:", error);
-    return { error: true, message: error.message };
-  }
-};
-
-
-
-
+export const editData = (url, updatedData, authRequired = true) =>
+  request("PUT", url, updatedData, { authRequired });
 
 export const deleteImages = async (url, imageUrl) => {
-  const token = localStorage.getItem("accessToken");
+  const token = getToken();
 
   try {
     const response = await axios.delete(apiUrl + url, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         "Content-Type": "application/json",
       },
-      params: {
-        img: imageUrl, // ✅ Will be appended as ?img=...
-      },  
+      params: imageUrl ? { img: imageUrl } : undefined,
     });
 
     return response.data;
   } catch (error) {
-    console.error("deleteImages error:", error.response?.data || error.message);
-    throw error;
+    return {
+      error: true,
+      success: false,
+      message: error.response?.data?.message || error.message,
+    };
   }
 };
 
+export const deleteCategory = (url, id) =>
+  request("DELETE", url, id ? { id } : undefined, { authRequired: true });
 
-export const deleteCategory = async (url, id)=>{
-  try{
-    const token = localStorage.getItem("accessToken")
-    
-    console.log("id", id)
-    const response = await axios.delete(apiUrl+url,{
-      headers:{
-         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      id:{id}
-      
-    })
+export const deleteProduct = (url, id) =>
+  request("DELETE", url, id ? { id } : undefined, { authRequired: true });
 
-    return response.data
-  }catch(error){
-    console.error("deleteCategory error:",  error);
-    throw error;
-  }
-}
+export const deleteData = (url) =>
+  request("DELETE", url, undefined, { authRequired: true });
 
-export const deleteProduct = async (url, id)=>{
-  try{
-    const token = localStorage.getItem("accessToken")
-    
-    const response = await axios.delete(apiUrl+url,{
-      headers:{
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      id:{id}
-      
-    })
+export const deleteMultipleData = (url, data) =>
+  request("DELETE", url, data, { authRequired: true });
 
-    return response.data
-  }catch(error){
-    console.error("deleteCategory error:",  error);
-    throw error;
-  }
-}
-
-
-export const deleteData = async (url)=>{
-  try{
-    const token = localStorage.getItem("accessToken")
-    
-    const response = await axios.delete(apiUrl+url,{
-      headers:{
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      }
-      
-    })
-
-    return response.data
-  }catch(error){
-    console.error("deleteCategory error:",  error);
-    throw error;
-  }
-}
-
-
-// export const deleteMultipleData = async (url, data) => {
-//   try {
-//     const token = localStorage.getItem("accessToken");
-
-//     const response = await axios.delete(apiUrl + url, {
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//         "Content-Type": "application/json",
-//       },
-//       data // ✅ Use 'data' for the request body in DELETE
-//     });
-
-//     return response.data;
-//   } catch (error) {
-//     console.error("deleteMultipleData error:", error.response?.data || error.message);
-//     throw error;
-//   }
-// }
-export const deleteMultipleData = async (url, data) => {
-  try {
-    const token = localStorage.getItem("accessToken");
-
-    const response = await fetch(apiUrl + url, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data), // ✅ must be stringified
-    });
-
-    if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.message);
-    }
-
-    return await response.json();
-
-  } catch (error) {
-    console.error("❌ deleteMultipleData FULL ERROR:", error);
-    throw error;
-  }
-};
-
-
-export const deleteSlide = async (url, id)=>{
-  try{
-
-    const token = localStorage.getItem("accessToken")
-    
-    const response = await axios.delete(apiUrl+url,{
-      headers:{
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      id:{id}
-      
-    })
-
-    return response.data
-  }catch(error){
-    console.error("deleteSlide error:",  error);
-    throw error;
-  }
-}
+export const deleteSlide = (url, id) =>
+  request("DELETE", url, id ? { id } : undefined, { authRequired: true });

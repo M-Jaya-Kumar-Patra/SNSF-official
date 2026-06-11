@@ -1,22 +1,26 @@
-// components/AdminGuard.jsx
 "use client";
-import { useAdmin } from "../context/AdminContext.js";
-import { useRouter } from "next/navigation";
+
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
 
 export default function AdminGuard({ children }) {
-  const { adminData, loading } = useAdmin();
   const router = useRouter();
+  const { isLogin, loading } = useAuth();
 
   useEffect(() => {
-    if (!loading && !adminData) {
-      router.push("/login"); // redirect if no admin
+    if (!loading && !isLogin) {
+      router.replace("/login");
     }
-  }, [loading, adminData, router]);
+  }, [loading, isLogin, router]);
 
-  if (loading) return <div>Loading...</div>; // or show a spinner
-
-  if (!adminData) return null; // prevent render until redirected
+  if (loading || !isLogin) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[var(--admin-bg)] text-sm text-[var(--admin-muted)]">
+        Checking admin session...
+      </div>
+    );
+  }
 
   return children;
 }
