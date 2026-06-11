@@ -117,7 +117,7 @@ export default function HomePageClient({
         <Shopbycat />
       </section>
 
-      <section className="flex justify-center min-h-[430px] sm:min-h-[560px] lg:min-h-[390px] max-w-[1600px] mx-auto mt-2 sm:mt-4 md:mt-6 px-2 sm:px-4 md:px-6">
+      <section className="flex justify-center min-h-[430px] sm:min-h-[560px] lg:min-h-[620px] max-w-[1600px] mx-auto mt-2 sm:mt-4 md:mt-6 px-2 sm:px-4 md:px-6">
         <Bestsellers
           posterIndex={0}
           initialData={initialBestsellers}

@@ -124,6 +124,7 @@ const Navbar = () => {
               height={64}
               className="h-[48px] w-[132px] object-contain sm:h-[60px] sm:w-[172px]"
               priority
+              fetchPriority="high"
             />
           </button>
 
