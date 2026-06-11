@@ -113,7 +113,7 @@ export default function HomePageClient({
         <Slider initialSlides={initialSlides} />
       </section>
 
-      <section className="flex justify-center max-w-[1600px] mx-auto lg:hidden min-h-[170px] sm:min-h-[260px] mt-3 mb-4 sm:mt-4 md:mt-6 px-2 sm:px-4 md:px-6">
+      <section className="flex justify-center max-w-[1600px] mx-auto md:hidden min-h-[170px] sm:min-h-[260px] mt-3 mb-4 sm:mt-4 md:mt-6 px-2 sm:px-4 md:px-6">
         <Shopbycat />
       </section>
 
