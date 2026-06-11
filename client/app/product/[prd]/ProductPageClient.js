@@ -14,10 +14,21 @@ import { IoCall } from "react-icons/io5";
 import { PiShareFat } from "react-icons/pi";
 import { trackProductEvent } from "@/lib/tracking";
 import { usePrd } from "@/app/context/ProductContext";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  BadgeCheck,
+  ChevronLeft,
+  ChevronRight,
+  Headphones,
+  Ruler,
+  ShieldCheck,
+} from "lucide-react";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
 const Suggestions = dynamic(() => import("@/components/Suggestions"), {
+  ssr: false,
+});
+
+const Recommendations = dynamic(() => import("@/components/Recommendations"), {
   ssr: false,
 });
 
@@ -139,28 +150,29 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
 
   if (isCheckingToken || !openedProduct) {
     return (
-      <div className="flex flex-col w-full min-h-screen sm:py-4 items-center bg-slate-100">
-        <div className="w-full sm:w-[1020px] min-h-screen p-4 sm:flex justify-between bg-white">
-          <div className="w-full flex gap-2 sm:w-[420px] p-1">
-            <div className="hidden sm:flex flex-col gap-1">
+      <div className="flex min-h-screen w-full flex-col items-center bg-slate-100 px-3 py-4 sm:px-6">
+        <div className="w-full max-w-[1280px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-xl shadow-slate-200/70 sm:grid sm:grid-cols-[54%_46%] sm:p-5">
+          <div className="flex w-full gap-3 rounded-2xl bg-slate-50 p-3">
+            <div className="hidden flex-col gap-2 sm:flex">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-[74px] w-16 bg-slate-200/80 animate-pulse"
+                  className="h-[86px] w-[78px] rounded-xl bg-slate-200/80 animate-pulse"
                 />
               ))}
             </div>
-            <div className="h-[310px] w-full bg-slate-200/80 animate-pulse" />
+            <div className="h-[360px] w-full rounded-2xl bg-slate-200/80 animate-pulse sm:h-[520px]" />
           </div>
 
-          <div className="sm:w-[600px] sm:p-5 sm:pl-6">
+          <div className="p-2 sm:p-6">
+            <div className="mb-3 h-6 w-32 rounded-full bg-slate-200/80 animate-pulse" />
             <div className="mb-3 h-10 w-4/5 rounded bg-slate-200/80 animate-pulse" />
             <div className="mb-4 h-6 w-3/5 rounded bg-slate-200/80 animate-pulse sm:mb-8" />
             <div className="flex gap-[8px]">
-              <div className="mb-8 h-[35px] w-1/2 rounded bg-slate-200/80 animate-pulse" />
-              <div className="mb-8 h-[35px] w-1/2 rounded bg-slate-200/80 animate-pulse" />
+              <div className="mb-8 h-[46px] w-1/2 rounded-xl bg-slate-200/80 animate-pulse" />
+              <div className="mb-8 h-[46px] w-1/2 rounded-xl bg-slate-200/80 animate-pulse" />
             </div>
-            <div className="mb-8 h-[200px] w-full rounded bg-slate-200/80 animate-pulse" />
+            <div className="mb-8 h-[220px] w-full rounded-2xl bg-slate-200/80 animate-pulse" />
           </div>
         </div>
       </div>
@@ -182,10 +194,10 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
 
   // Actual JSX rendering
   return (
-    <div className="flex w-full min-h-screen flex-col items-center bg-slate-100">
-      <div className="mx-auto mb-2 w-full justify-between bg-white pt-2 sm:my-3 sm:w-[1020px] sm:p-2 lg:flex">
+    <div className="flex min-h-screen w-full flex-col items-center bg-slate-100 px-0 pb-10 sm:px-6 sm:py-4">
+      <div className="mx-auto w-full max-w-[1280px] overflow-hidden border border-slate-200 bg-white shadow-xl shadow-slate-200/70 sm:rounded-2xl lg:grid lg:grid-cols-[54%_46%]">
         {/* Left: Image Section */}
-        <div className="image mr-4 flex w-full flex-col gap-[2px] sm:sticky sm:m-3 sm:h-[310px] sm:w-[400px] sm:flex-row sm:border sm:border-slate-400 sm:p-[2px] lg:top-[110px]">
+        <div className="image flex w-full flex-col gap-3 border-b border-slate-200 bg-slate-50 p-3 sm:sticky sm:top-[110px] sm:p-5 lg:h-[calc(100vh-140px)] lg:min-h-[620px] lg:border-b-0 lg:border-r">
           {/* Mobile Carousel */}
           <div className="block md:hidden w-full relative">
             <div
@@ -197,7 +209,7 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
                   key={src || idx}
                   type="button"
                   aria-label={`Open product image ${idx + 1}`}
-                  className="min-w-full snap-center bg-white"
+                  className="min-w-full snap-center rounded-2xl bg-white"
                   onClick={() => {
                     openLargeView(src);
                     setHideArrows(true);
@@ -212,7 +224,7 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
                       "/images/placeholder.jpg"
                     }
                     alt={`${openedProduct?.name || "Product"} image ${idx + 1}`}
-                    className="w-full h-[300px] object-contain"
+                    className="h-[330px] w-full rounded-2xl object-contain p-3"
                     width={500}
                     height={300}
                     priority={idx === 0}
@@ -225,7 +237,7 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
             <button
               type="button"
               aria-label="Toggle wishlist"
-              className="absolute right-3 top-3 z-[90] flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 border-opacity-50 bg-white shadow-md hover:shadow-inner"
+              className="absolute right-4 top-4 z-[90] flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white shadow-md transition hover:scale-105"
               onClick={(e) => {
                 if (!isLogin) {
                   router.push("/login");
@@ -251,7 +263,7 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
               userData?.wishlist?.some(
                 (item) => item === String(openedProduct?._id),
               ) ? (
-                <MdFavorite className="!text-rose-600 text-[22px] z-10" />
+                <MdFavorite className="!text-slate-950 text-[22px] z-10" />
               ) : (
                 <MdFavoriteBorder className="text-slate-600 text-[22px]" />
               )}
@@ -261,7 +273,7 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
             <button
               type="button"
               aria-label="Share product"
-              className="absolute right-3 top-12 z-[90] flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 border-opacity-50 bg-white shadow-md hover:shadow-inner"
+              className="absolute right-4 top-16 z-[90] flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white shadow-md transition hover:scale-105"
               onClick={async () => {
                 const shareData = {
                   title: openedProduct?.name,
@@ -354,14 +366,16 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
           )}
 
           {/* Desktop Thumbnail + Main Image */}
-          <div className="hidden h-auto gap-2 md:flex">
-            <div className="h-full w-[75px] overflow-y-auto border p-[2px] scrollbar-hide">
+          <div className="hidden h-full gap-3 md:flex">
+            <div className="h-full w-[92px] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 scrollbar-hide">
               <ul className="space-y-2">
                 {productImages?.map((src, idx) => (
                   <li
                     key={idx}
-                    className={`cursor-pointer rounded border bg-white ${
-                      selectedImage === src ? "ring-2 ring-blue-500" : ""
+                    className={`cursor-pointer overflow-hidden rounded-xl border bg-white transition ${
+                      selectedImage === src
+                        ? "border-slate-900 ring-2 ring-slate-900/10"
+                        : "border-slate-200 hover:border-slate-400"
                     }`}
                     onClick={() => setSelectedImage(src)}
                   >
@@ -374,7 +388,7 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
                         "/images/placeholder.jpg"
                       }
                       alt={`${openedProduct?.name || "Product"} thumbnail ${idx + 1}`}
-                      className="h-[64px] w-[128px] object-contain"
+                      className="h-[78px] w-full object-contain p-1"
                       width={100}
                       height={100}
                     />
@@ -383,10 +397,10 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
               </ul>
             </div>
 
-            <div className="relative w-full">
-              <div className="relative flex w-full items-center justify-center bg-gray-100 sm:h-full sm:w-[319px]">
+            <div className="relative min-w-0 flex-1">
+              <div className="relative flex h-full min-h-[560px] w-full items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white">
                 <Image
-                  className="h-full w-full cursor-zoom-in border object-contain"
+                  className="h-full w-full cursor-zoom-in object-contain p-5 transition duration-300 hover:scale-[1.02]"
                   src={getOptimizedCloudinaryUrl(
                     selectedImage ||
                       productImages?.[0] ||
@@ -397,8 +411,8 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
                     },
                   )}
                   alt="Selected Product"
-                  width={300}
-                  height={300}
+                  width={720}
+                  height={720}
                   priority
                  onClick={() => openLargeView(selectedImage)}
                 />
@@ -407,7 +421,7 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
                 <button
                   type="button"
                   aria-label="Toggle wishlist"
-                  className="absolute right-3 top-4 z-[500] flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 border-opacity-50 bg-white shadow-md hover:shadow-inner"
+                  className="absolute right-4 top-4 z-[500] flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white shadow-md transition hover:scale-105"
                   onClick={(e) => {
                     if (!isLogin) {
                       router.push("/login");
@@ -433,7 +447,7 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
                   userData?.wishlist?.some(
                     (item) => item === String(openedProduct?._id),
                   ) ? (
-                    <MdFavorite className="!text-rose-600 text-[22px] z-10" />
+                    <MdFavorite className="!text-slate-950 text-[22px] z-10" />
                   ) : (
                     <MdFavoriteBorder className="text-slate-600 text-[22px]" />
                   )}
@@ -443,7 +457,7 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
                 <button
                   type="button"
                   aria-label="Share product"
-                  className="absolute right-3 top-14 z-[500] flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-slate-200 border-opacity-50 bg-white shadow-md hover:shadow-inner"
+                  className="absolute right-4 top-16 z-[500] flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-slate-200 bg-white shadow-md transition hover:scale-105"
                   onClick={async () => {
                     const shareData = {
                       title: openedProduct?.name,
@@ -541,108 +555,164 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
         </div>
 
         {/* Right: Product Details */}
-        <div className="details px-3 sm:w-[600px] sm:p-4 sm:pt-6">
-          <h1 className="am:mt-0 mb-1 mt-2 text-[18px] font-medium text-gray-800 sm:mb-3 sm:text-[20px]">
+        <div className="details px-4 py-5 text-slate-950 sm:p-7 lg:py-8">
+          <div className="mb-4 flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-700">
+              <BadgeCheck className="h-4 w-4" />
+              Verified SNSF
+            </span>
+            {openedProduct?.catName && (
+              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-slate-600">
+                {openedProduct.catName}
+              </span>
+            )}
+          </div>
+
+          <h1 className="max-w-[620px] text-[28px] font-semibold leading-tight text-slate-950 sm:text-[38px]">
             {openedProduct?.name}
           </h1>
 
-          <p className="mb-2 text-[14px] font-medium text-gray-500 sm:mb-3 sm:text-[16px]">
-            {openedProduct?.brand}
+          <p className="mt-3 text-[15px] font-medium text-slate-500 sm:text-[16px]">
+            {openedProduct?.brand
+              ? `${openedProduct.brand} collection`
+              : "Premium steel furniture collection"}
           </p>
 
-          {!hideArrows && (
-            <>
-              <div className="my-2 mt-10 flex justify-around gap-2">
-                <button
-                  type="button"
-                  className="flex w-auto items-center justify-center gap-2 rounded-md border border-slate-900 px-1 py-1 text-base font-medium text-slate-900 transition hover:bg-slate-900 hover:text-white sm:w-1/2"
-                  onClick={async () => {
-                    if (!isLogin) {
-                      router.push("/login");
-                    } else {
-                      try {
-                        await postData("/api/enquiries/", {
-                          userId: userData?._id,
-                          contactInfo: {
-                            name: userData?.name,
-                            email: userData?.email,
-                            phone: userData?.phone,
-                          },
-                          productId: openedProduct?._id,
-                          message: `Customer opened WhatsApp for "${openedProduct?.name}"`,
-                          userMsg: `Enquiry for ${openedProduct?.name} via WhatsApp`,
-                          image: openedProduct?.images?.[0],
-                        });
-
-                        const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${openedProduct?.name}*.\nHere is the product link:\nhttps://snsteelfabrication.com/product/${openedProduct?._id}`;
-                        window.open(whatsappURL, "_blank");
-                      } catch {
-                        return;
-                      }
-                    }
-                  }}
-                >
-                  <WhatsappIcon className="!w-5 !h-5" />
-                  <span className="hidden sm:block">Get Price on WhatsApp</span>
-                </button>
-
-                <button
-                  type="button"
-                  className="flex w-full items-center justify-center gap-2 rounded-md bg-rose-600 px-2 py-1 text-base font-medium text-white transition hover:bg-rose-700 sm:w-1/2"
-                  onClick={async () => {
-                    if (!isLogin) {
-                      router.push("/login");
-                    } else {
-                      try {
-                        await postData("/api/enquiries/", {
-                          userId: userData?._id,
-                          contactInfo: {
-                            name: userData?.name,
-                            email: userData?.email,
-                            phone: userData?.phone,
-                          },
-                          productId: openedProduct?._id,
-                          message: `Direct call initiated for "${openedProduct?.name}"`,
-                          userMsg: `Enquiry for ${openedProduct?.name} via Call`,
-                          image: openedProduct?.images[0],
-                        });
-
-                        window.open("tel:+919776501230");
-                      } catch {
-                        return;
-                      }
-                    }
-                  }}
-                >
-                  <IoCall className="w-6 h-6 mx-2" />
-                  <span>Call to Get Best Price</span>
-                </button>
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            {[
+              {
+                icon: Ruler,
+                title: "Custom fit",
+                text: "Size support",
+              },
+              {
+                icon: ShieldCheck,
+                title: "Built strong",
+                text: "Steel quality",
+              },
+              {
+                icon: Headphones,
+                title: "Direct help",
+                text: "Quick enquiry",
+              },
+            ].map(({ icon: Icon, title, text }) => (
+              <div
+                key={title}
+                className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3"
+              >
+                <Icon className="mb-2 h-5 w-5 text-slate-700" />
+                <p className="text-sm font-semibold text-slate-900">{title}</p>
+                <p className="mt-1 text-xs font-medium text-slate-500">{text}</p>
               </div>
-            </>
-          )}
+            ))}
+          </div>
 
-          {/* Description */}
-          {openedProduct?.description && (
-            <div className="mt-4 flex gap-4">
-              <h2 className="font-semibold text-gray-500">Description</h2>
-              <p className="text-black">{openedProduct?.description}</p>
+          {!hideArrows && (
+            <div className="mt-7 grid gap-3 sm:grid-cols-2">
+              <button
+                type="button"
+                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 py-3 text-base font-semibold text-white transition hover:bg-slate-800"
+                onClick={async () => {
+                  if (!isLogin) {
+                    router.push("/login");
+                  } else {
+                    try {
+                      await postData("/api/enquiries/", {
+                        userId: userData?._id,
+                        contactInfo: {
+                          name: userData?.name,
+                          email: userData?.email,
+                          phone: userData?.phone,
+                        },
+                        productId: openedProduct?._id,
+                        message: `Customer opened WhatsApp for "${openedProduct?.name}"`,
+                        userMsg: `Enquiry for ${openedProduct?.name} via WhatsApp`,
+                        image: openedProduct?.images?.[0],
+                      });
+
+                      const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${openedProduct?.name}*.\nHere is the product link:\nhttps://snsteelfabrication.com/product/${openedProduct?._id}`;
+                      window.open(whatsappURL, "_blank");
+                    } catch {
+                      return;
+                    }
+                  }
+                }}
+              >
+                <WhatsappIcon className="!h-5 !w-5" />
+                <span>Get Price on WhatsApp</span>
+              </button>
+
+              <button
+                type="button"
+                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-base font-semibold text-slate-900 transition hover:border-slate-950 hover:bg-slate-950 hover:text-white"
+                onClick={async () => {
+                  if (!isLogin) {
+                    router.push("/login");
+                  } else {
+                    try {
+                      await postData("/api/enquiries/", {
+                        userId: userData?._id,
+                        contactInfo: {
+                          name: userData?.name,
+                          email: userData?.email,
+                          phone: userData?.phone,
+                        },
+                        productId: openedProduct?._id,
+                        message: `Direct call initiated for "${openedProduct?.name}"`,
+                        userMsg: `Enquiry for ${openedProduct?.name} via Call`,
+                        image: openedProduct?.images[0],
+                      });
+
+                      window.open("tel:+919776501230");
+                    } catch {
+                      return;
+                    }
+                  }
+                }}
+              >
+                <IoCall className="h-5 w-5" />
+                <span>Call to Get Best Price</span>
+              </button>
             </div>
           )}
 
-          {/* Product Specs */}
+          {openedProduct?.description && (
+            <section className="mt-7 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <h2 className="text-[17px] font-semibold text-slate-900">
+                Product Description
+              </h2>
+              <p className="mt-2 text-[15px] leading-7 text-slate-600">
+                {openedProduct?.description}
+              </p>
+            </section>
+          )}
+
           <ProductSpecs specs={openedProduct?.specifications} />
         </div>
       </div>
 
       {/* similar products */}
       {!showLarge && showSuggestions && (
-        <div className="w-full mx-10">
+        <div className="mt-6 flex w-full max-w-[1280px] flex-col gap-5 px-3 sm:px-0">
+          <Recommendations
+            title="Suggested for You"
+            subtitle="Picked from your browsing signals and nearby product styles."
+            eyebrow="Personal picks"
+            limit={10}
+            fallbackProductId={openedProduct?._id}
+            excludeProductId={openedProduct?._id}
+            catId={openedProduct?.catId}
+            subCatId={openedProduct?.subCatId}
+            thirdSubCatId={openedProduct?.thirdSubCatId}
+            brand={openedProduct?.brand}
+          />
+
           <Suggestions
             productId={openedProduct?._id}
-            catId={openedProduct.catId}
-            subCatId={openedProduct.subCatId}
-            thirdSubCatId={openedProduct.thirdSubCatId}
-            brand={openedProduct.brand}
+            catId={openedProduct?.catId}
+            subCatId={openedProduct?.subCatId}
+            thirdSubCatId={openedProduct?.thirdSubCatId}
+            brand={openedProduct?.brand}
           />
         </div>
       )}

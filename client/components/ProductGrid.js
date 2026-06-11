@@ -1,5 +1,6 @@
 // ProductGrid.jsx
 import React from "react";
+import { ArrowUpRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
@@ -7,96 +8,59 @@ export default function ProductGrid({
   products = [],
   row = 2,
   priorityFirst = false,
+  badge = "View",
 }) {
   const router = useRouter();
 
   return (
-    <div className="max-w-[1400px] mx-auto">
+    <div className="mx-auto max-w-[1400px]">
       <div
-        className="
-      grid gap-4 sm:gap-6
-
-      /* MOBILE */
-      grid-cols-2
-
-      /* SM AND UP */
-      sm:grid-cols-none
-      sm:grid-flow-col
-      sm:overflow-x-auto
-      sm:px-4
-      sm:pb-4
-      scrollbar-hide
-    "
+        className="grid grid-cols-2 gap-3 scrollbar-hide sm:grid-cols-none sm:grid-flow-col sm:overflow-x-auto sm:px-4 sm:pb-4 md:gap-4"
         style={{
           gridTemplateRows: `repeat(${row}, minmax(0, 1fr))`,
-          gridAutoColumns: "minmax(220px, 1fr)",
+          gridAutoColumns: "minmax(218px, 1fr)",
         }}
       >
-        {products.map((p, index) => {
+        {products.map((product, index) => {
           const isPriority = priorityFirst && index === 0;
 
           return (
-            <article
-              key={p.id}
-              onClick={() => router.push(`/product/${p.id}`)}
-              className="
-    group
-    bg-white
-    rounded-xl
-    sm:rounded-2xl
-    overflow-hidden
-    border border-gray-200
-    shadow-[0_2px_10px_rgba(0,0,0,0.04)]
-    transition-all duration-300 ease-out
-    sm:hover:shadow-[0_10px_10px_rgba(0,0,0,0.12)]
-    sm:hover:-translate-y-1
-    flex flex-col
-  "
+            <button
+              type="button"
+              key={product.id}
+              aria-label={`Open ${product.title || "product"}`}
+              onClick={() => router.push(`/product/${product.id}`)}
+              className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg"
             >
-              <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100">
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
                 <img
-                  src={getCloudinaryImageUrl(p.image, {
-                    width: 320,
-                    height: 240,
+                  src={getCloudinaryImageUrl(product.image, {
+                    width: 420,
+                    height: 315,
                   })}
-                  alt={p.title ?? "product image"}
+                  alt={product.title ?? "Product image"}
                   loading={isPriority ? "eager" : "lazy"}
                   fetchPriority={isPriority ? "high" : "auto"}
                   decoding={isPriority ? "sync" : "async"}
-                  className="
-        absolute inset-0
-        w-full h-full
-        object-cover
-        transition-transform duration-700 ease-out
-        group-hover:scale-105
-      "
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />
-
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
               </div>
 
-              <div className="p-1 sm:p-2 flex flex-col gap-2 flex-1 items-center">
+              <div className="flex min-h-[84px] w-full flex-1 flex-col justify-between gap-2 p-3">
                 <h3
-                  className="
-       card-title
-        leading-snug
-        text-center
-        truncate
-        w-full
-        mx-10
-      "
-                  title={p.title}
+                  className="line-clamp-2 text-sm font-semibold leading-snug text-slate-800"
+                  title={product.title}
                 >
-                  {p.title}
+                  {product.title}
                 </h3>
 
-                {p.subtitle && (
-                  <p className="text-xs sm:text-sm text-gray-500 line-clamp-1 truncate">
-                    {p.subtitle}
-                  </p>
-                )}
+                <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 transition group-hover:text-slate-900">
+                  View product
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </span>
               </div>
-            </article>
+            </button>
           );
         })}
       </div>

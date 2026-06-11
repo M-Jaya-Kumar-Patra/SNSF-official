@@ -1,402 +1,403 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { useRouter, usePathname } from "next/navigation";
-import { fetchDataFromApi, searchAPI } from "@/utils/api";
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import { usePathname, useRouter } from "next/navigation";
+import { ArrowUpRight, Loader2, Search as SearchIcon, X } from "lucide-react";
 import { useScreen } from "@/app/context/ScreenWidthContext";
-import CloseIcon from "@mui/icons-material/Close";
 import SearchDropdownPortal from "./SearchDropdownPortal";
 import { searchWithTracking } from "@/utils/searchWithTracking";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
-
-
-const Search = ({ onClose }) => {
+const Search = ({ onClose, navScrolled = null }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
-  const pathName = usePathname();
+  const [isSearching, setIsSearching] = useState(false);
+  const [dropdownStyle, setDropdownStyle] = useState({});
 
-  const inputWrapperRef = useRef(null);
-const [dropdownStyle, setDropdownStyle] = useState({});
-
-
-
-const justNavigatedRef = useRef(false); 
   const containerRef = useRef(null);
+  const inputWrapperRef = useRef(null);
+  const inputRef = useRef(null);
+  const justNavigatedRef = useRef(false);
+
   const router = useRouter();
   const pathname = usePathname();
+  const pathName = usePathname();
 
-  const { isXs, isSm, isMd, isLg, isXl, isXl1440, is2Xl, isGELg, screenWidth, deskSearch, setDeskSearch } = useScreen(); 
+  const {
+    isMd,
+    isLg,
+    isXl,
+    isXl1440,
+    is2Xl,
+    deskSearch,
+    setDeskSearch,
+  } = useScreen();
 
+  const effectiveScrolled =
+    typeof navScrolled === "boolean" ? navScrolled : isScrolled;
+  const isTopExpanded = pathName === "/" && !effectiveScrolled;
+  const isSearchExpanded = deskSearch || isTopExpanded;
 
-  const inputRef = useRef(null);
+  const largeExpandedWidth = is2Xl
+    ? "w-[520px]"
+    : isXl1440
+    ? "w-[440px]"
+    : isXl
+    ? "w-[380px]"
+    : isLg
+    ? "w-[320px]"
+    : isMd
+    ? "w-[280px]"
+    : "w-full";
 
-  useEffect(() => {
-  if (isDropdownVisible && inputWrapperRef.current) {
+  const mediumExpandedWidth = is2Xl
+    ? "w-[360px]"
+    : isXl1440
+    ? "w-[340px]"
+    : isXl
+    ? "w-[320px]"
+    : isLg
+    ? "w-[300px]"
+    : isMd
+    ? "w-[260px]"
+    : "w-full";
+
+  const expandedWidth = effectiveScrolled
+    ? mediumExpandedWidth
+    : largeExpandedWidth;
+
+  const collapsedWidth =
+    isMd || isLg
+      ? "w-[42px]"
+      : isXl
+      ? "w-[110px]"
+      : isXl1440 || is2Xl
+      ? "w-[118px]"
+      : "hidden";
+
+  const currentWidth = isSearchExpanded ? expandedWidth : collapsedWidth;
+
+  const updateDropdownPosition = () => {
+    if (!inputWrapperRef.current) return;
+
     const rect = inputWrapperRef.current.getBoundingClientRect();
+    const desiredWidth = Math.min(
+      Math.max(rect.width, 380),
+      window.innerWidth - 24,
+    );
+    const left = Math.min(
+      Math.max(12, rect.left),
+      window.innerWidth - desiredWidth - 12,
+    );
 
     setDropdownStyle({
       position: "fixed",
-      top: rect.bottom + 8,
-      left: rect.left,
-      width: rect.width,
+      top: rect.bottom + 10,
+      left,
+      width: desiredWidth,
       zIndex: 99999,
     });
-  }
-}, [isDropdownVisible]);
+  };
 
-
-
-
-useEffect(() => {
-  if (deskSearch) containerRef.current?.focus();
-}, [deskSearch]);
-
-
-
-  const expandedWidth = is2Xl
-  ? "w-[520px] "
-  : isXl1440
-  ? "w-[420px] "
-  : isXl
-  ? "w-[360px] "
-  : isLg
-  ? "w-[300px] "
-  : isMd
-  ? "w-[260px] "
-  : "w-full";
-
-
-  const shouldShowSearch = true;
-
-
-  const collapsedWidth = pathName === "/" ? isScrolled ?
-isSm?"hidden" : isMd? "w-[37.2px] ": isLg? "w-[37.2px]" : isXl? "w-[110px]": isXl1440? "w-[110px]":is2Xl? "w-[110px]":"hidden":
- isSm?"hidden " : isMd? "w-[200px]" : isGELg? "w-[200px] "  :    "hidden"
-:isMd?"w-[37.2px]":isLg?"w-[37.2px]":  isXl? "w-[110px]":isXl1440 || is2Xl?"w-[200px]":"hidden";
-
-  // 🔹 Reset search state
   const resetSearch = () => {
     setIsDropdownVisible(false);
+    setIsSearching(false);
+
     if (!pathname.startsWith("/ProductListing")) {
       setSearchQuery("");
       setResults([]);
     }
   };
 
-  // 🔹 Clear search when route changes (except /ProductListing)
+  useEffect(() => {
+    if (deskSearch) inputRef.current?.focus();
+  }, [deskSearch]);
+
   useEffect(() => {
     if (!pathname.startsWith("/ProductListing")) {
       setSearchQuery("");
       setResults([]);
       setIsDropdownVisible(false);
+      setIsSearching(false);
     }
   }, [pathname]);
-   useEffect(() => {
-      const handleScroll = () => setIsScrolled(window.scrollY > 10);
-      window.addEventListener("scroll", handleScroll);
-      return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-  
 
-  // Update debounced query after 300ms of no typing
-useEffect(() => {
-  const handler = setTimeout(() => {
-    setDebouncedQuery(searchQuery);
-  }, 500);
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 10);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  return () => clearTimeout(handler);
-}, [searchQuery]);
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery.trim());
+    }, 350);
 
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
 
-useEffect(() => {
-  if (justNavigatedRef.current) {
-    justNavigatedRef.current = false;
-    return;
-  }
-
-  if (!debouncedQuery.trim()) return resetSearch();
-
-  const fetchResults = async () => {
-    try {
-      const res = await searchWithTracking(debouncedQuery, "desktop");
-      setResults(res?.products ?? []);
-      setIsDropdownVisible(true);
-    } catch {
-      setResults([]);
+  useEffect(() => {
+    if (justNavigatedRef.current) {
+      justNavigatedRef.current = false;
+      return;
     }
+
+    if (!debouncedQuery) {
+      resetSearch();
+      return;
+    }
+
+    let ignore = false;
+
+    const fetchResults = async () => {
+      try {
+        setIsSearching(true);
+        const res = await searchWithTracking(debouncedQuery, "desktop");
+        if (ignore) return;
+
+        setResults(res?.products ?? []);
+        setIsDropdownVisible(true);
+        updateDropdownPosition();
+      } catch {
+        if (!ignore) setResults([]);
+      } finally {
+        if (!ignore) setIsSearching(false);
+      }
+    };
+
+    fetchResults();
+
+    return () => {
+      ignore = true;
+    };
+  }, [debouncedQuery]);
+
+  useEffect(() => {
+    if (!isDropdownVisible) return;
+
+    updateDropdownPosition();
+
+    const handleResize = () => updateDropdownPosition();
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("scroll", handleResize, { passive: true });
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", handleResize);
+    };
+  }, [isDropdownVisible, isSearchExpanded]);
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setDeskSearch(false);
+        setIsDropdownVisible(false);
+        resetSearch();
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  const handleClickResult = (item) => {
+    justNavigatedRef.current = true;
+
+    setSearchQuery("");
+    setResults([]);
+    setIsDropdownVisible(false);
+    setDeskSearch(false);
+
+    if (onClose) onClose();
+
+    router.push(`/product/${item._id}`);
   };
 
-  fetchResults();
-}, [debouncedQuery]);
-
-
- const onChangeInput = (e) => {
-  setSearchQuery(e.target.value);
-};
-
-
-const handleClickResult = (item) => {
-  justNavigatedRef.current = true; // 🔒 lock search
-
-  setSearchQuery("");
-  setResults([]);
-  setIsDropdownVisible(false);
-  setDeskSearch(false);
-
-  if (onClose) onClose();
-
-  if (item.thirdSubCatId) {
-    router.push(`/ProductListing?thirdSubCatId=${item.thirdSubCatId}`);
-  } else if (item.subCatId) {
-    router.push(`/ProductListing?subCatId=${item.subCatId}`);
-  } else if (item.catId) {
-    router.push(`/ProductListing?catId=${item.catId}`);
-  }
-};
-
-
-  // 🔹 Handle Enter key
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       if (results.length) handleClickResult(results[0]);
       else setIsDropdownVisible(false);
     }
-  };
 
-useEffect(() => {
-  const handleOutsideClick = (e) => {
-    if (containerRef.current && !containerRef.current.contains(e.target)) {
-      setDeskSearch(false);        // ✅ collapse bar
+    if (e.key === "Escape") {
       setIsDropdownVisible(false);
-      resetSearch();
+      setDeskSearch(false);
+      inputRef.current?.blur();
     }
   };
 
-  document.addEventListener("mousedown", handleOutsideClick);
-  return () => document.removeEventListener("mousedown", handleOutsideClick);
-}, []);
+  const handleClearOrClose = (e) => {
+    e.stopPropagation();
 
+    if (searchQuery) {
+      setSearchQuery("");
+      setResults([]);
+      setIsDropdownVisible(false);
+      inputRef.current?.focus();
+      return;
+    }
 
-
-  const toggleDeskSearch = ()=>{
-    setDeskSearch(prev => !prev);
+    setDeskSearch(false);
+    setIsDropdownVisible(false);
   };
 
-  // 🔹 Optimize Cloudinary images
-
-
-  
-
-
   return (
-
-<div
-  ref={containerRef}
-  className="relative flex items-center w-full cursor-text z-[1200]"
-  onClick={() => {
-    if (!deskSearch) setDeskSearch(true);
-  }}
->
-
-   <div
-  ref={containerRef}
-  className={`
-    relative transition-all duration-300 ease-out
-    ${shouldShowSearch ? "block" : "hidden"}
-    ${deskSearch ? expandedWidth : collapsedWidth}
-  `}
->
-
-
-
-
-{/* 
-  
-const isXs = screenWidth < 640;// < sm
-const isSm = screenWidth >= 640 && screenWidth < 768;
-const isMd = screenWidth >= 768 && screenWidth < 1024;
-const isLg = screenWidth >= 1024 && screenWidth < 1280;
-const isXl = screenWidth >= 1280 && screenWidth < 1440;
-const isXl1440 = screenWidth >= 1440 && screenWidth < 1536;
-const is2Xl = screenWidth >= 1536;
-const isGELg = screenWidth>=1024;
-//
-
-
-*/}
-
-
-
-
-
-      {/* max-w-[1800px] mx-auto px-4 flex items-center justify-between
-        ${isScrolled ? "h-[70px]" : "h-[80px]"}
- */}
-
-
-      {/* Search Box */}
-      <div
-
-      ref={inputWrapperRef}
-  className={`
-    flex items-center w-full sm:bg-white
-    px-2 py-[6px]   /* height locked */
-    border border-slate-400
-    focus-within:ring-[0.5px] focus-within:ring-slate-200
-
-    transition-[border-radius,box-shadow,transform,background-color]
-    duration-100
-    ease-[cubic-bezier(0.22,1,0.36,1)]
-    will-change-[transform]
-rounded-full
-bg-white shadow-md
-  `}
->
-  <SearchOutlinedIcon
-    width={20}
-    height={20}
-    className={`
-      mr-3 select-none text-slate-900
-      transition-transform duration-300
-    `}
-  />
-
-{/* 
-  
-const isXs = screenWidth < 640;// < sm
-const isSm = screenWidth >= 640 && screenWidth < 768;
-const isMd = screenWidth >= 768 && screenWidth < 1024;
-const isLg = screenWidth >= 1024 && screenWidth < 1280;
-const isXl = screenWidth >= 1280 && screenWidth < 1440;
-const isXl1440 = screenWidth >= 1440 && screenWidth < 1536;
-const is2Xl = screenWidth >= 1536;
-const isGELg = screenWidth>=1024;
-//
-
-
-*/}
-
-{/* 
-
-${ pathName === "/" ? isScrolled ?
-isSm?"hidden" : isMd? "w-[200px] ": isLg? "w-[110px]" : isXl1440? "w-[110px]":is2Xl? "w-[110px]":"hidden":
- isSm?"hidden " : isMd? "w-[200px]"   :    "hidden"
-:isLg?"w-[37.2px]":  isXl? "w-[110px]":isXl1440 || is2Xl?"w-[200px]":"hidden"
- */}
-
-
- <input
- ref={inputRef}
- 
-  type="text"
-  aria-label="Search products"
-  placeholder={
-    pathName === "/" ? isScrolled ? 
-    
-   isMd?"" :isLg?"": isXl? "Search":isXl1440? "Search":is2Xl? "Search":""// '/' scrolled                   //// if any error  seach-->""
-
-    :  isMd ?"Search Products": isSm? "" :"Search Products"// '/' not scrolled -------
-
-    :  
-    
-    isMd ? " " :isLg ? " " : isXl?"Search" : isXl1440 || is2Xl?"Search Products":""//not '/' scrolled
-
-    
-  }
-  value={searchQuery}
-  onChange={onChangeInput}
-  onKeyDown={handleKeyDown}
-  className=" w-full
-    flex-grow bg-transparent outline-none
-    card-title text-black
-    placeholder-slate-500
-  "
-  autoComplete="off"
-  spellCheck="false"
-/>
-
-{deskSearch && (
-  <button
-    type="button"
-    aria-label="Close search"
-    onClick={(e) => {
-      e.stopPropagation();   // 🔥 VERY IMPORTANT
-      setDeskSearch(false);
-      setIsDropdownVisible(false);
-    }}
-    className="ml-2 p-1 text-slate-500 hover:text-slate-800"
-  >
-    <CloseIcon fontSize="small" />
-  </button>
-)}
-
-
-</div>
-
-
-      {/* Dropdown */}
-     {isDropdownVisible && searchQuery.trim() && (
-  <SearchDropdownPortal>
-    <ul
-      style={dropdownStyle}
-      className="
-        bg-white
-        rounded-xl
-        shadow-2xl
-        max-h-[320px]
-        overflow-y-auto
-        border border-gray-200
-        scrollbar-hide
-      "
+    <div
+      ref={containerRef}
+      className="relative z-[1200] flex w-full cursor-text items-center justify-end overflow-visible"
+      onClick={() => {
+        if (!deskSearch) setDeskSearch(true);
+        inputRef.current?.focus();
+      }}
     >
-      {results.length ? (
-        results.map((item) => (
-          <li
-            key={item._id}
-            onMouseDown={(e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    handleClickResult(item);
-    setIsDropdownVisible(false);
-  }}
-            className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-indigo-50"
-          >
-            {item.images && (
-              <Image
-                src={getCloudinaryImageUrl(item.images[0] || item.images || "/images/placeholder.jpg", {
-                  width: 80,
-                  height: 80,
-                })}
-                alt={item.name}
-                width={40}
-                height={40}
-                className="rounded-md object-cover"
-              />
+      <div
+        className={`relative ml-auto transition-[width] duration-300 ease-out ${currentWidth}`}
+      >
+        <div
+          ref={inputWrapperRef}
+          className={`group flex min-h-11 w-full items-center gap-2 rounded-full border bg-white px-3 shadow-sm transition duration-200 ${
+            isSearchExpanded
+              ? "border-slate-200 shadow-[0_10px_28px_rgba(15,23,42,0.16)] focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-white/60"
+              : "border-white/20 hover:border-white/40 hover:bg-slate-50"
+          }`}
+        >
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-800 transition group-focus-within:bg-slate-950 group-focus-within:text-white">
+            {isSearching ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <SearchIcon className="h-4 w-4" />
             )}
-            <span className="text-indigo-900 font-medium text-sm truncate">
-              {item.name}
-            </span>
-          </li>
-        ))
-      ) : (
-        <li className="py-4 px-4 text-gray-500 text-sm italic">
-          No products found
-        </li>
-      )}
-    </ul>
-  </SearchDropdownPortal>
-)}
+          </span>
 
-    </div>
-    </div>
+          <input
+            ref={inputRef}
+            type="text"
+            aria-label="Search products"
+            placeholder={
+              isSearchExpanded
+                ? "Search products, sofas, beds..."
+                : isXl || isXl1440 || is2Xl
+                ? "Search"
+                : ""
+            }
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => {
+              setDeskSearch(true);
+              if (searchQuery.trim()) {
+                setIsDropdownVisible(true);
+                updateDropdownPosition();
+              }
+            }}
+            onKeyDown={handleKeyDown}
+            className={`min-w-0 flex-1 bg-transparent text-sm font-semibold text-slate-950 outline-none placeholder:text-slate-400 ${
+              isSearchExpanded ? "opacity-100" : "opacity-0 xl:opacity-100"
+            }`}
+            autoComplete="off"
+            spellCheck="false"
+          />
 
+          {(deskSearch || searchQuery) && (
+            <button
+              type="button"
+              aria-label={searchQuery ? "Clear search" : "Close search"}
+              onClick={handleClearOrClose}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-900"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        {isDropdownVisible && searchQuery.trim() && (
+          <SearchDropdownPortal>
+            <div
+              style={dropdownStyle}
+              className="overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-950 shadow-2xl shadow-slate-950/20"
+            >
+              <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                    Search results
+                  </p>
+                  <p className="mt-1 max-w-[280px] truncate text-sm font-semibold text-slate-900">
+                    {searchQuery}
+                  </p>
+                </div>
+                {isSearching && (
+                  <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+                )}
+              </div>
+
+              <div className="max-h-[380px] overflow-y-auto p-2 scrollbar-hide">
+                {results.length ? (
+                  <ul className="space-y-1">
+                    {results.slice(0, 8).map((item) => (
+                      <li key={item._id}>
+                        <button
+                          type="button"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleClickResult(item);
+                          }}
+                          className="group flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition hover:bg-slate-50"
+                        >
+                          <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-slate-100">
+                            {item.images && (
+                              <Image
+                                src={getCloudinaryImageUrl(
+                                  item.images[0] ||
+                                    item.images ||
+                                    "/images/placeholder.jpg",
+                                  { width: 120, height: 120 },
+                                )}
+                                alt={item.name || "Product"}
+                                fill
+                                sizes="56px"
+                                className="object-cover"
+                              />
+                            )}
+                          </span>
+
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">
+                              {item.brand || "SNSF"}
+                            </span>
+                            <span className="mt-1 line-clamp-2 text-sm font-semibold leading-5 text-slate-900">
+                              {item.name}
+                            </span>
+                          </span>
+
+                          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition group-hover:bg-slate-950 group-hover:text-white">
+                            <ArrowUpRight className="h-4 w-4" />
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="px-4 py-8 text-center">
+                    <p className="text-sm font-semibold text-slate-900">
+                      No products found
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      Try a shorter product name or category keyword.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </SearchDropdownPortal>
+        )}
+      </div>
+    </div>
   );
 };
 

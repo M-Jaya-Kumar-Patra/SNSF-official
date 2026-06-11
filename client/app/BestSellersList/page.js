@@ -1,237 +1,264 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
+import { IoCall } from "react-icons/io5";
 import { fetchDataFromApi, postData } from "@/utils/api";
 import { useAuth } from "@/app/context/AuthContext";
-import { useRouter } from "next/navigation";
 import { useWishlist } from "../context/WishlistContext";
-import { MdFavorite } from "react-icons/md";
-import { MdFavoriteBorder } from "react-icons/md";
-import Image from "next/image";
-
 import WhatsappIcon from "@/components/WhatsappIcon";
-import { IoCall } from "react-icons/io5";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
+const BestSellerSkeleton = () => (
+  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+    {Array.from({ length: 8 }).map((_, idx) => (
+      <div
+        key={idx}
+        className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm"
+      >
+        <div className="aspect-[4/3] rounded-xl bg-slate-200 animate-pulse" />
+        <div className="mt-4 h-5 w-[80%] rounded bg-slate-200 animate-pulse" />
+        <div className="mt-2 h-4 w-[48%] rounded bg-slate-200 animate-pulse" />
+        <div className="mt-5 grid grid-cols-2 gap-2">
+          <div className="h-10 rounded-xl bg-slate-200 animate-pulse" />
+          <div className="h-10 rounded-xl bg-slate-200 animate-pulse" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 const ProductListing = () => {
-  const {
-    userData,
-    isLogin,
-    loading,
-    setLoading,
-    isCheckingToken,
-  } = useAuth();
+  const { userData, isLogin, loading, setLoading, isCheckingToken } = useAuth();
   const router = useRouter();
-    const [data, setData] = useState([]);
-  
-
-    const loadCustomerFavorites = async () => {
-      try {
-        const res = await fetchDataFromApi(
-          "/api/home-sections?sectionName=bestsellers",
-          false
-        );
-  
-        if (!res.error) setData(res?.data || []);
-      } catch {
-        setData([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-
-     useEffect(() => {
-        loadCustomerFavorites();
-      }, []);
-    
+  const [data, setData] = useState([]);
 
   const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist();
 
+  const loadCustomerFavorites = async () => {
+    try {
+      const res = await fetchDataFromApi(
+        "/api/home-sections?sectionName=bestsellers",
+        false,
+      );
+
+      if (!res.error) setData(res?.data || []);
+    } catch {
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadCustomerFavorites();
+  }, []);
+
+  const toggleWishlist = (e, product) => {
+    if (!isLogin) {
+      router.push("/login");
+      return;
+    }
+
+    const isAlreadyInWishlist = userData?.wishlist?.some(
+      (item) => item === String(product?._id),
+    );
+
+    if (isAlreadyInWishlist) {
+      const wishItem = wishlistData?.find(
+        (itemInWishData) => itemInWishData.productId === product?._id,
+      );
+      const itemId = wishItem?._id;
+
+      if (itemId) {
+        removeFromWishlist(e, itemId, product?._id);
+      }
+    } else {
+      addToWishlist(e, product, userData._id);
+    }
+  };
+
+  const handleWhatsApp = async (product) => {
+    if (!isLogin) {
+      router.push("/login");
+      return;
+    }
+
+    try {
+      await postData("/api/enquiries/", {
+        userId: userData?._id,
+        contactInfo: {
+          name: userData?.name,
+          email: userData?.email,
+          phone: userData?.phone,
+        },
+        productId: product?._id,
+        message: `Customer opened WhatsApp for "${product?.name}"`,
+        userMsg: `Enquiry for ${product?.name} via WhatsApp`,
+        image: product?.images?.[0],
+      });
+
+      const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${product?.name}*.\nHere is the product link:\nhttps://snsteelfabrication.com/product/${product?._id}`;
+      window.open(whatsappURL, "_blank");
+    } catch {
+      return;
+    }
+  };
+
+  const handleCall = async (product) => {
+    if (!isLogin) {
+      router.push("/login");
+      return;
+    }
+
+    try {
+      await postData("/api/enquiries/", {
+        userId: userData?._id,
+        name: userData?.name,
+        email: userData?.email,
+        phone: userData?.phone,
+        productId: product?._id,
+        message: `Direct call initiated for "${product?.name}"`,
+        userMsg: `Enquiry for ${product?.name} via Call`,
+        image: product?.images?.[0],
+      });
+
+      window.open("tel:+919776501230");
+    } catch {
+      return;
+    }
+  };
+
+  const bestSellers = data?.filter((item) => item?.enabled && item?.product);
+
   return (
-    <div className="w-full bg-slate-100 ">
-      <div className="flex w-full min-h-screen justify-center bg-slate-100">
-        <div className="container w-full sm:w-[90%]  sm:my-4 mx-auto ">
-          <div className="flex-grow h-full bg-white p-2  sm:p-3 shadow-lg text-black">
-            <div className="w-full grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4 mb-5 place-items-center relative z-0 overflow-visible">
-              {isCheckingToken || loading || !data
-                ? Array.from({ length: 8 }).map((_, idx) => (
-                    <div
-                      key={idx}
-                      className="w-full min-h-[260px] shadow-md flex flex-col items-start justify-between p-3 bg-white "
-                    >
-                      <div className="h-[260px] w-full bg-slate-200/80 animate-pulse" />
-                      <div className="mt-4 h-6 w-[90%] rounded bg-slate-200/80 animate-pulse" />
-                      <div className="h-5 w-[60%] rounded bg-slate-200/80 animate-pulse" />
-                    </div>
-                  ))
-                : data
-                    ?.filter((prd) => prd?.enabled)
-                    .map((prd, index) => (
-                      <div
-                        key={prd?.product?._id || index}
-                        className="relative group w-full"
-                      >
-                        <div className="w-full min-h-[260px] shadow-md flex flex-col items-center justify-between p-3 bg-white hover:shadow-[rgba(0,0,0,0.3)] sm:hover:shadow-xl transition duration-300">
-                          <div className="w-full flex flex-col items-center">
-                            {prd?.product?.images?.length > 0 && prd?.product?.images[0] && (
-                              <div
-                                className="w-full aspect-[4/3] relative overflow-hidden cursor-pointer rounded-md"
-                                onClick={() =>
-                                  router.push(`/product/${prd?.product?._id}`)
-                                }
-                              >
-                                <Image
-                                  src={getCloudinaryImageUrl(
-                                    prd?.product?.images?.[0] || "/images/placeholder.jpg",
-                                    { width: 520, height: 390 }
-                                  )}
-                                  alt={prd?.name || "Product"}
-                                  fill
-                                  sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                                  className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-                                />
-                              </div>
-                            )}
-
-                            <div
-                              className="w-8 h-8 bg-white rounded-full flex items-center justify-center border border-slate-200 border-opacity-50 shadow-md hover:shadow-inner absolute top-4 right-3 cursor-pointer"
-                              onClick={(e) => {
-                                if (!isLogin) {
-                                  router.push("/login");
-                                } else {
-                                  const isAlreadyInWishlist =
-                                    userData?.wishlist?.some(
-                                      (item) => item === String(prd?.product?._id)
-                                    );
-
-                                  if (isAlreadyInWishlist) {
-                                    const wishItem = wishlistData?.find(
-                                      (itemInWishData) =>
-                                        itemInWishData.productId === prd?.product?._id
-                                    );
-                                    const itemId = wishItem?._id;
-
-                                    if (itemId) {
-                                      removeFromWishlist(e, itemId, prd?.product?._id);
-                                    }
-                                  } else {
-                                    addToWishlist(e, prd?.product, userData._id);
-                                  }
-                                }
-                              }}
-                            >
-                              {isLogin &&
-                              userData?.wishlist?.some(
-                                (item) => item === String(prd?.product._id)
-                              ) ? (
-                                <MdFavorite className="!text-rose-600 text-[22px]" />
-                              ) : (
-                                <MdFavoriteBorder className="text-slate-600 text-[22px]" />
-                              )}
-                            </div>
-
-                            <div className="w-full ">
-                              <h1 className="text-black sm:text-[18px] text-[18px] mt-3 font-medium font-sans truncate">
-                                {prd?.product?.name}
-                              </h1>
-                            </div>
-
-                            <div className="w-full justify-between items-center">
-                              <div className="w-full flex flex-col items-start">
-                                <h1
-                                  className={
-                                    prd?.product?.brand
-                                      ? "text-gray-500 text-[16px] mt-1"
-                                      : "text-white text-[16px] mt-1 cursor-default truncate"
-                                  }
-                                >
-                                  {prd?.product?.brand || "--- Not mentioned ---"}
-                                </h1>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div
-                          className="absolute left-0 top-full w-full z-50  pointer-events-none opacity-0 sm:group-hover:opacity-100 
-          sm:group-hover:pointer-events-auto transition-opacity duration-300 sm:group-hover:shadow-[rgba(0,0,0,0.3)] sm:group-hover:shadow-xl"
-                        >
-                          <div className="bg-white sm:shadow-lg p-2 flex gap-2 justify-center sm:justify-between flex-wrap">
-                            {/* WhatsApp Button */}
-                            <button
-                              type="button"
-                              className="!capitalize !text-slate-900 !border-slate-900 bg-gray-600 rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
-                              onClick={async () => {
-                                if (!isLogin) {
-                                  router.push("/login");
-                                } else {
-                                  try {
-                                    await postData("/api/enquiries/", {
-                                      userId: userData?._id,
-                                      contactInfo: {
-                                        name: userData?.name,
-                                        email: userData?.email,
-                                        phone: userData?.phone,
-                                      },
-                                      productId: prd?.product?._id,
-                                      message: `Customer opened WhatsApp for "${prd?.product?.name}"`,
-                                      userMsg: `Enquiry for ${prd?.product?.name} via WhatsApp`,
-                                      image: prd?.product?.images?.[0],
-                                    });
-
-                                    const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${prd?.product?.name}*.\nHere is the product link:\nhttps://snsteelfabrication.com/product/${prd?.product?._id}`;
-
-                                    window.open(whatsappURL, "_blank");
-                                  } catch {
-                                    return;
-                                  }
-                                }
-                              }}
-                            >
-                              <WhatsappIcon className="w-5 h-5" />
-                              <span className="hidden sm:inline">WhatsApp</span>
-                            </button>
-
-                            {/* Call Button */}
-                            <button
-                              type="button"
-                              className="!capitalize !bg-rose-600 hover:!bg-rose-700 text-white rounded-md px-3 py-[6px] text-sm sm:text-base w-[48%] flex items-center justify-center gap-2"
-                              onClick={async () => {
-                                if (!isLogin) {
-                                  router.push("/login");
-                                } else {
-                                  try {
-                                    await postData("/api/enquiries/", {
-                                      userId: userData?._id,
-                                      name: userData?.name,
-                                      email: userData?.email,
-                                      phone: userData?.phone,
-                                      productId: prd?.product?._id,
-                                      message: `Direct call initiated for "${prd?.product?.name}"`,
-                                      userMsg: `Enquiry for ${prd?.product?.name} via Call`,
-                                      image: prd?.product?.images[0],
-                                    });
-
-                                    window.open("tel:+919776501230");
-                                  } catch {
-                                    return;
-                                  }
-                                }
-                              }}
-                            >
-                              <IoCall className="w-5 h-5" />
-                              <span className="hidden sm:inline">Call</span>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+    <main className="min-h-screen bg-slate-100 px-3 pb-12 pt-4 text-slate-950 sm:px-6 sm:pt-6">
+      <div className="mx-auto w-full max-w-[1320px]">
+        <section className="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="p-4 sm:p-6">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                Customer favorites
+              </p>
+              <h1 className="mt-2 text-[28px] font-semibold leading-tight text-slate-950 sm:text-[36px]">
+                Best Sellers
+              </h1>
+              <p className="mt-3 max-w-2xl text-[15px] leading-6 text-slate-600">
+                The pieces customers keep choosing for strength, finish, and
+                everyday use.
+              </p>
             </div>
           </div>
-        </div>
+        </section>
+
+        {isCheckingToken || loading || !data ? (
+          <BestSellerSkeleton />
+        ) : bestSellers.length > 0 ? (
+          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+            {bestSellers.map((item, index) => {
+              const product = item?.product;
+              const isWishlisted =
+                isLogin && userData?.wishlist?.some(
+                  (wishlistItem) => wishlistItem === String(product?._id),
+                );
+
+              return (
+                <article
+                  key={product?._id || index}
+                  className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200"
+                >
+                  <div className="relative p-3">
+                    <button
+                      type="button"
+                      aria-label={`View ${product?.name || "product"}`}
+                      className="relative block aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-100"
+                      onClick={() => router.push(`/product/${product?._id}`)}
+                    >
+                      <Image
+                        src={getCloudinaryImageUrl(
+                          product?.images?.[0] || "/images/placeholder.jpg",
+                          { width: 560, height: 420 },
+                        )}
+                        alt={product?.name || "Product"}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </button>
+
+                    {index < 3 && (
+                      <span className="absolute left-5 top-5 rounded-full bg-slate-950 px-3 py-1 text-xs font-semibold text-white shadow">
+                        Top {index + 1}
+                      </span>
+                    )}
+
+                    <button
+                      type="button"
+                      aria-label={
+                        isWishlisted
+                          ? `Remove ${product?.name || "product"} from wishlist`
+                          : `Add ${product?.name || "product"} to wishlist`
+                      }
+                      className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-md transition hover:scale-105"
+                      onClick={(e) => toggleWishlist(e, product)}
+                    >
+                      {isWishlisted ? (
+                        <MdFavorite className="text-[23px] text-slate-950" />
+                      ) : (
+                        <MdFavoriteBorder className="text-[23px]" />
+                      )}
+                    </button>
+                  </div>
+
+                  <div className="flex flex-1 flex-col px-4 pb-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+                      {product?.brand || "SNSF"}
+                    </p>
+                    <h2 className="mt-2 line-clamp-2 min-h-[52px] text-[18px] font-semibold leading-snug text-slate-950">
+                      {product?.name}
+                    </h2>
+
+                    <div className="mt-auto grid grid-cols-[1fr_auto] gap-2 pt-4">
+                      <button
+                        type="button"
+                        className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-slate-950 px-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                        onClick={() => handleWhatsApp(product)}
+                      >
+                        <WhatsappIcon className="h-5 w-5" />
+                        <span>Enquire</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        aria-label={`Call about ${product?.name || "product"}`}
+                        className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-800 transition hover:border-slate-950 hover:bg-slate-950 hover:text-white"
+                        onClick={() => handleCall(product)}
+                      >
+                        <IoCall className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </section>
+        ) : (
+          <section className="flex min-h-[420px] items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
+            <div>
+              <p className="text-[22px] font-semibold text-slate-900">
+                No best sellers available
+              </p>
+              <p className="mt-2 text-sm text-slate-500">
+                Add products to the bestsellers section from admin to show them
+                here.
+              </p>
+            </div>
+          </section>
+        )}
       </div>
-    </div>
+    </main>
   );
 };
 

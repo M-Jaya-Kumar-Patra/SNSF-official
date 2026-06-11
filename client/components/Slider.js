@@ -1,475 +1,211 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { fetchDataFromApi } from "@/utils/api";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { useAuth } from "@/app/context/AuthContext"; // ✅ Added
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Skeleton from "@mui/material/Skeleton";
-import { motion, AnimatePresence, useReducedMotion  } from "framer-motion";
+import { fetchDataFromApi } from "@/utils/api";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
-const Slider = () => {
-  const [slides, setSlides] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [localLoading, setLocalLoading] = useState(false);
-  const router = useRouter();
-  const [direction, setDirection] = useState(1); // 1 = next, -1 = prev
-  const prefersReducedMotion = useReducedMotion();
-  const [isTabActive, setIsTabActive] = useState(true);
-const [isMobile, setIsMobile] = useState(false);
+const AUTOPLAY_DELAY = 5000;
 
-const shouldAnimate = slides.length > 0 && !isMobile && !prefersReducedMotion;
-
-
-useEffect(() => {
-  const check = () => setIsMobile(window.innerWidth < 768);
-  check();
-  window.addEventListener("resize", check);
-  return () => window.removeEventListener("resize", check);
-}, []);
-
-
-useEffect(() => {
-  const handleVisibilityChange = () => {
-    setIsTabActive(!document.hidden);
-  };
-
-  document.addEventListener("visibilitychange", handleVisibilityChange);
-  return () =>
-    document.removeEventListener("visibilitychange", handleVisibilityChange);
-}, []);
-useEffect(() => {
-  if (!slides.length || !isTabActive) return;
-
-  const timer = setInterval(() => {
-    setDirection(1);
-    setCurrentIndex((prev) => (prev + 1) % slides.length);
-  }, 5000);
-
-  return () => clearInterval(timer);
-}, [slides, isTabActive]);
-
-
-  useEffect(() => {
-
-    const getSlides = async () => {
-      try {
-        setLocalLoading(true);
-        const response = await fetchDataFromApi(
-          `/api/homeSlider/getAllSlides`,
-          false
-        );
-        setSlides(response?.data || []);
-      } catch (error) {
-        console.error("Error fetching slides:", error);
-      } finally {
-        setLocalLoading(false);
-      }
-    };
-
-    getSlides();
-  }, []); // ✅ Only runs after token is checked
-
-  
-  const handlePrev = () => {
-  setDirection(-1);
-  setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
-};
-
-const handleNext = () => {
-  setDirection(1);
-  setCurrentIndex((prev) => (prev + 1) % slides.length);
-};
-
-  // ✅ Render nothing while loading or waiting for token
-  if (localLoading) {
-  return (
-    <section className="w-full py-10 md:py-12">
-      <div className="max-w-[1400px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-[1.2fr_1fr_0.5fr] gap-14 items-center">
-
-        {/* LEFT TEXT SKELETON */}
-        <div>
-          <Skeleton width={140} height={22} />
-          <Skeleton width="80%" height={48} className="mt-3" />
-          <Skeleton width="70%" height={48} className="mt-2" />
-          <Skeleton width="90%" height={18} className="mt-4" />
-          <Skeleton width="60%" height={18} className="mt-2" />
-          <Skeleton
-            variant="rounded"
-            width={160}
-            height={44}
-            className="mt-6"
-          />
-        </div>
-
-        {/* CENTER PRODUCT SKELETON */}
-        <div className="flex justify-center">
-          <Skeleton
-            variant="circular"
-            width={320}
-            height={320}
-            sx={{
-              boxShadow:
-                "inset 0 0 40px rgba(15,23,42,0.12), 0 20px 60px rgba(15,23,42,0.18)",
-            }}
-          />
-        </div>
-
-        {/* RIGHT LIST SKELETON (DESKTOP ONLY) */}
-        <div className="hidden lg:flex flex-col gap-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-center gap-3">
-              <Skeleton variant="circular" width={48} height={48} />
-              <Skeleton width="70%" height={16} />
-            </div>
-          ))}
-        </div>
-
+const SliderSkeleton = () => (
+  <section className="w-full px-3 sm:px-4 md:px-6">
+    <div className="relative mx-auto min-h-[360px] max-w-[1600px] overflow-hidden rounded-2xl border border-slate-200 bg-slate-950 shadow-sm sm:grid sm:min-h-[460px] sm:items-center sm:gap-6 sm:rounded-xl sm:bg-white sm:p-6 lg:grid-cols-[0.95fr_1.05fr] lg:p-8">
+      <div className="absolute inset-x-0 bottom-0 z-10 space-y-3 p-4 sm:static sm:space-y-4 sm:p-0">
+        <div className="h-3 w-24 animate-pulse rounded bg-white/30 sm:h-4 sm:w-28 sm:bg-slate-200" />
+        <div className="h-9 w-4/5 animate-pulse rounded bg-white/30 sm:h-12 sm:bg-slate-200" />
+        <div className="h-8 w-3/5 animate-pulse rounded bg-white/30 sm:h-12 sm:bg-slate-200" />
+        <div className="h-3 w-full max-w-md animate-pulse rounded bg-white/30 sm:h-4 sm:bg-slate-200" />
+        <div className="h-10 w-32 animate-pulse rounded-lg bg-white/30 sm:h-11 sm:w-36 sm:bg-slate-200" />
       </div>
-    </section>
-  );
-}
-
-
-  const sideItemVariants = {
-  initial: { opacity: 0, x: 10 },
-  animate: { opacity: 1, x: 0 },
-};
-
-const sideItemTransition = {
-  duration: 0.45,
-  ease: "easeOut",
-};
-
-const textContainer = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.15,
-    },
-  },
-};
-
-const textItem = {
-  hidden: {
-    opacity: 0,
-    y: 16,
-    filter: "blur(4px)",
-  },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: {
-      duration: 0.7,
-      ease: "easeOut",
-    },
-  },
-};
-
-const splitWords = (text = "") => {
-  return text.split(" ");
-};
-
-const typingContainer = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: isMobile ? 0.04 : 0.12,
-    },
-  },
-};
-
-const typingWord = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { duration: 0.2 },
-  },
-};
-
-
-
-
-
-return (
-  <section className="relative w-full 
-py-10 md:py-12 pt-8 md:pt-12 lg:pt-12 overflow-hidden">
-
-  
-    {/* subtle ambient glow */}
-    <div className="absolute inset-0 pointer-events-none">
-      <div className="absolute top-1/2 left-1/2 w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-200/40 blur-3xl" />
-    </div>
-
-    <div className="relative max-w-[1400px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-[1.2fr_1fr_0.5fr] gap-14 items-center">
-
-      {/* LEFT CONTENT */}
-      
-<AnimatePresence mode="wait" >
-  <motion.div
-    key={currentIndex}
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-  >
-    {/* TAGLINE */}
-    <motion.p
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="sm:text-[22px] font-medium text-slate-700 tracking-wider mb-2 max-w-sm"
-    >
-      {slides[currentIndex]?.tagline}
-    </motion.p>
-
-    {/* TITLE — SOFT TYPING */}
-   <motion.h1
-  variants={shouldAnimate ? typingContainer : undefined}
-  initial={!isMobile && !prefersReducedMotion ? "hidden" : false}
-  animate={!isMobile && !prefersReducedMotion ? "show" : false}
-  className="
-    text-4xl md:text-5xl
-    font-bold text-slate-900
-    leading-tight
-    break-words
-  "
->
-  {!isMobile && !prefersReducedMotion
-    ? splitWords(slides[currentIndex]?.title).map((word, i) => (
-        <motion.span
-          key={i}
-          variants={typingWord}
-          className="inline-block mr-2"
-        >
-          {word}
-        </motion.span>
-      ))
-    : slides[currentIndex]?.title}
-</motion.h1>
-
-
-
-
-    {/* DESCRIPTION */}
-    <motion.p
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
-      className="mt-4 max-w-md text-slate-600 text-sm sm:text-base
- leading-relaxed"
-    >
-      {slides[currentIndex]?.description}
-    </motion.p>
-
-    {/* CTA */}
-    <motion.button
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.5 }}
-      onClick={() =>
-        slides[currentIndex]?.url &&
-        router.push(slides[currentIndex].url)
-      }
-      className="
-        mt-7 px-7 py-3 rounded-lg
-        bg-slate-900 text-white text-sm font-semibold
-        shadow-lg hover:shadow-xl
-        flex items-center gap-2
-      "
-    >
-      View Details <span className="text-lg">→</span>
-    </motion.button>
-  </motion.div>
-</AnimatePresence>
-
-
-
-
-      {/* CENTER PRODUCT */}
-      <div className="relative flex justify-center items-center">
-
-  {/* LEFT ARROW */}
-  <button
-  onClick={handlePrev}
-  className="
-    absolute -left-12 z-20
-    w-10 h-10
-    flex items-center justify-center
-    rounded-full
-    bg-white/80
-    border border-slate-200
-    text-slate-600
-    shadow-sm
-    opacity-0
-    group-hover:opacity-100
-    transition-all duration-300
-    hover:bg-white hover:shadow-md
-  "
->
-  <ChevronLeft className="w-5 h-5" />
-</button>
-
-<div className="relative">
-  <div className="
-    absolute inset-0
-    bg-[radial-gradient(circle_at_center,rgba(15,23,42,0.08),transparent_65%)]
-    rounded-full
-  " />
-  {/* STATIC CIRCLE (NO ANIMATION HERE) */}
-  <div
-  className="
-    min-w-[320px] min-h-[320px]
-    md:min-w-[420px] md:min-h-[420px]
-    rounded-full
-    bg-white
-    border border-slate-200
-    flex items-center justify-center
-    shadow-[inset_0_0_60px_rgba(15,23,42,0.12),0_30px_80px_rgba(15,23,42,0.22)]
-    overflow-hidden
-  "
->
-
-    {/* ONLY PRODUCT IMAGE ANIMATES */}
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={currentIndex}
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full h-full flex items-center justify-center"
-         onClick={() =>
-        slides[currentIndex]?.url &&
-        router.push(slides[currentIndex].url)
-      }
-      >
-        <Image
-          src={getCloudinaryImageUrl(
-            slides[currentIndex]?.images[0] || "/images/placeholder.jpg",
-            { width: isMobile ? 520 : 760, crop: "limit" }
-          )}
-          alt={slides[currentIndex]?.title || "Furniture"}
-          width={420}
-          height={420}
-            className="object-contain scale-100 hover:scale-110 transition-transform duration-700 ease-out"
-          priority
-          fetchPriority="high"
-        />
-      </motion.div>
-    </AnimatePresence>
-  </div>
-</div>
-  {/* RIGHT ARROW */}
-  <button
-    onClick={handleNext}
-    className="
-      absolute -right-6 z-20
-      bg-white border border-slate-200
-      opacity-0
-      p-2 rounded-full shadow
-      hover:bg-slate-100
-    "
-  >
-    <ChevronRight className="text-slate-700" />
-  </button>
-</div>
-
-
-      {/* RIGHT SIDE LIST – CALM & PREMIUM */}
-<div className="hidden lg:flex flex-col gap-2">
-  {slides.map((slide, index) => {
-    const isActive = index === currentIndex;
-
-    return (
-      <motion.div
-        key={slide._id || index}
-        onClick={() => {
-          setDirection(index > currentIndex ? 1 : -1);
-          setCurrentIndex(index);
-        }}
-        initial={false}
-        animate={{
-          opacity: isActive ? 1 : 0.55,
-        }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="
-          relative
-          flex items-center gap-3
-          px-3 py-2
-          cursor-pointer
-        "
-      >
-        {/* ACTIVE INDICATOR */}
-        <motion.div
-          layout
-          className="
-            absolute left-0 top-1/2 -translate-y-1/2
-            h-8 w-[2px]
-            rounded-full
-            bg-slate-900
-          "
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isActive ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-        />
-
-        {/* IMAGE */}
-        <motion.div
-          animate={{
-            scale: isActive ? 1 : 0.92,
-          }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-          className="
-            min-w-12 min-h-12
-            rounded-full
-            bg-white
-            border border-slate-200
-            flex items-center justify-center 
-          "
-        >
-          <Image
-            src={getCloudinaryImageUrl(slide?.images[0] || "/images/placeholder.jpg", {
-              width: 96,
-              height: 96,
-            })}
-            alt={slide?.title}
-            width={48}
-            height={48}
-            className="object-contain"
-          />
-        </motion.div>
-
-        {/* TEXT */}
-        <motion.p
-          animate={{
-            y: isActive ? 0 : 1,
-          }}
-          transition={{ duration: 0.4, ease: "easeOut" }}
-          className={`text-sm  ${
-            isActive
-              ? "text-slate-900 font-medium"
-              : "text-slate-500"
-          }`}
-        >
-          {slide?.title}
-        </motion.p>
-      </motion.div>
-    );
-  })}
-</div>
-
-
-
+      <div className="absolute inset-0 bg-slate-800 sm:static sm:h-[340px] sm:w-full sm:animate-pulse sm:rounded-xl sm:bg-slate-200" />
     </div>
   </section>
 );
 
+const normalizeSlides = (items = []) =>
+  items
+    .filter((slide) => slide && slide.status !== false)
+    .map((slide) => ({
+      ...slide,
+      image: slide?.images?.[0] || slide?.image?.[0] || slide?.image || null,
+    }))
+    .filter((slide) => slide.image);
 
+export default function Slider({ initialSlides = null }) {
+  const router = useRouter();
+  const [slides, setSlides] = useState(() =>
+    Array.isArray(initialSlides) ? normalizeSlides(initialSlides) : [],
+  );
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(!Array.isArray(initialSlides));
+  const [isTabActive, setIsTabActive] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
-};
+  const currentSlide = slides[currentIndex];
 
-export default Slider;
+  useEffect(() => {
+    if (Array.isArray(initialSlides)) {
+      setSlides(normalizeSlides(initialSlides));
+      setCurrentIndex(0);
+      setLoading(false);
+      return;
+    }
+
+    const getSlides = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchDataFromApi(
+          "/api/homeSlider/getAllSlides",
+          false,
+        );
+        setSlides(normalizeSlides(response?.data || []));
+      } catch {
+        setSlides([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getSlides();
+  }, [initialSlides]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setIsTabActive(!document.hidden);
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
+
+  useEffect(() => {
+    if (slides.length <= 1 || !isTabActive || isPaused) return;
+
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % slides.length);
+    }, AUTOPLAY_DELAY);
+
+    return () => clearInterval(timer);
+  }, [isPaused, isTabActive, slides.length]);
+
+  const goToSlide = (index) => {
+    setCurrentIndex((index + slides.length) % slides.length);
+  };
+
+  const nextSlide = () => goToSlide(currentIndex + 1);
+  const previousSlide = () => goToSlide(currentIndex - 1);
+
+  const imageUrl = useMemo(() => {
+    if (!currentSlide?.image) return "/images/placeholder.jpg";
+    return getCloudinaryImageUrl(currentSlide.image, {
+      width: 1100,
+      height: 720,
+      crop: "limit",
+    });
+  }, [currentSlide?.image]);
+
+  if (loading) return <SliderSkeleton />;
+  if (!currentSlide) return null;
+
+  return (
+    <section
+      className="w-full px-3 sm:px-4 md:px-6"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      <div className="relative mx-auto min-h-[360px] max-w-[1600px] overflow-hidden rounded-2xl border border-slate-200 bg-slate-950 shadow-sm sm:grid sm:min-h-[460px] sm:rounded-xl sm:bg-white lg:grid-cols-[0.95fr_1.05fr]">
+        <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col justify-end px-4 pb-5 pt-16 sm:static sm:justify-center sm:px-8 sm:py-6 lg:px-10">
+          {currentSlide?.tagline && (
+            <p className="mb-2 hidden text-xs font-semibold uppercase tracking-[0.14em] text-white/75 sm:block sm:text-sm sm:tracking-wide sm:text-slate-500 md:text-base">
+              {currentSlide.tagline}
+            </p>
+          )}
+
+          <h2 className="line-clamp-2 max-w-[290px] text-[23px] font-semibold leading-tight text-white drop-shadow-sm sm:max-w-xl sm:text-[44px] sm:text-slate-900 sm:drop-shadow-none lg:text-[52px]">
+            {currentSlide?.title || "S N Steel Fabrication"}
+          </h2>
+
+          {currentSlide?.description && (
+            <p className="mt-3 hidden max-w-[310px] text-sm leading-6 text-white/80 sm:mt-4 sm:block sm:max-w-lg sm:text-base sm:text-slate-600">
+              {currentSlide.description}
+            </p>
+          )}
+
+          <div className="mt-5 flex flex-wrap items-center gap-3 sm:mt-7">
+            {currentSlide?.url && (
+              <button
+                type="button"
+                onClick={() => router.push(currentSlide.url)}
+                className="inline-flex min-h-10 items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-slate-950 shadow-sm transition hover:bg-slate-100 sm:min-h-11 sm:rounded-lg sm:bg-slate-900 sm:px-6 sm:text-white sm:hover:bg-slate-800"
+              >
+                View Details
+              </button>
+            )}
+
+            {slides.length > 1 && (
+              <div className="hidden items-center gap-2 sm:flex">
+                <button
+                  type="button"
+                  aria-label="Previous hero slide"
+                  onClick={previousSlide}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Next hero slide"
+                  onClick={nextSlide}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
+            )}
+          </div>
+
+          {slides.length > 1 && (
+            <div className="mt-5 flex items-center gap-2 sm:mt-7">
+              {slides.map((slide, index) => (
+                <button
+                  key={slide?._id || index}
+                  type="button"
+                  aria-label={`Go to hero slide ${index + 1}`}
+                  onClick={() => goToSlide(index)}
+                  className={`h-2.5 rounded-full transition-all ${
+                    index === currentIndex
+                      ? "w-8 bg-white sm:bg-slate-900"
+                      : "w-2.5 bg-white/45 hover:bg-white/70 sm:bg-slate-300 sm:hover:bg-slate-400"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        <button
+          type="button"
+          aria-label={`Open ${currentSlide?.title || "hero slide"}`}
+          onClick={() => currentSlide?.url && router.push(currentSlide.url)}
+          disabled={!currentSlide?.url}
+          className="group relative block min-h-[360px] w-full overflow-hidden bg-slate-100 sm:min-h-[340px] lg:min-h-full"
+        >
+          <Image
+            key={currentSlide?._id || currentIndex}
+            src={imageUrl}
+            alt={currentSlide?.title || "S N Steel Fabrication"}
+            fill
+            priority={currentIndex === 0}
+            fetchPriority={currentIndex === 0 ? "high" : "auto"}
+            sizes="(max-width: 1024px) 100vw, 55vw"
+            className="object-cover transition duration-700 ease-out group-hover:scale-[1.03]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent sm:bg-gradient-to-r sm:from-white/10 sm:via-transparent sm:to-slate-950/10" />
+        </button>
+      </div>
+    </section>
+  );
+}

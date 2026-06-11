@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import Shopbycat from "@/components/Shopbycat";
 import Bestsellers from "@/components/Bestsellers";
+import Slider from "@/components/Slider";
 import { fetchDataFromApi, postData } from "@/utils/api";
 import { getDeviceId } from "@/utils/deviceId";
 import { useScreen } from "@/app/context/ScreenWidthContext";
@@ -58,6 +59,7 @@ function useDeferredContent(isMobile) {
 export default function HomePageClient({
   initialBestsellers = [],
   initialBestsellerPoster = null,
+  initialSlides = null,
 }) {
   const { userData } = useAuth();
   const { isXs, isSm } = useScreen();
@@ -106,6 +108,10 @@ export default function HomePageClient({
     <div className="bg-gradient-to-br from-slate-100 via-slate-50 to-slate-100">
       <h1 className="sr-only">S N Steel Fabrication</h1>
       <section className="bg-slate-100 h-[86px] hidden md:block" />
+
+      <section className="flex justify-center max-w-[1600px] mx-auto mt-3 sm:mt-4 md:mt-6">
+        <Slider initialSlides={initialSlides} />
+      </section>
 
       <section className="flex justify-center max-w-[1600px] mx-auto lg:hidden min-h-[170px] sm:min-h-[260px] mt-3 mb-4 sm:mt-4 md:mt-6 px-2 sm:px-4 md:px-6">
         <Shopbycat />

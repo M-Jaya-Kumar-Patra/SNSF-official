@@ -1,26 +1,22 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { ArrowUpRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { fetchDataFromApi } from "@/utils/api";
 import { useAuth } from "@/app/context/AuthContext";
 import { useScreen } from "@/app/context/ScreenWidthContext";
-import ProductGrid from "./ProductGrid";
 import TrendingGrid from "./TrendingGrid";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
 const StyleYourSpaceSection = () => {
   const router = useRouter();
-  const scrollRefStyle = useRef(null);
-  const scrollRefTrending = useRef(null);
-
   const { setLoading } = useAuth();
   const { isXs } = useScreen();
 
   const [trendingData, setTrendingData] = useState([]);
   const [shopByRoomData, setShopByRoomData] = useState([]);
-  
 
   const limit = isXs ? 8 : 12;
 
@@ -29,7 +25,7 @@ const StyleYourSpaceSection = () => {
       try {
         const res = await fetchDataFromApi(
           "/api/style-your-space/getAll",
-          false
+          false,
         );
         if (!res.error) setShopByRoomData(res?.data || []);
       } catch {
@@ -39,12 +35,11 @@ const StyleYourSpaceSection = () => {
       }
     };
 
-
     const loadTrending = async () => {
       try {
         const res = await fetchDataFromApi(
           "/api/home-sections?sectionName=trendingNow",
-          false
+          false,
         );
         if (!res.error) setTrendingData(res?.data || []);
       } catch {
@@ -56,170 +51,152 @@ const StyleYourSpaceSection = () => {
 
     loadShopByRoom();
     loadTrending();
-  }, []);
+  }, [setLoading]);
 
-  const productsForGrid = Array.isArray(trendingData)
-    ? trendingData
-        .slice(0, limit + 1)
-        .filter((prd) => prd?.enabled && prd?.product)
-        .map((prd) => ({
-          id: prd.product._id,
-          image: getCloudinaryImageUrl(prd.product.images?.[0] || "/placeholder.jpg", {
-            width: 420,
-            height: 315,
-          }),
-          title: prd.product.name,
-        }))
-    : [];
+  const roomCards = useMemo(
+    () =>
+      Array.isArray(shopByRoomData)
+        ? shopByRoomData.filter((item) => item?.status).slice(0, 5)
+        : [],
+    [shopByRoomData],
+  );
 
- return (
-  <div className="flex flex-col lg:flex-row gap-4 lg:gap-0 w-full">
-          {/* ================= LEFT : STYLE YOUR SPACE ================= */}
-          <div className="w-full lg:w-[420px] flex-shrink-0 ">
-            <div
-              className="h-full rounded-xl border border-slate-200 bg-white p-4 pb-3 shadow-2xl shadow-slate-200/70 sm:p-6"
-            >
-              <h2 className="section-title mb-3 mt-1 sm:mb-4">
-                Style Your Space
-              </h2>
+  const productsForGrid = useMemo(
+    () =>
+      Array.isArray(trendingData)
+        ? trendingData
+            .slice(0, limit + 1)
+            .filter((item) => item?.enabled && item?.product)
+            .map((item) => ({
+              id: item.product._id,
+              image: item.product.images?.[0] || "/placeholder.jpg",
+              title: item.product.name,
+            }))
+        : [],
+    [limit, trendingData],
+  );
 
-              <div className="relative w-full">
-                <div
-                  ref={scrollRefStyle}
-                  className="
-                overflow-hidden
-              
-                pb-2 sm:pb-4
-              "
-                >
-                  <div className="grid grid-rows-1 lg:grid-rows-2 grid-flow-col gap-3 sm:gap-6">
-                    {Array.isArray(shopByRoomData) && shopByRoomData.length > 0
-                      ? shopByRoomData.slice(0, 4).map(
-                          (prd, index) =>
-                            prd?.status && (
-                              <div
-                                key={prd?._id || index}
-                                className="
-                            min-w-full
-                            bg-white
-                            rounded-lg
-                            shadow-sm
-                            overflow-hidden
-                            transition-transform duration-300
-                            hover:scale-[1.03]
-                            cursor-pointer
-                          "
-                                onClick={() =>
-                                  router.push(`${prd?.url}`)
-                                }
-                              >
-                                
-                                <div className="relative w-full aspect-[3/5] md:aspect-[5/3] lg:aspect-[2/1] xl:aspect-video overflow-hidden group">
-
-  {/* IMAGE */}
-  <Image
-    src={getCloudinaryImageUrl(prd?.image?.[0] || "/images/placeholder.jpg", {
-      width: isXs ? 280 : 560,
-      height: isXs ? 420 : undefined,
-      crop: isXs ? "fill" : "limit",
-    })}
-    alt={prd?.name || "Product Image"}
-    fill
-    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 420px, 420px"
-    className="
-      object-cover
-      brightness-95
-      contrast-105
-      transition-transform duration-700 ease-out
-      group-hover:scale-105
-    "
-  />
-
-  {/* DARK GRADIENT OVERLAY */}
-  <div
-    className="
-      absolute inset-0
-      bg-gradient-to-t
-      from-black/65 via-black/30 to-black/0
-    "
-  />
-
-  {/* PRODUCT NAME */}
-  <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4">
-    <h3
-      className="
-        text-white
-        text-sm sm:text-base
-        font-semibold
-        leading-tight
-        drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]
-        line-clamp-2
-      "
-      title={prd?.name}
-    >
-      {prd?.name}
-    </h3>
-  </div>
-
-</div>
-
-                              </div>
-                            )
-                        )
-                      : Array.from({ length: 4 }).map((_, idx) => (
-                          <div
-                            key={idx}
-                            className="
-                        min-w-full
-                        bg-white
-                        rounded-lg
-                        overflow-hidden
-                      "
-                          >
-                            <div className="relative !w-full aspect-[3/5] bg-slate-200 animate-pulse md:!aspect-[5/3] lg:!aspect-[2/1] xl:!aspect-video">
-                            </div>
-                          </div>
-                        ))}
-                  </div>
-                </div>
-              </div>
+  return (
+    <section className="w-full">
+      <div className="grid w-full gap-4 lg:grid-cols-[430px_minmax(0,1fr)] lg:gap-5">
+        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xl shadow-slate-200/70 sm:p-5">
+          <div className="mb-4 flex items-end justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Shop by room
+              </p>
+              <h2 className="section-title mt-1">Style Your Space</h2>
             </div>
+            <span className="hidden rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 sm:inline-flex">
+              {roomCards.length || 4} rooms
+            </span>
           </div>
-         
 
-          {/* ================= RIGHT : TRENDING NOW ================= */}
-          <div
-            className="
-          w-full lg:max-w-[1164px]
-          bg-white
-          p-4 sm:p-6
-          rounded-xl border border-slate-200 shadow-2xl shadow-slate-200/70
-        "
-          >
-            <h2 className="section-title mb-3 mt-1 sm:mb-4">
-              Trending Now
-            </h2>
-
-            <div className="relative ">
-              <div
-                ref={scrollRefTrending}
-                className="
-              overflow-x-auto
-              scroll-smooth
-              scrollbar-hide
-              pb-2
-            "
-              >
-                <TrendingGrid
-                  products={productsForGrid}
-                  row={2}
-                  loading={productsForGrid.length === 0}
+          {roomCards.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3">
+              {roomCards.map((room, index) => (
+                <RoomCard
+                  key={room?._id || index}
+                  room={room}
+                  index={index}
+                  isLarge={index === 0}
+                  isMobile={isXs}
+                  onOpen={() => room?.url && router.push(room.url)}
                 />
-              </div>
+              ))}
             </div>
-          </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <div
+                  key={index}
+                  className={`animate-pulse rounded-xl bg-slate-200 ${
+                    index === 0
+                      ? "col-span-2 aspect-[16/10]"
+                      : "aspect-[4/3]"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
         </div>
+
+        <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-2xl shadow-slate-200/70 sm:p-5">
+          <div className="mb-4 flex items-end justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Popular picks
+              </p>
+              <h2 className="section-title mt-1">Trending Now</h2>
+            </div>
+            <span className="hidden rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 sm:inline-flex">
+              Top designs
+            </span>
+          </div>
+
+          <TrendingGrid
+            products={productsForGrid}
+            loading={productsForGrid.length === 0}
+          />
+        </div>
+      </div>
+    </section>
   );
 };
+
+function RoomCard({ room, index, isLarge, isMobile, onOpen }) {
+  return (
+    <button
+      type="button"
+      aria-label={`Open ${room?.name || "room collection"}`}
+      onClick={onOpen}
+      className={`group relative overflow-hidden rounded-xl bg-slate-100 text-left shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg ${
+        isLarge ? "col-span-2 aspect-[16/10]" : "aspect-[4/3]"
+      }`}
+    >
+      <Image
+        src={getCloudinaryImageUrl(room?.image?.[0] || "/images/placeholder.jpg", {
+          width: isLarge ? 720 : 360,
+          height: isLarge ? 450 : 270,
+          crop: isMobile ? "fill" : "limit",
+        })}
+        alt={room?.name || "Room design"}
+        fill
+        sizes={
+          isLarge
+            ? "(max-width: 1024px) 100vw, 430px"
+            : "(max-width: 1024px) 50vw, 210px"
+        }
+        className="object-cover brightness-95 contrast-105 transition-transform duration-700 group-hover:scale-105"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/20 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            {isLarge && (
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-white/70">
+                Featured room
+              </p>
+            )}
+            <h3
+              className={`line-clamp-2 font-semibold leading-tight text-white ${
+                isLarge ? "text-lg sm:text-xl" : "text-sm sm:text-base"
+              }`}
+              title={room?.name}
+            >
+              {room?.name}
+            </h3>
+          </div>
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/90 text-slate-900 transition group-hover:bg-white">
+            <ArrowUpRight className="h-4 w-4" />
+          </span>
+        </div>
+      </div>
+      <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+        {String(index + 1).padStart(2, "0")}
+      </span>
+    </button>
+  );
+}
 
 export default StyleYourSpaceSection;

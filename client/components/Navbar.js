@@ -4,9 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { FaBell } from "react-icons/fa";
-import { IoMdHome } from "react-icons/io";
-import { MdCall, MdOutlineMessage } from "react-icons/md";
+import { MdOutlineMessage } from "react-icons/md";
 import {
   BedDouble,
   Bell,
@@ -16,7 +14,9 @@ import {
   LampDesk,
   Laptop,
   MapPin,
+  Menu,
   Package,
+  PhoneCall,
   Sofa,
   User,
   UtensilsCrossed,
@@ -28,6 +28,8 @@ import { usePrd } from "@/app/context/ProductContext";
 import LogoutBTN from "./LogoutBTN";
 import Search from "./Search";
 
+const primaryLinks = ["Sofas", "Living Room", "Bedroom", "Dining"];
+
 const categoryIcons = {
   sofas: Sofa,
   "living room": Home,
@@ -38,9 +40,9 @@ const categoryIcons = {
   accessories: Boxes,
 };
 
-const getCategoryIcon = (name) => {
+const getCategoryIcon = (name, className = "h-6 w-6 text-slate-800") => {
   const Icon = categoryIcons[name?.toLowerCase()] || Package;
-  return <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-slate-900" />;
+  return <Icon className={className} strokeWidth={1.9} />;
 };
 
 const Navbar = () => {
@@ -54,8 +56,9 @@ const Navbar = () => {
   const { showLarge } = usePrd();
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const isHome = pathName === "/";
 
   useEffect(() => {
     if (isLogin) getNotifications();
@@ -64,13 +67,13 @@ const Navbar = () => {
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 10);
     handleScroll();
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setMenuOpen(false);
       }
     };
@@ -82,241 +85,247 @@ const Navbar = () => {
   if (showLarge) return null;
 
   const sortedCatData = [...(catData || [])].sort((a, b) => a.sln - b.sln);
+  const showTopCategories = !isHome || isScrolled;
+  const showBottomCategories = isHome && !isScrolled;
 
   const goCategory = (name) => {
-    const catId = catData?.find((c) => c.name === name)?._id;
+    const catId = catData?.find((category) => category.name === name)?._id;
     if (catId) router.push(`/ProductListing?catId=${catId}`);
   };
 
+  const findCategoryByName = (name) =>
+    catData?.find((category) => category.name === name);
+
   return (
-    <nav className="fixed w-full top-0 z-[1000] bg-slate-900">
-      <div className="bg-slate-900 text-white">
-        <div className="max-w-[1600px] mx-auto px-2 sm:px-6 flex justify-between items-center h-[80px] sm:h-[90px]">
+    <nav className="fixed left-0 top-0 z-[1000] w-full bg-slate-950 text-white shadow-[0_10px_30px_rgba(15,23,42,0.18)]">
+      <div className="relative border-b border-white/10 bg-slate-950/95 backdrop-blur">
+        <div className="mx-auto flex h-[74px] max-w-[1600px] items-center justify-between gap-2 px-3 sm:h-[88px] sm:px-6">
           <button
             type="button"
             aria-label="Go to home page"
             onClick={() => router.push("/")}
-            className="flex items-center gap-0 sm:gap-1 flex-shrink-0 h-[45px] sm:h-[50px]"
+            className="flex min-w-0 flex-shrink-0 items-center gap-1 rounded-full pr-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
           >
             <Image
               src="/images/logo.png"
-              alt="Logo"
-              width={60}
-              height={60}
-              className="w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] object-contain"
+              alt="S N Steel Fabrication logo"
+              width={62}
+              height={62}
+              className="h-[50px] w-[50px] object-contain sm:h-[62px] sm:w-[62px]"
               priority
             />
 
             <Image
               src="/images/snsf-text.png"
-              alt="SNSF"
-              width={160}
-              height={60}
-              className="w-[140px] h-[50px] sm:w-[160px] sm:h-[60px] object-contain"
+              alt="S N Steel Fabrication"
+              width={172}
+              height={64}
+              className="h-[48px] w-[132px] object-contain sm:h-[60px] sm:w-[172px]"
               priority
             />
           </button>
 
           <div
-            className={`hidden lg:flex h-full items-center gap-4 ml-10 mr-5 mt-4 text-sm font-medium transition-all duration-500 ${
-              pathName === "/" && !isScrolled
-                ? "opacity-0 translate-y-6 pointer-events-none"
-                : "opacity-100 translate-y-0"
+            className={`hidden min-w-0 flex-1 items-center justify-center transition duration-300 lg:flex ${
+              showTopCategories
+                ? "opacity-100 translate-y-0"
+                : "pointer-events-none -translate-y-2 opacity-0"
             }`}
           >
-            {pathName !== "/" && (
-              <div className="flex items-center justify-center gap-4">
-                <button
-                  type="button"
-                  aria-label="Go to home page"
-                  onClick={() => router.push("/")}
-                  className="text-slate-300 hover:text-white transition-colors mt-1"
-                >
-                  <IoMdHome className="text-[24px]" />
-                </button>
-                <span className="text-slate-400 font-semibold text-[20px]">
-                  |
-                </span>
-              </div>
-            )}
+            <div className="flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.06] p-1">
+              <button
+                type="button"
+                onClick={() => router.push("/")}
+                className={`inline-flex min-h-10 items-center gap-2 rounded-full px-4 text-sm font-semibold transition ${
+                  isHome
+                    ? "bg-white text-slate-950 shadow-sm"
+                    : "text-slate-200 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                <Home className="h-4 w-4" />
+                Home
+              </button>
 
-            {["Sofas", "Living Room", "Bedroom", "Dining"].map(
-              (name, i, arr) => (
-                <React.Fragment key={name}>
-                  <button
-                    type="button"
-                    onClick={() => goCategory(name)}
-                    className="text-slate-300 hover:text-white transition-colors duration-300 relative after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[1px] after:bg-white hover:after:w-full after:transition-all after:duration-300 text-nowrap text-[17px]"
-                  >
-                    {name}
-                  </button>
+              {primaryLinks.map((name, index) => {
+                const category = findCategoryByName(name);
 
-                  {i < arr.length - 1 && (
-                    <span className="text-slate-400 font-semibold text-[20px]">
-                      |
-                    </span>
-                  )}
-                </React.Fragment>
-              )
-            )}
+                return (
+                  <div key={name} className="group/category relative">
+                    <button
+                      type="button"
+                      onClick={() => goCategory(name)}
+                      className="inline-flex min-h-10 items-center rounded-full px-4 text-sm font-semibold text-slate-200 transition hover:bg-white/10 hover:text-white"
+                    >
+                      {name}
+                    </button>
+
+                    <CategoryFlyout
+                      category={category}
+                      align={index > primaryLinks.length - 3 ? "right" : "left"}
+                    />
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="sm:flex sm:gap-6">
-            <div className="relative md:w-[50px] lg:w-[50px] xl:w-[100px]">
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 transition-[opacity,transform] duration-[500ms]">
-                <Search />
-              </div>
+          <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-3">
+            <div
+              className={`hidden justify-end overflow-visible transition-[width] duration-300 md:flex ${
+                showBottomCategories
+                  ? "md:w-[300px] lg:w-[360px] xl:w-[460px] 2xl:w-[540px]"
+                  : "md:w-[48px] lg:w-[48px] xl:w-[118px] 2xl:w-[136px]"
+              }`}
+            >
+              <Search navScrolled={isScrolled} />
             </div>
 
-            <div className="w-auto sm:hidden flex">
-              <div className="relative block sm:hidden" ref={dropdownRef}>
-                <button
-                  type="button"
-                  aria-label="Account"
-                  onClick={() => setMenuOpen((prev) => !prev)}
-                  className="inline-flex items-center justify-center rounded-full p-2 text-slate-200"
-                >
-                  <Image
-                    src={userData?.avatar || "/images/emptyAccount.png"}
-                    alt="Account"
-                    width={35}
-                    height={35}
-                    className="!w-[35px] !h-[35px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
-                  />
-                </button>
-
-                {menuOpen && (
-                  <AccountMenu
-                    isLogin={isLogin}
-                    userData={userData}
-                    onClose={() => setMenuOpen(false)}
-                  />
-                )}
-              </div>
-            </div>
-
-            <div className="hidden sm:flex items-center gap-3">
+            <div className="hidden items-center gap-2 sm:flex">
               <button
                 type="button"
                 aria-label="Open notifications"
                 onClick={() => router.push("/notifications")}
-                className="inline-flex items-center justify-center rounded-full p-2"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-slate-100 transition hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
-                <FaBell className="!text-[33px] text-white" />
-              </button>
-              <button
-                type="button"
-                aria-label="Call"
-                onClick={() => (window.location.href = "tel:+919776501230")}
-                className="inline-flex items-center justify-center rounded-full p-2"
-              >
-                <MdCall className="!text-[37px] text-white" />
+                <Bell className="h-5 w-5" />
               </button>
 
-              <div className="relative group hidden sm:block">
+              <button
+                type="button"
+                aria-label="Call S N Steel Fabrication"
+                onClick={() => (window.location.href = "tel:+919776501230")}
+                className="hidden min-h-11 items-center gap-2 rounded-full border border-white/10 bg-white px-4 text-sm font-semibold text-slate-950 shadow-sm transition hover:bg-slate-100 xl:inline-flex"
+              >
+                <PhoneCall className="h-4 w-4" />
+                Call
+              </button>
+
+              <button
+                type="button"
+                aria-label="Call S N Steel Fabrication"
+                onClick={() => (window.location.href = "tel:+919776501230")}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-slate-100 transition hover:bg-white/15 xl:hidden"
+              >
+                <PhoneCall className="h-5 w-5" />
+              </button>
+
+              <div
+                className="group/account relative hidden sm:block"
+                ref={dropdownRef}
+                onMouseEnter={() => setMenuOpen(true)}
+                onMouseLeave={() => setMenuOpen(false)}
+              >
                 <button
                   type="button"
-                  aria-label="Account"
-                  onClick={() => router.push(isLogin ? "/profile" : "/login")}
-                  className="inline-flex items-center justify-center rounded-full p-2 text-slate-200"
+                  aria-label="Open account menu"
+                  aria-expanded={menuOpen}
+                  onClick={() => setMenuOpen((prev) => !prev)}
+                  className="inline-flex h-11 items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] p-1.5 pr-3 text-slate-100 transition hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
                   {isCheckingToken ? (
-                    <span className="block w-[37.2px] h-[37.2px] rounded-full border-2 border-slate-200 bg-slate-300 animate-pulse shrink-0" />
+                    <span className="block h-8 w-8 shrink-0 animate-pulse rounded-full bg-slate-300" />
                   ) : (
                     <Image
                       src={userData?.avatar || "/images/emptyAccount.png"}
                       alt="Account"
-                      width={37}
-                      height={37}
-                      className="w-[37.2px] h-[37.2px] rounded-full border-2 border-slate-200 cursor-pointer object-cover shrink-0"
+                      width={34}
+                      height={34}
+                      className="h-8 w-8 shrink-0 rounded-full border border-white/40 object-cover"
                     />
                   )}
+                  <Menu className="h-4 w-4" />
                 </button>
 
-                <div className="absolute right-0 mt-2 w-[220px] bg-white text-[#1e293b] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[1000]">
+                <div
+                  className={`absolute right-0 z-[2000] mt-3 w-[248px] overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-800 shadow-2xl transition duration-200 group-hover/account:visible group-hover/account:translate-y-0 group-hover/account:opacity-100 ${
+                    menuOpen
+                      ? "visible translate-y-0 opacity-100"
+                      : "invisible translate-y-2 opacity-0"
+                  }`}
+                >
+                    <AccountMenu
+                      isLogin={isLogin}
+                      userData={userData}
+                      onClose={() => setMenuOpen(false)}
+                    />
+                </div>
+              </div>
+            </div>
+
+            <div className="relative sm:hidden" ref={dropdownRef}>
+              <button
+                type="button"
+                aria-label="Open account menu"
+                aria-expanded={menuOpen}
+                onClick={() => setMenuOpen((prev) => !prev)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.08]"
+              >
+                <Image
+                  src={userData?.avatar || "/images/emptyAccount.png"}
+                  alt="Account"
+                  width={34}
+                  height={34}
+                  className="h-8 w-8 rounded-full border border-white/40 object-cover"
+                />
+              </button>
+
+              {menuOpen && (
+                <div className="absolute right-0 z-[2000] mt-3 w-[248px] overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-800 shadow-2xl">
                   <AccountMenu
                     isLogin={isLogin}
                     userData={userData}
                     onClose={() => setMenuOpen(false)}
                   />
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
+      </div>
 
-        <div
-          className={`hidden md:block transition-[opacity,transform] duration-[500ms] ${
-            isScrolled
-              ? "opacity-0 translate-y-3 pointer-events-none"
-              : "opacity-100 translate-y-0"
-          }`}
-        >
-          <div
-            className={`max-w-[1600px] mx-auto py-2 flex justify-center ${
-              pathName === "/" ? "block" : "hidden"
-            }`}
-          >
-            <ul className="flex items-start gap-4 scrollbar-hide">
-              {sortedCatData.length === 0
-                ? Array.from({ length: 7 }).map((_, index) => (
-                    <li
-                      key={`skeleton-${index}`}
-                      className="h-[70px] md:w-[85px] lg:w-[110px] xl:w-[130px]"
-                    >
-                      <div className="h-[70px] md:w-[85px] lg:w-[110px] xl:w-[130px] rounded-xl bg-slate-200 animate-pulse" />
-                    </li>
-                  ))
-                : sortedCatData.map((cat) => (
-                    <li
-                      key={cat._id}
+      <div
+        className={`relative hidden border-b border-slate-200/70 bg-white text-slate-900 shadow-sm transition-[max-height,opacity,transform] duration-300 md:block ${
+          showBottomCategories
+            ? "max-h-[92px] overflow-visible opacity-100 translate-y-0"
+            : "max-h-0 -translate-y-2 overflow-hidden opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className="mx-auto max-w-[1600px] px-4 py-3">
+          <ul className="flex items-center justify-center gap-3 overflow-visible">
+            {sortedCatData.length === 0
+              ? Array.from({ length: 7 }).map((_, index) => (
+                  <li key={`category-skeleton-${index}`}>
+                    <div className="h-[62px] w-[118px] animate-pulse rounded-2xl bg-slate-100" />
+                  </li>
+                ))
+              : sortedCatData.map((cat, index) => (
+                  <li key={cat._id} className="group/category relative">
+                    <button
+                      type="button"
                       onClick={() =>
                         router.push(`/ProductListing?catId=${cat._id}`)
                       }
-                      className="relative group cursor-pointer"
+                      className="group flex h-[62px] min-w-[118px] items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
                     >
-                      <div className="h-[70px] md:w-[85px] lg:w-[110px] xl:w-[130px] bg-white rounded-xl flex flex-col items-center justify-center p-1 gap-1 shadow-sm shadow-slate-900/20 hover:shadow-lg hover:shadow-slate-900/30 transition-all duration-200">
-                        <div className="w-8 h-8 flex items-center justify-center">
-                          {getCategoryIcon(cat.name)}
-                        </div>
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 transition group-hover:bg-slate-900">
+                        {getCategoryIcon(
+                          cat.name,
+                          "h-5 w-5 text-slate-800 transition group-hover:text-white",
+                        )}
+                      </span>
+                      <span className="max-w-[92px] truncate text-sm font-semibold text-slate-800">
+                        {cat.name}
+                      </span>
+                    </button>
 
-                        <span className="md:text-[12px] lg:text-[14px] xl:text-[16px] text-slate-900 text-nowrap font-medium text-center">
-                          {cat.name}
-                        </span>
-                      </div>
-                    </li>
-                  ))}
-            </ul>
-          </div>
+                    <CategoryFlyout
+                      category={cat}
+                      align={index > sortedCatData.length - 3 ? "right" : "left"}
+                    />
+                  </li>
+                ))}
+          </ul>
         </div>
-
-        {mobileMenuOpen && (
-          <div className="sm:hidden bg-white text-[#131e30] border-t border-b py-2 px-4 space-y-2">
-            <div
-              onClick={() => {
-                router.push("/");
-                setMobileMenuOpen(false);
-              }}
-              className="cursor-pointer hover:font-semibold flex items-center gap-2"
-            >
-              <IoMdHome /> Home
-            </div>
-
-            {sortedCatData.map((cat) => (
-              <div key={cat._id}>
-                <div
-                  onClick={() => {
-                    router.push(`/ProductListing?catId=${cat._id}`);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="cursor-pointer font-medium hover:text-indigo-600"
-                >
-                  {cat.name}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </nav>
   );
@@ -324,73 +333,165 @@ const Navbar = () => {
 
 function AccountMenu({ isLogin, userData, onClose }) {
   return (
-    <div className="flex flex-col p-3 space-y-2 text-sm">
+    <div className="p-2 text-sm">
       {!isLogin ? (
         <>
-          <div className="font-semibold text-gray-900">Welcome, Guest!</div>
-          <hr className="border-gray-200" />
-          <Link
-            href="/login"
-            onClick={onClose}
-            className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition font-medium"
-          >
-            Login
-          </Link>
-          <Link
-            href="/signup"
-            onClick={onClose}
-            className="w-full text-left px-3 py-2 rounded hover:bg-gray-100 transition font-medium"
-          >
-            Register
-          </Link>
+          <div className="rounded-xl bg-slate-50 px-3 py-3">
+            <p className="font-semibold text-slate-900">Welcome, Guest</p>
+            <p className="mt-1 text-xs text-slate-500">
+              Login to save products and enquiries.
+            </p>
+          </div>
+
+          <div className="mt-2 grid gap-1">
+            <Link
+              href="/login"
+              onClick={onClose}
+              className="rounded-xl px-3 py-2 font-semibold text-slate-700 transition hover:bg-slate-100"
+            >
+              Login
+            </Link>
+            <Link
+              href="/signup"
+              onClick={onClose}
+              className="rounded-xl px-3 py-2 font-semibold text-slate-700 transition hover:bg-slate-100"
+            >
+              Register
+            </Link>
+          </div>
         </>
       ) : (
         <>
-          <div className="font-semibold text-gray-900 px-3">
-            {userData?.name || "User"}
+          <div className="rounded-xl bg-slate-50 px-3 py-3">
+            <p className="truncate font-semibold text-slate-900">
+              {userData?.name || "User"}
+            </p>
+            {userData?.email && (
+              <p className="mt-1 truncate text-xs text-slate-500">
+                {userData.email}
+              </p>
+            )}
           </div>
-          <hr className="border-gray-200" />
-          <Link
-            href="/profile"
-            onClick={onClose}
-            className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition"
-          >
-            <User size={18} /> Profile
-          </Link>
-          <Link
-            href="/enquires"
-            onClick={onClose}
-            className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition"
-          >
-            <MdOutlineMessage size={18} /> My Enquries
-          </Link>
-          <Link
-            href="/wishlist"
-            onClick={onClose}
-            className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition"
-          >
-            <Heart size={18} /> Wishlist
-          </Link>
-          <Link
-            href="/notifications"
-            onClick={onClose}
-            className="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded transition"
-          >
-            <Bell size={18} /> Notifications
-          </Link>
-          <Link
-            href="/address"
-            onClick={onClose}
-            className="flex items-center gap-2 hover:bg-gray-100 px-3 pt-2 pb-[2px] rounded transition"
-          >
-            <MapPin size={18} /> Manage Address
-          </Link>
-          <div className="pt-0">
+
+          <div className="mt-2 grid gap-1">
+            <MenuLink href="/profile" onClose={onClose} icon={<User size={18} />}>
+              Profile
+            </MenuLink>
+            <MenuLink
+              href="/enquires"
+              onClose={onClose}
+              icon={<MdOutlineMessage size={18} />}
+            >
+              My Enquiries
+            </MenuLink>
+            <MenuLink
+              href="/wishlist"
+              onClose={onClose}
+              icon={<Heart size={18} />}
+            >
+              Wishlist
+            </MenuLink>
+            <MenuLink
+              href="/notifications"
+              onClose={onClose}
+              icon={<Bell size={18} />}
+            >
+              Notifications
+            </MenuLink>
+            <MenuLink
+              href="/address"
+              onClose={onClose}
+              icon={<MapPin size={18} />}
+            >
+              Manage Address
+            </MenuLink>
+          </div>
+
+          <div className="mt-2 border-t border-slate-100 pt-2">
             <LogoutBTN onLogout={onClose} />
           </div>
         </>
       )}
     </div>
+  );
+}
+
+function CategoryFlyout({ category, align = "left" }) {
+  const children = [...(category?.children || [])].sort((a, b) => a.sln - b.sln);
+
+  if (!category || children.length === 0) return null;
+
+  return (
+    <div
+      className={`invisible absolute top-full z-[1900] w-[520px] translate-y-2 pt-3 text-slate-900 opacity-0 transition duration-200 group-hover/category:visible group-hover/category:translate-y-0 group-hover/category:opacity-100 ${
+        align === "right" ? "right-0" : "left-0"
+      }`}
+    >
+      <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl">
+        <div className="mb-2 flex items-center justify-between border-b border-slate-100 pb-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Browse
+            </p>
+            <p className="text-base font-semibold text-slate-950">
+              {category.name}
+            </p>
+          </div>
+          <Link
+            href={`/ProductListing?catId=${category._id}`}
+            className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-slate-800"
+          >
+            View all
+          </Link>
+        </div>
+
+        <div className="grid max-h-[360px] grid-cols-2 gap-2 overflow-y-auto pr-1 scrollbar-hide">
+          {children.map((subCat) => {
+            const thirdChildren = [...(subCat.children || [])].sort(
+              (a, b) => a.sln - b.sln,
+            );
+
+            return (
+              <div key={subCat._id} className="rounded-xl p-2 hover:bg-slate-50">
+                <Link
+                  href={`/ProductListing?subCatId=${subCat._id}`}
+                  className="block truncate text-sm font-semibold text-slate-800 hover:text-slate-950"
+                >
+                  {subCat.name}
+                </Link>
+
+                {thirdChildren.length > 0 && (
+                  <div className="mt-2 grid gap-1">
+                    {thirdChildren.slice(0, 4).map((thirdSubCat) => (
+                      <Link
+                        key={thirdSubCat._id}
+                        href={`/ProductListing?thirdSubCatId=${thirdSubCat._id}`}
+                        className="truncate rounded-lg px-2 py-1 text-xs font-medium text-slate-500 transition hover:bg-white hover:text-slate-900"
+                      >
+                        {thirdSubCat.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MenuLink({ href, onClose, icon, children }) {
+  return (
+    <Link
+      href={href}
+      onClick={onClose}
+      className="flex items-center gap-2 rounded-xl px-3 py-2 font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-950"
+    >
+      {icon}
+      {children}
+    </Link>
   );
 }
 

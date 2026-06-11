@@ -1,14 +1,24 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
-import Image from "next/image";
 import { fetchDataFromApi } from "@/utils/api";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 
-const Suggestions = ({ productId, catId, subCatId, thirdSubCatId, brand }) => {
+const Suggestions = ({
+  productId,
+  catId,
+  subCatId,
+  thirdSubCatId,
+  brand,
+  title = "Similar Products",
+  subtitle = "More designs from the same style family.",
+  eyebrow = "Related picks",
+  limit = 12,
+}) => {
   const { setLoading, isCheckingToken } = useAuth();
   const scrollRef = useRef(null);
   const router = useRouter();
@@ -26,9 +36,17 @@ const Suggestions = ({ productId, catId, subCatId, thirdSubCatId, brand }) => {
   useEffect(() => {
     const loadSuggestions = async () => {
       try {
-        const query = `productId=${productId}&catId=${catId}&subCatId=${subCatId}&thirdSubCatId=${thirdSubCatId}&brand=${brand}&limit=12`;
+        const query = new URLSearchParams({
+          productId: productId || "",
+          catId: catId || "",
+          subCatId: subCatId || "",
+          thirdSubCatId: thirdSubCatId || "",
+          brand: brand || "",
+          limit: String(limit),
+        });
+
         const res = await fetchDataFromApi(
-          `/api/product/suggestions?${query}`,
+          `/api/product/suggestions?${query.toString()}`,
           false,
         );
 
@@ -42,7 +60,7 @@ const Suggestions = ({ productId, catId, subCatId, thirdSubCatId, brand }) => {
     };
 
     loadSuggestions();
-  }, [brand, catId, productId, setLoading, subCatId, thirdSubCatId]);
+  }, [brand, catId, limit, productId, setLoading, subCatId, thirdSubCatId]);
 
   useEffect(() => {
     if (!hydrated || isCheckingToken) return;
@@ -62,105 +80,106 @@ const Suggestions = ({ productId, catId, subCatId, thirdSubCatId, brand }) => {
     checkScrollLimits();
     container.addEventListener("scroll", checkScrollLimits);
     return () => container.removeEventListener("scroll", checkScrollLimits);
-  }, []);
+  }, [data]);
 
   const scroll = (direction) => {
     const container = scrollRef.current;
     if (!container) return;
 
     container.scrollBy({
-      left: direction === "left" ? -container.clientWidth * 0.8 : container.clientWidth * 0.8,
+      left:
+        direction === "left"
+          ? -container.clientWidth * 0.82
+          : container.clientWidth * 0.82,
       behavior: "smooth",
     });
   };
 
+  if (!localLoading && data.length === 0) return null;
+
   return (
-    <div className="flex w-full flex-col items-center bg-slate-100 pb-5 pt-3">
-      <h2 className="mb-4 mt-4 text-2xl font-bold text-black sm:mb-8 sm:mt-8 sm:text-3xl">
-        Similar Products
-      </h2>
+    <section className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="flex flex-col gap-3 border-b border-slate-100 px-4 py-4 sm:flex-row sm:items-end sm:justify-between sm:px-5">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+            {eyebrow}
+          </p>
+          <h2 className="mt-1 text-[24px] font-semibold leading-tight text-slate-950 sm:text-[30px]">
+            {title}
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-slate-500">{subtitle}</p>
+        </div>
 
-      <div className="relative mx-auto w-full max-w-[1100px] px-4">
-        <button
-          type="button"
-          aria-label="Scroll similar products left"
-          onClick={() => scroll("left")}
-          disabled={isAtStart}
-          className={`absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full p-1 shadow transition sm:p-2 ${
-            isAtStart ? "bg-gray-300" : "bg-white/80 hover:bg-white"
-          }`}
-        >
-          <ChevronLeft />
-        </button>
+        <div className="hidden gap-2 sm:flex">
+          <button
+            type="button"
+            aria-label={`Scroll ${title} left`}
+            onClick={() => scroll("left")}
+            disabled={isAtStart}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-800 transition disabled:cursor-not-allowed disabled:opacity-40 hover:border-slate-950"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
 
-        <div
-          ref={scrollRef}
-          className="overflow-x-auto whitespace-nowrap scroll-smooth py-5 scrollbar-hide"
-        >
-          <div className="inline-flex gap-4 px-2 py-4">
-            {Array.isArray(data) && data.length > 0 ? (
-              data.map((prd) => (
+          <button
+            type="button"
+            aria-label={`Scroll ${title} right`}
+            onClick={() => scroll("right")}
+            disabled={isAtEnd}
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-800 transition disabled:cursor-not-allowed disabled:opacity-40 hover:border-slate-950"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+
+      <div ref={scrollRef} className="overflow-x-auto scroll-smooth scrollbar-hide">
+        <div className="grid grid-flow-col auto-cols-[minmax(180px,220px)] gap-3 p-4 sm:auto-cols-[minmax(220px,250px)] sm:p-5">
+          {Array.isArray(data) && data.length > 0
+            ? data.map((prd) => (
                 <article
                   key={prd?._id}
-                  className="flex min-w-[256px] max-w-[256px] flex-col items-center gap-3 bg-white p-2 shadow-md transition hover:scale-105"
+                  className="group cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-slate-300 hover:shadow-md"
+                  onClick={() => router.push(`/product/${prd?._id}`)}
                 >
-                  <button
-                    type="button"
-                    aria-label={`Open ${prd?.name || "product"}`}
-                    className="relative w-full cursor-pointer overflow-hidden rounded-md"
-                    style={{ aspectRatio: "4 / 3" }}
-                    onClick={() => router.push(`/product/${prd?._id}`)}
-                  >
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
                     <Image
                       src={getCloudinaryImageUrl(
                         prd?.images?.[0] || "/images/placeholder.jpg",
-                        { width: 320, height: 240 },
+                        { width: 420, height: 315 },
                       )}
                       alt={prd?.name || "Product"}
                       fill
-                      sizes="256px"
-                      className="object-cover"
+                      sizes="(max-width: 640px) 220px, 250px"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                  </button>
+                  </div>
 
-                  <button
-                    type="button"
-                    className="w-full truncate px-2 text-center text-sm font-medium text-gray-800"
-                    onClick={() => router.push(`/product/${prd?._id}`)}
-                  >
-                    {prd?.name}
-                  </button>
+                  <div className="min-h-[86px] p-3">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+                      {prd?.brand || "SNSF"}
+                    </p>
+                    <h3 className="mt-2 line-clamp-2 text-sm font-semibold leading-5 text-slate-900">
+                      {prd?.name}
+                    </h3>
+                  </div>
                 </article>
               ))
-            ) : localLoading ? (
-              Array.from({ length: 6 }).map((_, i) => (
-                <div
+            : Array.from({ length: 6 }).map((_, i) => (
+                <article
                   key={i}
-                  className="flex min-w-[256px] max-w-[256px] flex-col items-center gap-3 bg-white p-2 shadow-md"
+                  className="overflow-hidden rounded-xl border border-slate-200 bg-white"
                 >
-                  <div className="h-[150px] w-full animate-pulse rounded bg-slate-200" />
-                  <div className="h-4 w-4/5 animate-pulse rounded bg-slate-200" />
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500">No suggestions found</p>
-            )}
-          </div>
+                  <div className="aspect-[4/3] w-full animate-pulse bg-slate-200" />
+                  <div className="p-3">
+                    <div className="h-3 w-20 animate-pulse rounded bg-slate-200" />
+                    <div className="mt-3 h-4 w-4/5 animate-pulse rounded bg-slate-200" />
+                  </div>
+                </article>
+              ))}
         </div>
-
-        <button
-          type="button"
-          aria-label="Scroll similar products right"
-          onClick={() => scroll("right")}
-          disabled={isAtEnd}
-          className={`absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full p-1 shadow sm:p-2 ${
-            isAtEnd ? "bg-gray-300" : "bg-white/80 hover:bg-white"
-          }`}
-        >
-          <ChevronRight />
-        </button>
       </div>
-    </div>
+    </section>
   );
 };
 

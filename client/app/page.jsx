@@ -26,9 +26,10 @@ async function fetchHomeJson(path, timeoutMs = 1500) {
 }
 
 export default async function Home() {
-  const [bestsellersRes, postersRes] = await Promise.all([
+  const [bestsellersRes, postersRes, sliderRes] = await Promise.all([
     fetchHomeJson("/api/home-sections?sectionName=bestsellers"),
     fetchHomeJson("/api/poster/getAll"),
+    fetchHomeJson("/api/homeSlider/getAllSlides"),
   ]);
 
   const initialBestsellers = Array.isArray(bestsellersRes?.data)
@@ -39,10 +40,13 @@ export default async function Home() {
     ? postersRes.data[0] || null
     : null;
 
+  const initialSlides = Array.isArray(sliderRes?.data) ? sliderRes.data : null;
+
   return (
     <HomePageClient
       initialBestsellers={initialBestsellers}
       initialBestsellerPoster={initialBestsellerPoster}
+      initialSlides={initialSlides}
     />
   );
 }
