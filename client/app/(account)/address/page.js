@@ -41,6 +41,7 @@ import { trackVisitor } from "@/lib/tracking";
 import { useScreen } from "@/app/context/ScreenWidthContext";
 import Skeleton from "@mui/material/Skeleton";
 import AddressCardSkeleton from "@/components/AddressCardSkeleton";
+import AccountPageShell from "@/components/AccountPageShell";
 
 
 
@@ -329,102 +330,17 @@ const [isDeliverable, setIsDeliverable] = useState(null);
 
 
   return (
-    <>
-      <div className="flex w-full min-h-screen justify-center bg-slate-100">
-        <div
-          className={`w-full sm:w-[1020px]   ${
-            isMd ? "my-8" : "sm:my-3"
-          } !mx-auto sm:flex justify-between gap-3 `}
-        >
-          {/* Left Sidebar */}
-          <div className="hidden sm:block left h-full">
-            <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5   gap-3 flex flex-col justify-center items-center ">
-              <Image
-                className="h-[140px] w-[140px] rounded-full object-cover"
-                src={
-                  getOptimizedCloudinaryUrl(userData?.avatar) ||
-                  "/images/account.png"
-                }
-                alt="User Profile"
-                width={140}
-                height={140}
-                loading="lazy"
-              />
-
-              <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide card-title">
-                {userData?.name}
-              </h1>
-            </div>
-
-            <div className="leftlower mt-3 w-[256px] bg-white shadow-lg">
-              <ul className="text-gray-600 font-sans">
-                <li>
-                  <Link href="/enquires">
-                    <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                      <MdOutlineMessage size={18} /> My Enquries
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2">
-                    <User size={18} /> Account Settings
-                  </div>
-                </li>
-                <li>
-                  <Link href="/profile">
-                    <div className="h-[40px] flex items-center pl-12 font-semibold cursor-pointer active:bg-slate-100">
-                      Profile Information
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/address">
-                    <div className="h-[40px] flex items-center pl-10 font-semibold  border  border-l-8 border-y-0 border-r-0 border-indigo-950 cursor-pointer  text-indigo-950 bg-slate-100 active:bg-slate-100">
-                      Manage Address
-                    </div>
-                  </Link>
-                </li>
-                {/* <li>
-                                    <Link href="/payments">
-                                        <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                                            <CreditCard size={18} /> Payments
-                                        </div>
-                                    </Link>
-                                </li> */}
-                <li>
-                  <Link href="/notifications">
-                    <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2  active:bg-slate-100">
-                      <Bell size={18} /> Notifications
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/wishlist">
-                    <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                      <Heart size={18} /> Wishlist
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <div>
-                    <LogoutBTN className={"!pl-5"} />
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Right Profile Section */}
-          <div className="right h-full w-full lg:w-[750px] bg-slate-100 sm:bg-white shadow-xl sm:p-6">
-            <div className="mb-2 sm:border-b border-gray-200   py-2 pl-3 sm:py-0 sm:pl-0 sm:pb-4 bg-white">
-              <h2 className="section-title ">Manage Addresses</h2>
-            </div>
-
-            <div className="p-2 sm:px-0 min-h-[90vh] bg-white">
+    <AccountPageShell
+      activePath="/address"
+      title="Manage Address"
+      description="Save contact and delivery locations for faster enquiries and service follow-up."
+    >
+      <section className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+            <div className="min-h-[520px]">
               {!showAddAddressForm && (
                 <button
                   onClick={() => setShowAddAddressForm(true)}
-                  className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-md border border-indigo-900 bg-indigo-950 text-white text-sm font-medium shadow-sm hover:bg-indigo-900 hover:shadow-md transition duration-200"
+                  className="mb-4 flex items-center gap-2 rounded-xl bg-slate-950 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700"
                 >
                   <IoMdAdd className="text-base sm:text-lg" />
                   Add Address
@@ -441,36 +357,36 @@ const [isDeliverable, setIsDeliverable] = useState(null);
     .map((address, index) => (
       <div
         key={index}
-        className="border p-3 sm:p-5 my-2 sm:my-4 rounded-md sm:rounded-xl shadow-md bg-white flex justify-between hover:shadow-lg transition duration-300"
+        className="my-3 flex justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg sm:p-5"
       >
         <div>
-          <h3 className="text-md sm:text-lg font-bold text-black mb-[2px] sm:mb-1">
+          <h3 className="text-md mb-1 font-bold text-slate-950 sm:text-lg">
             {address?.name}
           </h3>
 
-          <p className="text-gray-800 text-sm sm:text-md mb-[2px] sm:mb-1">
+          <p className="text-sm text-slate-700 sm:text-base">
             {address.address}
           </p>
 
-          <p className="text-gray-700 text-sm sm:text-md mb-[2px] sm:mb-1">
+          <p className="mt-1 text-sm text-slate-600 sm:text-base">
             {[address.locality, address.city, address.state]
               .filter(Boolean)
               .join(", ")}
             {address.pin && ` - ${address.pin}`}
           </p>
 
-          <p className="text-gray-600 mb-[2px] sm:mb-1">
+          <p className="mt-1 text-sm text-slate-600">
             Phone: {address.phone}
             {address.altPhone && ` | Alt: ${address.altPhone}`}
           </p>
 
           {address.landmark && (
-            <p className="text-gray-500 italic mb-[2px] sm:mb-1">
+            <p className="mt-1 text-sm italic text-slate-500">
               {address.landmark}
             </p>
           )}
 
-          <p className="text-xs sm:text-sm text-gray-500">
+          <p className="mt-2 inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
             {address.addressType}
           </p>
         </div>
@@ -478,7 +394,7 @@ const [isDeliverable, setIsDeliverable] = useState(null);
         <div className="flex gap-3 sm:gap-4 pr-1 sm:pr-2 pt-1">
           <button
             onClick={(e) => toggleEditAddress(e, address)}
-            className="p-1 rounded transition hover:scale-105 active:scale-95"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 transition hover:bg-slate-50 active:scale-95"
           >
             <FaEdit size={18} className="text-gray-700" />
           </button>
@@ -487,7 +403,7 @@ const [isDeliverable, setIsDeliverable] = useState(null);
             onClick={(e) =>
               handleClickOpenDeleteAlert(e, address._id)
             }
-            className="p-1 rounded transition hover:scale-105 active:scale-95"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 transition hover:border-red-200 hover:bg-red-50 active:scale-95"
           >
             <MdDelete size={18} className="text-red-600" />
           </button>
@@ -495,7 +411,7 @@ const [isDeliverable, setIsDeliverable] = useState(null);
       </div>
     ))
 ) : (
-                  <div className="flex flex-col items-center justify-center mt-20 text-center">
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
                     {/* Lottie Animation */}
                     <div className="w-[200px] sm:w-[260px] mb-4">
                       <DotLottieReact
@@ -506,12 +422,12 @@ const [isDeliverable, setIsDeliverable] = useState(null);
                     </div>
 
                     {/* Heading */}
-                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-700">
+                    <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
                       No Addresses Added
                     </h2>
 
                     {/* Subtext */}
-                    <p className="text-gray-500 mt-2 text-sm sm:text-base max-w-sm">
+                    <p className="mt-2 max-w-sm text-sm text-slate-500 sm:text-base">
                       You haven’t added any addresses yet. Add a delivery address
                       to make your future orders faster and easier!
                     </p>
@@ -934,10 +850,8 @@ const [isDeliverable, setIsDeliverable] = useState(null);
   </div>
 )}
 
-          </div>
-        </div>
-      </div>
-    </>
+      </section>
+    </AccountPageShell>
   );
 };
 

@@ -23,6 +23,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
+import { getProductPath } from "@/utils/productUrl";
 
 const Suggestions = dynamic(() => import("@/components/Suggestions"), {
   ssr: false,
@@ -630,7 +631,7 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
                         image: openedProduct?.images?.[0],
                       });
 
-                      const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${openedProduct?.name}*.\nHere is the product link:\nhttps://snsteelfabrication.com/product/${openedProduct?._id}`;
+                      const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${openedProduct?.name}*.\nHere is the product link:\nhttps://www.snsteelfabrication.com${getProductPath(openedProduct)}`;
                       window.open(whatsappURL, "_blank");
                     } catch {
                       return;

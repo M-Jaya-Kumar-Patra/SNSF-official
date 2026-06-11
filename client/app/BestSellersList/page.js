@@ -10,6 +10,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useWishlist } from "../context/WishlistContext";
 import WhatsappIcon from "@/components/WhatsappIcon";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
+import { getProductPath } from "@/utils/productUrl";
 
 const BestSellerSkeleton = () => (
   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
@@ -100,7 +101,7 @@ const ProductListing = () => {
         image: product?.images?.[0],
       });
 
-      const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${product?.name}*.\nHere is the product link:\nhttps://snsteelfabrication.com/product/${product?._id}`;
+      const whatsappURL = `https://wa.me/919776501230?text=Hi, I'm interested in *${product?.name}*.\nHere is the product link:\nhttps://www.snsteelfabrication.com${getProductPath(product)}`;
       window.open(whatsappURL, "_blank");
     } catch {
       return;
@@ -174,7 +175,7 @@ const ProductListing = () => {
                       type="button"
                       aria-label={`View ${product?.name || "product"}`}
                       className="relative block aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-100"
-                      onClick={() => router.push(`/product/${product?._id}`)}
+                      onClick={() => router.push(getProductPath(product))}
                     >
                       <Image
                         src={getCloudinaryImageUrl(

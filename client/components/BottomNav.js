@@ -24,6 +24,7 @@ import {
 import { useCat } from "@/app/context/CategoryContext";
 import { searchWithTracking } from "@/utils/searchWithTracking";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
+import { getProductPath } from "@/utils/productUrl";
 
 const categoryIcons = {
   sofas: Sofa,
@@ -301,7 +302,7 @@ const BottomNav = () => {
                       <li key={item._id}>
                         <button
                           type="button"
-                          onClick={() => goTo(`/product/${item._id}`)}
+                          onClick={() => goTo(getProductPath(item))}
                           className="flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-left shadow-sm transition active:scale-[0.99]"
                         >
                           <span className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-slate-100">

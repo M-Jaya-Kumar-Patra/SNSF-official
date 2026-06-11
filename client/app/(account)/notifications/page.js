@@ -1,34 +1,37 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
-import LogoutBTN from "@/components/LogoutBTN";
+import AccountPageShell from "@/components/AccountPageShell";
 import { useAuth } from "@/app/context/AuthContext";
 import { useNotice } from "@/app/context/NotificationContext";
-import { MdOutlineMessage } from "react-icons/md";
-import { User, Package, CreditCard, Heart, Bell } from "lucide-react";
 import { trackVisitor } from "@/lib/tracking";
-import { useScreen } from "@/app/context/ScreenWidthContext";
+
+const getStatusIcon = (message = "") => {
+  if (message.includes("confirmed")) return "OK";
+  if (message.includes("processing")) return "...";
+  if (message.includes("delivered")) return "Done";
+  if (message.includes("canceled")) return "X";
+  if (message.includes("returned")) return "Back";
+  if (message.includes("refunded")) return "Rs";
+  return "New";
+};
+
 const Account = () => {
   const router = useRouter();
-  const { userData, isLogin, isCheckingToken, setIsCheckingToken } = useAuth();
+  const { isLogin, isCheckingToken, setIsCheckingToken } = useAuth();
   const { notices, getNotifications, markAllUnreadAsRead } = useNotice();
-  const { isSm, isMd, isLg, isXl } = useScreen();
-
-  if (isCheckingToken)
-    return <div className="text-center mt-10">Checking session...</div>;
 
   useEffect(() => {
     if (!isLogin) {
       setIsCheckingToken(false);
       router.push("/login");
-    } else {
-      getNotifications();
+      return;
     }
-  }, [isLogin, router]);
+
+    getNotifications();
+  }, [getNotifications, isLogin, router, setIsCheckingToken]);
 
   useEffect(() => {
     trackVisitor("notifications");
@@ -38,170 +41,70 @@ const Account = () => {
     const handleReadOnLoad = async () => {
       await getNotifications();
       const hasUnread = Array.isArray(notices) && notices.some((n) => !n.read);
-      if (hasUnread) {
-        await markAllUnreadAsRead();
-      }
+      if (hasUnread) await markAllUnreadAsRead();
     };
 
     handleReadOnLoad();
   }, []);
 
-  const getOptimizedCloudinaryUrl = (url) => {
-    if (!url?.includes("res.cloudinary.com")) return url; // Don't touch local images
-    return url.replace("/upload/", "/upload/w_800,h_800,c_fill,f_auto,q_90/");
-  };
-
-  const getStatusIcon = (message = "") => {
-    if (message.includes("confirmed")) return "✅";
-    if (message.includes("processing")) return "🔄";
-    if (message.includes("delivered")) return "📦";
-    if (message.includes("canceled")) return "❌";
-    if (message.includes("returned")) return "↩️";
-    if (message.includes("refunded")) return "💸";
-    return "📬";
-  };
+  if (isCheckingToken) {
+    return <div className="mt-10 text-center">Checking session...</div>;
+  }
 
   return (
-    <div className="flex w-full min-h-screen justify-center bg-slate-100">
-      <div
-        className={`w-full sm:w-[1020px]   ${
-          isMd ? "my-8" : "sm:my-3"
-        } !mx-auto sm:flex justify-between gap-3 `}
-      >
-        {/* Left Sidebar */}
-        <div className="hidden sm:block left h-fit sticky top-8">
-          <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5 gap-3 flex flex-col justify-center items-center">
-            <Image
-              className="h-[140px] w-full sm:w-[140px] rounded-full object-cover"
-              src={
-                getOptimizedCloudinaryUrl(userData?.avatar) ||
-                "/images/account.png"
-              }
-              alt="User Profile"
-              width={140}
-              height={140}
-              loading="lazy"
-            />
-            <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide card-title">
-              {userData?.name}
-            </h1>
-          </div>
-
-          <div className="leftlower mt-3 w-[256px] bg-white shadow-lg">
-            <ul className="text-gray-600 font-sans">
-              <li>
-                <Link href="/enquires">
-                  <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                    <MdOutlineMessage size={18} /> My Enquries
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2">
-                  <User size={18} /> Account Settings
-                </div>
-              </li>
-              <li>
-                <Link href="/profile">
-                  <div className="h-[40px] flex items-center pl-12 font-semibold cursor-pointer active:bg-slate-100">
-                    Profile Information
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/address">
-                  <div className="h-[40px] flex items-center pl-12 font-semibold cursor-pointer active:bg-slate-100">
-                    Manage Address
-                  </div>
-                </Link>
-              </li>
-              {/* <li>
-                <Link href="/payments">
-                  <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                    <CreditCard size={18} /> Payments
-                  </div>
-                </Link>
-              </li> */}
-              <li>
-                <Link href="/notifications">
-                  <div className="h-[40px] flex items-center pl-[12.5px] font-semibold border border-l-8 border-y-0 border-r-0 border-indigo-950 cursor-pointer text-indigo-950 bg-slate-100 active:bg-slate-100 gap-[9px]">
-                    <Bell size={18} /> Notifications
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/wishlist">
-                  <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                    <Heart size={18} /> Wishlist
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <div>
-                  <LogoutBTN className={"!pl-5"} />
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Right Notification Section */}
-        <div className="right h-full w-full lg:w-[750px] bg-slate-100 sm:bg-white shadow-xl sm:p-6">
-          <div className="mb-2 sm:border-b border-gray-200  py-2 pl-3 sm:py-0 sm:pl-0 sm:pb-4 bg-white">
-            <h2 className="section-title">Notifications</h2>
-          </div>
-
-          {notices?.length > 0 ? (
-            <div className="space-y-2 sm:space-y-3 p-2 sm:px-0 bg-white">
-              {notices.map((notice, index) => (
-                <div
-                  key={index}
-                  className="bg-gradient-to-r from-gray-50 to-white border border-gray-100 rounded-xl p-3 sm:p-5 shadow-sm hover:shadow-lg transition-all cursor-pointer hover:scale-[1.02] duration-200"
-                  onClick={() => {
-                    if (notice?.link) router.push(notice.link);
-                  }}
-                >
-                  <div className="flex items-start gap-3 sm:gap-4">
-                    <div className="text-xl sm:text-2xl">
-                      {getStatusIcon(notice.message)}
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-[14px] sm:text-[15px] text-gray-800 font-medium leading-relaxed">
-                        <span
-                          dangerouslySetInnerHTML={{ __html: notice.message }}
-                        />
-                        {!notice.read && (
-                          <span className="ml-2 w-2 h-2 rounded-full bg-blue-600 inline-block animate-ping"></span>
-                        )}
-                      </div>
-                      <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                        {new Date(notice.createdAt).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center mt-16 sm:mt-20 text-center px-4">
-              <h2 className="text-lg sm:text-2xl font-semibold text-gray-700">
-                No Notifications Yet
-              </h2>
-              <p className="text-gray-500 mt-2 text-sm sm:text-base max-w-sm">
-                You currently don’t have any notifications. We’ll keep you
-                posted!
-              </p>
-              <Link
-                href="/"
-                className="mt-6 bg-blue-600 hover:bg-slate-900 text-white px-5 sm:px-6 py-2 rounded-full text-sm sm:text-base transition shadow-md"
+    <AccountPageShell
+      activePath="/notifications"
+      title="Notifications"
+      description="See account updates, enquiry alerts, and SNSF messages in one place."
+    >
+      <section className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+        {notices?.length > 0 ? (
+          <div className="space-y-3">
+            {notices.map((notice, index) => (
+              <button
+                type="button"
+                key={notice?._id || index}
+                className="flex w-full items-start gap-3 rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-50 to-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg sm:p-5"
+                onClick={() => {
+                  if (notice?.link) router.push(notice.link);
+                }}
               >
-                Back to Home
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-xs font-bold text-white">
+                  {getStatusIcon(notice.message)}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span
+                    className="block text-sm font-semibold leading-6 text-slate-800"
+                    dangerouslySetInnerHTML={{ __html: notice.message }}
+                  />
+                  <span className="mt-2 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+                    {new Date(notice.createdAt).toLocaleString()}
+                  </span>
+                </span>
+                {!notice.read && (
+                  <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-blue-600" />
+                )}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center px-4 py-20 text-center">
+            <h2 className="text-lg font-bold text-slate-950 sm:text-2xl">
+              No Notifications Yet
+            </h2>
+            <p className="mt-2 max-w-sm text-sm text-slate-500 sm:text-base">
+              You currently do not have any notifications. We will keep you posted.
+            </p>
+            <Link
+              href="/"
+              className="mt-6 rounded-xl bg-slate-950 px-5 py-2 text-sm font-bold text-white shadow-md transition hover:bg-blue-700 sm:px-6 sm:text-base"
+            >
+              Back to Home
+            </Link>
+          </div>
+        )}
+      </section>
+    </AccountPageShell>
   );
 };
 

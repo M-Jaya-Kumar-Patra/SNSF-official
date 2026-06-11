@@ -7,6 +7,7 @@ import { ArrowUpRight, Sparkles } from "lucide-react";
 import { fetchDataFromApi } from "@/utils/api";
 import { useAuth } from "@/app/context/AuthContext";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
+import { getProductPath } from "@/utils/productUrl";
 
 const New = () => {
   const router = useRouter();
@@ -58,7 +59,7 @@ const New = () => {
                   type="button"
                   aria-label={`Open ${prd?.name || "new product"}`}
                   key={prd._id}
-                  onClick={() => router.push(`/product/${prd._id}`)}
+                  onClick={() => router.push(getProductPath(prd))}
                   className="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg"
                 >
                   <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">

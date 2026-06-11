@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { fetchDataFromApi } from "@/utils/api";
 import { useAuth } from "@/app/context/AuthContext";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
+import { getProductPath } from "@/utils/productUrl";
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
@@ -55,7 +56,7 @@ const HotDeal = () => {
                 <div
                   key={idx}
                   onClick={() =>
-                    router.push(`/product/${prd?.product?._id}`)
+                    router.push(getProductPath(prd?.product))
                   }
                   className="
                     w-[260px] shrink-0

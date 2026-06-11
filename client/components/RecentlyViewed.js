@@ -6,6 +6,7 @@ import { ArrowUpRight, Clock3 } from "lucide-react";
 import { postData } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
+import { getProductPath } from "@/utils/productUrl";
 
 export default function RecentlyViewed({ onEmpty }) {
   const [products, setProducts] = useState([]);
@@ -82,7 +83,7 @@ export default function RecentlyViewed({ onEmpty }) {
                 type="button"
                 aria-label={`Open ${prd?.name || "recently viewed product"}`}
                 key={prd._id}
-                onClick={() => router.push(`/product/${prd._id}`)}
+                onClick={() => router.push(getProductPath(prd))}
                 className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg"
               >
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">

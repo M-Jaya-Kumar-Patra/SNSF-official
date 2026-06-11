@@ -4,4 +4,4 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-Sitemap: https://snsteelfabrication.com/sitemap.xml
+Sitemap: https://www.snsteelfabrication.com/sitemap.xml

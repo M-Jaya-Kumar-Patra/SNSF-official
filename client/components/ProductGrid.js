@@ -3,6 +3,7 @@ import React from "react";
 import { ArrowUpRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
+import { getProductPath } from "@/utils/productUrl";
 
 export default function ProductGrid({
   products = [],
@@ -29,7 +30,7 @@ export default function ProductGrid({
               type="button"
               key={product.id}
               aria-label={`Open ${product.title || "product"}`}
-              onClick={() => router.push(`/product/${product.id}`)}
+              onClick={() => router.push(getProductPath(product))}
               className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg"
             >
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">

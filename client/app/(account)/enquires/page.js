@@ -21,6 +21,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { useScreen } from "@/app/context/ScreenWidthContext";
+import AccountPageShell from "@/components/AccountPageShell";
 
 const Account = () => {
   const router = useRouter();
@@ -55,117 +56,39 @@ const Account = () => {
     return <div className="text-center mt-10">Checking session...</div>;
 
   return (
-    <>
-      <div className="flex w-full min-h-screen justify-center bg-slate-100">
-        <div
-          className={`w-full sm:w-[1020px]   ${
-            isMd ? "my-8" : "sm:my-3"
-          } !mx-auto sm:flex justify-between gap-3 `}
-        >
-          {/* Left Sidebar */}
-          <div className="hidden sm:block left h-fit sticky top-8">
-            <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5 gap-3 flex flex-col justify-center items-center">
-              <Image
-                className="h-[140px] w-[140px] rounded-full object-cover"
-                src={
-                  getOptimizedCloudinaryUrl(userData?.avatar) ||
-                  "/images/account.png"
-                }
-                alt="User Profile"
-                width={140}
-                height={140}
-                loading="lazy"
-              />
-
-              <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide card-title">
-                {userData?.name}
-              </h1>
-            </div>
-
-            <div className="leftlower mt-3 w-[256px] bg-white shadow-lg">
-              <ul className="text-gray-600 font-sans">
-                <li>
-                  <Link href="/enquires">
-                    <div className="h-[40px] flex items-center pl-[12.5px] font-semibold border border-l-8 border-y-0 border-r-0 border-indigo-950 cursor-pointer text-indigo-950 bg-slate-100 active:bg-slate-100 gap-[9px]">
-                      <MdOutlineMessage size={18} /> My Enquiries
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2">
-                    <User size={18} /> Account Settings
-                  </div>
-                </li>
-                <li>
-                  <Link href="/profile">
-                    <div className="h-[40px] flex items-center pl-12 font-semibold cursor-pointer active:bg-slate-100">
-                      Profile Information
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/address">
-                    <div className="h-[40px] flex items-center pl-12 font-semibold cursor-pointer active:bg-slate-100">
-                      Manage Address
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/notifications">
-                    <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                      <Bell size={18} /> Notifications
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/wishlist">
-                    <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                      <Heart size={18} /> Wishlist
-                    </div>
-                  </Link>
-                </li>
-                <li>
-                  <div>
-                    <LogoutBTN className={"!pl-5"} />
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Right Section */}
-          <div className="right h-full w-full lg:w-[750px] bg-slate-100 sm:bg-white shadow-xl sm:p-6">
-            <div className="mb-2 sm:border-b border-gray-200 py-2 pl-3 sm:py-0 sm:pl-0 sm:pb-4 bg-white">
-              <h2 className="section-title">My Enquiries</h2>
-            </div>
-
-            <div className="w-full px-2 py-2">
+    <AccountPageShell
+      activePath="/enquires"
+      title="My Enquiries"
+      description="Track the products you contacted SNSF about through WhatsApp or call."
+    >
+      <section className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+            <div className="w-full">
               {loading ? (
-                <p className="text-center text-gray-600">
+                <p className="rounded-2xl bg-slate-50 py-12 text-center text-slate-500">
                   Loading enquiries...
                 </p>
               ) : enquiries.length === 0 ? (
                 <>
-                  <div className="flex flex-col items-center justify-center mt-16 sm:mt-20 text-center px-4">
-                    <h2 className="text-lg sm:text-2xl font-semibold text-gray-700">
+                  <div className="flex flex-col items-center justify-center px-4 py-20 text-center">
+                    <h2 className="text-lg font-bold text-slate-950 sm:text-2xl">
                       No Enquiries Yet
                     </h2>
 
-                    <p className="text-gray-500 mt-2 text-sm sm:text-base max-w-sm">
+                    <p className="mt-2 max-w-sm text-sm text-slate-500 sm:text-base">
                       You haven't received any customer enquiries yet. Once
                       someone contacts you, you'll see it here.
                     </p>
 
                     <Link
                       href="/"
-                      className="mt-6 bg-blue-600 hover:bg-slate-900 text-white px-5 sm:px-6 py-2 rounded-full text-sm sm:text-base transition shadow-md"
+                      className="mt-6 rounded-xl bg-slate-950 px-5 py-2 text-sm font-bold text-white shadow-md transition hover:bg-blue-700 sm:px-6 sm:text-base"
                     >
                       Back to Home
                     </Link>
                   </div>
                 </>
               ) : (
-                <div className="flex flex-col gap-2  sm:gap-3">
+                <div className="flex flex-col gap-3">
                   {enquiries
                     .slice()
                     .reverse()
@@ -173,16 +96,16 @@ const Account = () => {
                       <div
                         key={enq._id}
                         onClick={() => router.push(`/product/${enq.prdId}`)}
-                        className="bg-white border border-gray-200 rounded-md p-4 shadow-sm hover:shadow-md hover:border-indigo-200 cursor-pointer transition-all"
+                        className="cursor-pointer rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg"
                       >
                         {/* User message */}
-                        <p className="text-gray-800 text-md font-medium">
+                        <p className="text-md font-bold text-slate-950">
                           {enq?.userMsg?.includes("WhatsApp") && "📱"}{" "}
                           {enq?.userMsg?.includes("Call") && "📞"} {enq.userMsg}
                         </p>
 
                         {/* Date */}
-                        <p className="text-gray-400 text-xs mt-1">
+                        <p className="mt-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
                           {new Date(enq.createdAt).toLocaleString("en-IN", {
                             dateStyle: "medium",
                             timeStyle: "short",
@@ -193,10 +116,8 @@ const Account = () => {
                 </div>
               )}
             </div>
-          </div>
-        </div>
-      </div>
-    </>
+      </section>
+    </AccountPageShell>
   );
 };
 

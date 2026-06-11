@@ -13,6 +13,7 @@ import Loading from '@/components/Loading';
 import { useWishlist } from '@/app/context/WishlistContext';
 import { IoCall } from "react-icons/io5";
 import WhatsappIcon from '@/components/WhatsappIcon';
+import { getProductPath } from '@/utils/productUrl';
 
 const ProductListing = () => {
   const { productsData, setProductsData, getProductsData } = usePrd();
@@ -66,7 +67,7 @@ const ProductListing = () => {
               {productsData?.map((prd) => (
                 <div key={prd?._id} className="relative group w-full">
                   <div
-                    onClick={() => router.push(`/product/${prd._id}`)}
+                    onClick={() => router.push(getProductPath(prd))}
                     className="w-full min-h-[260px] shadow-md flex flex-col items-center justify-between p-3 bg-white hover:shadow-xl transition duration-300"
                   >
                     <div className="w-full flex flex-col items-center">

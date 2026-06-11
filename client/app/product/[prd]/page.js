@@ -1,6 +1,9 @@
 // app/product/[prd]/page.js
 
 import ProductPageClient from "./ProductPageClient";
+import { getAbsoluteProductUrl } from "@/utils/productUrl";
+
+const SITE_URL = "https://www.snsteelfabrication.com";
 
 export async function generateMetadata({ params }) {
   const { prd } = params;
@@ -48,7 +51,7 @@ export async function generateMetadata({ params }) {
     `Experience the perfect blend of style, durability, and functionality with ${name}.`;
 
   const productImage = images?.[0] || "/snsf-banner.jpg";
-  const productUrl = `https://snsteelfabrication.com/product/${prd}`;
+  const productUrl = getAbsoluteProductUrl(product, SITE_URL);
 
   /* ✅ BASE KEYWORDS */
   const keywords = [
@@ -118,6 +121,10 @@ export async function generateMetadata({ params }) {
     description: productDescription,
     keywords: [...new Set(keywords)], // ✅ deduplicated
 
+    alternates: {
+      canonical: productUrl,
+    },
+
     openGraph: {
       title: `${name} – ${brand || "SNSF"}`,
       description: productDescription,
@@ -181,7 +188,7 @@ export default async function Page({ params }) {
                     product.countInStock > 0
                       ? "https://schema.org/InStock"
                       : "https://schema.org/OutOfStock",
-                  url: `https://snsteelfabrication.com/product/${prd}`,
+                  url: getAbsoluteProductUrl(product, SITE_URL),
                 },
               }),
             }}

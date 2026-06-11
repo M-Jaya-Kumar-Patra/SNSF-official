@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import Image from "next/image";
 import Skeleton from "@mui/material/Skeleton";
+import { getProductPath } from "@/utils/productUrl";
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
@@ -47,7 +48,7 @@ const AllinOne = () => {
                 className="group bg-white border p-1 sm:p-2 shadow-sm hover:shadow-md transition-all duration-200"
               >
                 <div
-                  onClick={() => router.push(`/product/${prd._id}`)}
+                  onClick={() => router.push(getProductPath(prd))}
                   className="cursor-pointer"
                 >
                   <div className="relative aspect-[4/3] rounded-md overflow-hidden">

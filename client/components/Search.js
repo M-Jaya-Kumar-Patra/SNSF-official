@@ -8,6 +8,7 @@ import { useScreen } from "@/app/context/ScreenWidthContext";
 import SearchDropdownPortal from "./SearchDropdownPortal";
 import { searchWithTracking } from "@/utils/searchWithTracking";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
+import { getProductPath } from "@/utils/productUrl";
 
 const Search = ({ onClose, navScrolled = null }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -209,7 +210,7 @@ const Search = ({ onClose, navScrolled = null }) => {
 
     if (onClose) onClose();
 
-    router.push(`/product/${item._id}`);
+    router.push(getProductPath(item));
   };
 
   const handleKeyDown = (e) => {

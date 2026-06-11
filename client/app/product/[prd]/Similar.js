@@ -8,6 +8,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import Image from "next/image";
 import Skeleton from "@mui/material/Skeleton";
 import { fetchDataFromApi } from "@/utils/api";
+import { getProductPath } from "@/utils/productUrl";
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
@@ -145,7 +146,7 @@ const Similar = (props) => {
                   <div
                     key={prd._id || index}
                     className="min-w-[256px] max-w-[256px] p-2 bg-white shadow-md flex flex-col items-center justify-start gap-3 transition-transform duration-300 group hover:scale-105 cursor-pointer"
-                    onClick={() => router.push(`/product/${prd._id}`)}
+                    onClick={() => router.push(getProductPath(prd))}
                   >
                     <div className="w-full relative rounded-md overflow-hidden" style={{ aspectRatio: "4 / 3" }}>
                       <Image

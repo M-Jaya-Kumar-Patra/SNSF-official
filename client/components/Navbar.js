@@ -100,7 +100,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed left-0 top-0 z-[1000] w-full bg-slate-950 text-white shadow-[0_10px_30px_rgba(15,23,42,0.18)]">
-      <div className="relative border-b border-white/10 bg-slate-950/95 backdrop-blur">
+      <div className="relative z-[80] border-b border-white/10 bg-slate-950/95 backdrop-blur">
         <div className="mx-auto flex h-[74px] max-w-[1600px] items-center justify-between gap-2 px-3 sm:h-[88px] sm:px-6">
           <button
             type="button"
@@ -290,7 +290,7 @@ const Navbar = () => {
       </div>
 
       <div
-        className={`relative hidden border-b border-slate-200/70 bg-white text-slate-900 shadow-sm transition-[max-height,opacity,transform] duration-300 md:block ${
+        className={`relative z-[40] hidden border-b border-slate-200/70 bg-white text-slate-900 shadow-sm transition-[max-height,opacity,transform] duration-300 md:block ${
           showBottomCategories
             ? "max-h-[92px] overflow-visible opacity-100 translate-y-0"
             : "max-h-0 -translate-y-2 overflow-hidden opacity-0 pointer-events-none"

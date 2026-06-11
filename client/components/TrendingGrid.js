@@ -4,6 +4,7 @@ import React from "react";
 import { ArrowUpRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
+import { getProductPath } from "@/utils/productUrl";
 
 export default function TrendingGrid({ products = [], loading = false }) {
   const router = useRouter();
@@ -46,7 +47,7 @@ export default function TrendingGrid({ products = [], loading = false }) {
                   type="button"
                   aria-label={`Open ${product.title || "trending product"}`}
                   key={product.id}
-                  onClick={() => router.push(`/product/${product.id}`)}
+                  onClick={() => router.push(getProductPath(product))}
                   className={`group cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg ${
                     isFeatured
                       ? "col-span-2 row-span-2 min-w-[300px] sm:min-w-[430px]"

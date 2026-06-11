@@ -14,6 +14,7 @@ import { MdDelete } from "react-icons/md";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { trackVisitor } from "@/lib/tracking";
 import { useScreen } from "@/app/context/ScreenWidthContext";
+import AccountPageShell from "@/components/AccountPageShell";
 
 const Account = () => {
   const router = useRouter();
@@ -37,114 +38,30 @@ const Account = () => {
   };
 
   return (
-    <div className="flex w-full min-h-screen justify-center bg-slate-100">
-      <div
-        className={`w-full sm:w-[1020px]   ${
-          isMd ? "my-8" : "sm:my-3"
-        } !mx-auto sm:flex justify-between gap-3 `}
-      >
-        {/* Sidebar */}
-        <div className="hidden sm:block left h-full">
-          <div className="w-[256px] bg-white shadow-lg pb-5 pt-6 px-5 gap-3 flex flex-col justify-center items-center">
-            <Image
-              className="h-[140px] w-[140px] rounded-full object-cover"
-              src={
-                getOptimizedCloudinaryUrl(userData?.avatar) ||
-                "/images/account.png"
-              }
-              alt="User Profile"
-              width={140}
-              height={140}
-              loading="lazy"
-            />
-
-            <h1 className="text-black font-sans font-semibold overflow-x-auto scrollbar-hide card-title">
-              {userData?.name}
-            </h1>
-          </div>
-
-          <div className="leftlower mt-3 w-[256px] bg-white shadow-lg">
-            <ul className="text-gray-600 font-sans">
-              <li>
-                <Link href="/enquires">
-                  <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                    <MdOutlineMessage size={18} /> My Enquries
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2">
-                  <User size={18} /> Account Settings
-                </div>
-              </li>
-              <li>
-                <Link href="/profile">
-                  <div className="h-[40px] flex items-center pl-12 font-semibold cursor-pointer active:bg-slate-100">
-                    Profile Information
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/address">
-                  <div className="h-[40px] flex items-center pl-12 font-semibold cursor-pointer active:bg-slate-100">
-                    Manage Address
-                  </div>
-                </Link>
-              </li>
-              {/* <li>
-                <Link href="/payments">
-                  <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                    <CreditCard size={18} /> Payments
-                  </div>
-                </Link>
-              </li> */}
-              <li>
-                <Link href="/notifications">
-                  <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                    <Bell size={18} /> Notifications
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/wishlist">
-                  <div className="h-[40px] flex items-center pl-[12.5px] font-semibold border border-l-8 border-y-0 border-r-0 border-indigo-950 cursor-pointer text-indigo-950 bg-slate-100 active:bg-slate-100 gap-[9px]">
-                    <Heart size={18} /> Wishlist
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <div>
-                  <LogoutBTN className={"!pl-5"} />
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Wishlist Section */}
-        <div className="right h-full w-full lg:w-[750px] bg-slate-100 sm:bg-white shadow-xl sm:p-6">
-          <div className="mb-2 sm:border-b border-gray-200 py-2 pl-3 sm:py-0 sm:pl-0 sm:pb-4 bg-white">
-            <h2 className="section-title ">My Wishlist</h2>
-          </div>
-
-          <div className="list-section min-h-[90vh] space-y-2 sm:space-y-4 p-2 sm:px-0 bg-white">
+    <AccountPageShell
+      activePath="/wishlist"
+      title="Wishlist"
+      description="Review saved products and continue enquiries whenever you are ready."
+    >
+      <section className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
+          <div className="list-section min-h-[520px] space-y-3">
             {wishlistData?.length > 0 ? (
               wishlistData.map((item, index) => (
                 <div
                   key={index}
-                  className="flex gap-4 p-2 sm:p-4 border rounded-lg shadow-sm hover:shadow-md transition"
+                  className="flex gap-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg sm:p-4"
                 >
                   {/* Product Image */}
                   <div
-                    className="w-[130px] h-[110px] flex items-center justify-center bg-gray-100 rounded cursor-pointer"
+                    className="relative h-[110px] w-[130px] shrink-0 cursor-pointer overflow-hidden rounded-2xl bg-slate-100"
                     onClick={() => router.push(`/product/${item?.productId}`)}
                   >
                     <Image
                       src={getOptimizedCloudinaryUrl(item.image)}
                       alt={item.title || "Product"}
-                      width={100}
-                      height={100}
-                      className="object-contain max-h-full max-w-full"
+                      fill
+                      sizes="130px"
+                      className="object-cover"
                       loading="lazy"
                     />
                   </div>
@@ -155,13 +72,13 @@ const Account = () => {
                       className="cursor-pointer"
                       onClick={() => router.push(`/product/${item?.productId}`)}
                     >
-                      <h3 className="text-lg font-semibold text-gray-800">
+                      <h3 className="text-lg font-bold text-slate-950">
                         {item?.productTitle}
                       </h3>
                       <p
                         className={
                           item?.brand !== "Unknown Brand"
-                            ? "text-gray-500 text-sm"
+                            ? "text-slate-500 text-sm"
                             : "hidden"
                         }
                       >
@@ -172,17 +89,21 @@ const Account = () => {
 
                   {/* Delete Button */}
                   <div className="flex items-start">
-                    <MdDelete
-                      className="text-gray-400 hover:text-red-500 text-2xl cursor-pointer transition"
+                    <button
+                      type="button"
+                      aria-label="Remove from wishlist"
+                      className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-400 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
                       onClick={(e) =>
                         removeFromWishlist(e, item?._id, item?.productId)
                       }
-                    />
+                    >
+                      <MdDelete className="text-2xl" />
+                    </button>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="flex flex-col items-center justify-center mt-20 text-center">
+              <div className="flex flex-col items-center justify-center py-20 text-center">
                 <div className="w-[200px] sm:w-[260px] mb-4">
                   <DotLottieReact
                     src="https://lottie.host/3083b307-7cfd-4fcd-9d3d-76299b402a46/P13OnArBCk.lottie"
@@ -190,25 +111,24 @@ const Account = () => {
                     autoplay
                   />
                 </div>
-                <h2 className="text-xl sm:text-2xl font-semibold text-gray-700">
+                <h2 className="text-xl font-bold text-slate-950 sm:text-2xl">
                   Your Wishlist is Empty
                 </h2>
-                <p className="text-gray-500 mt-2 text-sm sm:text-base max-w-sm">
+                <p className="mt-2 max-w-sm text-sm text-slate-500 sm:text-base">
                   Looks like you haven’t added anything to your wishlist yet.
                   Start exploring and add your favorite items!
                 </p>
                 <Link
                   href="/"
-                  className="mt-6 bg-blue-600 hover:bg-slate-900 text-white px-6 py-2 rounded-full text-sm sm:text-base transition"
+                  className="mt-6 rounded-xl bg-slate-950 px-6 py-2 text-sm font-bold text-white transition hover:bg-blue-700 sm:text-base"
                 >
                   Back to Home
                 </Link>
               </div>
             )}
           </div>
-        </div>
-      </div>
-    </div>
+      </section>
+    </AccountPageShell>
   );
 };
 

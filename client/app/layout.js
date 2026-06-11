@@ -33,14 +33,14 @@ export const viewport = {
 };
 
 export const metadata = {
-  metadataBase: new URL("https://snsteelfabrication.com"),
+  metadataBase: new URL("https://www.snsteelfabrication.com"),
   title: "S N Steel Fabrication",
   description:
     "S N Steel Fabrication offers durable, modern, and customizable steel furniture for homes and businesses. Premium quality at affordable prices.",
   openGraph: {
     title: "S N Steel Fabrication",
     description: "Modern & customizable steel furniture.",
-    url: "https://snsteelfabrication.com",
+    url: "https://www.snsteelfabrication.com",
     siteName: "S N Steel Fabrication", // ✅ Updated here
     images: [
       {
@@ -71,6 +71,9 @@ export const metadata = {
     apple: "/apple-touch-icon.png",
   },
   manifest: "/manifest.json",
+  alternates: {
+    canonical: "/",
+  },
   appleWebApp: {
     capable: true,
     title: "S N Steel Fabrication", // ✅ Changed from "SNSF" to full name

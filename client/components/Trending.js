@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { fetchDataFromApi } from "@/utils/api";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
+import { getProductPath } from "@/utils/productUrl";
 
 const joSan = Josefin_Sans({ subsets: ["latin"], weight: "400" });
 
@@ -74,7 +75,7 @@ const Trending = () => {
       .map((prd, idx) => (
         <div
           key={idx}
-          onClick={() => router.push(`/product/${prd?.product?._id}`)}
+          onClick={() => router.push(getProductPath(prd?.product))}
           className="
             w-[220px] shrink-0
             bg-white rounded-xl

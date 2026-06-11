@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
 import { fetchDataFromApi } from "@/utils/api";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
+import { getProductPath } from "@/utils/productUrl";
 
 const Suggestions = ({
   productId,
@@ -140,7 +141,7 @@ const Suggestions = ({
                 <article
                   key={prd?._id}
                   className="group cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-slate-300 hover:shadow-md"
-                  onClick={() => router.push(`/product/${prd?._id}`)}
+                  onClick={() => router.push(getProductPath(prd))}
                 >
                   <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
                     <Image
