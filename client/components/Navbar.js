@@ -25,6 +25,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useCat } from "@/app/context/CategoryContext";
 import { useNotice } from "@/app/context/NotificationContext";
 import { usePrd } from "@/app/context/ProductContext";
+import { useScreen } from "@/app/context/ScreenWidthContext";
 import LogoutBTN from "./LogoutBTN";
 import Search from "./Search";
 
@@ -54,6 +55,7 @@ const Navbar = () => {
   const { userData, isLogin, isCheckingToken } = useAuth();
   const { getNotifications } = useNotice();
   const { showLarge } = usePrd();
+  const { deskSearch } = useScreen();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -85,7 +87,7 @@ const Navbar = () => {
   if (showLarge) return null;
 
   const sortedCatData = [...(catData || [])].sort((a, b) => a.sln - b.sln);
-  const showTopCategories = !isHome || isScrolled;
+  const showTopCategories = (!isHome || isScrolled) && !deskSearch;
   const showBottomCategories = isHome && !isScrolled;
 
   const goCategory = (name) => {
@@ -172,9 +174,11 @@ const Navbar = () => {
           <div className="flex min-w-0 items-center justify-end gap-2 sm:gap-3">
             <div
               className={`hidden justify-end overflow-visible transition-[width] duration-300 md:flex ${
-                showBottomCategories
+                deskSearch
+                  ? "md:w-[260px] lg:w-[300px] xl:w-[320px] 2xl:w-[360px]"
+                  : showBottomCategories
                   ? "md:w-[300px] lg:w-[360px] xl:w-[460px] 2xl:w-[540px]"
-                  : "md:w-[48px] lg:w-[48px] xl:w-[118px] 2xl:w-[136px]"
+                  : "md:w-[48px] lg:w-[48px] xl:w-[48px] 2xl:w-[48px]"
               }`}
             >
               <Search navScrolled={isScrolled} />
@@ -210,7 +214,7 @@ const Navbar = () => {
               </button>
 
               <div
-                className="group/account relative hidden sm:block"
+                className="group/account relative z-[2600] hidden sm:block"
                 ref={dropdownRef}
                 onMouseEnter={() => setMenuOpen(true)}
                 onMouseLeave={() => setMenuOpen(false)}
@@ -219,7 +223,7 @@ const Navbar = () => {
                   type="button"
                   aria-label="Open account menu"
                   aria-expanded={menuOpen}
-                  onClick={() => setMenuOpen((prev) => !prev)}
+                  onClick={() => router.push(isLogin ? "/profile" : "/login")}
                   className="inline-flex h-11 items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] p-1.5 pr-3 text-slate-100 transition hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
                   {isCheckingToken ? (
@@ -237,22 +241,24 @@ const Navbar = () => {
                 </button>
 
                 <div
-                  className={`absolute right-0 z-[2000] mt-3 w-[248px] overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-800 shadow-2xl transition duration-200 group-hover/account:visible group-hover/account:translate-y-0 group-hover/account:opacity-100 ${
+                  className={`absolute right-0 top-full z-[3000] w-[248px] pt-3 transition duration-200 group-hover/account:visible group-hover/account:translate-y-0 group-hover/account:opacity-100 ${
                     menuOpen
                       ? "visible translate-y-0 opacity-100"
                       : "invisible translate-y-2 opacity-0"
                   }`}
                 >
+                  <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-800 shadow-2xl">
                     <AccountMenu
                       isLogin={isLogin}
                       userData={userData}
                       onClose={() => setMenuOpen(false)}
                     />
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="relative sm:hidden" ref={dropdownRef}>
+            <div className="relative z-[2600] sm:hidden" ref={dropdownRef}>
               <button
                 type="button"
                 aria-label="Open account menu"
@@ -270,7 +276,7 @@ const Navbar = () => {
               </button>
 
               {menuOpen && (
-                <div className="absolute right-0 z-[2000] mt-3 w-[248px] overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-800 shadow-2xl">
+                <div className="absolute right-0 z-[3000] mt-3 w-[248px] overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-800 shadow-2xl">
                   <AccountMenu
                     isLogin={isLogin}
                     userData={userData}

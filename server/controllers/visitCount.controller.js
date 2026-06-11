@@ -1,28 +1,31 @@
 // server/controllers/visitCount.controller.js
 import VisitCountModel from "../models/visitCount.model.js";
 
+const IST_OFFSET_MS = 330 * 60 * 1000;
+
 /**
- * Helper: floor date to start of minute/hour/day/etc.
+ * Helper: floor date to start of minute/hour/day/etc. in IST.
+ * Production servers often run in UTC, so do not use local Date getters here.
  */
 const floorDate = (d, bucket) => {
-  const dt = new Date(d);
+  const dt = new Date(new Date(d).getTime() + IST_OFFSET_MS);
+
   if (bucket === "minute") {
-    dt.setSeconds(0, 0);
+    dt.setUTCSeconds(0, 0);
   } else if (bucket === "hour") {
-    dt.setMinutes(0, 0, 0);
+    dt.setUTCMinutes(0, 0, 0);
   } else if (bucket === "day") {
-    dt.setHours(0, 0, 0, 0);
+    dt.setUTCHours(0, 0, 0, 0);
   } else if (bucket === "week") {
-    // set to start of week (Monday ISO style)
-    // get day (0=Sun..6=Sat) -> convert to Monday-based index
-    const day = (dt.getDay() + 6) % 7; // 0 => Monday
-    dt.setDate(dt.getDate() - day);
-    dt.setHours(0, 0, 0, 0);
+    const day = (dt.getUTCDay() + 6) % 7;
+    dt.setUTCDate(dt.getUTCDate() - day);
+    dt.setUTCHours(0, 0, 0, 0);
   } else if (bucket === "month") {
-    dt.setDate(1);
-    dt.setHours(0, 0, 0, 0);
+    dt.setUTCDate(1);
+    dt.setUTCHours(0, 0, 0, 0);
   }
-  return dt;
+
+  return new Date(dt.getTime() - IST_OFFSET_MS);
 };
 
 /**
@@ -38,41 +41,28 @@ const generateBuckets = (start, endExclusive, bucket) => {
   let iter = 0;
 
   while (current < endExclusive && iter++ < safetyLimit) {
-    let label = "";
+    const label = formatLabelFromDate(bucket, current);
+    const bucketStart = new Date(current);
+
     if (bucket === "minute") {
-      const hh = current.getHours().toString().padStart(2, "0");
-      const mm = current.getMinutes().toString().padStart(2, "0");
-      label = `${hh}:${mm}`;
       current = new Date(current.getTime() + 60 * 1000); // +1 minute
     } else if (bucket === "hour") {
-      const hh = current.getHours().toString().padStart(2, "0");
-      label = `${hh}:00`;
       current = new Date(current.getTime() + 60 * 60 * 1000); // +1 hour
     } else if (bucket === "day") {
-      const dd = current.getDate().toString().padStart(2, "0");
-      const mm = (current.getMonth() + 1).toString().padStart(2, "0");
-      label = `${dd}/${mm}`;
       current = new Date(current.getTime() + 24 * 60 * 60 * 1000); // +1 day
     } else if (bucket === "week") {
-      // ISO week number (simple)
-      const tmp = new Date(current);
-      const firstJan = new Date(tmp.getFullYear(), 0, 1);
-      const days = Math.floor((tmp - firstJan) / (24 * 60 * 60 * 1000));
-      const weekNo = Math.ceil((days + firstJan.getDay() + 1) / 7);
-      label = `Wk ${weekNo}`;
       current = new Date(current.getTime() + 7 * 24 * 60 * 60 * 1000); // +1 week
     } else {
-      // month
-      const mm = (current.getMonth() + 1).toString().padStart(2, "0");
-      const yy = current.getFullYear();
-      label = `${mm}/${yy}`;
-      // increment month safely
-      const next = new Date(current);
-      next.setMonth(next.getMonth() + 1);
-      current = next;
+      const next = new Date(current.getTime() + IST_OFFSET_MS);
+      next.setUTCMonth(next.getUTCMonth() + 1);
+      current = new Date(next.getTime() - IST_OFFSET_MS);
     }
 
-    buckets.push({ time: label, visits: 0 });
+    buckets.push({
+      time: bucketStart.toISOString(),
+      label,
+      visits: 0,
+    });
   }
 
   return buckets;
@@ -82,31 +72,32 @@ const generateBuckets = (start, endExclusive, bucket) => {
  * label formatter for a JS Date according to bucket type (must match generateBuckets)
  */
 const formatLabelFromDate = (bucket, dateObj) => {
-  const dt = new Date(dateObj);
+  const dt = new Date(new Date(dateObj).getTime() + IST_OFFSET_MS);
+
   if (bucket === "minute") {
-    const hh = dt.getHours().toString().padStart(2, "0");
-    const mm = dt.getMinutes().toString().padStart(2, "0");
+    const hh = dt.getUTCHours().toString().padStart(2, "0");
+    const mm = dt.getUTCMinutes().toString().padStart(2, "0");
     return `${hh}:${mm}`;
   }
   if (bucket === "hour") {
-    const hh = dt.getHours().toString().padStart(2, "0");
+    const hh = dt.getUTCHours().toString().padStart(2, "0");
     return `${hh}:00`;
   }
   if (bucket === "day") {
-    const dd = dt.getDate().toString().padStart(2, "0");
-    const mm = (dt.getMonth() + 1).toString().padStart(2, "0");
+    const dd = dt.getUTCDate().toString().padStart(2, "0");
+    const mm = (dt.getUTCMonth() + 1).toString().padStart(2, "0");
     return `${dd}/${mm}`;
   }
   if (bucket === "week") {
     const tmp = new Date(dt);
-    const firstJan = new Date(tmp.getFullYear(), 0, 1);
+    const firstJan = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
     const days = Math.floor((tmp - firstJan) / (24 * 60 * 60 * 1000));
-    const weekNo = Math.ceil((days + firstJan.getDay() + 1) / 7);
+    const weekNo = Math.ceil((days + firstJan.getUTCDay() + 1) / 7);
     return `Wk ${weekNo}`;
   }
   // month
-  const mm = (dt.getMonth() + 1).toString().padStart(2, "0");
-  const yy = dt.getFullYear();
+  const mm = (dt.getUTCMonth() + 1).toString().padStart(2, "0");
+  const yy = dt.getUTCFullYear();
   return `${mm}/${yy}`; 
 };
 
@@ -115,7 +106,6 @@ export const addVisitCount = async (req, res) => {
   try {
     const deviceId = req.body.deviceId;
 
-    console.log("The deviceId is here: ",deviceId)
     const ip =
       req.headers["x-forwarded-for"]?.split(",")[0] ||
       req.socket.remoteAddress;
@@ -292,7 +282,7 @@ export const getVisitsByRange = async (req, res) => {
     for (const row of aggResult) {
       const dateKey = row._id; // this will be an ISODate (truncated)
       const label = formatLabelFromDate(bucketUnit, dateKey);
-      const entry = buckets.find((b) => b.time === label);
+      const entry = buckets.find((b) => b.label === label);
       if (entry) entry.visits = row.count;
       // if not found, ignore (shouldn't happen if generateBuckets aligned)
     }
@@ -361,7 +351,7 @@ export const getVisitsByCustomRange = async (req, res) => {
 
     for (const row of aggResult) {
       const label = formatLabelFromDate(bucketUnit, row._id);
-      const entry = buckets.find((b) => b.time === label);
+      const entry = buckets.find((b) => b.label === label);
       if (entry) entry.visits = row.count;
     }
 

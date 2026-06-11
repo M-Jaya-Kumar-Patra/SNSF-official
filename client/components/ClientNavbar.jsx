@@ -237,7 +237,7 @@ const clientNavbar = ({ fontClass, cartItems = [], minimized = false }) => {
                   </IconButton>
 
                   {menuOpen && (
-                    <div className="absolute right-0 mt-2 w-[230px] bg-white text-[#1e293b] rounded-xl shadow-2xl z-[1000]">
+                    <div className="absolute right-0 z-[3000] mt-2 w-[230px] rounded-xl bg-white text-[#1e293b] shadow-2xl">
                       <div className="flex flex-col p-3 space-y-2 text-sm">
                         {!isLogin ? (
                           <>
@@ -355,12 +355,10 @@ const clientNavbar = ({ fontClass, cartItems = [], minimized = false }) => {
                   </IconButton>
 
                   {/* ACCOUNT */}
-                  <div className="relative group hidden sm:block">
+                  <div className="relative z-[2600] hidden sm:block group">
                     <IconButton
                       aria-label="Account"
-                      onClick={() =>
-                        router.push(isLogin ? "/profile" : "/login")
-                      }
+                      onClick={() => router.push(isLogin ? "/profile" : "/login")}
                       className="text-slate-200"
                     >
                       {isCheckingToken ? (
@@ -384,8 +382,8 @@ const clientNavbar = ({ fontClass, cartItems = [], minimized = false }) => {
                     </IconButton>
 
                     {/* Hover Dropdown */}
-                    <div className="absolute right-0 mt-2 w-[220px] bg-white text-[#1e293b] rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[1000]">
-                      <div className="flex flex-col p-3 space-y-2 text-sm">
+                    <div className="invisible absolute right-0 top-full z-[3000] w-[220px] pt-3 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100">
+                      <div className="flex flex-col space-y-2 rounded-lg bg-white p-3 text-sm text-[#1e293b] shadow-xl">
                         {isLogin ? (
                           <>
                             <div className="font-semibold text-gray-900">

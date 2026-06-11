@@ -35,7 +35,7 @@ const VisitsOverTime = () => {
     rows.map((item) => ({
       ...item,
       timeRaw: item.time,
-      timeLabel: formatChartTime(item.time, selectedRange),
+      timeLabel: item.label || formatChartTime(item.time, selectedRange),
     }));
 
   const fetchVisits = async (url, selectedRange = range) => {

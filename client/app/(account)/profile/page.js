@@ -1,45 +1,53 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { User, Package, CreditCard, Bell, Heart } from "lucide-react";
-import { MdOutlineMessage } from "react-icons/md";
-import LogoutBTN from "@/components/LogoutBTN";
-import Box from "@mui/material/Box";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
-import { FaCloudUploadAlt } from "react-icons/fa";
-import CircularProgress from "@mui/material/CircularProgress";
-import { useAlert } from "@/app/context/AlertContext";
-import { uploadImage, editData, postData, putImage } from "@/utils/api";
-import { useAuth } from "@/app/context/AuthContext";
-import { MdModeEdit } from "react-icons/md";
-import { RiLockPasswordFill } from "react-icons/ri";
-import { RxCross2 } from "react-icons/rx";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { getDeviceId } from "@/utils/deviceId";
-import Loading from "@/components/Loading";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import CircularProgress from "@mui/material/CircularProgress";
+import InputAdornment from "@mui/material/InputAdornment";
+import TextField from "@mui/material/TextField";
 import {
-  ScreenWidthProvider,
-  useScreen,
-} from "@/app/context/ScreenWidthContext";
+  Bell,
+  Heart,
+  LockKeyhole,
+  MapPin,
+  MessageSquareText,
+  ShieldCheck,
+  User,
+} from "lucide-react";
+import { FaCloudUploadAlt } from "react-icons/fa";
+import Loading from "@/components/Loading";
+import LogoutBTN from "@/components/LogoutBTN";
+import { useAlert } from "@/app/context/AlertContext";
+import { useAuth } from "@/app/context/AuthContext";
+import { editData, postData, uploadImage } from "@/utils/api";
+import { getCloudinaryImageUrl } from "@/utils/cloudinary";
+import { getDeviceId } from "@/utils/deviceId";
 
-const Account = () => {
+const accountLinks = [
+  { href: "/profile", label: "Profile Information", icon: User, active: true },
+  { href: "/address", label: "Manage Address", icon: MapPin },
+  { href: "/enquires", label: "My Enquiries", icon: MessageSquareText },
+  { href: "/wishlist", label: "Wishlist", icon: Heart },
+  { href: "/notifications", label: "Notifications", icon: Bell },
+];
+
+const getAvatarUrl = (url) =>
+  url
+    ? getCloudinaryImageUrl(url, { width: 320, height: 320 })
+    : "/images/account.png";
+
+export default function Account() {
   const router = useRouter();
   const alert = useAlert();
-  const {
-    isLogin,
-    userData,
-    setUserData,
-    isCheckingToken,
-    setIsCheckingToken,
-  } = useAuth();
+  const { isLogin, userData, setUserData, isCheckingToken, setIsCheckingToken } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [userId, setUserId] = useState("");
   const [passLoading, setPassLoading] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [formFields, setFormFields] = useState({
     name: "",
     email: "",
@@ -50,22 +58,20 @@ const Account = () => {
     newPassword: "",
     confirmPassword: "",
   });
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const { isSm, isMd, isLg, isXl } = useScreen();
-  if (isCheckingToken)
-    return <div className="text-center mt-10">Checking session...</div>;
+
   useEffect(() => {
     if (!isLogin) {
       setIsCheckingToken(false);
       router.replace("/login");
-    } else {
-      setFormFields({
-        name: userData?.name || "",
-        email: userData?.email || "",
-        phone: userData?.phone || "",
-      });
+      return;
     }
-  }, [isLogin, userData, router]);
+
+    setFormFields({
+      name: userData?.name || "",
+      email: userData?.email || "",
+      phone: userData?.phone || "",
+    });
+  }, [isLogin, userData, router, setIsCheckingToken]);
 
   useEffect(() => {
     const id = userData?._id || userData?.id;
@@ -80,84 +86,80 @@ const Account = () => {
     const lastVisit = localStorage.getItem("l20dec25kjf34u85");
 
     if (lastVisit !== today) {
-      const deviceId = getDeviceId();
-
-      postData(
-        "/api/visit/new",
-        {
-          deviceId,
-        },
-        false
-      );
-
+      postData("/api/visit/new", { deviceId: getDeviceId() }, false);
       localStorage.setItem("l20dec25kjf34u85", today);
     }
   }, []);
 
-  const onChangeFile = async (e) => {
-    e.preventDefault();
+  if (isCheckingToken) {
+    return (
+      <div className="mt-10 text-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  if (!isLogin) {
+    return (
+      <div className="mt-10 text-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  const onChangeFile = async (event) => {
+    event.preventDefault();
+    const file = event.target.files?.[0];
+
+    if (!file || !["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(file.type)) {
+      alert.alertBox({ type: "error", msg: "Invalid image format" });
+      return;
+    }
 
     try {
-      const file = e.target.files?.[0];
+      setUploading(true);
+      const formData = new FormData();
+      formData.append("avatar", file);
 
-      if (
-        file &&
-        ["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
-          file.type
-        )
-      ) {
-        setUploading(true);
+      const response = await uploadImage("/api/user/user-avatar", formData);
 
-        const formData = new FormData();
-        formData.append("avatar", file);
-
-        // Debugging log
-        for (let pair of formData.entries()) {
-          console.log("FORMDATA ENTRY:", pair[0], pair[1]);
-        }
-
-        // Call your NEW util
-        const response = await uploadImage("/api/user/user-avatar", formData);
-
-        console.log("response:", response);
-
-        if (response?.success && response?.avatar) {
-          console.log("response.success:", response?.success);
-          console.log("response?.avatar:", response?.avatar);
-
-          setUserData((prev) => ({ ...prev, avatar: response.avatar }));
-          localStorage.setItem("userAvatar", response.avatar);
-        } else {
-          alert.alertBox({
-            type: "error",
-            msg: response?.message || "Failed to update avatar",
-          });
-        }
+      if (response?.success && response?.avatar) {
+        setUserData((prev) => ({ ...prev, avatar: response.avatar }));
+        localStorage.setItem("userAvatar", response.avatar);
       } else {
-        alert.alertBox({ type: "error", msg: "Invalid image format" });
+        alert.alertBox({
+          type: "error",
+          msg: response?.message || "Failed to update avatar",
+        });
       }
-    } catch (error) {
+    } catch {
       alert.alertBox({ type: "error", msg: "Something went wrong" });
     } finally {
       setUploading(false);
     }
   };
 
-
-  const onChangeInput = (e) => {
-    const { name, value } = e.target;
+  const onChangeInput = (event) => {
+    const { name, value } = event.target;
     setFormFields((prev) => ({ ...prev, [name]: value }));
   };
 
-  const onChangePassword = (e) => {
-    const { name, value } = e.target;
+  const onChangePassword = (event) => {
+    const { name, value } = event.target;
     setChangePasswordForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     setIsLoading(true);
+
     const { name, email, phone } = formFields;
+
+    if (!name.trim()) {
+      alert.alertBox({ type: "error", msg: "Please enter your name" });
+      setIsLoading(false);
+      return;
+    }
 
     if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
       alert.alertBox({ type: "error", msg: "Invalid email format" });
@@ -167,546 +169,325 @@ const Account = () => {
 
     try {
       const response = await editData(`/api/user/${userId}`, formFields, false);
-      setUserData({
-        ...userData,
-        name: response.user?.name || name,
-        email: response.user?.email || email,
-        phone: response.user?.phone || phone,
-        avatar: response.user?.avatar || userData.avatar,
-      });
 
       if (!response.error) {
-        alert.alertBox({
-          type: "success",
-          msg: "Profile updated successfully",
+        setUserData({
+          ...userData,
+          name: response.user?.name || name,
+          email: response.user?.email || email,
+          phone: response.user?.phone || phone,
+          avatar: response.user?.avatar || userData?.avatar,
         });
+        alert.alertBox({ type: "success", msg: "Profile updated successfully" });
       } else {
-        alert.alertBox({
-          type: "error",
-          msg: response?.message || "Update failed",
-        });
+        alert.alertBox({ type: "error", msg: response?.message || "Update failed" });
       }
-    } catch (err) {
+    } catch {
       alert.alertBox({ type: "error", msg: "Network error. Try again later." });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
+  const handlePasswordChange = async (event) => {
+    event.preventDefault();
     setPassLoading(true);
+
     const { oldPassword, newPassword, confirmPassword } = changePasswordForm;
 
-    if (!oldPassword || !newPassword || !confirmPassword) {
+    if (!userData?.signUpWithGoogle && !oldPassword) {
+      alert.alertBox({ type: "error", msg: "Please enter old password" });
       setPassLoading(false);
-      alert.alertBox({ type: "error", msg: "Please fill all password fields" });
       return;
     }
-    if (oldPassword === newPassword) {
-      setPassLoading(false);
-      alert.alertBox({
-        type: "error",
-        msg: "New password must be different from old password",
-      });
-      return;
-    }
-    if (confirmPassword !== newPassword) {
-      setPassLoading(false);
-      alert.alertBox({ type: "error", msg: "Passwords do not match" });
-      return;
-    }
-
-    try {
-      const response = await postData("/api/user/changePassword", {
-        email: userData?.email,
-        oldPassword,
-        newPassword,
-        confirmPassword,
-      });
-
-      if (!response.error) {
-        alert.alertBox({
-          type: "success",
-          msg: "Password changed successfully",
-        });
-        setChangePasswordForm({
-          oldPassword: "",
-          newPassword: "",
-          confirmPassword: "",
-        });
-        setShowTopForm(false);
-      } else {
-        alert.alertBox({ type: "error", msg: response?.message });
-      }
-    } catch (err) {
-      alert.alertBox({ type: "error", msg: err?.message });
-    } finally {
-      setPassLoading(false);
-    }
-  };
-
-  const handleSetPassword = async (e) => {
-    e.preventDefault();
-    setPassLoading(true);
-    const { newPassword, confirmPassword } = changePasswordForm;
 
     if (!newPassword || !confirmPassword) {
-      setPassLoading(false);
       alert.alertBox({ type: "error", msg: "Please fill all password fields" });
+      setPassLoading(false);
       return;
     }
 
     if (confirmPassword !== newPassword) {
-      setPassLoading(false);
       alert.alertBox({ type: "error", msg: "Passwords do not match" });
+      setPassLoading(false);
       return;
     }
 
     try {
-      const response = await postData("/api/user/setPassword", {
-        email: userData?.email,
-        newPassword,
-        confirmPassword,
-      });
+      const endpoint = userData?.signUpWithGoogle
+        ? "/api/user/setPassword"
+        : "/api/user/changePassword";
+      const payload = userData?.signUpWithGoogle
+        ? { email: userData?.email, newPassword, confirmPassword }
+        : { email: userData?.email, oldPassword, newPassword, confirmPassword };
+
+      const response = await postData(endpoint, payload);
 
       if (!response.error) {
-        alert.alertBox({ type: "success", msg: "Password set successfully" });
-        setChangePasswordForm({
-          oldPassword: "",
-          newPassword: "",
-          confirmPassword: "",
-        });
-        await editData(
-          `/api/user/${userData?._id}`,
-          {
-            email: userData?.email,
-            signUpWithGoogle: false,
-          },
-          true
-        );
-        setShowTopForm(false);
+        if (userData?.signUpWithGoogle) {
+          await editData(
+            `/api/user/${userData?._id}`,
+            { email: userData?.email, signUpWithGoogle: false },
+            true
+          );
+          setUserData({ ...userData, signUpWithGoogle: false });
+        }
 
-        setUserData({
-          ...userData,
-          signUpWithGoogle: false,
+        alert.alertBox({
+          type: "success",
+          msg: userData?.signUpWithGoogle ? "Password set successfully" : "Password changed successfully",
         });
+        setChangePasswordForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
+        setShowPasswordForm(false);
       } else {
-        alert.alertBox({ type: "error", msg: response?.message });
+        alert.alertBox({ type: "error", msg: response?.message || "Password update failed" });
       }
-    } catch (err) {
-      alert.alertBox({ type: "error", msg: err?.message });
+    } catch {
+      alert.alertBox({ type: "error", msg: "Password update failed" });
     } finally {
       setPassLoading(false);
     }
   };
 
-  const getOptimizedCloudinaryUrl = (url) => {
-    if (!url?.includes("res.cloudinary.com")) return url; // Don't touch local images
-    return url.replace("/upload/", "/upload/w_800,h_800,c_fill,f_auto,q_90/");
-  };
-
-  const [showTopForm, setShowTopForm] = useState(false);
-
-  if (!isLogin)
-    return (
-      <div className="text-center mt-10">
-        <Loading />
-      </div>
-    );
-
   return (
-    <div className="flex w-full min-h-screen justify-center bg-slate-100">
-      <div
-        className={`w-full sm:w-[1020px]   ${
-          isMd ? "my-8" : "sm:my-3"
-        } !mx-auto sm:flex justify-between gap-3 `}
-      >
-        {/* Sidebar */}
-        <div className="left sm:h-full">
-          <div className="flex sm:hidden w-full pl-3 items-center justify-start mb-2 bg-white shadow-lg py-2">
-            <span className="!section-title">Profile Information</span>
+    <main className="min-h-screen bg-slate-100 px-3 py-4 sm:px-6 sm:py-8">
+      <div className="mx-auto max-w-7xl space-y-5">
+        <section className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-xl shadow-slate-900/5">
+          <div className="bg-slate-950 px-5 py-7 text-white sm:px-8">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.22em] text-blue-300">
+              Client account
+            </p>
+            <h1 className="text-3xl font-bold">Profile Information</h1>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
+              Manage your personal details, avatar, security, wishlist, enquiries, and notifications.
+            </p>
           </div>
-          <div className=" w-full sm:w-[256px] mb-2 bg-white shadow-lg pb-2 sm:pb-5 pt-2 sm:pt-6 sm:px-5 gap-3 flex flex-col justify-center items-center ">
-            <div className="mt-2 sm:mt-0 mr-2 sm:mr-0 w-[90px] h-[90px] sm:w-[140px] sm:h-[140px] relative group overflow-hidden border   rounded-full border-gray-300 shadow">
-              {!uploading && (
-                <Image
-                  src={
-                    getOptimizedCloudinaryUrl(userData?.avatar) ||
-                    "/images/account.png"
-                  }
-                  alt="avatar"
-                  width={140}
-                  height={140}
-                  className="w-full h-full object-cover"
-                />
-              )}
-              <div
-                className={`absolute inset-0 z-50 flex items-center justify-center transition-all duration-300 ${
-                  uploading
-                    ? "bg-[rgba(0,0,0,0.7)] opacity-100"
-                    : "bg-[rgba(0,0,0,0.6)] opacity-0 group-hover:opacity-100"
-                }`}
+
+          <div className="grid gap-5 p-4 sm:p-6 lg:grid-cols-[310px_1fr]">
+            <aside className="space-y-4">
+              <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5 text-center">
+                <div className="group relative mx-auto h-32 w-32 overflow-hidden rounded-full border border-slate-200 bg-white shadow">
+                  {!uploading && (
+                    <Image
+                      src={getAvatarUrl(userData?.avatar)}
+                      alt="User profile"
+                      fill
+                      sizes="128px"
+                      className="object-cover"
+                    />
+                  )}
+                  <div
+                    className={`absolute inset-0 z-10 flex items-center justify-center transition ${
+                      uploading
+                        ? "bg-black/70 opacity-100"
+                        : "bg-black/55 opacity-0 group-hover:opacity-100"
+                    }`}
+                  >
+                    {uploading ? (
+                      <CircularProgress color="inherit" size={28} />
+                    ) : (
+                      <FaCloudUploadAlt className="text-2xl text-white" />
+                    )}
+                    <input
+                      type="file"
+                      name="avatar"
+                      accept="image/*"
+                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                      onChange={onChangeFile}
+                    />
+                  </div>
+                </div>
+
+                <h2 className="mt-4 text-xl font-bold text-slate-950">
+                  {userData?.name || "User"}
+                </h2>
+                <p className="mt-1 truncate text-sm text-slate-500">
+                  {userData?.email || "No email available"}
+                </p>
+              </div>
+
+              <nav className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
+                {accountLinks.map(({ href, label, icon: Icon, active }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={`flex items-center gap-3 border-b border-slate-100 px-4 py-3 text-sm font-semibold last:border-b-0 ${
+                      active
+                        ? "bg-slate-950 text-white"
+                        : "text-slate-700 transition hover:bg-slate-50 hover:text-slate-950"
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" />
+                    {label}
+                  </Link>
+                ))}
+
+                <div className="border-t border-slate-100 px-1 py-1">
+                  <LogoutBTN className="!pl-3" />
+                </div>
+              </nav>
+            </aside>
+
+            <section className="space-y-5">
+              <form
+                onSubmit={handleSubmit}
+                className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
               >
-                {uploading ? (
-                  <CircularProgress color="inherit" size={30} />
-                ) : (
-                  <FaCloudUploadAlt className="text-white text-2xl" />
-                )}
-                <input
-                  type="file"
-                  name="avatar"
-                  accept="image/*"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  onChange={onChangeFile}
-                />
-              </div>
-            </div>
-            <h1 className=" text-black font-sans font-semibold overflow-x-auto scrollbar-hide card-title">
-              {userData?.name}
-            </h1>
-          </div>
-
-          <div className="hidden sm:block leftlower mt-3 w-[256px] bg-white shadow-lg">
-            <ul className="text-gray-600 font-sans">
-              <li>
-                <Link href="/enquires">
-                  <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                    <MdOutlineMessage size={18} /> My Enquries
+                <div className="mb-5 flex items-center justify-between gap-3">
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-950">Personal details</h3>
+                    <p className="mt-1 text-sm text-slate-500">
+                      Keep your contact details accurate for enquiries and support.
+                    </p>
                   </div>
-                </Link>
-              </li>
-              <li>
-                <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2">
-                  <User size={18} /> Account Settings
+                  <User className="hidden h-6 w-6 text-slate-400 sm:block" />
                 </div>
-              </li>
-              <li>
-                <Link href="/profile">
-                  <div className="h-[40px] flex items-center pl-10 font-semibold  border  border-l-8 border-y-0 border-r-0 border-indigo-950  cursor-pointer  text-indigo-950 bg-slate-100 active:bg-slate-100">
-                    Profile Information
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/address">
-                  <div className="h-[40px] flex items-center pl-12 font-semibold cursor-pointer  active:bg-slate-100">
-                    Manage Address
-                  </div>
-                </Link>
-              </li>
-              {/* <li>
-                                    <Link href="/payments">
-                                        <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                                            <CreditCard size={18} /> Payments
-                                        </div>
-                                    </Link>
-                                </li> */}
-              <li>
-                <Link href="/notifications">
-                  <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2  active:bg-slate-100">
-                    <Bell size={18} /> Notifications
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <Link href="/wishlist">
-                  <div className="h-[50px] flex items-center pl-5 font-semibold cursor-pointer gap-2 active:bg-slate-100">
-                    <Heart size={18} /> Wishlist
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <div>
-                  <LogoutBTN className={"!pl-5"} />
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <TextField
+                    label="Full Name"
+                    variant="outlined"
+                    name="name"
+                    size="small"
+                    value={formFields.name}
+                    disabled={isLoading}
+                    onChange={onChangeInput}
+                    fullWidth
+                  />
+                  <TextField
+                    label="Email"
+                    variant="outlined"
+                    name="email"
+                    size="small"
+                    value={formFields.email}
+                    disabled
+                    onChange={onChangeInput}
+                    fullWidth
+                  />
+                  <TextField
+                    label="Phone"
+                    variant="outlined"
+                    name="phone"
+                    size="small"
+                    value={formFields.phone}
+                    disabled={isLoading}
+                    onChange={onChangeInput}
+                    fullWidth
+                    className="md:col-span-2"
+                    InputProps={{
+                      startAdornment: <InputAdornment position="start">+91</InputAdornment>,
+                    }}
+                  />
                 </div>
-              </li>
-            </ul>
-          </div>
-        </div>
 
-        {/* Main Panel */}
-        <div className="w-full lg:w-[750px]  bg-white shadow-lg p-2 sm:p-5">
-          <div className="hidden sm:flex items-center justify-between">
-            <span className="section-title">Profile Information</span>
-          </div>
-
-          {/* Profile Info Form */}
-          <form
-            onSubmit={handleSubmit}
-            className="  sm:border-slate-400 rounded-md mt-2 sm:mt-4  pt-1 sm:pt-3"
-          >
-            <Box
-              component="div"
-              sx={{ "& .MuiTextField-root": { width: "full" } }}
-              className=" w-full "
-            >
-              <div className="flex flex-col w-full ">
-                <TextField
-                  label="Full Name"
-                  variant="outlined"
-                  name="name"
-                  size="small"
-                  value={formFields.name}
-                  disabled={isLoading}
-                  onChange={onChangeInput}
-                  className="!m-1 !my-2 sm:!m-3 "
-                />
-                <TextField
-                  label="Email"
-                  variant="outlined"
-                  name="email"
-                  size="small"
-                  value={formFields.email}
-                  disabled={true}
-                  onChange={onChangeInput}
-                  className="!m-1 !my-2 sm:!m-3"
-                />
-                <TextField
-                  label="Phone"
-                  variant="outlined"
-                  name="phone"
-                  size="small"
-                  value={formFields.phone}
-                  disabled={isLoading}
-                  onChange={onChangeInput}
-                  className="!m-1 !my-2 sm:!m-3"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">+91</InputAdornment>
-                    ),
-                  }}
-                />
-              </div>
-              <div></div>
-              <div className="flex items-center gap-4">
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className={`w-full flex items-center text-xs sm:text-normal justify-center gap-2 px-3 py-2 mt-1 mx-1 sm:mx-3 rounded-md font-semibold text-white  sm:text-base transition-all duration-200
-      ${
-        isLoading
-          ? "bg-green-700 opacity-50 cursor-not-allowed"
-          : "bg-green-700 hover:bg-green-800 active:scale-95"
-      }`}
+                  className="mt-5 flex h-11 w-full items-center justify-center rounded-xl bg-emerald-700 text-sm font-bold text-white shadow-lg shadow-emerald-900/10 transition hover:bg-emerald-800 disabled:opacity-60"
                 >
-                  {isLoading ? (
-                    <CircularProgress color="inherit" size={22} />
-                  ) : (
-                    <>
-                      <MdModeEdit className="text-xs sm:text-normal" />
-                      <span>Update Profile</span>
-                    </>
-                  )}
+                  {isLoading ? <CircularProgress color="inherit" size={20} /> : "Update Profile"}
                 </button>
-              </div>
-            </Box>
-          </form>
+              </form>
 
-          {/* change password field */}
-          {userData?.signUpWithGoogle ? (
-            <form
-              className="border border-slate-400 rounded-md mt-3 sm:mt-6 mx-1 sm:mx-3 p-2 sm:pt-3 "
-              onSubmit={handleSetPassword}
-            >
-              <div>
-                <div key={"top"}>
-                  <div
-                    className="flex justify-center sm:justify-between"
-                    onClick={() => setShowTopForm((prev) => !prev)}
-                  >
-                    <div className="hidden sm:block text-gray-700 font-semibold text-sm  sm:text-lg">
-                      Set Password
+              <section className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100">
+                      <LockKeyhole className="h-5 w-5 text-slate-800" />
                     </div>
-                    <button
-                      // onClick={() => setShowTopForm(prev => !prev)}
-                      className="mt-0 text-slate-900 font-sans font-bold text-xs sm:text-md"
-                      type="button"
-                    >
-                      SET PASSWORD
-                    </button>
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-950">
+                        {userData?.signUpWithGoogle ? "Set password" : "Change password"}
+                      </h3>
+                      <p className="mt-1 text-sm text-slate-500">
+                        {userData?.signUpWithGoogle
+                          ? "Add a password to your Google-created account."
+                          : "Use a strong password and update it regularly."}
+                      </p>
+                    </div>
                   </div>
 
-                  {showTopForm && (
-                    <div className="border-slate-500 rounded-md flex flex-col justify-center items-center">
-                      <div className="mt-4  gap-x-3 w-full sm:w-2/3 ">
-                        <Box
-                          component="div"
-                          sx={{ "& .MuiTextField-root": { width: "full" } }}
-                          className=" w-full"
-                        >
-                          <TextField
-                            label="New password"
-                            variant="outlined"
-                            size="small"
-                            name="newPassword"
-                            margin="dense"
-                            value={changePasswordForm.newPassword}
-                            fullWidth
-                            onChange={onChangePassword}
-                          />
-                          <TextField
-                            label="Confirm password"
-                            variant="outlined"
-                            size="small"
-                            name="confirmPassword"
-                            margin="dense"
-                            value={changePasswordForm.confirmPassword}
-                            fullWidth
-                            onChange={onChangePassword}
-                          />
-
-                          <div className="flex w-full gap-3 ">
-                            <button
-                              type="submit"
-                              disabled={passLoading}
-                              onClick={() => setShowTopForm((prev) => !prev)}
-                              className={`btn-org btn-sm w-full bg-white p-1 mt-3 mb-2 border text-xs sm:text-normal  border-slate-400 rounded-md ${
-                                passLoading
-                                  ? "opacity-50 cursor-not-allowed"
-                                  : ""
-                              }`}
-                            >
-                              <div className="flex items-center justify-center font-semibold text-red-500  gap-2">
-                                <RxCross2 />
-                                <h1>Cancel</h1>
-                              </div>
-                            </button>
-                            <button
-                              type="submit"
-                              disabled={passLoading}
-                              className={`btn-org btn-sm w-full bg-primary-gradient text-xs sm:text-normal text-nowrap p-1 mt-3 mb-2 rounded-md ${
-                                passLoading
-                                  ? "opacity-50 cursor-not-allowed"
-                                  : ""
-                              }`}
-                            >
-                              {passLoading ? (
-                                <CircularProgress color="inherit" size={22} />
-                              ) : (
-                                <div className="flex items-center justify-center font-semibold gap-2">
-                                  <RiLockPasswordFill />
-                                  <h1>Change Password</h1>
-                                </div>
-                              )}
-                            </button>
-                          </div>
-                        </Box>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </form>
-          ) : (
-            <form
-              className="border border-slate-400 rounded-md mt-3 sm:mt-6 mx-1 sm:mx-3 p-2 sm:pt-3 "
-              onSubmit={handlePasswordChange}
-            >
-              <div>
-                <div key={"top"}>
-                  <div
-                    className="flex justify-center sm:justify-between"
-                    onClick={() => setShowTopForm((prev) => !prev)}
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordForm((prev) => !prev)}
+                    className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-slate-800 transition hover:bg-slate-50"
                   >
-                    <div className="hidden sm:block text-gray-700 font-semibold text-sm  sm:text-lg">
-                      Change Password
-                    </div>
-                    <button
-                      // onClick={() => setShowTopForm(prev => !prev)}
-                      className="mt-0 text-slate-900 font-sans font-bold text-xs sm:text-md"
-                      type="button"
-                    >
-                      CHANGE PASSWORD
-                    </button>
-                  </div>
-
-                  {showTopForm && (
-                    <div className="border-slate-500 rounded-md flex flex-col justify-center items-center">
-                      <div className="mt-4  gap-x-3 w-full sm:w-2/3 ">
-                        <Box
-                          component="div"
-                          sx={{ "& .MuiTextField-root": { width: "full" } }}
-                          className=" w-full"
-                        >
-                          <TextField
-                            label="Old password"
-                            variant="outlined"
-                            size="small"
-                            name="oldPassword"
-                            margin="dense"
-                            value={changePasswordForm.oldPassword}
-                            fullWidth
-                            onChange={onChangePassword}
-                          />
-                          <TextField
-                            label="New password"
-                            variant="outlined"
-                            size="small"
-                            name="newPassword"
-                            margin="dense"
-                            value={changePasswordForm.newPassword}
-                            fullWidth
-                            onChange={onChangePassword}
-                          />
-                          <TextField
-                            label="Confirm password"
-                            variant="outlined"
-                            size="small"
-                            name="confirmPassword"
-                            margin="dense"
-                            value={changePasswordForm.confirmPassword}
-                            fullWidth
-                            onChange={onChangePassword}
-                          />
-
-                          <div className="flex w-full gap-3 ">
-                            <button
-                              type="submit"
-                              disabled={passLoading}
-                              onClick={() => setShowTopForm((prev) => !prev)}
-                              className={`btn-org btn-sm w-full bg-white p-1 mt-3 mb-2 border text-xs sm:text-normal  border-slate-400 rounded-md ${
-                                passLoading
-                                  ? "opacity-50 cursor-not-allowed"
-                                  : ""
-                              }`}
-                            >
-                              <div className="flex items-center justify-center font-semibold text-red-500  gap-2">
-                                <RxCross2 />
-                                <h1>Cancel</h1>
-                              </div>
-                            </button>
-                            <button
-                              type="submit"
-                              disabled={passLoading}
-                              className={`btn-org btn-sm w-full bg-primary-gradient text-xs sm:text-normal text-nowrap p-1 mt-3 mb-2 rounded-md ${
-                                passLoading
-                                  ? "opacity-50 cursor-not-allowed"
-                                  : ""
-                              }`}
-                            >
-                              {passLoading ? (
-                                <CircularProgress color="inherit" size={22} />
-                              ) : (
-                                <div className="flex items-center justify-center font-semibold gap-2">
-                                  <RiLockPasswordFill />
-                                  <h1>Change Password</h1>
-                                </div>
-                              )}
-                            </button>
-                          </div>
-                        </Box>
-                      </div>
-                    </div>
-                  )}
+                    {showPasswordForm ? "Close" : userData?.signUpWithGoogle ? "Set Password" : "Change"}
+                  </button>
                 </div>
-              </div>
-            </form>
-          )}
-        </div>
+
+                {showPasswordForm && (
+                  <form onSubmit={handlePasswordChange} className="mt-5 grid gap-4 md:grid-cols-3">
+                    {!userData?.signUpWithGoogle && (
+                      <TextField
+                        label="Old password"
+                        variant="outlined"
+                        size="small"
+                        name="oldPassword"
+                        value={changePasswordForm.oldPassword}
+                        fullWidth
+                        onChange={onChangePassword}
+                        type="password"
+                      />
+                    )}
+                    <TextField
+                      label="New password"
+                      variant="outlined"
+                      size="small"
+                      name="newPassword"
+                      value={changePasswordForm.newPassword}
+                      fullWidth
+                      onChange={onChangePassword}
+                      type="password"
+                    />
+                    <TextField
+                      label="Confirm password"
+                      variant="outlined"
+                      size="small"
+                      name="confirmPassword"
+                      value={changePasswordForm.confirmPassword}
+                      fullWidth
+                      onChange={onChangePassword}
+                      type="password"
+                    />
+
+                    <div className="flex gap-3 md:col-span-3">
+                      <button
+                        type="button"
+                        onClick={() => setShowPasswordForm(false)}
+                        className="h-10 rounded-xl border border-slate-200 px-5 text-sm font-bold text-slate-600 transition hover:bg-slate-50"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={passLoading}
+                        className="flex h-10 items-center justify-center rounded-xl bg-slate-950 px-5 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60"
+                      >
+                        {passLoading ? <CircularProgress color="inherit" size={20} /> : "Save Password"}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </section>
+
+              <section className="grid gap-4 md:grid-cols-3">
+                {[
+                  ["Verified account", "Your account session is protected.", ShieldCheck],
+                  ["Saved products", "Wishlist access stays connected.", Heart],
+                  ["Fast enquiries", "Your details autofill support requests.", MessageSquareText],
+                ].map(([title, text, Icon]) => (
+                  <div key={title} className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-sm">
+                    <Icon className="h-5 w-5 text-slate-700" />
+                    <p className="mt-3 font-bold text-slate-950">{title}</p>
+                    <p className="mt-1 text-sm leading-5 text-slate-500">{text}</p>
+                  </div>
+                ))}
+              </section>
+            </section>
+          </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
-};
-
-export default Account;
+}

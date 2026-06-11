@@ -71,13 +71,7 @@ const Search = ({ onClose, navScrolled = null }) => {
     : largeExpandedWidth;
 
   const collapsedWidth =
-    isMd || isLg
-      ? "w-[42px]"
-      : isXl
-      ? "w-[110px]"
-      : isXl1440 || is2Xl
-      ? "w-[118px]"
-      : "hidden";
+    isMd || isLg || isXl || isXl1440 || is2Xl ? "w-[42px]" : "hidden";
 
   const currentWidth = isSearchExpanded ? expandedWidth : collapsedWidth;
 
@@ -282,8 +276,6 @@ const Search = ({ onClose, navScrolled = null }) => {
             placeholder={
               isSearchExpanded
                 ? "Search products, sofas, beds..."
-                : isXl || isXl1440 || is2Xl
-                ? "Search"
                 : ""
             }
             value={searchQuery}
@@ -297,7 +289,7 @@ const Search = ({ onClose, navScrolled = null }) => {
             }}
             onKeyDown={handleKeyDown}
             className={`min-w-0 flex-1 bg-transparent text-sm font-semibold text-slate-950 outline-none placeholder:text-slate-400 ${
-              isSearchExpanded ? "opacity-100" : "opacity-0 xl:opacity-100"
+              isSearchExpanded ? "opacity-100" : "opacity-0"
             }`}
             autoComplete="off"
             spellCheck="false"
