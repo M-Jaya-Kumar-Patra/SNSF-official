@@ -12,6 +12,12 @@ import WhatsappIcon from "@/components/WhatsappIcon";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 import { getProductPath } from "@/utils/productUrl";
 
+const getProductTime = (product) => {
+  const value = product?.dateCreated || product?.createdAt || product?.updatedAt;
+  const time = value ? new Date(value).getTime() : 0;
+  return Number.isFinite(time) ? time : 0;
+};
+
 const ListingLoading = () => (
   <div className="min-h-screen bg-slate-100 px-3 pb-12 pt-4 sm:px-6 sm:pt-6">
     <div className="mx-auto w-full max-w-[1320px]">
@@ -172,7 +178,7 @@ const ProductListingContent = () => {
           <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
             {products
               .slice()
-              .reverse()
+              .sort((a, b) => getProductTime(b) - getProductTime(a))
               .map((prd, index) => {
                 const isWishlisted =
                   isLogin && userData?.wishlist?.includes(String(prd?._id));

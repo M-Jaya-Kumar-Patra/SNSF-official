@@ -1,6 +1,6 @@
 import HomePageClient from "@/components/HomePageClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -12,7 +12,7 @@ async function fetchHomeJson(path, timeoutMs = 1500) {
 
   try {
     const res = await fetch(`${API_URL}${path}`, {
-      cache: "no-store",
+      next: { revalidate: 60 },
       signal: controller.signal,
     });
 

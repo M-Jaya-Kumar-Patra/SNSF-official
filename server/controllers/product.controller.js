@@ -2,7 +2,6 @@ import ProductModel from "../models/product.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import connectDB from "../config/connectDb.js";
 import slugify from "slugify";
-import fs from "fs";
 import mongoose from "mongoose";
 
 
@@ -14,7 +13,11 @@ cloudinary.config({
   secure: true,
 });
 
-var imagesArr = [];
+function normalizeImages(images) {
+  if (Array.isArray(images)) return images.filter(Boolean);
+  if (typeof images === "string" && images.trim()) return [images.trim()];
+  return [];
+}
 
 export const getProductBySlug = async (req, res) => {
   await connectDB();
@@ -54,14 +57,16 @@ export async function uploadImages(request, response) {
             overwrite: false,
         };
 
-        for (let i = 0; i < image.length; i++) {
-            const result = await cloudinary.uploader.upload(image[i].path, options);
-            imagesArr.push(result.secure_url);
-            fs.unlinkSync(image[i].path);
-        }
+        const uploadedImages = await Promise.all(
+            image.map((file) =>
+                cloudinary.uploader
+                    .upload(file.path, options)
+                    .then((result) => result.secure_url)
+            )
+        );
 
         return response.status(200).json({
-            images: imagesArr,
+            images: uploadedImages,
             error: false,
             success: true,
         });
@@ -77,9 +82,6 @@ export async function uploadImages(request, response) {
 // Create Product Controller
 export async function createProduct(request, response) {
   try {
-    console.log("Images Array:", imagesArr);
-    console.log(request.body);
-
     const {
       name,
       description,
@@ -115,7 +117,7 @@ export async function createProduct(request, response) {
       productId: new mongoose.Types.ObjectId(),
       checked: false,
       description,
-      images: images || imagesArr,
+      images: normalizeImages(images),
       brand,
       price,
       oldPrice,
@@ -163,8 +165,6 @@ export async function createProduct(request, response) {
     });
 
     await product.save();
-
-    imagesArr = [];
 
     return response.status(200).json({
       error: false,
@@ -285,41 +285,39 @@ export const getAllProductsByThirdCatName = (req, res) =>
 
 export async function getAllProductsByPrice(request, response) {
     try {
-        let productList = [];
+        const page = Math.max(1, parseInt(request.query.page, 10) || 1);
+        const perPage = Math.min(
+            100,
+            Math.max(1, parseInt(request.query.perPage || request.query.limit, 10) || 20)
+        );
+        const minPrice = Number(request.query.minPrice) || 0;
+        const maxPrice = Number(request.query.maxPrice);
+        const query = {
+            price: { $gte: minPrice },
+        };
 
-        // Filter by Category ID
-        if (request.query.catId !== "" && request.query.catId !== undefined) {
-            const productListArr = await ProductModel.find({
-                catId: request.query.catId,
-            }).populate("category");
-            productList = productListArr;
-        }
+        if (Number.isFinite(maxPrice)) query.price.$lte = maxPrice;
+        if (request.query.catId) query.catId = request.query.catId;
+        if (request.query.subCatId) query.subCatId = request.query.subCatId;
+        if (request.query.thirdSubCatId) query.thirdSubCatId = request.query.thirdSubCatId;
 
-        // Filter by Third Sub Category ID
-        if (request.query.thirdSubCatId !== "" && request.query.thirdSubCatId !== undefined) {
-            const productListArr = await ProductModel.find({
-                thirdSubCatId: request.query.thirdSubCatId,
-            }).populate("category");
-            productList = productListArr;
-        }
-
-        // Filter by Price Range
-        const filteredProducts = productList.filter((product) => {
-            if (request.query.minPrice && product.price < parseInt(request.query.minPrice)) {
-                return false;
-            }
-            if (request.query.maxPrice && product.price > parseInt(request.query.maxPrice)) {
-                return false;
-            }
-            return true;
-        });
+        const [products, total] = await Promise.all([
+            ProductModel.find(query)
+                .populate("category")
+                .sort({ price: 1, dateCreated: -1 })
+                .skip((page - 1) * perPage)
+                .limit(perPage)
+                .lean(),
+            ProductModel.countDocuments(query),
+        ]);
 
         return response.status(200).json({
             error: false,
             success: true,
-            products: filteredProducts,
-            totalPages: 0,
-            page: 0,
+            products,
+            total,
+            totalPages: Math.ceil(total / perPage),
+            page,
         });
     } catch (error) {
         return response.status(500).json({
@@ -332,62 +330,36 @@ export async function getAllProductsByPrice(request, response) {
 
 export async function getAllProductsByRating(request, response) {
     try {
-        const page = parseInt(request.query.page) || 1;
-        const perPage = parseInt(request.query.perPage) || 10;
+        const page = Math.max(1, parseInt(request.query.page, 10) || 1);
+        const perPage = Math.min(
+            100,
+            Math.max(1, parseInt(request.query.perPage || request.query.limit, 10) || 10)
+        );
+        const rating = Number(request.query.rating);
+        const query = {};
 
-        const totalPosts = await ProductModel.countDocuments();
-        const totalPages = Math.ceil(totalPosts / perPage);
+        if (Number.isFinite(rating)) query.rating = { $gte: rating };
+        if (request.query.catId) query.catId = request.query.catId;
+        if (request.query.subCatId) query.subCatId = request.query.subCatId;
+        if (request.query.thirdSubCatId) query.thirdSubCatId = request.query.thirdSubCatId;
 
-        if (page > totalPages) {
-            return response.status(404).json({
-                message: "Page not found",
-                success: false,
-                error: true
-            });
-        }
+        const [products, total] = await Promise.all([
+            ProductModel.find(query)
+                .populate("category")
+                .sort({ rating: -1, dateCreated: -1 })
+                .skip((page - 1) * perPage)
+                .limit(perPage)
+                .lean(),
+            ProductModel.countDocuments(query),
+        ]);
 
-        let products = []
-
-        if (request.query.catId !== undefined) {
-            products = await ProductModel.find({
-                rating: request.query.rating,
-                catId: request.query.catId
-            })
-                .populate("category").skip((page - 1) * perPage)
-                .limit(perPage).exec();
-        }
-        if (request.query.subCatId !== undefined) {
-            products = await ProductModel.find({
-                rating: request.query.rating,
-                subCatId: request.query.subCatId
-            })
-                .populate("category").skip((page - 1) * perPage)
-                .limit(perPage).exec();
-        }
-        if (request.query.thirdSubCatId !== undefined) {
-            products = await ProductModel.find({
-                rating: request.query.rating,
-                thirdSubCatId: request.query.thirdSubCatId
-            })
-                .populate("category").skip((page - 1) * perPage)
-                .limit(perPage).exec();
-        }
-
-
-
-
-        if (!products) {
-            response.status(500).json({
-                error: true,
-                success: false
-            })
-
-
-        }
         return response.status(200).json({
             error: false,
             success: true,
-            data: products
+            data: products,
+            total,
+            page,
+            totalPages: Math.ceil(total / perPage),
         });
     } catch (error) {
         return response.status(500).json({
@@ -424,9 +396,15 @@ export async function getProductsCount(request, response) {
 
 export async function getAllFeaturedProducts(request, response) {
     try {
-        const products = await ProductModel.find({
-            isFeatured: request.query.isFeatured
-        }).populate("category")
+        const limit = Math.min(50, Math.max(1, Number(request.query.limit) || 20));
+        const isFeatured =
+            request.query.isFeatured === undefined ? true : request.query.isFeatured;
+
+        const products = await ProductModel.find({ isFeatured })
+            .populate("category")
+            .sort({ dateCreated: -1 })
+            .limit(limit)
+            .lean();
 
         if (!products) {
             response.status(500).json({
@@ -668,7 +646,7 @@ export async function updateProduct(request, response) {
             {
                 name,
                 description,
-                images,
+                images: normalizeImages(images),
                 brand,
                 price,
                 oldPrice,
@@ -721,8 +699,6 @@ export async function updateProduct(request, response) {
             });
         }
 
-        imagesArr = [];
-
         return response.status(200).json({
             message: "The product has been updated successfully",
             error: false,
@@ -765,33 +741,26 @@ export async function filters(request, response) {
             query.$or = filters;
         }
 
-        // Always apply price range
-        query.price = {
-            $gte: parseFloat(minPrice) || 0,
-            $lte: parseFloat(maxPrice) || Infinity
-        };
+        query.price = { $gte: parseFloat(minPrice) || 0 };
+        const parsedMaxPrice = parseFloat(maxPrice);
+        if (Number.isFinite(parsedMaxPrice)) query.price.$lte = parsedMaxPrice;
 
         // Optional rating filter
         if (rating !== undefined && rating !== null) {
             query.rating = { $gte: parseFloat(rating) };
         }
 
-        // Log the final query for debugging
-        console.log("Query filters:", query);
-
         // Pagination logic
-        const parsedLimit = parseInt(limit) || 10;
+        const parsedLimit = Math.min(100, Math.max(1, parseInt(limit) || 10));
         const skip = (parseInt(page) - 1) * parsedLimit;
 
         const products = await ProductModel.find(query)
             .populate("category")
             .skip(skip)
-            .limit(parsedLimit);
+            .limit(parsedLimit)
+            .lean();
 
         const total = await ProductModel.countDocuments(query);
-
-        console.log("Total matched documents:", total);
-        console.log("Returned products:", products.length);
 
         return response.status(200).json({
             error: false,
@@ -952,17 +921,15 @@ export async function SearchProductsController(req, res) {
     }
 
     // 🔥 Log search (non-blocking)
-    try {
-      await SearchLog.create({
+    SearchLog.create({
         query,
         visitorId,
         sessionId,
         userId,
         resultsFound: products.length,
-      });
-    } catch (logError) {
-      console.error("Failed to log search:", logError);
-    }
+    }).catch((logError) => {
+      console.error("Failed to log search:", logError.message);
+    });
 
     return res.json({ success: true, products });
 
@@ -1000,9 +967,11 @@ export async function getNewArrivals(req, res) {
 
 export async function getBestSellers(req, res) {
     try {
+        const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 20));
         const products = await ProductModel.find({ isFeatured: true })
             .populate("category")
             .sort({ sales: -1, dateCreated: -1 })
+            .limit(limit)
             .lean();
 
         return res.status(200).json({
