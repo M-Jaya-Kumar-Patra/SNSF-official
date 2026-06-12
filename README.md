@@ -68,7 +68,6 @@ This project is split into three main applications:
 ├── admin/        # Admin dashboard built with Next.js
 ├── client/       # Customer storefront built with Next.js
 ├── server/       # Express API, models, controllers, routes, jobs, workers
-├── screenShots/  # README screenshots
 └── README.md
 ```
 
