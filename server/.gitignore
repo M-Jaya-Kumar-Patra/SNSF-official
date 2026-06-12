@@ -3,3 +3,9 @@ server/.env
 *.env
 
 server/.npm-cache/
+
+node_modules/
+.npm-cache/
+.env
+
+server/uploads/
