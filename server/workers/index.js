@@ -70,18 +70,22 @@ const workers = [
 
 // Worker Events
 for (const worker of workers) {
+  if (process.env.NODE_ENV !== "production") {
   worker.on("completed", (job) => {
     console.log(
       `✅ Job completed: ${job.queueName}/${job.name}/${job.id}`
     );
   });
+}
 
+ if (process.env.NODE_ENV !== "production") {
   worker.on("failed", (job, error) => {
     console.error(
       `❌ Job failed: ${job?.queueName}/${job?.name}/${job?.id}`,
       error.message
     );
   });
+  }
 }
 
 // Health server for Render Free Plan
