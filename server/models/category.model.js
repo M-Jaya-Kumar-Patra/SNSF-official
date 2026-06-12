@@ -23,6 +23,10 @@ const categorySchema = mongoose.Schema({
     {timestamps: true}  
 )
 
+categorySchema.index({ parentId: 1, name: 1 });
+categorySchema.index({ name: 1 });
+categorySchema.index({ createdAt: -1 });
+
 const CategoryModel = mongoose.model("Category", categorySchema);
 
 export default CategoryModel

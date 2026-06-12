@@ -7,17 +7,26 @@ getHomeSectionItems,
 reorderHomeSectionItems,
 searchProducts
 } from "../controllers/homeSection.controller.js";
+import {
+cacheResponse,
+invalidateCacheOnSuccess,
+} from "../middlewares/cache.js";
 
 
 const sectionRouter = express.Router();
+const homeSectionCache = cacheResponse("homeSections", Number(process.env.HOME_SECTION_CACHE_TTL_SECONDS) || 180);
+const invalidateHomeSectionCache = invalidateCacheOnSuccess([
+"homeSections",
+"products",
+]);
 
 
-sectionRouter.post("/", createHomeSectionItem);//body
-sectionRouter.put("/:id", updateHomeSectionItem);//param, body
-sectionRouter.delete("/:id", deleteHomeSectionItem);//param
-sectionRouter.get("/", getHomeSectionItems);//query
-sectionRouter.post("/reorder", reorderHomeSectionItems);//body
-sectionRouter.get("/search", searchProducts);//query4
+sectionRouter.post("/", invalidateHomeSectionCache, createHomeSectionItem);//body
+sectionRouter.put("/:id", invalidateHomeSectionCache, updateHomeSectionItem);//param, body
+sectionRouter.delete("/:id", invalidateHomeSectionCache, deleteHomeSectionItem);//param
+sectionRouter.get("/", homeSectionCache, getHomeSectionItems);//query
+sectionRouter.post("/reorder", invalidateHomeSectionCache, reorderHomeSectionItems);//body
+sectionRouter.get("/search", cacheResponse("productSearch", 60), searchProducts);//query4
 
 
 export default sectionRouter;

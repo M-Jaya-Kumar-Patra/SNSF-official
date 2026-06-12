@@ -12,6 +12,9 @@ const loginHistorySchema = new mongoose.Schema({
   },
 });
 
+loginHistorySchema.index({ userId: 1, loggedInAt: -1 });
+loginHistorySchema.index({ loggedInAt: -1 });
+
 const LoginHistoryModel =
   mongoose.models.LoginHistory ||
   mongoose.model("LoginHistory", loginHistorySchema);

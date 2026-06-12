@@ -98,6 +98,10 @@ lastRecommendedProductIds: {
 
 }, { timestamps: true });
 
+userSchema.index({ status: 1, createdAt: -1 });
+userSchema.index({ last_login_date: -1 });
+userSchema.index({ lastRecommendationEmailAt: 1 });
+userSchema.index({ wishlist: 1 });
 
 
 const UserModel = mongoose.models.User || mongoose.model("User", userSchema);

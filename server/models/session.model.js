@@ -17,4 +17,10 @@ const sessionSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
+sessionSchema.index({ sessionId: 1 }, { unique: true });
+sessionSchema.index({ visitorId: 1, lastActivity: -1 });
+sessionSchema.index({ userId: 1, lastActivity: -1 });
+sessionSchema.index({ startedAt: -1 });
+sessionSchema.index({ bounce: 1, startedAt: -1 });
+
 export default mongoose.models.Session || mongoose.model("Session", sessionSchema);

@@ -184,12 +184,28 @@ export async function createProduct(request, response) {
 
 export async function getAllProducts(request, response) {
     try {
-        const products = await ProductModel.find();
+        const page = Math.max(1, parseInt(request.query.page, 10) || 1);
+        const limit = Math.min(
+            100,
+            Math.max(1, parseInt(request.query.limit || request.query.perPage, 10) || 50)
+        );
+        const shouldPaginate = request.query.page || request.query.limit || request.query.perPage;
+
+        const query = ProductModel.find().sort({ dateCreated: -1 });
+        if (shouldPaginate) query.skip((page - 1) * limit).limit(limit);
+
+        const [products, total] = await Promise.all([
+            query.lean(),
+            shouldPaginate ? ProductModel.countDocuments() : undefined,
+        ]);
 
         return response.status(200).json({
             error: false,
             success: true,
-            data: products
+            data: products,
+            ...(shouldPaginate
+                ? { total, page, totalPages: Math.ceil(total / limit), limit }
+                : {})
         });
     } catch (error) {
         return response.status(500).json({
@@ -207,15 +223,29 @@ export async function getAllProducts(request, response) {
 // controllers/productController.js
 async function handleProductFetch(queryObj, request, response) {
     try {
-        const products = await ProductModel.find(queryObj)
+        const page = Math.max(1, parseInt(request.query.page, 10) || 1);
+        const limit = Math.min(
+            100,
+            Math.max(1, parseInt(request.query.limit || request.query.perPage, 10) || 50)
+        );
+        const shouldPaginate = request.query.page || request.query.limit || request.query.perPage;
+
+        const query = ProductModel.find(queryObj)
             .populate("category")
-            .exec();
+            .sort({ dateCreated: -1 });
+        if (shouldPaginate) query.skip((page - 1) * limit).limit(limit);
+
+        const [products, total] = await Promise.all([
+            query.lean().exec(),
+            shouldPaginate ? ProductModel.countDocuments(queryObj) : undefined,
+        ]);
 
         return response.status(200).json({
             error: false,
             success: true,
             data: products,
-            total: products.length
+            total: shouldPaginate ? total : products.length,
+            ...(shouldPaginate ? { page, totalPages: Math.ceil(total / limit), limit } : {})
         });
     } catch (error) {
         return response.status(500).json({
@@ -877,27 +907,49 @@ export async function SearchProductsController(req, res) {
     const visitorId = req.headers["x-visitor-id"] || null;
     const sessionId = req.headers["x-session-id"] || null;
     const userId = req.headers["x-user-id"] || null;
+    const limit = Math.max(1, Math.min(50, parseInt(req.query.limit, 10) || 50));
 
     if (!query) {
       return res.json({ success: true, products: [] });
     }
 
     // 🔹 Split query into words
-    const queryWords = query.split(/\s+/); // handles any number of words
+    let products = [];
 
     // 🔹 Build dynamic $and array where each word must match at least one field
-    const andConditions = queryWords.map(word => ({
-      $or: [
-        { name: { $regex: word, $options: "i" } },
-        { brand: { $regex: word, $options: "i" } },
-        { catName: { $regex: word, $options: "i" } },
-        { subCat: { $regex: word, $options: "i" } },
-        { thirdSubCat: { $regex: word, $options: "i" } },
-      ]
-    }));
+    try {
+      products = await ProductModel.find(
+        { $text: { $search: query } },
+        { score: { $meta: "textScore" } }
+      )
+        .sort({ score: { $meta: "textScore" }, dateCreated: -1 })
+        .limit(limit)
+        .lean();
+    } catch (searchError) {
+      console.warn("Text search unavailable, falling back to regex:", searchError.message);
+    }
 
     // 🔹 Query the database
-    const products = await ProductModel.find({ $and: andConditions }).limit(50);
+    if (!products.length) {
+      const queryWords = query
+        .split(/\s+/)
+        .map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+        .filter(Boolean);
+
+      const andConditions = queryWords.map((word) => ({
+        $or: [
+          { name: { $regex: word, $options: "i" } },
+          { brand: { $regex: word, $options: "i" } },
+          { catName: { $regex: word, $options: "i" } },
+          { subCat: { $regex: word, $options: "i" } },
+          { thirdSubCat: { $regex: word, $options: "i" } },
+        ],
+      }));
+
+      products = await ProductModel.find({ $and: andConditions })
+        .limit(limit)
+        .lean();
+    }
 
     // 🔥 Log search (non-blocking)
     try {
@@ -923,9 +975,12 @@ export async function SearchProductsController(req, res) {
 
 export async function getNewArrivals(req, res) {
     try {
-        const limit = Number(req.query.limit) || 10; // default 10 latest products
+        const limit = Math.min(50, Math.max(1, Number(req.query.limit) || 10));
 
         const products = await ProductModel.find({})
+            .sort({ dateCreated: -1 })
+            .limit(limit)
+            .lean();
 
         return res.status(200).json({
             error: false,
@@ -946,7 +1001,9 @@ export async function getNewArrivals(req, res) {
 export async function getBestSellers(req, res) {
     try {
         const products = await ProductModel.find({ isFeatured: true })
-            .populate("category").sort({ createdAt: -1 });
+            .populate("category")
+            .sort({ sales: -1, dateCreated: -1 })
+            .lean();
 
         return res.status(200).json({
             error: false,

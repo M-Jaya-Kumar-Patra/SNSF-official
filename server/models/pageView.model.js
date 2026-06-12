@@ -15,5 +15,12 @@ const pageViewSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
+pageViewSchema.index({ timestamp: -1 });
+pageViewSchema.index({ sessionId: 1, timestamp: -1 });
+pageViewSchema.index({ visitorId: 1, timestamp: -1 });
+pageViewSchema.index({ userId: 1, timestamp: -1 });
+pageViewSchema.index({ pageName: 1, timestamp: -1 });
+pageViewSchema.index({ isExitPage: 1, timestamp: -1 });
+
 export default mongoose.models.PageView || mongoose.model("PageView", pageViewSchema);
   

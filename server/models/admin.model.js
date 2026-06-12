@@ -92,6 +92,9 @@ adminSchema.pre("save", function (next) {
   next();
 });
 
+adminSchema.index({ status: 1, createdAt: -1 });
+adminSchema.index({ last_login_date: -1 });
+
 const AdminModel = mongoose.models.Admin || mongoose.model("Admin", adminSchema);
 
 export default AdminModel;

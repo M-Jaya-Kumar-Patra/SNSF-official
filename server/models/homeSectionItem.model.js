@@ -56,6 +56,16 @@ this.slug = slugify(this.title, { lower: true, strict: true });
 next();
 });
 
+HomeSectionItemSchema.index({ sectionName: 1, enabled: 1, index: 1, pinned: -1 });
+HomeSectionItemSchema.index({ productId: 1, sectionName: 1 });
+HomeSectionItemSchema.index(
+{ sectionName: 1, productId: 1 },
+{
+unique: true,
+partialFilterExpression: { productId: { $type: "objectId" } },
+}
+);
+
 
 const HomeSectionItem = mongoose.models.HomeSectionItem || mongoose.model("HomeSectionItem", HomeSectionItemSchema);
 export default HomeSectionItem;

@@ -2,11 +2,13 @@ import dns from "dns";
 dns.setDefaultResultOrder("ipv4first");
 import express from 'express';
 import cors from 'cors';
+import compression from "compression";
 import dotenv from 'dotenv';
 dotenv.config();
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import helmet from 'helmet';
+import { rateLimiter } from "./middlewares/rateLimiter.js";
 import connectDB from './config/connectDb.js';
 import userRouter from './route/user.route.js';
 import categoryRouter from './route/category.route.js';
@@ -25,11 +27,11 @@ import styleSpaceRouter from './route/styleYourSpace.route.js';
 import posterRouter from './route/poster.route.js';
 import analyticsRouter from './route/analytics.route.js';
 import videoRouter from './route/video.route.js';
-import { startRecommendationCron } from "./cron/recommendation.cron.js";
 
 
 
 const app = express();
+app.set("trust proxy", 1);
 
 console.log('Starting server setup...');
 const allowedOrigins = process.env.CORS_ORIGINS
@@ -58,8 +60,14 @@ app.use(
 
 console.log('CORS middleware configured');
 
+app.use(compression());
+console.log('Compression middleware enabled');
 
-app.use(express.json());
+app.use(rateLimiter());
+console.log('Rate limiter enabled');
+
+app.use(express.json({ limit: process.env.JSON_BODY_LIMIT || "1mb" }));
+app.use(express.urlencoded({ extended: true, limit: process.env.JSON_BODY_LIMIT || "1mb" }));
 console.log('JSON body parser enabled');
 
 app.use(cookieParser());
@@ -112,12 +120,36 @@ app.use("/api/analytics", analyticsRouter);
 
 app.use("/api/videos", videoRouter);
 
+app.use((err, req, res, next) => {
+  if (!err) return next();
+
+  const isUploadError =
+    err.name === "MulterError" ||
+    err.message?.startsWith("Unsupported file type") ||
+    err.message === "Only video files are allowed!";
+
+  if (isUploadError) {
+    const statusCode = err.code === "LIMIT_FILE_SIZE" ? 413 : 400;
+    return res.status(statusCode).json({
+      success: false,
+      error: true,
+      message: err.message,
+    });
+  }
+
+  console.error("Unhandled request error:", err);
+  return res.status(err.statusCode || 500).json({
+    success: false,
+    error: true,
+    message: err.statusCode ? err.message : "Internal server error",
+  });
+});
+
 
 connectDB().then(() => {
   const port = process.env.PORT || 8000;
   app.listen(port, () => {
     console.log(`✅ Server is running on port ${port}`);
-    startRecommendationCron();
   });
 }).catch(err => {
   console.error('❌ Failed to connect to database:', err);

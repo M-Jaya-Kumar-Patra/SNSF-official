@@ -290,7 +290,9 @@ export async function deleteCategory(request, response) {
 
 export async function updatedCategory(request, response) {
     try {
-        const imageFiles = Array.isArray(request.files?.images)
+        const imageFiles = Array.isArray(request.files)
+            ? request.files
+            : Array.isArray(request.files?.images)
             ? request.files.images
             : request.files?.images ? [request.files.images] : [];
 

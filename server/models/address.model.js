@@ -49,5 +49,9 @@ const addressSchema = mongoose.Schema({
     }]
 }, { timestamps: true });
 
+addressSchema.index({ userId: 1, createdAt: -1 });
+addressSchema.index({ pin: 1 });
+addressSchema.index({ city: 1, state: 1 });
+
 const AddressModel = mongoose.model("address", addressSchema);
 export default AddressModel;

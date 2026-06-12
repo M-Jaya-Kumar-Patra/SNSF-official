@@ -1,15 +1,16 @@
 import multer from "multer";
 
-// Use MemoryStorage so the file is stored in RAM as a Buffer
 const storage = multer.memoryStorage();
+const maxVideoSizeMb = Number(process.env.VIDEO_UPLOAD_MAX_FILE_SIZE_MB) || 50;
 
 const videoUpload = multer({
-  storage: storage,
+  storage,
   limits: {
-    fileSize: 50 * 1024 * 1024, // Limit to 50MB (Adjust if needed)
+    fileSize: maxVideoSizeMb * 1024 * 1024,
+    files: 1,
   },
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith("video/")) {
+    if (file.mimetype?.startsWith("video/")) {
       cb(null, true);
     } else {
       cb(new Error("Only video files are allowed!"), false);

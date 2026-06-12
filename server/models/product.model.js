@@ -53,6 +53,23 @@ const productSchema = new mongoose.Schema({
   },
 });
 
+productSchema.index(
+  { name: "text", brand: "text", catName: "text", subCat: "text", thirdSubCat: "text" },
+  {
+    name: "ProductSearchTextIndex",
+    weights: { name: 10, brand: 6, catName: 4, subCat: 3, thirdSubCat: 2 },
+  }
+);
+productSchema.index({ catId: 1, price: 1, dateCreated: -1 });
+productSchema.index({ subCatId: 1, price: 1, dateCreated: -1 });
+productSchema.index({ thirdSubCatId: 1, price: 1, dateCreated: -1 });
+productSchema.index({ isFeatured: 1, dateCreated: -1 });
+productSchema.index({ isAllinOne: 1, dateCreated: -1 });
+productSchema.index({ brand: 1, dateCreated: -1 });
+productSchema.index({ rating: -1, dateCreated: -1 });
+productSchema.index({ sales: -1, dateCreated: -1 });
+productSchema.index({ category: 1, dateCreated: -1 });
+
 // Automatically generate slug before saving
 productSchema.pre("save", function (next) {
   if (!this.slug && this.name) {

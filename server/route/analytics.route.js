@@ -1,10 +1,14 @@
 // server/route/analytics.route.js
 import express from "express";
 import analytics from "../controllers/analytics.controller.js";
+import { cacheResponse } from "../middlewares/cache.js";
 
 
 import { getLoginActivity } from "../controllers/loginAnalytics.controller.js";
 const analyticsRouter = express.Router();
+analyticsRouter.use(
+  cacheResponse("analytics", Number(process.env.ANALYTICS_CACHE_TTL_SECONDS) || 60)
+);
 
 // Visitor analytics
 analyticsRouter.get("/visitors/unique", analytics.uniqueVisitors);         // 1A

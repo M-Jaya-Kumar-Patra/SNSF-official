@@ -29,6 +29,13 @@ const productEventSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+productEventSchema.index({ userId: 1, createdAt: -1 });
+productEventSchema.index({ visitorId: 1, createdAt: -1 });
+productEventSchema.index({ sessionId: 1, createdAt: -1 });
+productEventSchema.index({ productId: 1, eventType: 1, createdAt: -1 });
+productEventSchema.index({ eventType: 1, createdAt: -1 });
+productEventSchema.index({ timestamp: -1 });
+
 const ProductEventModel =
   mongoose.models.ProductEvent ||
   mongoose.model("ProductEvent", productEventSchema);

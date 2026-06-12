@@ -30,6 +30,10 @@ const visitCountSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+visitCountSchema.index({ isIgnored: 1, visitedAt: -1 });
+visitCountSchema.index({ visitorId: 1, visitedAt: -1 });
+visitCountSchema.index({ ipAddress: 1, visitedAt: -1 });
+
 const VisitCountModel =
   mongoose.models.VisitCount ||
   mongoose.model("VisitCount", visitCountSchema);

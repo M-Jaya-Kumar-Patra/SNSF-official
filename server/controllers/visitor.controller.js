@@ -1,77 +1,25 @@
-import visitorModel from "../models/visitor.model.js";
-import sessionModel from "../models/session.model.js";
-import pageViewModel from "../models/pageView.model.js";
+import { addJob } from "../jobs/queue.js";
+import { recordVisitorActivity } from "../services/analytics.service.js";
 
 export const trackVisitor = async (req, res) => {
   try {
-    const {
-      visitorId,
-      sessionId,
-      userId,
-      pageName,
-      scrollDepth,
-      timeSpent,
-      deviceType,
-      browser,
-      os,
-      country,
-      city,
-      referrer,
-    } = req.body;
+    const { visitorId, sessionId, pageName } = req.body;
 
     if (!visitorId || !sessionId || !pageName) {
       return res.status(400).json({ success: false, message: "Missing fields" });
     }
 
-    // 1️⃣ Visitor update
-    const existing = await visitorModel.findOne({ visitorId });
-
-    await visitorModel.findOneAndUpdate(
-      { visitorId },
-      {
-        $set: {
-          lastVisit: new Date(),
-          userId: userId || null,
-          deviceType,
-          browser,
-          os,
-          country,
-          city,
-          referrer,
-          visitorType: existing ? "returning" : "new",
-        },
-        $setOnInsert: {
-          firstVisit: new Date(),
-          visitorId,
-        },
-      },
-      { upsert: true }
-    );
-
-    // 2️⃣ Session update
-    await sessionModel.findOneAndUpdate(
-      { sessionId },
-      {
-        visitorId,
-        userId: userId || null,
-        lastActivity: new Date(),
-        $inc: { pagesVisitedCount: 1 },
-      },
-      { upsert: true }
-    );
-
-    // 3️⃣ Page view
-    await pageViewModel.create({
-      visitorId,
-      sessionId,
-      userId: userId || null,
-      pageName,
-      scrollDepth: scrollDepth || 0,
-      timeSpent: timeSpent || 0,
+    const result = await addJob("analytics", "track-visitor", req.body, {
+      inline: recordVisitorActivity,
     });
 
-    return res.json({ success: true });
+    return res.status(result.queued ? 202 : 200).json({
+      success: true,
+      queued: result.queued,
+    });
   } catch (err) {
-    return res.status(500).json({ success: false, error: err.message });
+    return res
+      .status(err.statusCode || 500)
+      .json({ success: false, error: err.message });
   }
 };

@@ -28,4 +28,12 @@ const visitorSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
+visitorSchema.index({ visitorId: 1 }, { unique: true });
+visitorSchema.index({ userId: 1, lastVisit: -1 });
+visitorSchema.index({ lastVisit: -1 });
+visitorSchema.index({ deviceType: 1, lastVisit: -1 });
+visitorSchema.index({ browser: 1, lastVisit: -1 });
+visitorSchema.index({ country: 1, lastVisit: -1 });
+visitorSchema.index({ visitorType: 1, firstVisit: -1 });
+
 export default mongoose.models.Visitor || mongoose.model("Visitor", visitorSchema);

@@ -1,0 +1,674 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.8.0
+2 info using node@v24.13.1
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:E:\SNSF\sns-clean\server\.npmrc
+5 silly config load:file:C:\Users\M Jaya Kumar\.npmrc
+6 silly config load:file:C:\Users\M Jaya Kumar\AppData\Roaming\npm\etc\npmrc
+7 verbose config error loading global config Error: EPERM: operation not permitted, open 'C:\Users\M Jaya Kumar\AppData\Roaming\npm\etc\npmrc'
+7 verbose config     at async open (node:internal/fs/promises:637:25)
+7 verbose config     at async readFile (node:internal/fs/promises:1269:14)
+7 verbose config     at async #loadFile (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\config\lib\index.js:641:5)
+7 verbose config     at async Config.load (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\config\lib\index.js:268:5)
+7 verbose config     at async #load (C:\Program Files\nodejs\node_modules\npm\lib\npm.js:99:5)
+7 verbose config     at async Npm.load (C:\Program Files\nodejs\node_modules\npm\lib\npm.js:81:14)
+7 verbose config     at async module.exports (C:\Program Files\nodejs\node_modules\npm\lib\cli\entry.js:35:37) {
+7 verbose config   errno: -4048,
+7 verbose config   code: 'EPERM',
+7 verbose config   syscall: 'open',
+7 verbose config   path: 'C:\\Users\\M Jaya Kumar\\AppData\\Roaming\\npm\\etc\\npmrc'
+7 verbose config }
+8 verbose title npm install bullmq ioredis compression
+9 verbose argv "install" "bullmq" "ioredis" "compression" "--cache" ".\\.npm-cache"
+10 verbose logfile logs-max:10 dir:E:\SNSF\sns-clean\server\.npm-cache\_logs\2026-06-12T03_16_40_595Z-
+11 verbose logfile E:\SNSF\sns-clean\server\.npm-cache\_logs\2026-06-12T03_16_40_595Z-debug-0.log
+12 silly logfile done cleaning log files
+13 silly packumentCache heap:4496293888 maxSize:1124073472 maxEntrySize:562036736
+14 silly idealTree buildDeps
+15 silly fetch manifest bullmq@*
+16 silly packumentCache full:https://registry.npmmirror.com/bullmq cache-miss
+17 verbose shrinkwrap failed to load node_modules/.package-lock.json missing from node_modules: node_modules/fsevents
+18 http fetch GET 200 https://registry.npmmirror.com/npm 1096ms
+19 http fetch GET 200 https://registry.npmmirror.com/bullmq 1241ms (cache miss)
+20 silly packumentCache full:https://registry.npmmirror.com/bullmq set size:635046 disposed:false
+21 silly fetch manifest redis@>=5.0.0
+22 silly packumentCache full:https://registry.npmmirror.com/redis cache-miss
+23 http fetch GET 200 https://registry.npmmirror.com/redis 576ms (cache miss)
+24 silly packumentCache full:https://registry.npmmirror.com/redis set size:75124 disposed:false
+25 silly fetch manifest ioredis@*
+26 silly packumentCache full:https://registry.npmmirror.com/ioredis cache-miss
+27 http fetch GET 200 https://registry.npmmirror.com/ioredis 240ms (cache miss)
+28 silly packumentCache full:https://registry.npmmirror.com/ioredis set size:124581 disposed:false
+29 silly fetch manifest compression@*
+30 silly packumentCache full:https://registry.npmmirror.com/compression cache-miss
+31 http fetch GET 200 https://registry.npmmirror.com/compression 515ms (cache miss)
+32 silly packumentCache full:https://registry.npmmirror.com/compression set size:17815 disposed:false
+33 silly placeDep ROOT bullmq@5.78.0 OK for: server@1.0.0 want: *
+34 silly placeDep ROOT compression@1.8.1 OK for: server@1.0.0 want: *
+35 silly placeDep ROOT ioredis@5.11.1 OK for: server@1.0.0 want: *
+36 silly fetch manifest cron-parser@4.9.0
+37 silly packumentCache full:https://registry.npmmirror.com/cron-parser cache-miss
+38 silly fetch manifest ioredis@5.10.1
+39 silly packumentCache full:https://registry.npmmirror.com/ioredis cache-hit
+40 silly fetch manifest msgpackr@2.0.2
+41 silly packumentCache full:https://registry.npmmirror.com/msgpackr cache-miss
+42 silly fetch manifest node-abort-controller@3.1.1
+43 silly packumentCache full:https://registry.npmmirror.com/node-abort-controller cache-miss
+44 silly fetch manifest semver@7.8.0
+45 silly packumentCache full:https://registry.npmmirror.com/semver cache-miss
+46 silly fetch manifest compressible@~2.0.18
+47 silly packumentCache full:https://registry.npmmirror.com/compressible cache-miss
+48 silly fetch manifest debug@2.6.9
+49 silly packumentCache full:https://registry.npmmirror.com/debug cache-miss
+50 silly fetch manifest negotiator@~0.6.4
+51 silly packumentCache full:https://registry.npmmirror.com/negotiator cache-miss
+52 silly fetch manifest @ioredis/commands@1.10.0
+53 silly packumentCache full:https://registry.npmmirror.com/@ioredis%2fcommands cache-miss
+54 silly fetch manifest cluster-key-slot@1.1.1
+55 silly packumentCache full:https://registry.npmmirror.com/cluster-key-slot cache-miss
+56 silly fetch manifest debug@4.4.3
+57 silly packumentCache full:https://registry.npmmirror.com/debug cache-miss
+58 silly fetch manifest denque@2.1.0
+59 silly packumentCache full:https://registry.npmmirror.com/denque cache-miss
+60 silly fetch manifest redis-errors@1.2.0
+61 silly packumentCache full:https://registry.npmmirror.com/redis-errors cache-miss
+62 silly fetch manifest redis-parser@3.0.0
+63 silly packumentCache full:https://registry.npmmirror.com/redis-parser cache-miss
+64 silly fetch manifest standard-as-callback@2.1.0
+65 silly packumentCache full:https://registry.npmmirror.com/standard-as-callback cache-miss
+66 http fetch GET 200 https://registry.npmmirror.com/msgpackr 250ms (cache miss)
+67 silly packumentCache full:https://registry.npmmirror.com/msgpackr set size:77160 disposed:false
+68 http fetch GET 200 https://registry.npmmirror.com/denque 444ms (cache miss)
+69 silly packumentCache full:https://registry.npmmirror.com/denque set size:10496 disposed:false
+70 http fetch GET 200 https://registry.npmmirror.com/negotiator 466ms (cache miss)
+71 silly packumentCache full:https://registry.npmmirror.com/negotiator set size:10810 disposed:false
+72 http fetch GET 200 https://registry.npmmirror.com/compressible 521ms (cache miss)
+73 silly packumentCache full:https://registry.npmmirror.com/compressible set size:9671 disposed:false
+74 http fetch GET 200 https://registry.npmmirror.com/cron-parser 527ms (cache miss)
+75 silly packumentCache full:https://registry.npmmirror.com/cron-parser set size:47994 disposed:false
+76 http fetch GET 200 https://registry.npmmirror.com/debug 548ms (cache miss)
+77 silly packumentCache full:https://registry.npmmirror.com/debug set size:32036 disposed:false
+78 http fetch GET 200 https://registry.npmmirror.com/debug 590ms (cache miss)
+79 silly packumentCache full:https://registry.npmmirror.com/debug set size:32036 disposed:false
+80 silly packumentCache full:https://registry.npmmirror.com/debug dispose
+81 http fetch GET 200 https://registry.npmmirror.com/semver 649ms (cache miss)
+82 silly packumentCache full:https://registry.npmmirror.com/semver set size:47041 disposed:false
+83 http fetch GET 200 https://registry.npmmirror.com/redis-errors 784ms (cache miss)
+84 silly packumentCache full:https://registry.npmmirror.com/redis-errors set size:3082 disposed:false
+85 http fetch GET 200 https://registry.npmmirror.com/cluster-key-slot 828ms (cache miss)
+86 silly packumentCache full:https://registry.npmmirror.com/cluster-key-slot set size:8609 disposed:false
+87 http fetch GET 200 https://registry.npmmirror.com/redis-parser 827ms (cache miss)
+88 silly packumentCache full:https://registry.npmmirror.com/redis-parser set size:8599 disposed:false
+89 http fetch GET 200 https://registry.npmmirror.com/node-abort-controller 849ms (cache miss)
+90 silly packumentCache full:https://registry.npmmirror.com/node-abort-controller set size:7714 disposed:false
+91 http fetch GET 200 https://registry.npmmirror.com/standard-as-callback 851ms (cache miss)
+92 silly packumentCache full:https://registry.npmmirror.com/standard-as-callback set size:2677 disposed:false
+93 http fetch GET 200 https://registry.npmmirror.com/@ioredis%2fcommands 954ms (cache miss)
+94 silly packumentCache full:https://registry.npmmirror.com/@ioredis%2fcommands set size:13109 disposed:false
+95 silly placeDep ROOT cron-parser@4.9.0 OK for: bullmq@5.78.0 want: 4.9.0
+96 silly placeDep node_modules/bullmq ioredis@5.10.1 OK for: bullmq@5.78.0 want: 5.10.1
+97 silly placeDep ROOT msgpackr@2.0.2 OK for: bullmq@5.78.0 want: 2.0.2
+98 silly placeDep ROOT node-abort-controller@3.1.1 OK for: bullmq@5.78.0 want: 3.1.1
+99 silly placeDep ROOT semver@7.8.0 REPLACE for: bullmq@5.78.0 want: 7.8.0
+100 silly fetch manifest luxon@^3.2.1
+101 silly packumentCache full:https://registry.npmmirror.com/luxon cache-miss
+102 silly fetch manifest @ioredis/commands@1.5.1
+103 silly packumentCache full:https://registry.npmmirror.com/@ioredis%2fcommands cache-hit
+104 silly fetch manifest cluster-key-slot@^1.1.0
+105 silly packumentCache full:https://registry.npmmirror.com/cluster-key-slot cache-hit
+106 silly fetch manifest denque@^2.1.0
+107 silly packumentCache full:https://registry.npmmirror.com/denque cache-hit
+108 silly fetch manifest lodash.defaults@^4.2.0
+109 silly packumentCache full:https://registry.npmmirror.com/lodash.defaults cache-miss
+110 silly fetch manifest lodash.isarguments@^3.1.0
+111 silly packumentCache full:https://registry.npmmirror.com/lodash.isarguments cache-miss
+112 silly fetch manifest redis-errors@^1.2.0
+113 silly packumentCache full:https://registry.npmmirror.com/redis-errors cache-hit
+114 silly fetch manifest redis-parser@^3.0.0
+115 silly packumentCache full:https://registry.npmmirror.com/redis-parser cache-hit
+116 silly fetch manifest standard-as-callback@^2.1.0
+117 silly packumentCache full:https://registry.npmmirror.com/standard-as-callback cache-hit
+118 silly fetch manifest msgpackr-extract@^3.0.4
+119 silly packumentCache full:https://registry.npmmirror.com/msgpackr-extract cache-miss
+120 http fetch GET 200 https://registry.npmmirror.com/msgpackr-extract 159ms (cache miss)
+121 silly packumentCache full:https://registry.npmmirror.com/msgpackr-extract set size:30642 disposed:false
+122 http fetch GET 200 https://registry.npmmirror.com/lodash.isarguments 478ms (cache miss)
+123 silly packumentCache full:https://registry.npmmirror.com/lodash.isarguments set size:5478 disposed:false
+124 http fetch GET 200 https://registry.npmmirror.com/lodash.defaults 574ms (cache miss)
+125 silly packumentCache full:https://registry.npmmirror.com/lodash.defaults set size:4920 disposed:false
+126 http fetch GET 200 https://registry.npmmirror.com/luxon 734ms (cache miss)
+127 silly packumentCache full:https://registry.npmmirror.com/luxon set size:65197 disposed:false
+128 silly placeDep ROOT compressible@2.0.18 OK for: compression@1.8.1 want: ~2.0.18
+129 silly placeDep node_modules/compression debug@2.6.9 OK for: compression@1.8.1 want: 2.6.9
+130 silly placeDep node_modules/compression negotiator@0.6.4 OK for: compression@1.8.1 want: ~0.6.4
+131 silly fetch manifest ms@2.0.0
+132 silly packumentCache full:https://registry.npmmirror.com/ms cache-miss
+133 http fetch GET 200 https://registry.npmmirror.com/ms 149ms (cache miss)
+134 silly packumentCache full:https://registry.npmmirror.com/ms set size:15985 disposed:false
+135 silly placeDep ROOT luxon@3.7.2 OK for: cron-parser@4.9.0 want: ^3.2.1
+136 silly placeDep ROOT @ioredis/commands@1.10.0 OK for: ioredis@5.11.1 want: 1.10.0
+137 silly placeDep ROOT cluster-key-slot@1.1.1 OK for: ioredis@5.11.1 want: 1.1.1
+138 silly placeDep ROOT debug@4.4.3 REPLACE for: ioredis@5.11.1 want: 4.4.3
+139 silly placeDep ROOT denque@2.1.0 OK for: ioredis@5.11.1 want: 2.1.0
+140 silly placeDep ROOT redis-errors@1.2.0 OK for: ioredis@5.11.1 want: 1.2.0
+141 silly placeDep ROOT redis-parser@3.0.0 OK for: ioredis@5.11.1 want: 3.0.0
+142 silly placeDep ROOT standard-as-callback@2.1.0 OK for: ioredis@5.11.1 want: 2.1.0
+143 silly placeDep ROOT msgpackr-extract@3.0.4 OK for: msgpackr@2.0.2 want: ^3.0.4
+144 silly fetch manifest node-gyp-build-optional-packages@5.2.2
+145 silly packumentCache full:https://registry.npmmirror.com/node-gyp-build-optional-packages cache-miss
+146 silly fetch manifest @msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.4
+147 silly packumentCache full:https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-darwin-arm64 cache-miss
+148 silly fetch manifest @msgpackr-extract/msgpackr-extract-darwin-x64@3.0.4
+149 silly packumentCache full:https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-darwin-x64 cache-miss
+150 silly fetch manifest @msgpackr-extract/msgpackr-extract-linux-arm@3.0.4
+151 silly packumentCache full:https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-linux-arm cache-miss
+152 silly fetch manifest @msgpackr-extract/msgpackr-extract-linux-arm64@3.0.4
+153 silly packumentCache full:https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-linux-arm64 cache-miss
+154 silly fetch manifest @msgpackr-extract/msgpackr-extract-linux-x64@3.0.4
+155 silly packumentCache full:https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-linux-x64 cache-miss
+156 silly fetch manifest @msgpackr-extract/msgpackr-extract-win32-x64@3.0.4
+157 silly packumentCache full:https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-win32-x64 cache-miss
+158 http fetch GET 200 https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-darwin-x64 144ms (cache miss)
+159 silly packumentCache full:https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-darwin-x64 set size:9734 disposed:false
+160 http fetch GET 200 https://registry.npmmirror.com/node-gyp-build-optional-packages 159ms (cache miss)
+161 silly packumentCache full:https://registry.npmmirror.com/node-gyp-build-optional-packages set size:17357 disposed:false
+162 http fetch GET 200 https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-darwin-arm64 173ms (cache miss)
+163 silly packumentCache full:https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-darwin-arm64 set size:9726 disposed:false
+164 http fetch GET 200 https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-linux-arm64 178ms (cache miss)
+165 silly packumentCache full:https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-linux-arm64 set size:9710 disposed:false
+166 http fetch GET 200 https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-linux-arm 180ms (cache miss)
+167 silly packumentCache full:https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-linux-arm set size:9692 disposed:false
+168 http fetch GET 200 https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-win32-x64 181ms (cache miss)
+169 silly packumentCache full:https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-win32-x64 set size:9722 disposed:false
+170 http fetch GET 200 https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-linux-x64 207ms (cache miss)
+171 silly packumentCache full:https://registry.npmmirror.com/@msgpackr-extract%2fmsgpackr-extract-linux-x64 set size:9719 disposed:false
+172 silly placeDep ROOT @msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.4 OK for: msgpackr-extract@3.0.4 want: 3.0.4
+173 silly placeDep ROOT @msgpackr-extract/msgpackr-extract-darwin-x64@3.0.4 OK for: msgpackr-extract@3.0.4 want: 3.0.4
+174 silly placeDep ROOT @msgpackr-extract/msgpackr-extract-linux-arm@3.0.4 OK for: msgpackr-extract@3.0.4 want: 3.0.4
+175 silly placeDep ROOT @msgpackr-extract/msgpackr-extract-linux-arm64@3.0.4 OK for: msgpackr-extract@3.0.4 want: 3.0.4
+176 silly placeDep ROOT @msgpackr-extract/msgpackr-extract-linux-x64@3.0.4 OK for: msgpackr-extract@3.0.4 want: 3.0.4
+177 silly placeDep ROOT @msgpackr-extract/msgpackr-extract-win32-x64@3.0.4 OK for: msgpackr-extract@3.0.4 want: 3.0.4
+178 silly placeDep ROOT node-gyp-build-optional-packages@5.2.2 OK for: msgpackr-extract@3.0.4 want: 5.2.2
+179 silly fetch manifest detect-libc@^2.0.1
+180 silly packumentCache full:https://registry.npmmirror.com/detect-libc cache-miss
+181 http fetch GET 200 https://registry.npmmirror.com/detect-libc 207ms (cache miss)
+182 silly packumentCache full:https://registry.npmmirror.com/detect-libc set size:10958 disposed:false
+183 silly placeDep ROOT detect-libc@2.1.2 OK for: node-gyp-build-optional-packages@5.2.2 want: ^2.0.1
+184 silly fetch manifest nodemailer@^6.8.0
+185 silly packumentCache full:https://registry.npmmirror.com/nodemailer cache-miss
+186 http fetch GET 200 https://registry.npmmirror.com/nodemailer 427ms (cache miss)
+187 silly packumentCache full:https://registry.npmmirror.com/nodemailer set size:90754 disposed:false
+188 silly placeDep node_modules/@auth/mongodb-adapter nodemailer@6.10.1 OK for: @auth/core@0.40.0 want: ^6.8.0
+189 silly placeDep node_modules/bullmq @ioredis/commands@1.5.1 OK for: ioredis@5.10.1 want: 1.5.1
+190 silly placeDep ROOT lodash.defaults@4.2.0 OK for: ioredis@5.10.1 want: ^4.2.0
+191 silly placeDep ROOT lodash.isarguments@3.1.0 OK for: ioredis@5.10.1 want: ^3.1.0
+192 silly placeDep node_modules/compression ms@2.0.0 OK for: debug@2.6.9 want: 2.0.0
+193 silly reify mark retired [ 'E:\\SNSF\\sns-clean\\server\\node_modules\\debug' ]
+194 silly reify mark retired [
+194 silly reify   'E:\\SNSF\\sns-clean\\server\\node_modules\\semver',
+194 silly reify   'E:\\SNSF\\sns-clean\\server\\node_modules\\.bin\\semver',
+194 silly reify   'E:\\SNSF\\sns-clean\\server\\node_modules\\.bin\\semver.cmd',
+194 silly reify   'E:\\SNSF\\sns-clean\\server\\node_modules\\.bin\\semver.ps1'
+194 silly reify ]
+195 silly reify moves {
+195 silly reify   'E:\\SNSF\\sns-clean\\server\\node_modules\\debug': 'E:\\SNSF\\sns-clean\\server\\node_modules\\.debug-Tt6K4EBY',
+195 silly reify   'E:\\SNSF\\sns-clean\\server\\node_modules\\semver': 'E:\\SNSF\\sns-clean\\server\\node_modules\\.semver-Lb80e8Pw',
+195 silly reify   'E:\\SNSF\\sns-clean\\server\\node_modules\\.bin\\semver': 'E:\\SNSF\\sns-clean\\server\\node_modules\\.bin\\.semver-V88xgtgr',
+195 silly reify   'E:\\SNSF\\sns-clean\\server\\node_modules\\.bin\\semver.cmd': 'E:\\SNSF\\sns-clean\\server\\node_modules\\.bin\\.semver.cmd-F3Cc9h1U',
+195 silly reify   'E:\\SNSF\\sns-clean\\server\\node_modules\\.bin\\semver.ps1': 'E:\\SNSF\\sns-clean\\server\\node_modules\\.bin\\.semver.ps1-ZTzSzC88'
+195 silly reify }
+196 silly audit bulk request {
+196 silly audit   '@auth/mongodb-adapter': [ '3.10.0' ],
+196 silly audit   '@auth/core': [ '0.40.0' ],
+196 silly audit   '@firebase/ai': [ '1.4.1' ],
+196 silly audit   '@firebase/analytics': [ '0.10.17' ],
+196 silly audit   '@firebase/analytics-compat': [ '0.2.23' ],
+196 silly audit   '@firebase/analytics-types': [ '0.8.3' ],
+196 silly audit   '@firebase/app': [ '0.13.2' ],
+196 silly audit   '@firebase/app-check': [ '0.10.1' ],
+196 silly audit   '@firebase/app-check-compat': [ '0.3.26' ],
+196 silly audit   '@firebase/app-check-interop-types': [ '0.3.3' ],
+196 silly audit   '@firebase/app-check-types': [ '0.5.3' ],
+196 silly audit   '@firebase/app-compat': [ '0.4.2' ],
+196 silly audit   '@firebase/app-types': [ '0.9.3' ],
+196 silly audit   '@firebase/auth': [ '1.10.8' ],
+196 silly audit   '@firebase/auth-compat': [ '0.5.28' ],
+196 silly audit   '@firebase/auth-interop-types': [ '0.2.4' ],
+196 silly audit   '@firebase/auth-types': [ '0.13.0' ],
+196 silly audit   '@firebase/component': [ '0.6.18' ],
+196 silly audit   '@firebase/data-connect': [ '0.3.10' ],
+196 silly audit   '@firebase/database': [ '1.0.20' ],
+196 silly audit   '@firebase/database-compat': [ '2.0.11' ],
+196 silly audit   '@firebase/database-types': [ '1.0.15' ],
+196 silly audit   '@firebase/firestore': [ '4.8.0' ],
+196 silly audit   '@firebase/firestore-compat': [ '0.3.53' ],
+196 silly audit   '@firebase/firestore-types': [ '3.0.3' ],
+196 silly audit   '@firebase/functions': [ '0.12.9' ],
+196 silly audit   '@firebase/functions-compat': [ '0.3.26' ],
+196 silly audit   '@firebase/functions-types': [ '0.6.3' ],
+196 silly audit   '@firebase/installations': [ '0.6.18' ],
+196 silly audit   '@firebase/installations-compat': [ '0.2.18' ],
+196 silly audit   '@firebase/installations-types': [ '0.5.3' ],
+196 silly audit   '@firebase/logger': [ '0.4.4' ],
+196 silly audit   '@firebase/messaging': [ '0.12.22' ],
+196 silly audit   '@firebase/messaging-compat': [ '0.2.22' ],
+196 silly audit   '@firebase/messaging-interop-types': [ '0.2.3' ],
+196 silly audit   '@firebase/performance': [ '0.7.7' ],
+196 silly audit   '@firebase/performance-compat': [ '0.2.20' ],
+196 silly audit   '@firebase/performance-types': [ '0.2.3' ],
+196 silly audit   '@firebase/remote-config': [ '0.6.5' ],
+196 silly audit   '@firebase/remote-config-compat': [ '0.2.18' ],
+196 silly audit   '@firebase/remote-config-types': [ '0.4.0' ],
+196 silly audit   '@firebase/storage': [ '0.13.14' ],
+196 silly audit   '@firebase/storage-compat': [ '0.3.24' ],
+196 silly audit   '@firebase/storage-types': [ '0.8.3' ],
+196 silly audit   '@firebase/util': [ '1.12.1' ],
+196 silly audit   '@firebase/webchannel-wrapper': [ '1.0.3' ],
+196 silly audit   '@grpc/grpc-js': [ '1.9.15' ],
+196 silly audit   '@grpc/proto-loader': [ '0.7.15' ],
+196 silly audit   '@mongodb-js/saslprep': [ '1.2.2' ],
+196 silly audit   '@panva/hkdf': [ '1.2.1' ],
+196 silly audit   '@protobufjs/aspromise': [ '1.1.2' ],
+196 silly audit   '@protobufjs/base64': [ '1.1.2' ],
+196 silly audit   '@protobufjs/codegen': [ '2.0.4' ],
+196 silly audit   '@protobufjs/eventemitter': [ '1.1.0' ],
+196 silly audit   '@protobufjs/fetch': [ '1.1.0' ],
+196 silly audit   '@protobufjs/float': [ '1.0.2' ],
+196 silly audit   '@protobufjs/inquire': [ '1.1.0' ],
+196 silly audit   '@protobufjs/path': [ '1.1.2' ],
+196 silly audit   '@protobufjs/pool': [ '1.1.0' ],
+196 silly audit   '@protobufjs/utf8': [ '1.1.0' ],
+196 silly audit   '@stablelib/base64': [ '1.0.1' ],
+196 silly audit   '@types/node': [ '24.1.0', '22.19.1' ],
+196 silly audit   '@types/webidl-conversions': [ '7.0.3' ],
+196 silly audit   '@types/whatwg-url': [ '11.0.5' ],
+196 silly audit   accepts: [ '2.0.0' ],
+196 silly audit   'agent-base': [ '7.1.3' ],
+196 silly audit   'ansi-regex': [ '5.0.1' ],
+196 silly audit   'ansi-styles': [ '4.3.0' ],
+196 silly audit   anymatch: [ '3.1.3' ],
+196 silly audit   'append-field': [ '1.0.0' ],
+196 silly audit   asynckit: [ '0.4.0' ],
+196 silly audit   axios: [ '1.10.0' ],
+196 silly audit   'balanced-match': [ '1.0.2' ],
+196 silly audit   'base64-js': [ '1.5.1' ],
+196 silly audit   'basic-auth': [ '2.0.1' ],
+196 silly audit   'safe-buffer': [ '5.1.2', '5.2.1' ],
+196 silly audit   bcryptjs: [ '3.0.2' ],
+196 silly audit   'bignumber.js': [ '9.3.0' ],
+196 silly audit   'binary-extensions': [ '2.3.0' ],
+196 silly audit   'body-parser': [ '2.2.0' ],
+196 silly audit   'brace-expansion': [ '1.1.12' ],
+196 silly audit   braces: [ '3.0.3' ],
+196 silly audit   bson: [ '6.10.4' ],
+196 silly audit   'buffer-equal-constant-time': [ '1.0.1' ],
+196 silly audit   'buffer-from': [ '1.1.2' ],
+196 silly audit   busboy: [ '1.6.0' ],
+196 silly audit   bytes: [ '3.1.2' ],
+196 silly audit   'call-bind-apply-helpers': [ '1.0.2' ],
+196 silly audit   'call-bound': [ '1.0.4' ],
+196 silly audit   chokidar: [ '3.6.0' ],
+196 silly audit   cliui: [ '8.0.1' ],
+196 silly audit   cloudinary: [ '2.7.0' ],
+196 silly audit   'color-convert': [ '2.0.1' ],
+196 silly audit   'color-name': [ '1.1.4' ],
+196 silly audit   'combined-stream': [ '1.0.8' ],
+196 silly audit   'concat-map': [ '0.0.1' ],
+196 silly audit   'concat-stream': [ '1.6.2' ],
+196 silly audit   'content-disposition': [ '1.0.0' ],
+196 silly audit   'content-type': [ '1.0.5' ],
+196 silly audit   cookie: [ '0.7.2' ],
+196 silly audit   'cookie-parser': [ '1.4.7' ],
+196 silly audit   'cookie-signature': [ '1.0.6', '1.2.2' ],
+196 silly audit   'core-util-is': [ '1.0.3' ],
+196 silly audit   cors: [ '2.8.5' ],
+196 silly audit   debug: [ '2.6.9', '4.4.3' ],
+196 silly audit   'delayed-stream': [ '1.0.0' ],
+196 silly audit   depd: [ '2.0.0' ],
+196 silly audit   dotenv: [ '16.6.1' ],
+196 silly audit   'dunder-proto': [ '1.0.1' ],
+196 silly audit   'ecdsa-sig-formatter': [ '1.0.11' ],
+196 silly audit   'ee-first': [ '1.1.1' ],
+196 silly audit   'emoji-regex': [ '8.0.0' ],
+196 silly audit   encodeurl: [ '2.0.0' ],
+196 silly audit   'es-define-property': [ '1.0.1' ],
+196 silly audit   'es-errors': [ '1.3.0' ],
+196 silly audit   'es-object-atoms': [ '1.1.1' ],
+196 silly audit   'es-set-tostringtag': [ '2.1.0' ],
+196 silly audit   'es6-promise': [ '4.2.8' ],
+196 silly audit   escalade: [ '3.2.0' ],
+196 silly audit   'escape-html': [ '1.0.3' ],
+196 silly audit   etag: [ '1.8.1' ],
+196 silly audit   express: [ '5.1.0' ],
+196 silly audit   extend: [ '3.0.2' ],
+196 silly audit   'fast-sha256': [ '1.3.0' ],
+196 silly audit   'faye-websocket': [ '0.11.4' ],
+196 silly audit   'fill-range': [ '7.1.1' ],
+196 silly audit   finalhandler: [ '2.1.0' ],
+196 silly audit   firebase: [ '11.10.0' ],
+196 silly audit   'follow-redirects': [ '1.15.9' ],
+196 silly audit   'form-data': [ '4.0.4' ],
+196 silly audit   'mime-db': [ '1.52.0', '1.54.0' ],
+196 silly audit   'mime-types': [ '2.1.35', '3.0.1' ],
+196 silly audit   forwarded: [ '0.2.0' ],
+196 silly audit   fresh: [ '2.0.0' ],
+196 silly audit   fsevents: [ '2.3.3' ],
+196 silly audit   'function-bind': [ '1.1.2' ],
+196 silly audit   gaxios: [ '6.7.1' ],
+196 silly audit   'get-caller-file': [ '2.0.5' ],
+196 silly audit   'get-intrinsic': [ '1.3.0' ],
+196 silly audit   'get-proto': [ '1.0.1' ],
+196 silly audit   'glob-parent': [ '5.1.2' ],
+196 silly audit   'google-auth-library': [ '9.15.1' ],
+196 silly audit   'gcp-metadata': [ '6.1.1' ],
+196 silly audit   jwa: [ '2.0.1', '1.4.2' ],
+196 silly audit   jws: [ '4.0.0', '3.2.2' ],
+196 silly audit   'google-logging-utils': [ '0.0.2' ],
+196 silly audit   gopd: [ '1.2.0' ],
+196 silly audit   gtoken: [ '7.1.0' ],
+196 silly audit   'has-flag': [ '3.0.0' ],
+196 silly audit   'has-symbols': [ '1.1.0' ],
+196 silly audit   'has-tostringtag': [ '1.0.2' ],
+196 silly audit   hasown: [ '2.0.2' ],
+196 silly audit   helmet: [ '8.1.0' ],
+196 silly audit   'http-errors': [ '2.0.0' ],
+196 silly audit   'http-parser-js': [ '0.5.10' ],
+196 silly audit   'https-proxy-agent': [ '7.0.6' ],
+196 silly audit   'iconv-lite': [ '0.6.3' ],
+196 silly audit   idb: [ '7.1.1' ],
+196 silly audit   'ignore-by-default': [ '1.0.1' ],
+196 silly audit   inherits: [ '2.0.4' ],
+196 silly audit   'ipaddr.js': [ '1.9.1' ],
+196 silly audit   'is-binary-path': [ '2.1.0' ],
+196 silly audit   'is-extglob': [ '2.1.1' ],
+196 silly audit   'is-fullwidth-code-point': [ '3.0.0' ],
+196 silly audit   'is-glob': [ '4.0.3' ],
+196 silly audit   'is-number': [ '7.0.0' ],
+196 silly audit   'is-promise': [ '4.0.0' ],
+196 silly audit   'is-stream': [ '2.0.1' ],
+196 silly audit   isarray: [ '1.0.0' ],
+196 silly audit   jose: [ '6.0.12' ],
+196 silly audit   'json-bigint': [ '1.0.0' ],
+196 silly audit   jsonwebtoken: [ '9.0.2' ],
+196 silly audit   kareem: [ '2.6.3' ],
+196 silly audit   lodash: [ '4.17.21' ],
+196 silly audit   'lodash.camelcase': [ '4.3.0' ],
+196 silly audit   'lodash.includes': [ '4.3.0' ],
+196 silly audit   'lodash.isboolean': [ '3.0.3' ],
+196 silly audit   'lodash.isinteger': [ '4.0.4' ],
+196 silly audit   'lodash.isnumber': [ '3.0.3' ],
+196 silly audit   'lodash.isplainobject': [ '4.0.6' ],
+196 silly audit   'lodash.isstring': [ '4.0.1' ],
+196 silly audit   'lodash.once': [ '4.1.1' ],
+196 silly audit   long: [ '5.3.2' ],
+196 silly audit   'math-intrinsics': [ '1.1.0' ],
+196 silly audit   'media-typer': [ '1.1.0', '0.3.0' ],
+196 silly audit   'memory-pager': [ '1.5.0' ],
+196 silly audit   'merge-descriptors': [ '2.0.0' ],
+196 silly audit   minimatch: [ '3.1.2' ],
+196 silly audit   minimist: [ '1.2.8' ],
+196 silly audit   mkdirp: [ '0.5.6' ],
+196 silly audit   mongodb: [ '6.18.0' ],
+196 silly audit   'mongodb-connection-string-url': [ '3.0.2' ],
+196 silly audit   mongoose: [ '8.17.0' ],
+196 silly audit   morgan: [ '1.10.1' ],
+196 silly audit   ms: [ '2.0.0', '2.1.3' ],
+196 silly audit   'on-finished': [ '2.3.0', '2.4.1' ],
+196 silly audit   mpath: [ '0.9.0' ],
+196 silly audit   mquery: [ '5.0.0' ],
+196 silly audit   multer: [ '1.4.5-lts.2' ],
+196 silly audit   'type-is': [ '1.6.18', '2.0.1' ],
+196 silly audit   negotiator: [ '1.0.0', '0.6.4' ],
+196 silly audit   'node-cron': [ '4.2.1' ],
+196 silly audit   'node-fetch': [ '2.7.0' ],
+196 silly audit   tr46: [ '0.0.3', '5.1.1' ],
+196 silly audit   'webidl-conversions': [ '3.0.1', '7.0.0' ],
+196 silly audit   'whatwg-url': [ '5.0.0', '14.2.0' ],
+196 silly audit   nodemailer: [ '7.0.5' ],
+196 silly audit   nodemon: [ '3.1.10' ],
+196 silly audit   'normalize-path': [ '3.0.0' ],
+196 silly audit   oauth4webapi: [ '3.6.0' ],
+196 silly audit   'object-assign': [ '4.1.1' ],
+196 silly audit   'object-inspect': [ '1.13.4' ],
+196 silly audit   'on-headers': [ '1.1.0' ],
+196 silly audit   once: [ '1.4.0' ],
+196 silly audit   parseurl: [ '1.3.3' ],
+196 silly audit   'path-to-regexp': [ '8.2.0' ],
+196 silly audit   picomatch: [ '2.3.1' ],
+196 silly audit   preact: [ '10.24.3' ],
+196 silly audit   'preact-render-to-string': [ '6.5.11' ],
+196 silly audit   'process-nextick-args': [ '2.0.1' ],
+196 silly audit   protobufjs: [ '7.5.3' ],
+196 silly audit   'proxy-addr': [ '2.0.7' ],
+196 silly audit   'proxy-from-env': [ '1.1.0' ],
+196 silly audit   'pstree.remy': [ '1.1.8' ],
+196 silly audit   punycode: [ '2.3.1' ],
+196 silly audit   q: [ '1.5.1' ],
+196 silly audit   qs: [ '6.14.0' ],
+196 silly audit   querystringify: [ '2.2.0' ],
+196 silly audit   'range-parser': [ '1.2.1' ],
+196 silly audit   'raw-body': [ '3.0.0' ],
+196 silly audit   razorpay: [ '2.9.6' ],
+196 silly audit   'readable-stream': [ '2.3.8' ],
+196 silly audit   readdirp: [ '3.6.0' ],
+196 silly audit   'require-directory': [ '2.1.1' ],
+196 silly audit   'requires-port': [ '1.0.0' ],
+196 silly audit   resend: [ '6.5.2' ],
+196 silly audit   router: [ '2.2.0' ],
+196 silly audit   'safer-buffer': [ '2.1.2' ],
+196 silly audit   send: [ '1.2.0' ],
+196 silly audit   'serve-static': [ '2.2.0' ],
+196 silly audit   setprototypeof: [ '1.2.0' ],
+196 silly audit   'side-channel': [ '1.1.0' ],
+196 silly audit   'side-channel-list': [ '1.0.0' ],
+196 silly audit   'side-channel-map': [ '1.0.1' ],
+196 silly audit   'side-channel-weakmap': [ '1.0.2' ],
+196 silly audit   sift: [ '17.1.3' ],
+196 silly audit   'simple-update-notifier': [ '2.0.0' ],
+196 silly audit   slugify: [ '1.6.6' ],
+196 silly audit   'sparse-bitfield': [ '3.0.3' ],
+196 silly audit   statuses: [ '2.0.1' ],
+196 silly audit   streamsearch: [ '1.1.0' ],
+196 silly audit   string_decoder: [ '1.1.1' ],
+196 silly audit   'string-width': [ '4.2.3' ],
+196 silly audit   'strip-ansi': [ '6.0.1' ],
+196 silly audit   'supports-color': [ '5.5.0' ],
+196 silly audit   svix: [ '1.76.1' ],
+196 silly audit   'undici-types': [ '6.21.0', '7.8.0' ],
+196 silly audit   uuid: [ '10.0.0', '9.0.1' ],
+196 silly audit   'to-regex-range': [ '5.0.1' ],
+196 silly audit   toidentifier: [ '1.0.1' ],
+196 silly audit   touch: [ '3.1.1' ],
+196 silly audit   tslib: [ '2.8.1' ],
+196 silly audit   typedarray: [ '0.0.6' ],
+196 silly audit   undefsafe: [ '2.0.5' ],
+196 silly audit   unpipe: [ '1.0.0' ],
+196 silly audit   'url-parse': [ '1.5.10' ],
+196 silly audit   'util-deprecate': [ '1.0.2' ],
+196 silly audit   vary: [ '1.1.2' ],
+196 silly audit   'web-vitals': [ '4.2.4' ],
+196 silly audit   'websocket-driver': [ '0.7.4' ],
+196 silly audit   'websocket-extensions': [ '0.1.4' ],
+196 silly audit   'wrap-ansi': [ '7.0.0' ],
+196 silly audit   wrappy: [ '1.0.2' ],
+196 silly audit   xtend: [ '4.0.2' ],
+196 silly audit   y18n: [ '5.0.8' ],
+196 silly audit   yargs: [ '17.7.2' ],
+196 silly audit   'yargs-parser': [ '21.1.1' ],
+196 silly audit   bullmq: [ '5.78.0' ],
+196 silly audit   compression: [ '1.8.1' ],
+196 silly audit   ioredis: [ '5.11.1', '5.10.1' ],
+196 silly audit   'cron-parser': [ '4.9.0' ],
+196 silly audit   msgpackr: [ '2.0.2' ],
+196 silly audit   'node-abort-controller': [ '3.1.1' ],
+196 silly audit   semver: [ '7.8.0' ],
+196 silly audit   compressible: [ '2.0.18' ],
+196 silly audit   luxon: [ '3.7.2' ],
+196 silly audit   '@ioredis/commands': [ '1.10.0', '1.5.1' ],
+196 silly audit   'cluster-key-slot': [ '1.1.1' ],
+196 silly audit   denque: [ '2.1.0' ],
+196 silly audit   'redis-errors': [ '1.2.0' ],
+196 silly audit   'redis-parser': [ '3.0.0' ],
+196 silly audit   'standard-as-callback': [ '2.1.0' ],
+196 silly audit   'msgpackr-extract': [ '3.0.4' ],
+196 silly audit   '@msgpackr-extract/msgpackr-extract-darwin-arm64': [ '3.0.4' ],
+196 silly audit   '@msgpackr-extract/msgpackr-extract-darwin-x64': [ '3.0.4' ],
+196 silly audit   '@msgpackr-extract/msgpackr-extract-linux-arm': [ '3.0.4' ],
+196 silly audit   '@msgpackr-extract/msgpackr-extract-linux-arm64': [ '3.0.4' ],
+196 silly audit   '@msgpackr-extract/msgpackr-extract-linux-x64': [ '3.0.4' ],
+196 silly audit   '@msgpackr-extract/msgpackr-extract-win32-x64': [ '3.0.4' ],
+196 silly audit   'node-gyp-build-optional-packages': [ '5.2.2' ],
+196 silly audit   'detect-libc': [ '2.1.2' ],
+196 silly audit   'lodash.defaults': [ '4.2.0' ],
+196 silly audit   'lodash.isarguments': [ '3.1.0' ]
+196 silly audit }
+197 http cache @msgpackr-extract/msgpackr-extract-win32-x64@https://registry.npmmirror.com/@msgpackr-extract/msgpackr-extract-win32-x64/-/msgpackr-extract-win32-x64-3.0.4.tgz 0ms (cache hit)
+198 http cache node-gyp-build-optional-packages@https://registry.npmmirror.com/node-gyp-build-optional-packages/-/node-gyp-build-optional-packages-5.2.2.tgz 0ms (cache hit)
+199 http cache lodash.defaults@https://registry.npmmirror.com/lodash.defaults/-/lodash.defaults-4.2.0.tgz 0ms (cache hit)
+200 http cache detect-libc@https://registry.npmmirror.com/detect-libc/-/detect-libc-2.1.2.tgz 0ms (cache hit)
+201 http cache lodash.isarguments@https://registry.npmmirror.com/lodash.isarguments/-/lodash.isarguments-3.1.0.tgz 0ms (cache hit)
+202 http cache msgpackr-extract@https://registry.npmmirror.com/msgpackr-extract/-/msgpackr-extract-3.0.4.tgz 0ms (cache hit)
+203 http cache redis-parser@https://registry.npmmirror.com/redis-parser/-/redis-parser-3.0.0.tgz 0ms (cache hit)
+204 http cache @ioredis/commands@https://registry.npmmirror.com/@ioredis/commands/-/commands-1.10.0.tgz 0ms (cache hit)
+205 http cache denque@https://registry.npmmirror.com/denque/-/denque-2.1.0.tgz 0ms (cache hit)
+206 http cache standard-as-callback@https://registry.npmmirror.com/standard-as-callback/-/standard-as-callback-2.1.0.tgz 0ms (cache hit)
+207 http cache cluster-key-slot@https://registry.npmmirror.com/cluster-key-slot/-/cluster-key-slot-1.1.1.tgz 0ms (cache hit)
+208 http cache node-abort-controller@https://registry.npmmirror.com/node-abort-controller/-/node-abort-controller-3.1.1.tgz 0ms (cache hit)
+209 http cache luxon@https://registry.npmmirror.com/luxon/-/luxon-3.7.2.tgz 0ms (cache hit)
+210 http cache compressible@https://registry.npmmirror.com/compressible/-/compressible-2.0.18.tgz 0ms (cache hit)
+211 http cache redis-errors@https://registry.npmmirror.com/redis-errors/-/redis-errors-1.2.0.tgz 0ms (cache hit)
+212 http cache cron-parser@https://registry.npmmirror.com/cron-parser/-/cron-parser-4.9.0.tgz 0ms (cache hit)
+213 http cache msgpackr@https://registry.npmmirror.com/msgpackr/-/msgpackr-2.0.2.tgz 0ms (cache hit)
+214 http cache ioredis@https://registry.npmmirror.com/ioredis/-/ioredis-5.11.1.tgz 0ms (cache hit)
+215 http cache ms@https://registry.npmmirror.com/ms/-/ms-2.0.0.tgz 0ms (cache hit)
+216 http cache compression@https://registry.npmmirror.com/compression/-/compression-1.8.1.tgz 0ms (cache hit)
+217 http cache ioredis@https://registry.npmmirror.com/ioredis/-/ioredis-5.10.1.tgz 0ms (cache hit)
+218 http cache bullmq@https://registry.npmmirror.com/bullmq/-/bullmq-5.78.0.tgz 0ms (cache hit)
+219 http cache debug@https://registry.npmmirror.com/debug/-/debug-2.6.9.tgz 0ms (cache hit)
+220 http cache debug@https://registry.npmmirror.com/debug/-/debug-4.4.3.tgz 0ms (cache hit)
+221 http cache semver@https://registry.npmmirror.com/semver/-/semver-7.8.0.tgz 0ms (cache hit)
+222 http cache negotiator@https://registry.npmmirror.com/negotiator/-/negotiator-0.6.4.tgz 0ms (cache hit)
+223 silly tarball no local data for @msgpackr-extract/msgpackr-extract-win32-x64@https://registry.npmmirror.com/@msgpackr-extract/msgpackr-extract-win32-x64/-/msgpackr-extract-win32-x64-3.0.4.tgz. Extracting by manifest.
+224 silly tarball no local data for node-gyp-build-optional-packages@https://registry.npmmirror.com/node-gyp-build-optional-packages/-/node-gyp-build-optional-packages-5.2.2.tgz. Extracting by manifest.
+225 http cache @ioredis/commands@https://registry.npmmirror.com/@ioredis/commands/-/commands-1.5.1.tgz 0ms (cache hit)
+226 silly tarball no local data for lodash.defaults@https://registry.npmmirror.com/lodash.defaults/-/lodash.defaults-4.2.0.tgz. Extracting by manifest.
+227 silly tarball no local data for detect-libc@https://registry.npmmirror.com/detect-libc/-/detect-libc-2.1.2.tgz. Extracting by manifest.
+228 silly tarball no local data for lodash.isarguments@https://registry.npmmirror.com/lodash.isarguments/-/lodash.isarguments-3.1.0.tgz. Extracting by manifest.
+229 silly tarball no local data for msgpackr-extract@https://registry.npmmirror.com/msgpackr-extract/-/msgpackr-extract-3.0.4.tgz. Extracting by manifest.
+230 silly tarball no local data for redis-parser@https://registry.npmmirror.com/redis-parser/-/redis-parser-3.0.0.tgz. Extracting by manifest.
+231 silly tarball no local data for @ioredis/commands@https://registry.npmmirror.com/@ioredis/commands/-/commands-1.10.0.tgz. Extracting by manifest.
+232 silly tarball no local data for denque@https://registry.npmmirror.com/denque/-/denque-2.1.0.tgz. Extracting by manifest.
+233 silly tarball no local data for standard-as-callback@https://registry.npmmirror.com/standard-as-callback/-/standard-as-callback-2.1.0.tgz. Extracting by manifest.
+234 silly tarball no local data for cluster-key-slot@https://registry.npmmirror.com/cluster-key-slot/-/cluster-key-slot-1.1.1.tgz. Extracting by manifest.
+235 silly tarball no local data for node-abort-controller@https://registry.npmmirror.com/node-abort-controller/-/node-abort-controller-3.1.1.tgz. Extracting by manifest.
+236 silly tarball no local data for luxon@https://registry.npmmirror.com/luxon/-/luxon-3.7.2.tgz. Extracting by manifest.
+237 silly tarball no local data for compressible@https://registry.npmmirror.com/compressible/-/compressible-2.0.18.tgz. Extracting by manifest.
+238 silly tarball no local data for redis-errors@https://registry.npmmirror.com/redis-errors/-/redis-errors-1.2.0.tgz. Extracting by manifest.
+239 silly tarball no local data for cron-parser@https://registry.npmmirror.com/cron-parser/-/cron-parser-4.9.0.tgz. Extracting by manifest.
+240 silly tarball no local data for msgpackr@https://registry.npmmirror.com/msgpackr/-/msgpackr-2.0.2.tgz. Extracting by manifest.
+241 silly tarball no local data for ioredis@https://registry.npmmirror.com/ioredis/-/ioredis-5.11.1.tgz. Extracting by manifest.
+242 silly tarball no local data for ms@https://registry.npmmirror.com/ms/-/ms-2.0.0.tgz. Extracting by manifest.
+243 silly tarball no local data for compression@https://registry.npmmirror.com/compression/-/compression-1.8.1.tgz. Extracting by manifest.
+244 silly tarball no local data for ioredis@https://registry.npmmirror.com/ioredis/-/ioredis-5.10.1.tgz. Extracting by manifest.
+245 silly tarball no local data for bullmq@https://registry.npmmirror.com/bullmq/-/bullmq-5.78.0.tgz. Extracting by manifest.
+246 silly tarball no local data for debug@https://registry.npmmirror.com/debug/-/debug-2.6.9.tgz. Extracting by manifest.
+247 silly tarball no local data for debug@https://registry.npmmirror.com/debug/-/debug-4.4.3.tgz. Extracting by manifest.
+248 silly tarball no local data for semver@https://registry.npmmirror.com/semver/-/semver-7.8.0.tgz. Extracting by manifest.
+249 silly tarball no local data for negotiator@https://registry.npmmirror.com/negotiator/-/negotiator-0.6.4.tgz. Extracting by manifest.
+250 silly tarball no local data for @ioredis/commands@https://registry.npmmirror.com/@ioredis/commands/-/commands-1.5.1.tgz. Extracting by manifest.
+251 http fetch POST 404 https://registry.npmmirror.com/-/npm/v1/security/advisories/bulk 153ms
+252 verbose audit error HttpErrorGeneral: 404 Not Found - POST https://registry.npmmirror.com/-/npm/v1/security/advisories/bulk - [NOT_IMPLEMENTED] /-/npm/v1/security/* not implemented yet
+252 verbose audit error     at C:\Program Files\nodejs\node_modules\npm\node_modules\npm-registry-fetch\lib\check-response.js:103:15
+252 verbose audit error     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+252 verbose audit error     at async #getReport (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\audit-report.js:275:19)
+252 verbose audit error     at async AuditReport.run (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\audit-report.js:100:19) {
+252 verbose audit error   headers: [Object: null prototype] {
+252 verbose audit error     server: [ 'Tengine' ],
+252 verbose audit error     date: [ 'Fri, 12 Jun 2026 03:16:49 GMT' ],
+252 verbose audit error     'content-type': [ 'application/json' ],
+252 verbose audit error     'transfer-encoding': [ 'chunked' ],
+252 verbose audit error     connection: [ 'keep-alive' ],
+252 verbose audit error     'strict-transport-security': [ 'max-age=5184000' ],
+252 verbose audit error     via: [ 'cache1.sg12[,404666]' ],
+252 verbose audit error     'timing-allow-origin': [ '*' ],
+252 verbose audit error     eagleid: [ 'a3b5519517812342092227618e' ],
+252 verbose audit error     'x-fetch-attempts': [ '1' ]
+252 verbose audit error   },
+252 verbose audit error   statusCode: 404,
+252 verbose audit error   code: 'E404',
+252 verbose audit error   method: 'POST',
+252 verbose audit error   uri: 'https://registry.npmmirror.com/-/npm/v1/security/advisories/bulk',
+252 verbose audit error   body: {
+252 verbose audit error     error: '[NOT_IMPLEMENTED] /-/npm/v1/security/* not implemented yet'
+252 verbose audit error   },
+252 verbose audit error   pkgid: undefined
+252 verbose audit error }
+253 silly audit error [object Object]
+254 silly audit report null
+255 http fetch GET 200 https://cdn.npmmirror.com/packages/node-gyp-build-optional-packages/5.2.2/node-gyp-build-optional-packages-5.2.2.tgz 1245ms (cache miss)
+256 http fetch GET 200 https://cdn.npmmirror.com/packages/compressible/2.0.18/compressible-2.0.18.tgz 1241ms (cache miss)
+257 http fetch GET 200 https://cdn.npmmirror.com/packages/msgpackr-extract/3.0.4/msgpackr-extract-3.0.4.tgz 1245ms (cache miss)
+258 http fetch GET 200 https://cdn.npmmirror.com/packages/lodash.isarguments/3.1.0/lodash.isarguments-3.1.0.tgz 1246ms (cache miss)
+259 http fetch GET 200 https://cdn.npmmirror.com/packages/detect-libc/2.1.2/detect-libc-2.1.2.tgz 1246ms (cache miss)
+260 http fetch GET 200 https://cdn.npmmirror.com/packages/%40ioredis/commands/1.10.0/commands-1.10.0.tgz 1246ms (cache miss)
+261 http fetch GET 200 https://cdn.npmmirror.com/packages/lodash.defaults/4.2.0/lodash.defaults-4.2.0.tgz 1251ms (cache miss)
+262 http fetch GET 200 https://cdn.npmmirror.com/packages/cluster-key-slot/1.1.1/cluster-key-slot-1.1.1.tgz 1249ms (cache miss)
+263 http fetch GET 200 https://cdn.npmmirror.com/packages/standard-as-callback/2.1.0/standard-as-callback-2.1.0.tgz 1257ms (cache miss)
+264 http fetch GET 200 https://cdn.npmmirror.com/packages/redis-errors/1.2.0/redis-errors-1.2.0.tgz 1257ms (cache miss)
+265 http fetch GET 200 https://cdn.npmmirror.com/packages/node-abort-controller/3.1.1/node-abort-controller-3.1.1.tgz 1263ms (cache miss)
+266 http fetch GET 200 https://cdn.npmmirror.com/packages/ms/2.0.0/ms-2.0.0.tgz 1356ms (cache miss)
+267 http fetch GET 200 https://cdn.npmmirror.com/packages/denque/2.1.0/denque-2.1.0.tgz 1363ms (cache miss)
+268 http fetch GET 200 https://cdn.npmmirror.com/packages/compression/1.8.1/compression-1.8.1.tgz 1394ms (cache miss)
+269 http fetch GET 200 https://cdn.npmmirror.com/packages/cron-parser/4.9.0/cron-parser-4.9.0.tgz 1412ms (cache miss)
+270 http fetch GET 200 https://cdn.npmmirror.com/packages/negotiator/0.6.4/negotiator-0.6.4.tgz 1418ms (cache miss)
+271 http fetch GET 200 https://cdn.npmmirror.com/packages/redis-parser/3.0.0/redis-parser-3.0.0.tgz 1452ms (cache miss)
+272 http fetch GET 200 https://cdn.npmmirror.com/packages/semver/7.8.0/semver-7.8.0.tgz 1635ms (cache miss)
+273 http fetch GET 200 https://cdn.npmmirror.com/packages/%40msgpackr-extract/msgpackr-extract-win32-x64/3.0.4/msgpackr-extract-win32-x64-3.0.4.tgz 1663ms (cache miss)
+274 http fetch GET 200 https://cdn.npmmirror.com/packages/%40ioredis/commands/1.5.1/commands-1.5.1.tgz 1843ms (cache miss)
+275 http fetch GET 200 https://cdn.npmmirror.com/packages/debug/2.6.9/debug-2.6.9.tgz 1880ms (cache miss)
+276 http fetch GET 200 https://cdn.npmmirror.com/packages/ioredis/5.10.1/ioredis-5.10.1.tgz 1883ms (cache miss)
+277 http fetch GET 200 https://cdn.npmmirror.com/packages/debug/4.4.3/debug-4.4.3.tgz 1884ms (cache miss)
+278 http fetch GET 200 https://cdn.npmmirror.com/packages/ioredis/5.11.1/ioredis-5.11.1.tgz 2028ms (cache miss)
+279 http fetch GET 200 https://cdn.npmmirror.com/packages/msgpackr/2.0.2/msgpackr-2.0.2.tgz 2230ms (cache miss)
+280 http fetch GET 200 https://cdn.npmmirror.com/packages/bullmq/5.78.0/bullmq-5.78.0.tgz 2931ms (cache miss)
+281 http fetch GET 200 https://cdn.npmmirror.com/packages/luxon/3.7.2/luxon-3.7.2.tgz 3478ms (cache miss)
+282 info run msgpackr-extract@3.0.4 install node_modules/msgpackr-extract node-gyp-build-optional-packages
+283 info run msgpackr-extract@3.0.4 install { code: 0, signal: null }
+284 silly ADD node_modules/lodash.isarguments
+285 silly ADD node_modules/lodash.defaults
+286 silly ADD node_modules/detect-libc
+287 silly ADD node_modules/node-gyp-build-optional-packages
+288 silly ADD node_modules/@msgpackr-extract/msgpackr-extract-win32-x64
+289 silly ADD node_modules/msgpackr-extract
+290 silly ADD node_modules/standard-as-callback
+291 silly ADD node_modules/redis-parser
+292 silly ADD node_modules/redis-errors
+293 silly ADD node_modules/denque
+294 silly ADD node_modules/cluster-key-slot
+295 silly ADD node_modules/@ioredis/commands
+296 silly ADD node_modules/luxon
+297 silly ADD node_modules/compressible
+298 silly ADD node_modules/node-abort-controller
+299 silly ADD node_modules/msgpackr
+300 silly ADD node_modules/cron-parser
+301 silly ADD node_modules/ioredis
+302 silly ADD node_modules/compression
+303 silly ADD node_modules/compression/node_modules/ms
+304 silly ADD node_modules/compression/node_modules/negotiator
+305 silly ADD node_modules/compression/node_modules/debug
+306 silly ADD node_modules/bullmq
+307 silly ADD node_modules/bullmq/node_modules/@ioredis/commands
+308 silly ADD node_modules/bullmq/node_modules/ioredis
+309 silly CHANGE node_modules/semver
+310 silly CHANGE node_modules/debug
+311 verbose cwd E:\SNSF\sns-clean\server
+312 verbose os Windows_NT 10.0.26200
+313 verbose node v24.13.1
+314 verbose npm  v11.8.0
+315 notice
+315 notice New minor version of npm available! 11.8.0 -> 11.17.0
+315 notice Changelog: https://github.com/npm/cli/releases/tag/v11.17.0
+315 notice To update run: npm install -g npm@11.17.0
+315 notice  { force: true, Symbol(proc-log.meta): true }
+316 verbose exit 0
+317 info ok
