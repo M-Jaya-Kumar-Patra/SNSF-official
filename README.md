@@ -1,4 +1,4 @@
-# SNSF - S N Steel Fabrication E-commerce Platform
+# SNSF - S N Steel Fabrication Business Platform
 
 A full-stack furniture e-commerce and business management platform built for **S N Steel Fabrication**. The repository contains a customer-facing website, an admin dashboard, an Express API, analytics tracking, recommendation jobs, and media/content management tools.
 
