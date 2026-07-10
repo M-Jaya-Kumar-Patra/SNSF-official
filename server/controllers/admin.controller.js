@@ -195,7 +195,7 @@ export async function loginController(request, response) {
         }
 
         const accessToken = await generatedAccessToken(admin._id);
-        const refreshToken = await generatedRefreshToken(admin._id);
+        const refreshToken = await generatedRefreshToken(admin._id, AdminModel);
 
         await AdminModel.findByIdAndUpdate(admin._id, {
             last_login_date: new Date()
@@ -208,11 +208,8 @@ export async function loginController(request, response) {
             maxAge: 5 * 60 * 60 * 1000 // 5 hours
         };
 
-        console.log(admin?.body?.name)
         response.cookie("accessToken", accessToken, cookieOptions);
         response.cookie("refreshToken", refreshToken, cookieOptions);
-        console.log(accessToken, refreshToken)
-
         return response.json({
             message: "Login successfully",
             error: false,
@@ -242,7 +239,6 @@ export async function loginController(request, response) {
 export async function logoutController(request, response) {
     try {
         const adminid = request.adminId;
-        console.log("logoutController Triggered")
 
         const cookieOptions = {
             httpOnly: true,
@@ -274,10 +270,7 @@ export async function logoutController(request, response) {
 
 export async function adminAvatarController(request, response) {
     try {
-        console.log("adminAvatarController Triggered")
         const adminId = request.adminId;
-        console.log("Admin ID from token:", adminId);
-        console.log("Is valid ObjectId:", mongoose.Types.ObjectId.isValid(adminId));
 
         // Validate adminId
         if (!mongoose.Types.ObjectId.isValid(adminId)) {
@@ -761,7 +754,13 @@ export async function changePassword(request, response) {
 
 export async function refreshToken(request, response) {
     try {
-        const refreshToken = request.cookies.refeshToken || request?.headers?.authorization?.split(".")[1]
+        const authHeader = request?.headers?.authorization || "";
+        const refreshToken =
+            request.cookies.refreshToken ||
+            request.cookies.refeshToken ||
+            (authHeader.startsWith("Bearer ")
+                ? authHeader.split(" ")[1]
+                : authHeader.split(".")[1])
 
         if (!refreshToken) {
             return response.status(401).json({
@@ -781,7 +780,7 @@ export async function refreshToken(request, response) {
             })
         }
 
-        const adminId = verifyToken?._id;
+        const adminId = verifyToken?._id || verifyToken?.id;
         const newAccessToken = await generatedAccessToken(adminId)
 
         const cookieOption = {

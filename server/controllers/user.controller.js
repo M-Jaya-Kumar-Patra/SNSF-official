@@ -276,12 +276,8 @@ export async function loginController(request, response) {
       path: "/"
     };
 
-    console.log("user_name:", user?.body?.name);
     response.cookie("accessToken", accessToken, cookieOptions);
     response.cookie("refreshToken", refreshToken, cookieOptions);
-    console.log("accessToken: ", accessToken, "refreshToken: ", refreshToken);
-
-
     await sendEmailFun(
       email,
       "New Login Detected – SNSF",
@@ -381,9 +377,10 @@ export async function authWithGoogle(req, res) {
     
     const cookieOptions = {
       httpOnly: true,
-      secure: false,
-      sameSite: "Lax",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
       maxAge: 5 * 60 * 60 * 1000,
+      path: "/",
     };
 
     res.cookie("accessToken", accessToken, cookieOptions);
@@ -423,7 +420,6 @@ export async function authWithGoogle(req, res) {
 export async function logoutController(request, response) {
   try {
     const userid = request.userId;
-    console.log("logoutController Triggered");
 
     const cookieOptions = {
       httpOnly: true,
@@ -455,10 +451,7 @@ export async function logoutController(request, response) {
 
 export async function userAvatarController(request, response) {
   try {
-    console.log("userAvatarController Triggered");
     const userId = request.userId;
-    console.log("User ID from token:", userId);
-    console.log("Is valid ObjectId:", mongoose.Types.ObjectId.isValid(userId));
 
     // Validate userId
     if (!mongoose.Types.ObjectId.isValid(userId)) {
@@ -982,9 +975,13 @@ export async function setPassword(request, response) {
 
 export async function refreshToken(request, response) {
   try {
+    const authHeader = request?.headers?.authorization || "";
     const refreshToken =
+      request.cookies.refreshToken ||
       request.cookies.refeshToken ||
-      request?.headers?.authorization?.split(".")[1];
+      (authHeader.startsWith("Bearer ")
+        ? authHeader.split(" ")[1]
+        : authHeader.split(".")[1]);
 
     if (!refreshToken) {
       return response.status(401).json({
@@ -1007,7 +1004,7 @@ export async function refreshToken(request, response) {
       });
     }
 
-    const userId = verifyToken?._id;
+    const userId = verifyToken?._id || verifyToken?.id;
     const newAccessToken = await generatedAccessToken(userId);
 
     const cookieOption = {

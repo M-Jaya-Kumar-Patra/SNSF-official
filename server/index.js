@@ -27,6 +27,7 @@ import styleSpaceRouter from './route/styleYourSpace.route.js';
 import posterRouter from './route/poster.route.js';
 import analyticsRouter from './route/analytics.route.js';
 import videoRouter from './route/video.route.js';
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 
 
@@ -120,30 +121,7 @@ app.use("/api/analytics", analyticsRouter);
 
 app.use("/api/videos", videoRouter);
 
-app.use((err, req, res, next) => {
-  if (!err) return next();
-
-  const isUploadError =
-    err.name === "MulterError" ||
-    err.message?.startsWith("Unsupported file type") ||
-    err.message === "Only video files are allowed!";
-
-  if (isUploadError) {
-    const statusCode = err.code === "LIMIT_FILE_SIZE" ? 413 : 400;
-    return res.status(statusCode).json({
-      success: false,
-      error: true,
-      message: err.message,
-    });
-  }
-
-  console.error("Unhandled request error:", err);
-  return res.status(err.statusCode || 500).json({
-    success: false,
-    error: true,
-    message: err.statusCode ? err.message : "Internal server error",
-  });
-});
+app.use(errorHandler);
 
 
 connectDB().then(() => {
