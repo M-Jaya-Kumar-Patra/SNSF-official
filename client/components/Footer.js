@@ -166,7 +166,7 @@ const Footer = () => {
 
             {/* Middle: Credits */}
             <a
-              href="https://jaya-portfolio-five.vercel.app/"
+              href="https://jaya-patra.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
             >

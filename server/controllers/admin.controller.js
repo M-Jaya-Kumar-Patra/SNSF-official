@@ -761,7 +761,7 @@ export async function changePassword(request, response) {
 
 export async function refreshToken(request, response) {
     try {
-        const refreshToken = request.cookies.refeshToken || request?.headers?.authorization?.split(".")[1]
+        const refreshToken = request.cookies.refreshToken || request?.headers?.authorization?.split(".")[1]
 
         if (!refreshToken) {
             return response.status(401).json({

@@ -15,7 +15,10 @@ import ProductModel from "../models/product.model.js";
 import welcomeEmail from "../utils/EmailTemplates/welcomeEmailTemplate.js";
 import forgotPasswordEmail from "../utils/EmailTemplates/forgotPasswordTemplate.js";
 import passwordResetSuccessEmail from "../utils/EmailTemplates/passwordResetSuccessEmail.js";
-import {newLoginEmail, newGoogleLoginEmail} from "../utils/EmailTemplates/loginTemplate.js";
+import {
+  newLoginEmail,
+  newGoogleLoginEmail,
+} from "../utils/EmailTemplates/loginTemplate.js";
 import { OAuth2Client } from "google-auth-library";
 import Session from "../models/session.model.js";
 import ProductEventModel from "../models/productEvent.model.js";
@@ -53,7 +56,8 @@ export async function registerUserController(request, response) {
 
     if (existingUser && existingUser.signUpWithGoogle) {
       return response.status(400).json({
-        popup: "Your account is registered via Google. Please log in using Google first. You can set a password from your profile.",
+        popup:
+          "Your account is registered via Google. Please log in using Google first. You can set a password from your profile.",
         error: true,
         success: false,
       });
@@ -91,13 +95,13 @@ export async function registerUserController(request, response) {
       email,
       "Verify your email – SNSF",
       "",
-      verificationEmail(name, verifyCode)
+      verificationEmail(name, verifyCode),
     );
 
     // 🔐 Generate JWT token
     const token = jwt.sign(
       { email: user.email, id: user._id },
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET,
     );
 
     return response.status(200).json({
@@ -177,13 +181,13 @@ export async function verifyEmailController(request, response) {
         email,
         "Welcome to S N Steel Fabrication – We’re glad to have you here!",
         "",
-        welcomeEmail(user.name)
+        welcomeEmail(user.name),
       );
       console.log("📨 Welcome email sent to:", email);
     } catch (emailErr) {
       console.error(
         "⚠️ Failed to send welcome email:",
-        emailErr.message || emailErr
+        emailErr.message || emailErr,
       );
     }
 
@@ -206,8 +210,6 @@ export async function loginController(request, response) {
   try {
     const { email, password, visitorId } = request.body;
     console.log("loginController triggered", email, password);
-
-
 
     if (!email || !password) {
       return response.status(400).json({
@@ -235,7 +237,8 @@ export async function loginController(request, response) {
     }
     if (user && user.signUpWithGoogle) {
       return response.status(400).json({
-        popup: "Your account is registered via Google. Please log in using Google first. You can set a password from your profile.",
+        popup:
+          "Your account is registered via Google. Please log in using Google first. You can set a password from your profile.",
         error: true,
         success: false,
       });
@@ -268,38 +271,52 @@ export async function loginController(request, response) {
 
     await LoginHistoryModel.create({ userId: user._id });
 
-    const cookieOptions = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      maxAge: 5 * 60 * 60 * 1000, // 5 hours
-      path: "/"
-    };
+    const accessCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+  maxAge: 15 * 60 * 1000, // 15 minutes
+  path: "/",
+};
+
+const refreshCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  path: "/",
+};
 
     console.log("user_name:", user?.body?.name);
-    response.cookie("accessToken", accessToken, cookieOptions);
-    response.cookie("refreshToken", refreshToken, cookieOptions);
-    console.log("accessToken: ", accessToken, "refreshToken: ", refreshToken);
+    response.cookie(
+  "accessToken",
+  accessToken,
+  accessCookieOptions
+);
 
+response.cookie(
+  "refreshToken",
+  refreshToken,
+  refreshCookieOptions
+);
+    console.log("accessToken: ", accessToken, "refreshToken: ", refreshToken);
 
     await sendEmailFun(
       email,
       "New Login Detected – SNSF",
       undefined,
-      newLoginEmail(user?.name)
+      newLoginEmail(user?.name),
     );
 
-
     await ProductEventModel.updateMany(
-  {
-    visitorId,
-    userId: null,
-  },
-  {
-    $set: { userId: user._id },
-  }
-);
-
+      {
+        visitorId,
+        userId: null,
+      },
+      {
+        $set: { userId: user._id },
+      },
+    );
 
     return response.json({
       message: "Login successfully",
@@ -337,8 +354,6 @@ export async function authWithGoogle(req, res) {
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
-    
-
     const payload = ticket.getPayload();
 
     const { email, name, picture, sub } = payload;
@@ -370,15 +385,12 @@ export async function authWithGoogle(req, res) {
     const accessToken = await generatedAccessToken(user._id);
     const refreshToken = await generatedRefreshToken(user._id);
 
-
     await LoginHistoryModel.create({ userId: user._id });
 
     await UserModel.findByIdAndUpdate(user._id, {
       last_login_date: new Date(),
     });
 
-    
-    
     const cookieOptions = {
       httpOnly: true,
       secure: false,
@@ -389,7 +401,6 @@ export async function authWithGoogle(req, res) {
     res.cookie("accessToken", accessToken, cookieOptions);
     res.cookie("refreshToken", refreshToken, cookieOptions);
 
-
     user.access_token = accessToken;
     user.refresh_token = refreshToken;
     await user.save();
@@ -398,7 +409,7 @@ export async function authWithGoogle(req, res) {
       email,
       "New Login Detected – SNSF",
       "",
-      newGoogleLoginEmail(user?.name)
+      newGoogleLoginEmail(user?.name),
     );
 
     return res.json({
@@ -413,7 +424,6 @@ export async function authWithGoogle(req, res) {
         avatar: user.avatar,
       },
     });
-
   } catch (err) {
     console.error("Google Auth Error:", err);
     return res.status(500).json({ error: true, message: err.message });
@@ -525,7 +535,7 @@ export async function userAvatarController(request, response) {
       try {
         const result = await cloudinary.uploader.upload(
           file.path,
-          uploadOptions
+          uploadOptions,
         );
         console.log("Cloudinary upload result:", result);
         imagesArr.push(result.secure_url);
@@ -621,7 +631,6 @@ export async function removeImageFromCloudinary(request, response) {
 }
 
 export async function updateUserDetails(request, response) {
-
   try {
     const userId = request.userId;
     const { name, email, phone, password, signUpWithGoogle } = request.body;
@@ -638,10 +647,10 @@ export async function updateUserDetails(request, response) {
 
     let verifyCode = "";
 
-    if(email){
-        if (email !== userExist.email) {
-      verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
-    }
+    if (email) {
+      if (email !== userExist.email) {
+        verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+      }
     }
 
     let hashPassword = "";
@@ -665,7 +674,7 @@ export async function updateUserDetails(request, response) {
         otp: verifyCode !== "" ? verifyCode : null,
         otpExpires: verifyCode !== "" ? Date.now() + 600000 : null,
       },
-      { new: true }
+      { new: true },
     );
 
     if (email !== userExist.email) {
@@ -676,7 +685,6 @@ export async function updateUserDetails(request, response) {
         html: verificationEmail(name, verifyCode),
       });
     }
-
 
     return response.status(200).json({
       message: "User updated successfully",
@@ -691,7 +699,6 @@ export async function updateUserDetails(request, response) {
       },
     });
   } catch (error) {
-
     return response.status(500).json({
       message: error.message || error,
       error: true,
@@ -715,7 +722,7 @@ export async function forgotPasswordController(request, response) {
     } else {
       let verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-      (user.otp = verifyCode), (user.otpExpires = Date.now() + 600000);
+      ((user.otp = verifyCode), (user.otpExpires = Date.now() + 600000));
 
       await user.save();
 
@@ -723,7 +730,7 @@ export async function forgotPasswordController(request, response) {
         email,
         "Reset Your Password – SNSF",
         "",
-        forgotPasswordEmail(user?.name, verifyCode)
+        forgotPasswordEmail(user?.name, verifyCode),
       );
 
       return response.json({
@@ -790,7 +797,7 @@ export async function verifyForgotPasswordOtp(request, response) {
       email,
       "Your SNSF Password Has Been Changed",
       "",
-      passwordResetSuccessEmail(user?.name)
+      passwordResetSuccessEmail(user?.name),
     );
 
     return response.status(200).json({
@@ -881,7 +888,7 @@ export async function changePassword(request, response) {
     console.log(hashOldPassword);
     const isPasswordCorrect = await bcryptjs.compare(
       oldPassword,
-      user.password
+      user.password,
     );
 
     console.log(isPasswordCorrect);
@@ -952,7 +959,7 @@ export async function setPassword(request, response) {
     }
 
     const salt = await bcryptjs.genSalt(10);
- 
+
     if (newPassword !== confirmPassword) {
       return response.status(400).json({
         message: "New password and Confirm password must be same",
@@ -983,8 +990,10 @@ export async function setPassword(request, response) {
 export async function refreshToken(request, response) {
   try {
     const refreshToken =
-      request.cookies.refeshToken ||
-      request?.headers?.authorization?.split(".")[1];
+      request.cookies.refreshToken ||
+      (request.headers.authorization?.startsWith("Bearer ")
+        ? request.headers.authorization.split(" ")[1]
+        : null);
 
     if (!refreshToken) {
       return response.status(401).json({
@@ -996,12 +1005,22 @@ export async function refreshToken(request, response) {
 
     const verifyToken = await jwt.verify(
       refreshToken,
-      process.env.SECRET_KEY_REFRESH_TOKEN
+      process.env.SECRET_KEY_REFRESH_TOKEN,
     );
 
-    if (!verifyToken) {
+    const user = await UserModel.findById(verifyToken._id);
+
+    if (!user) {
       return response.status(401).json({
-        message: "Token is expired",
+        message: "User not found",
+        error: true,
+        success: false,
+      });
+    }
+
+    if (user.refresh_token !== refreshToken) {
+      return response.status(401).json({
+        message: "Invalid refresh token",
         error: true,
         success: false,
       });
@@ -1011,10 +1030,12 @@ export async function refreshToken(request, response) {
     const newAccessToken = await generatedAccessToken(userId);
 
     const cookieOption = {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-    };
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+  maxAge: 15 * 60 * 1000,
+  path: "/",
+};
 
     response.cookie("accessToken", newAccessToken, cookieOption);
 
@@ -1027,12 +1048,23 @@ export async function refreshToken(request, response) {
       },
     });
   } catch (error) {
-    return response.status(500).json({
-      message: error.message || error,
+  if (
+    error.name === "TokenExpiredError" ||
+    error.name === "JsonWebTokenError"
+  ) {
+    return response.status(401).json({
+      message: "Invalid or expired refresh token",
       error: true,
       success: false,
     });
   }
+
+  return response.status(500).json({
+    message: "Internal Server Error",
+    error: true,
+    success: false,
+  });
+}
 }
 
 export async function userDetails(request, response) {
@@ -1041,7 +1073,7 @@ export async function userDetails(request, response) {
     console.log("userId:", userId);
 
     const user = await UserModel.findById(userId).select(
-      "-password -refresh_token"
+      "-password -refresh_token",
     );
 
     if (!user) {
@@ -1118,7 +1150,7 @@ export async function addAddress(request, response) {
     await UserModel.findByIdAndUpdate(
       userId,
       { $push: { address_details: savedAddress._id } },
-      { new: true }
+      { new: true },
     );
 
     return response.status(200).json({
@@ -1206,7 +1238,6 @@ export async function deleteAddress(request, response) {
   }
 }
 
-
 export async function updateUserAddress(request, response) {
   try {
     const { id: userId, addressId } = request.params;
@@ -1243,9 +1274,7 @@ export async function updateUserAddress(request, response) {
     }
 
     const isPinChanged = String(oldAddress.pin) !== String(pin);
-    const deliverable = isPinChanged
-      ? isPincodeServiceable(pin)
-      : null; // null means no popup needed
+    const deliverable = isPinChanged ? isPincodeServiceable(pin) : null; // null means no popup needed
 
     const updatedAddress = await AddressModel.findByIdAndUpdate(
       addressId,
@@ -1261,7 +1290,7 @@ export async function updateUserAddress(request, response) {
         locality,
         addressType,
       },
-      { new: true }
+      { new: true },
     );
 
     return response.status(200).json({
@@ -1310,26 +1339,25 @@ export async function resendOTP(request, response) {
     await user.save();
 
     const safeEmail = String(email)
-  .normalize("NFKD")
-  .replace(/[^\x00-\x7F]/g, "")
-  .trim()
-  .toLowerCase();
+      .normalize("NFKD")
+      .replace(/[^\x00-\x7F]/g, "")
+      .trim()
+      .toLowerCase();
 
-  
     const emailSent = await sendEmailFun(
       safeEmail,
       "Your OTP – S N Steel Fabrication",
       "",
-      verificationEmail(user.name || "User", verifyCode)
+      verificationEmail(user.name || "User", verifyCode),
     );
 
     if (!emailSent) {
-  return res.status(500).json({
-    success: false,
-    error: true,
-    message: "Failed to send OTP. Please try again later.",
-  });
-}
+      return res.status(500).json({
+        success: false,
+        error: true,
+        message: "Failed to send OTP. Please try again later.",
+      });
+    }
 
     return response.status(200).json({
       message: `OTP resent to ${email}`,
@@ -1345,11 +1373,9 @@ export async function resendOTP(request, response) {
   }
 }
 
-
 export async function getRelatedProductsByCategory(req, res) {
   try {
     const { productId } = req.query;
-
 
     if (!productId) {
       return res.status(400).json({
@@ -1399,7 +1425,6 @@ export async function getRelatedProductsByCategory(req, res) {
   }
 }
 
-
 export const getAllUsers = async (req, res) => {
   try {
     const users = await UserModel.find()
@@ -1417,7 +1442,7 @@ export const getAllUsers = async (req, res) => {
           ...u.toObject(),
           lastActivity: session?.lastActivity || null,
         };
-      })
+      }),
     );
 
     res.status(200).json({
@@ -1425,7 +1450,6 @@ export const getAllUsers = async (req, res) => {
       error: false,
       users: usersWithActivity,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -1435,51 +1459,49 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-
-
 export const getCurrentlyLoggedInUsers = async (req, res) => {
   try {
     const users = await UserModel.find({
-      refresh_token: { $ne: "" }
+      refresh_token: { $ne: "" },
     }).select("name email avatar");
 
     res.json({
       success: true,
       count: users.length,
-      users
+      users,
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 };
-
 
 export const getLoggedOutUsers = async (req, res) => {
   try {
     const users = await UserModel.find({
-      refresh_token: ""
+      refresh_token: "",
     }).select("name email avatar");
 
     res.json({
       success: true,
       count: users.length,
-      users
+      users,
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 };
 
-
 export const getLoginMethodStats = async (req, res) => {
   try {
     const googleUsers = await UserModel.countDocuments({ provider: "google" });
-    const emailUsers = await UserModel.countDocuments({ provider: "credentials" });
+    const emailUsers = await UserModel.countDocuments({
+      provider: "credentials",
+    });
 
     res.json({
       success: true,
       googleUsers,
-      emailUsers
+      emailUsers,
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
