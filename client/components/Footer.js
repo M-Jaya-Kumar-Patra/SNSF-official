@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { FiPhone, FiMail, FiGlobe, FiExternalLink } from "react-icons/fi";
 
 const Footer = () => {
   const [showMap, setShowMap] = useState(false);
@@ -14,8 +15,8 @@ const Footer = () => {
   };
 
   return (
-    <footer className="w-full bg-slate-900">
-      <div className="max-w-[1600px] mx-auto  text-white px-6  pt-10 pb-6 font-sans">
+    <footer className="w-full bg-slate-900 ">
+      <div className="max-w-[1600px]  mx-auto  text-white px-6  pt-10 pb-20 md:pb-6  font-sans">
         {/* Main Grid */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-10 mb-10">
           {/* Company */}
@@ -153,7 +154,7 @@ const Footer = () => {
           <div
             className="   py-4 
                   grid grid-cols-1 sm:grid-cols-2 
-                  items-center text-sm text-gray-400 gap-2"
+                  items-center text-sm text-gray-400 gap-6"
           >
             {/* Left: Copyright */}
             <p
@@ -164,17 +165,47 @@ const Footer = () => {
               reserved.
             </p>
 
+            
+
             {/* Middle: Credits */}
-            <a
-              href="https://jaya-patra.vercel.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <p className="text-center sm:text-right">
-                Designed & Developed by{" "}
-                <span className="font-bold text-nowrap">Jaya Kumar</span>
-              </p>
-            </a>
+            <div className="flex flex-col sm:items-end gap-2">
+  <a
+    href="https://jaya-patra.vercel.app"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="font-semibold hover:text-white flex items-center gap-1"
+  >
+    Designed & Developed by M Jaya Kumar Patra
+  </a>
+
+  <div className="flex flex-wrap gap-2 justify-center sm:justify-end mt-2">
+    <a
+      href="https://jaya-patra.vercel.app"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-gray-600 hover:border-white hover:text-white transition"
+    >
+      <FiGlobe size={14} />
+      Portfolio
+    </a>
+
+    <a
+      href="tel:+917847911696"
+      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-gray-600 hover:border-white hover:text-white transition"
+    >
+      <FiPhone size={14} />
+      Call
+    </a>
+
+    <a
+      href="mailto:jayapatra2004@gmail.com"
+      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-gray-600 hover:border-white hover:text-white transition"
+    >
+      <FiMail size={14} />
+      Email
+    </a>
+  </div>
+</div>
           </div>
         </div>
       </div>
