@@ -27,6 +27,8 @@ import styleSpaceRouter from './route/styleYourSpace.route.js';
 import posterRouter from './route/poster.route.js';
 import analyticsRouter from './route/analytics.route.js';
 import videoRouter from './route/video.route.js';
+import pingNest from "pingnest";
+
 
 
 
@@ -57,8 +59,13 @@ app.use(
   })
 );
 
+app.use(
+  pingNest({
+    apiKey: "pn_live_6727d68e11435dda761967dc653b29ba8bd472de88a23d3e",
+    service: "snsf-backend",
+  })
+);
 
-console.log('CORS middleware configured');
 
 app.use(compression());
 console.log('Compression middleware enabled');
