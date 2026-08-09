@@ -132,6 +132,23 @@ body {
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
 }
 
+.admin-input {
+  @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-950 focus:ring-2 focus:ring-slate-950/10;
+}
+
+.admin-button-primary,
+.admin-button-secondary {
+  @apply rounded-lg px-3 py-2 text-sm font-semibold transition;
+}
+
+.admin-button-primary {
+  @apply bg-slate-950 text-white hover:bg-slate-800;
+}
+
+.admin-button-secondary {
+  @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50;
+}
+
 /* Remove spinner for number inputs in WebKit (Chrome, Safari, Edge) */
 [type="number"]::-webkit-inner-spin-button,
 [type="number"]::-webkit-outer-spin-button {

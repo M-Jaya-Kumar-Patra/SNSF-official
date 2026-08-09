@@ -8,7 +8,7 @@ import {
   useCallback,
 } from "react";
 import { jwtDecode } from "jwt-decode";
-import { fetchDataFromApi } from "@/utils/api";
+import { fetchDataFromApi, refreshAccessToken } from "@/utils/api";
 import { useRouter } from "next/navigation";
 
 const AuthContext = createContext();
@@ -57,6 +57,15 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   }, [logout]);
+
+  const refreshSessionOrLogout = useCallback(async () => {
+    try {
+      await refreshAccessToken();
+      await fetchUserDetails();
+    } catch {
+      await logout();
+    }
+  }, [fetchUserDetails, logout]);
   const login = useCallback(
     async (data, token) => {
       if (!data || !token) return;
@@ -88,18 +97,20 @@ export const AuthProvider = ({ children }) => {
       const currentTime = Date.now() / 1000;
 
       if (decoded.exp < currentTime) {
-        logout();
-        setIsCheckingToken(false);
+        refreshSessionOrLogout().finally(() => setIsCheckingToken(false));
       } else {
         const timeLeft = (decoded.exp - currentTime) * 1000;
-        setTimeout(() => logout(), timeLeft);
+        const refreshTimer = setTimeout(() => {
+          refreshSessionOrLogout().finally(() => setIsCheckingToken(false));
+        }, timeLeft);
         fetchUserDetails().finally(() => setIsCheckingToken(false));
+        return () => clearTimeout(refreshTimer);
       }
     } catch (err) {
       logout();
       setIsCheckingToken(false);
     }
-  }, [fetchUserDetails, logout]);
+  }, [fetchUserDetails, logout, refreshSessionOrLogout]);
 
   useEffect(() => {
     if (userData?._id || userData?.id) {

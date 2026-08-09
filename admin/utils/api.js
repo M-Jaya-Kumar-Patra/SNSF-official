@@ -90,6 +90,9 @@ export const postData = (url, formData, authRequired = true) =>
 export const putData = (url, formData, authRequired = true) =>
   request("PUT", url, formData, { authRequired });
 
+export const patchData = (url, formData, authRequired = true) =>
+  request("PATCH", url, formData, { authRequired });
+
 export const putImage = (url, formData, authRequired = true) =>
   request("PUT", url, formData, { authRequired, isFormData: true });
 

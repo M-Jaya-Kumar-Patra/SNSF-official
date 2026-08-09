@@ -21,6 +21,7 @@ import {
   Headphones,
   Ruler,
   ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 import { getProductPath } from "@/utils/productUrl";
@@ -673,6 +674,28 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
               >
                 <IoCall className="h-5 w-5" />
                 <span>Call to Get Best Price</span>
+              </button>
+
+              <button
+                type="button"
+                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-base font-semibold text-slate-900 transition hover:border-slate-950 hover:bg-slate-50"
+                onClick={() => {
+                  window.dispatchEvent(
+                    new CustomEvent("snsf-ai:open", {
+                      detail: {
+                        product: {
+                          productId: openedProduct?._id,
+                          productName: openedProduct?.name,
+                          slug: openedProduct?.slug,
+                          images: openedProduct?.images,
+                        },
+                      },
+                    })
+                  );
+                }}
+              >
+                <Sparkles className="h-5 w-5" />
+                <span>Ask SNSF AI</span>
               </button>
             </div>
           )}

@@ -26,6 +26,8 @@ import "../models/video.model.js";
 import "../models/visitCount.model.js";
 import "../models/visitor.model.js";
 import "../models/wishlist.model.js";
+import "../models/knowledgeBase.model.js";
+import "../models/knowledgeChunk.model.js";
 
 try {
   await connectDB();

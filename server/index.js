@@ -1,5 +1,6 @@
 import dns from "dns";
 dns.setDefaultResultOrder("ipv4first");
+import { createServer } from "http";
 import express from 'express';
 import cors from 'cors';
 import compression from "compression";
@@ -27,12 +28,16 @@ import styleSpaceRouter from './route/styleYourSpace.route.js';
 import posterRouter from './route/poster.route.js';
 import analyticsRouter from './route/analytics.route.js';
 import videoRouter from './route/video.route.js';
+import aiRouter from './route/ai.route.js';
+import adminChatRouter from './route/adminChat.route.js';
+import { configureSocketIO } from "./socket/index.js";
 import pingNest from "pingnest";
 
 
 
 
 const app = express();
+const httpServer = createServer(app);
 app.set("trust proxy", 1);
 
 console.log('Starting server setup...');
@@ -127,6 +132,9 @@ app.use("/api/analytics", analyticsRouter);
 
 app.use("/api/videos", videoRouter);
 
+app.use("/api/ai", aiRouter);
+app.use("/api/ai-admin", adminChatRouter);
+
 app.use((err, req, res, next) => {
   if (!err) return next();
 
@@ -155,7 +163,8 @@ app.use((err, req, res, next) => {
 
 connectDB().then(() => {
   const port = process.env.PORT || 8000;
-  app.listen(port, () => {
+  configureSocketIO(httpServer, { allowedOrigins });
+  httpServer.listen(port, () => {
     console.log(`✅ Server is running on port ${port}`);
   });
 }).catch(err => {

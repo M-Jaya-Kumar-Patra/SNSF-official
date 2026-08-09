@@ -13,6 +13,8 @@ import ViewQuiltIcon from "@mui/icons-material/ViewQuilt";
 import ChairIcon from "@mui/icons-material/Chair";
 import ImageIcon from "@mui/icons-material/Image";
 import VideoLibraryIcon from "@mui/icons-material/VideoLibrary"; // 
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import ForumIcon from "@mui/icons-material/Forum";
 
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutBTN from "./LogoutBTN";
@@ -28,6 +30,8 @@ const navItems = [
   { label: "Style Your Space", path: "/StyleYourSpace", icon: ChairIcon },
   { label: "Poster Manager", path: "/PosterManager", icon: ImageIcon },
   { label: "Video Manager", path: "/VideoManager", icon: VideoLibraryIcon }, // Added Video Manager
+  { label: "AI Knowledge", path: "/KnowledgeBase", icon: MenuBookIcon },
+  { label: "AI & Customer Chat", path: "/AIChat", icon: ForumIcon },
 ];
 
 export default function Sidebar({ onNavigate }) {

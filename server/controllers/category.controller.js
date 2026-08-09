@@ -91,11 +91,11 @@ export async function createCategory(request, response) {
 
 export async function getCategories(request, response) {
     try {
-        const categories = await CategoryModel.find();
+        const categories = await CategoryModel.find().lean();
         const categoryMap = {};
 
         categories.forEach(cat => {
-            categoryMap[cat._id] = { ...cat._doc, children: [] };
+            categoryMap[cat._id] = { ...cat, children: [] };
         });
 
         const rootCategories = [];

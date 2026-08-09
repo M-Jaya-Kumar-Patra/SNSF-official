@@ -5,6 +5,61 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 import axios from 'axios';
 import Cookies from "js-cookie";
 
+let refreshRequest = null;
+
+const getStoredAccessToken = () =>
+  typeof window === "undefined" ? "" : localStorage.getItem("accessToken") || "";
+
+export const refreshAccessToken = async () => {
+  if (refreshRequest) return refreshRequest;
+
+  refreshRequest = (async () => {
+    const refreshToken =
+      typeof window === "undefined" ? "" : localStorage.getItem("refreshToken") || "";
+    const headers = { "Content-Type": "application/json" };
+
+    // The server normally receives the httpOnly refresh cookie. The stored token
+    // remains a compatibility fallback for sessions created by older releases.
+    if (refreshToken) headers.Authorization = `Bearer ${refreshToken}`;
+
+    const response = await fetch(`${apiUrl}/api/user/refresh-token`, {
+      method: "POST",
+      headers,
+      credentials: "include",
+    });
+    const data = await response.json().catch(() => ({}));
+    const nextAccessToken = data?.data?.accessToken;
+
+    if (!response.ok || !nextAccessToken) {
+      throw new Error(data?.message || "Refresh token is missing or expired");
+    }
+
+    localStorage.setItem("accessToken", nextAccessToken);
+    return nextAccessToken;
+  })().finally(() => {
+    refreshRequest = null;
+  });
+
+  return refreshRequest;
+};
+
+const fetchAuthenticated = async (url, options = {}) => {
+  const headers = new Headers(options.headers || {});
+  let accessToken = getStoredAccessToken();
+
+  if (!accessToken) accessToken = await refreshAccessToken();
+  headers.set("Authorization", `Bearer ${accessToken}`);
+
+  let response = await fetch(apiUrl + url, { ...options, headers, credentials: "include" });
+  if (response.status === 401) {
+    accessToken = await refreshAccessToken();
+    headers.set("Authorization", `Bearer ${accessToken}`);
+    response = await fetch(apiUrl + url, { ...options, headers, credentials: "include" });
+  }
+
+  return response;
+};
+
 // POST request
 export const postData = async (url, formData, authRequired = true) => {
 
@@ -14,13 +69,15 @@ export const postData = async (url, formData, authRequired = true) => {
     };
 
     if (authRequired) {
-      const token = localStorage.getItem("accessToken")
-
-      if (!token) throw new Error("Access token is missing or expired");
-      headers["Authorization"] = `Bearer ${token}`;
+      const token = getStoredAccessToken();
+      if (token) headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const response = await fetch(apiUrl + url, {
+    const response = authRequired ? await fetchAuthenticated(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(formData),
+    }) : await fetch(apiUrl + url, {
       method: "POST",
       headers,
       body: JSON.stringify(formData),
@@ -43,15 +100,14 @@ export const fetchDataFromApi = async (url, authRequired = true) => {
     };
 
     if (authRequired) {
-      const token = localStorage.getItem("accessToken")
-
-      if (!token) {
-        return { error: true, message: "Access token is missing or expired" };
-      }
-      headers["Authorization"] = `Bearer ${token}`;
+      const token = getStoredAccessToken();
+      if (token) headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const response = await fetch(apiUrl + url, {
+    const response = authRequired ? await fetchAuthenticated(url, {
+      method: "GET",
+      headers,
+    }) : await fetch(apiUrl + url, {
       method: "GET",
       headers,
     });

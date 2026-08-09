@@ -51,16 +51,17 @@ function getClientKey(req) {
   );
 }
 
-function incrementMemoryBucket(key, windowMs) {
+function incrementMemoryBucket(key, windowMs, bucketPrefix = RATE_LIMIT_PREFIX) {
   const timestamp = now();
-  const existing = buckets.get(key);
+  const bucketKey = `${bucketPrefix}:${key}`;
+  const existing = buckets.get(bucketKey);
   const bucket =
     existing && existing.resetAt > timestamp
       ? existing
       : { count: 0, resetAt: timestamp + windowMs };
 
   bucket.count += 1;
-  buckets.set(key, bucket);
+  buckets.set(bucketKey, bucket);
 
   if (buckets.size > 10_000) {
     for (const [bucketKey, value] of buckets.entries()) {
@@ -71,11 +72,11 @@ function incrementMemoryBucket(key, windowMs) {
   return bucket;
 }
 
-async function incrementRedisBucket(key, windowMs) {
+async function incrementRedisBucket(key, windowMs, bucketPrefix = RATE_LIMIT_PREFIX) {
   const redis = await getRedisClient();
   if (!redis) return null;
 
-  const redisKey = `${RATE_LIMIT_PREFIX}:rate:${key}`;
+  const redisKey = `${bucketPrefix}:rate:${key}`;
   const count = await redis.incr(redisKey);
   let ttl = await redis.pttl(redisKey);
 
@@ -93,6 +94,7 @@ async function incrementRedisBucket(key, windowMs) {
 export function rateLimiter({
   windowMs = Number(process.env.RATE_LIMIT_WINDOW_MS) || 60_000,
   max = Number(process.env.RATE_LIMIT_MAX) || 300,
+  keyPrefix = RATE_LIMIT_PREFIX,
 } = {}) {
   return async (req, res, next) => {
     if (process.env.RATE_LIMIT_ENABLED === "false") return next();
@@ -102,11 +104,11 @@ export function rateLimiter({
 
     try {
       bucket =
-        (await incrementRedisBucket(key, windowMs)) ||
-        incrementMemoryBucket(key, windowMs);
+        (await incrementRedisBucket(key, windowMs, keyPrefix)) ||
+        incrementMemoryBucket(key, windowMs, keyPrefix);
     } catch (error) {
       console.warn("Rate limiter fallback used:", error.message);
-      bucket = incrementMemoryBucket(key, windowMs);
+      bucket = incrementMemoryBucket(key, windowMs, keyPrefix);
     }
 
     res.set("X-RateLimit-Limit", String(max));

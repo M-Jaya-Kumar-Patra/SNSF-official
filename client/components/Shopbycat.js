@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { useCat } from "@/app/context/CategoryContext";
-import { useAuth } from "@/app/context/AuthContext";
 import {
   BedDouble,
   Boxes,
@@ -31,7 +30,6 @@ const getCategoryIcon = (name) => {
 
 const Shopbycat = () => {
   const { catData } = useCat();
-  const { isCheckingToken } = useAuth();
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -39,7 +37,7 @@ const Shopbycat = () => {
   }, []);
 
   const sortedCatData = (catData || []).slice().sort((a, b) => a.sln - b.sln);
-  const isLoading = isCheckingToken || !hydrated || sortedCatData.length === 0;
+  const isLoading = !hydrated || sortedCatData.length === 0;
 
   const renderCategories = () => {
     if (isLoading) {
