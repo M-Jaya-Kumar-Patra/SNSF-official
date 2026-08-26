@@ -186,6 +186,7 @@ const ProductListingContent = () => {
                 return (
                   <article
                     key={prd?._id || index}
+                    data-product-id={prd?._id}
                     className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200"
                   >
                     <div className="relative p-3">
@@ -193,7 +194,12 @@ const ProductListingContent = () => {
                         type="button"
                         aria-label={`View ${prd?.name || "product"}`}
                         className="relative block aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-100"
-                        onClick={() => router.push(getProductPath(prd))}
+                        onClick={() => {
+                            const path = getProductPath(prd);
+                            try { console.log('product-click', prd?._id || prd?.slug || prd?.id, path); } catch (e) {}
+                            try { window.dispatchEvent(new CustomEvent('snsf:productClick', { detail: { id: prd?._id || prd?.slug || prd?.id, path } })); } catch (e) {}
+                            router.push(path);
+                          }}
                       >
                         <Image
                           src={getCloudinaryImageUrl(

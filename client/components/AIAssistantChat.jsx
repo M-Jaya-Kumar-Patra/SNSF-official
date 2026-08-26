@@ -80,22 +80,150 @@ export default function AIAssistantChat() {
   const [messages, setMessages] = useState(() => [getWelcomeMessage("en")]);
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const panelRef = useRef(null);
+  const openButtonRef = useRef(null);
+  const ignorePopRef = useRef(false);
 
   const apiUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL || "", []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+
     const savedLanguage = window.localStorage.getItem("snsf-assistant-language");
     if (savedLanguage && LANGUAGE_OPTIONS.some((option) => option.value === savedLanguage)) {
       setSelectedLanguage(savedLanguage);
       setMessages([getWelcomeMessage(savedLanguage)]);
     }
+
+    const updateViewportHeight = () => {
+      const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      document.documentElement.style.setProperty("--snsf-viewport-height", `${viewportHeight}px`);
+    };
+
+    updateViewportHeight();
+    const viewport = window.visualViewport;
+    viewport?.addEventListener("resize", updateViewportHeight);
+    window.addEventListener("resize", updateViewportHeight);
+
+    return () => {
+      viewport?.removeEventListener("resize", updateViewportHeight);
+      window.removeEventListener("resize", updateViewportHeight);
+    };
   }, []);
 
   useEffect(() => {
     if (!open) return;
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, loading, open]);
+
+  // prevent background scroll and handle back button when assistant is open
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const disableBackgroundScroll = () => {
+      // preserve scroll position
+      const scrollY = window.scrollY || window.pageYOffset;
+      document.documentElement.style.setProperty('--snsf-scroll-top', String(scrollY));
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = '0';
+      document.body.style.right = '0';
+      document.body.style.overflow = 'hidden';
+
+      // prevent touchmove outside panel
+      const onTouchMove = (e) => {
+        if (!panelRef.current) return;
+        if (!panelRef.current.contains(e.target)) {
+          e.preventDefault();
+        }
+      };
+
+      document.addEventListener('touchmove', onTouchMove, { passive: false });
+
+      return () => {
+        document.removeEventListener('touchmove', onTouchMove, { passive: false });
+        // restore scroll
+        const top = parseInt(document.body.style.top || '0') * -1;
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, top || 0);
+      };
+    };
+
+    const onPop = (e) => {
+      if (ignorePopRef.current) {
+        ignorePopRef.current = false;
+        return;
+      }
+
+      if (open) {
+        // close assistant instead of navigating back
+        setOpen(false);
+        try {
+          // restore a history entry so back remains consistent
+          history.pushState(null, '');
+        } catch (err) {}
+      }
+    };
+
+    if (open) {
+      // push a state so browser back can be intercepted
+      try {
+        if (!history.state || !history.state.snsfAssistant) {
+          history.pushState({ snsfAssistant: true }, '');
+        }
+      } catch (err) {}
+
+      // Only disable background scroll on small screens (mobile)
+      const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+      const cleanupScroll = isMobile ? disableBackgroundScroll() : undefined;
+
+      window.addEventListener('popstate', onPop);
+
+      // outside-click to close assistant on desktop
+      const onOutsidePointer = (e) => {
+        try {
+          const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+          if (isMobile) return;
+          const target = e.target;
+          if (!panelRef.current) return;
+          if (panelRef.current.contains(target)) return;
+          if (openButtonRef.current && openButtonRef.current.contains(target)) return;
+          // clicked outside
+          setOpen(false);
+        } catch (err) {
+          // ignore
+        }
+      };
+
+      document.addEventListener('pointerdown', onOutsidePointer);
+
+      return () => {
+        document.removeEventListener('pointerdown', onOutsidePointer);
+        window.removeEventListener('popstate', onPop);
+        if (typeof cleanupScroll === 'function') cleanupScroll();
+        // if we opened a history state, try to remove it so we don't stack entries
+        try {
+          if (history.state && history.state.snsfAssistant) {
+            ignorePopRef.current = true;
+            history.back();
+          }
+        } catch (err) {}
+      };
+    }
+
+    return undefined;
+  }, [open]);
+  const focusInput = () => {
+    if (typeof window === "undefined") return;
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  };
 
   const handleLanguageChange = (event) => {
     const nextLanguage = event.target.value;
@@ -191,14 +319,14 @@ export default function AIAssistantChat() {
       ]);
     } finally {
       setLoading(false);
-      setTimeout(() => inputRef.current?.focus(), 50);
+      focusInput();
     }
   };
 
   return (
-    <div className="fixed bottom-[88px] right-4 z-[1300] md:bottom-6">
+    <div className="fixed bottom-24 right-4 z-[1300] md:bottom-6">
       {open && (
-        <section className="mb-3 flex h-[min(620px,calc(100vh-120px))] w-[calc(100vw-32px)] max-w-[390px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-950 shadow-2xl shadow-slate-950/25">
+        <section ref={panelRef} className="fixed inset-0 z-[1301] flex h-[var(--snsf-viewport-height,100vh)] w-full flex-col overflow-hidden border border-slate-200 bg-white text-slate-950 shadow-2xl shadow-slate-950/25 md:inset-y-0 md:top-0 md:bottom-0 md:right-0 md:left-auto md:mb-0 md:h-auto md:w-[25%] md:max-w-none md:rounded-l-2xl">
           <header className="flex items-center justify-between border-b border-slate-200 bg-slate-950 px-4 py-3 text-white">
             <div className="flex min-w-0 items-center gap-3">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-slate-950">
@@ -270,8 +398,9 @@ export default function AIAssistantChat() {
                           <Link
                             key={product._id}
                             href={getProductPath(product)}
-                            className="flex min-h-16 items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-2 text-slate-900 transition hover:border-slate-400 hover:bg-white"
-                          >
+                                  onClick={() => setOpen(false)}
+                                  className="flex min-h-16 items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-2 text-slate-900 transition hover:border-slate-400 hover:bg-white"
+                                >
                             <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-white">
                               <Image
                                 src={getProductImage(product)}
@@ -350,6 +479,12 @@ export default function AIAssistantChat() {
                 ref={inputRef}
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
+                onFocus={() => {
+                  if (typeof window === "undefined") return;
+                  window.setTimeout(() => {
+                    inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+                  }, 150);
+                }}
                 placeholder="Ask about products..."
                 className="min-w-0 flex-1 rounded-full border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium outline-none transition focus:border-slate-950 focus:bg-white"
               />
@@ -367,10 +502,11 @@ export default function AIAssistantChat() {
       )}
 
       <button
+        ref={openButtonRef}
         type="button"
         aria-label="Open SNSF assistant"
         onClick={() => setOpen((value) => !value)}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-slate-950 text-white shadow-2xl shadow-slate-950/30 transition hover:-translate-y-0.5 hover:bg-slate-800"
+        className={`flex h-14 w-14 items-center justify-center rounded-full bg-slate-950 text-white shadow-2xl shadow-slate-950/30 transition hover:-translate-y-0.5 hover:bg-slate-800 ${open ? "pointer-events-none opacity-0" : "opacity-100"}`}
       >
         {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
       </button>

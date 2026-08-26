@@ -24,22 +24,31 @@ export default function ProductGrid({
       >
         {products.map((product, index) => {
           const isPriority = priorityFirst && index === 0;
-
+          const id = product?._id || product?.id || product?.productId || index;
+          const imageSrc = product?.images?.[0] || product?.image || "/images/placeholder.jpg";
+          const title = product?.name || product?.title || "Product";
+ 
           return (
             <button
               type="button"
-              key={product.id}
-              aria-label={`Open ${product.title || "product"}`}
-              onClick={() => router.push(getProductPath(product))}
+              key={id}
+              data-product-id={id}
+              aria-label={`Open ${title}`}
+              onClick={() => {
+                  const path = getProductPath(product);
+                  try { console.log('product-click', id, path); } catch (e) {}
+                  try { window.dispatchEvent(new CustomEvent('snsf:productClick', { detail: { id, path } })); } catch (e) {}
+                  router.push(path);
+                } }
               className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg"
             >
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
                 <img
-                  src={getCloudinaryImageUrl(product.image, {
+                  src={getCloudinaryImageUrl(imageSrc, {
                     width: 420,
                     height: 315,
                   })}
-                  alt={product.title ?? "Product image"}
+                  alt={title + " image"}
                   loading={isPriority ? "eager" : "lazy"}
                   fetchPriority={isPriority ? "high" : "auto"}
                   decoding={isPriority ? "sync" : "async"}
@@ -47,15 +56,15 @@ export default function ProductGrid({
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
               </div>
-
+ 
               <div className="flex min-h-[84px] w-full flex-1 flex-col justify-between gap-2 p-3">
                 <h3
                   className="line-clamp-2 text-sm font-semibold leading-snug text-slate-800"
-                  title={product.title}
+                  title={title}
                 >
-                  {product.title}
+                  {title}
                 </h3>
-
+ 
                 <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 transition group-hover:text-slate-900">
                   View product
                   <ArrowUpRight className="h-3.5 w-3.5" />
