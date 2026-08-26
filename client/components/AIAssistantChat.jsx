@@ -220,7 +220,6 @@ export default function AIAssistantChat() {
     if (typeof window === "undefined") return;
     requestAnimationFrame(() => {
       inputRef.current?.focus();
-      inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     });
   };
 
@@ -485,9 +484,6 @@ export default function AIAssistantChat() {
               onChange={(event) => setInput(event.target.value)}
               onFocus={() => {
                 if (typeof window === "undefined") return;
-                window.setTimeout(() => {
-                  inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-                }, 150);
               }}
               placeholder="Ask about products, warranty..."
               className="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-base font-medium outline-none transition focus:border-slate-950 focus:bg-white focus:ring-2 focus:ring-slate-950/10"
