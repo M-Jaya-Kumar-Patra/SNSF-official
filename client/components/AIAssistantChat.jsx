@@ -517,7 +517,6 @@ export default function AIAssistantChat() {
           display: flex;
           align-items: center;
           justify-content: center;
-          /* Push it up on mobile to avoid bottom nav bars */
           bottom: env(safe-area-inset-bottom, 20px);
         }
 
@@ -525,7 +524,7 @@ export default function AIAssistantChat() {
           .chatbot-showroom {
             position: fixed;
             right: 20px;
-            bottom: calc(75px + env(safe-area-inset-bottom, 0px)); /* Adjust 75px based on your bottom nav height */
+            bottom: calc(75px + env(safe-area-inset-bottom, 0px));
             z-index: 1200;
           }
         }
@@ -543,12 +542,16 @@ export default function AIAssistantChat() {
           border-radius: 24px;
         }
 
-        /* Mobile: True Full Screen with dynamic viewport height & safe keyboard handling */
+        /* Mobile: Fixed position filling viewport to resize smoothly with virtual keyboard */
         @media (max-width: 640px) {
           .chatbot-panel-wrapper {
-            inset: 0 !important;
-            width: 100vw !important;
-            height: 100dvh !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
             max-width: none !important;
             max-height: none !important;
             border-radius: 0 !important;
