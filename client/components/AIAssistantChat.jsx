@@ -89,46 +89,43 @@ export default function AIAssistantChat() {
   const [loading, setLoading] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [messages, setMessages] = useState(() => [getWelcomeMessage("en")]);
-  const [panelHeight, setPanelHeight] = useState("100vh");
-  
+  const [hydrated, setHydrated] = useState(false);
+
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
   const panelRef = useRef(null);
   const openButtonRef = useRef(null);
   const ignorePopRef = useRef(false);
+  const openedByUserRef = useRef(false);
 
   const apiUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL || "", []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    setHydrated(true);
 
     const savedLanguage = window.localStorage.getItem("snsf-assistant-language");
     if (savedLanguage && LANGUAGE_OPTIONS.some((option) => option.value === savedLanguage)) {
       setSelectedLanguage(savedLanguage);
       setMessages([getWelcomeMessage(savedLanguage)]);
     }
-
-    const updateViewportHeight = () => {
-      const vHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      setPanelHeight(`${vHeight}px`);
-    };
-
-    updateViewportHeight();
-    const viewport = window.visualViewport;
-    viewport?.addEventListener("resize", updateViewportHeight);
-    viewport?.addEventListener("scroll", updateViewportHeight);
-    window.addEventListener("resize", updateViewportHeight);
-
-    return () => {
-      viewport?.removeEventListener("resize", updateViewportHeight);
-      viewport?.removeEventListener("scroll", updateViewportHeight);
-      window.removeEventListener("resize", updateViewportHeight);
-    };
   }, []);
 
   useEffect(() => {
     if (!open) return;
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    setTimeout(() => {
+      try {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+      } catch (err) {}
+
+      try {
+        inputRef.current?.focus?.({ preventScroll: true });
+      } catch (err) {
+        try {
+          inputRef.current?.focus?.();
+        } catch (e) {}
+      }
+    }, 120);
   }, [messages, loading, open]);
 
   useEffect(() => {
@@ -150,8 +147,10 @@ export default function AIAssistantChat() {
 
     if (open) {
       try {
-        if (!history.state || !history.state.snsfAssistant) {
-          history.pushState({ snsfAssistant: true }, '');
+        if (openedByUserRef.current) {
+          if (!history.state || !history.state.snsfAssistant) {
+            history.pushState({ snsfAssistant: true }, '');
+          }
         }
       } catch (err) {}
 
@@ -175,7 +174,7 @@ export default function AIAssistantChat() {
         document.removeEventListener('pointerdown', onOutsidePointer);
         window.removeEventListener('popstate', onPop);
         try {
-          if (history.state && history.state.snsfAssistant) {
+          if (openedByUserRef.current && history.state && history.state.snsfAssistant) {
             ignorePopRef.current = true;
             history.back();
           }
@@ -255,7 +254,7 @@ export default function AIAssistantChat() {
       const assistantContent = cleanAssistantText(
         data?.answer ||
           (selectedLanguage === "hi"
-            ? "Abhi mujhe answer mil nahi raha. Aap SNSF se direct contact kar sakte hain."
+            ? "Abhi mujhe answer mil nahi रहा. Aap SNSF से direct contact कर सकते हैं."
             : selectedLanguage === "od"
               ? "ବର୍ତ୍ତମାନ ମୁଁ ଉତ୍ତର ପାଇପାରିବି ନାହିଁ। ଆପଣ SNSF ସହିତ direct contact କରିପାରିବେ।"
               : "I could not answer that right now. Please contact SNSF directly."),
@@ -292,184 +291,186 @@ export default function AIAssistantChat() {
   };
 
   return (
-    <div className="fixed bottom-20 right-6 md:bottom-6 z-[1300]">
-      {/* Animated Chat Window Container */}
-      <section 
-        ref={panelRef} 
-        style={{ height: open ? panelHeight : undefined }}
-        className={`chatbot-panel-wrapper fixed inset-0 z-[1301] flex w-full flex-col overflow-hidden border border-slate-200 bg-white text-slate-950 shadow-2xl shadow-slate-950/25 md:inset-y-auto md:bottom-24 md:right-6 md:left-auto md:h-[680px] md:w-[420px] md:rounded-3xl ${
-          open ? "panel-enter" : "panel-exit"
-        }`}
-      >
-        <header className="flex items-center justify-between border-b border-slate-200 bg-slate-950 px-4 py-3.5 text-white shrink-0">
-          <div className="flex min-w-0 items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-700 text-white shadow-inner border border-white/10">
-              <Bot className="h-5 w-5 text-indigo-400 animate-pulse" />
-            </span>
-            <div className="min-w-0">
-              <h2 className="truncate text-sm font-bold tracking-wide">SNSF Expert</h2>
-              <p className="truncate text-[11px] text-slate-400 font-medium">Online • Ready to assist</p>
+    <div className="fixed bottom-6 right-6 z-[1300] flex flex-col items-end pointer-events-none">
+      {hydrated && (
+        <section 
+          ref={panelRef} 
+          className={`chatbot-panel-wrapper fixed z-[1301] flex flex-col overflow-hidden border border-slate-200 bg-white text-slate-950 shadow-2xl shadow-slate-950/25 pointer-events-auto ${
+            open ? "panel-enter" : "panel-exit"
+          }`}
+        >
+          <header className="flex items-center justify-between border-b border-slate-200 bg-slate-950 px-4 py-3 text-white shrink-0">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-slate-800 to-slate-700 text-white shadow-inner border border-white/10">
+                <Bot className="h-5 w-5 text-indigo-400 animate-pulse" />
+              </span>
+              <div className="min-w-0">
+                <h2 className="truncate text-sm font-bold tracking-wide">SNSF Expert</h2>
+                <p className="truncate text-[11px] text-slate-400 font-medium">Online • Ready to assist</p>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <label className="flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900/80 px-2.5 py-1.5 text-[11px] font-semibold text-slate-200 shadow-sm">
-              <Languages className="h-3.5 w-3.5 text-indigo-400" />
-              <select
-                aria-label="Choose assistant language"
-                value={selectedLanguage}
-                onChange={handleLanguageChange}
-                className="appearance-none bg-transparent pr-4 text-[11px] font-semibold text-slate-100 outline-none cursor-pointer"
-              >
-                {LANGUAGE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value} className="bg-slate-950 text-slate-100">
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <button
-              type="button"
-              aria-label="Close assistant"
-              onClick={() => setOpen(false)}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition hover:bg-white/10 hover:text-white"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-        </header>
-
-        <div className="assistant-scroll flex-1 overflow-y-auto bg-slate-50/70 p-4 min-h-0">
-          <div className="space-y-4">
-            {messages.map((message, index) => (
-              <div
-                key={`${message.role}-${index}`}
-                className={message.role === "user" ? "flex justify-end" : "flex justify-start"}
-              >
-                <div
-                  className={`max-w-[88%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed shadow-sm ${
-                    message.role === "user"
-                      ? "bg-slate-950 text-white rounded-br-sm"
-                      : "border border-slate-200/80 bg-white text-slate-800 rounded-bl-sm"
-                  }`}
+            <div className="flex items-center gap-2">
+              <label className="flex items-center gap-1 rounded-full border border-slate-700 bg-slate-900/80 px-2.5 py-1 text-[11px] font-semibold text-slate-200 shadow-sm">
+                <Languages className="h-3.5 w-3.5 text-indigo-400" />
+                <select
+                  aria-label="Choose assistant language"
+                  value={selectedLanguage}
+                  onChange={handleLanguageChange}
+                  className="appearance-none bg-transparent pr-3 text-[11px] font-semibold text-slate-100 outline-none cursor-pointer"
                 >
-                  <div className="flex items-start justify-between gap-2.5">
-                    <p className="whitespace-pre-line">{message.content}</p>
-                    {message.role === "assistant" && (
-                      <button
-                        type="button"
-                        aria-label="Listen to assistant answer"
-                        onClick={() => speakMessage(message.content, selectedLanguage)}
-                        className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 transition hover:border-slate-400 hover:text-slate-950"
-                      >
-                        <Volume2 className="h-3.5 w-3.5" />
-                      </button>
+                  {LANGUAGE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value} className="bg-slate-950 text-slate-100">
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                type="button"
+                aria-label="Close assistant"
+                onClick={() => setOpen(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-white/10 hover:text-white"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+          </header>
+
+          <div className="assistant-scroll flex-1 overflow-y-auto bg-slate-50/70 p-4 min-h-0">
+            <div className="space-y-3">
+              {messages.map((message, index) => (
+                <div
+                  key={`${message.role}-${index}`}
+                  className={message.role === "user" ? "flex justify-end" : "flex justify-start"}
+                >
+                  <div
+                    className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed shadow-sm ${
+                      message.role === "user"
+                        ? "bg-slate-950 text-white rounded-br-sm"
+                        : "border border-slate-200/80 bg-white text-slate-800 rounded-bl-sm"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="whitespace-pre-line">{message.content}</p>
+                      {message.role === "assistant" && (
+                        <button
+                          type="button"
+                          aria-label="Listen to assistant answer"
+                          onClick={() => speakMessage(message.content, selectedLanguage)}
+                          className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-500 transition hover:border-slate-400 hover:text-slate-950"
+                        >
+                          <Volume2 className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
+
+                    {message.products?.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        {message.products.map((product) => (
+                          <Link
+                            key={product._id}
+                            href={getProductPath(product)}
+                            onClick={() => setOpen(false)}
+                            className="flex items-center gap-2.5 rounded-xl border border-slate-200/80 bg-white p-2 text-slate-900 transition hover:border-slate-400 hover:shadow-md"
+                          >
+                            <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-slate-100 bg-slate-50">
+                              <Image
+                                src={getProductImage(product)}
+                                alt={product.name || "SNSF product"}
+                                fill
+                                sizes="40px"
+                                className="object-cover"
+                              />
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="block line-clamp-2 text-xs font-bold leading-tight">
+                                {product.name}
+                              </span>
+                              <span className="mt-0.5 block line-clamp-1 text-[11px] text-slate-500 font-medium">
+                                {[product.catName, product.brand].filter(Boolean).join(" • ")}
+                              </span>
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+
+                    {message.actions?.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {message.actions.map((action) => (
+                          <a
+                            key={`${action.type}-${action.href}`}
+                            href={action.href}
+                            target={action.type === "whatsapp" ? "_blank" : undefined}
+                            rel={action.type === "whatsapp" ? "noopener noreferrer" : undefined}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-[11px] font-semibold text-slate-900 transition hover:bg-slate-950 hover:text-white hover:border-slate-950 shadow-xs"
+                          >
+                            <ActionIcon type={action.type} />
+                            {action.label}
+                          </a>
+                        ))}
+                      </div>
                     )}
                   </div>
-
-                  {message.products?.length > 0 && (
-                    <div className="mt-3.5 space-y-2">
-                      {message.products.map((product) => (
-                        <Link
-                          key={product._id}
-                          href={getProductPath(product)}
-                          onClick={() => setOpen(false)}
-                          className="flex min-h-16 items-center gap-3 rounded-xl border border-slate-200/80 bg-white p-2.5 text-slate-900 transition hover:border-slate-400 hover:shadow-md"
-                        >
-                          <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-slate-100 bg-slate-50">
-                            <Image
-                              src={getProductImage(product)}
-                              alt={product.name || "SNSF product"}
-                              fill
-                              sizes="48px"
-                              className="object-cover"
-                            />
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="block line-clamp-2 text-sm font-bold leading-tight">
-                              {product.name}
-                            </span>
-                            <span className="mt-0.5 block line-clamp-1 text-xs text-slate-500 font-medium">
-                              {[product.catName, product.brand].filter(Boolean).join(" • ")}
-                            </span>
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-
-                  {message.actions?.length > 0 && (
-                    <div className="mt-3.5 flex flex-wrap gap-2">
-                      {message.actions.map((action) => (
-                        <a
-                          key={`${action.type}-${action.href}`}
-                          href={action.href}
-                          target={action.type === "whatsapp" ? "_blank" : undefined}
-                          rel={action.type === "whatsapp" ? "noopener noreferrer" : undefined}
-                          className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-900 transition hover:bg-slate-950 hover:text-white hover:border-slate-950 shadow-xs"
-                        >
-                          <ActionIcon type={action.type} />
-                          {action.label}
-                        </a>
-                      ))}
-                    </div>
-                  )}
                 </div>
-              </div>
-            ))}
+              ))}
 
-            {loading && (
-              <div className="flex justify-start">
-                <div className="inline-flex items-center gap-2.5 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-500 shadow-sm">
-                  <Loader2 className="h-4 w-4 animate-spin text-indigo-600" />
-                  Finding best details...
+              {loading && (
+                <div className="flex justify-start">
+                  <div className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-500 shadow-sm">
+                    <Loader2 className="h-3.5 w-3.5 animate-spin text-indigo-600" />
+                    Finding best details...
+                  </div>
                 </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
+              )}
+              <div ref={messagesEndRef} />
+            </div>
           </div>
-        </div>
 
-        <div className="border-t border-slate-200 bg-white p-3.5 shrink-0">
-          <div className="mb-2.5 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {(STARTER_MESSAGES[selectedLanguage] || STARTER_MESSAGES.en).map((starter) => (
-              <button
-                key={starter}
-                type="button"
-                onClick={() => sendMessage(starter)}
-                className="shrink-0 rounded-full border border-slate-200 bg-slate-50/60 px-3.5 py-2 text-xs font-medium text-slate-600 transition hover:border-slate-900 hover:bg-slate-900 hover:text-white"
-              >
-                {starter}
-              </button>
-            ))}
-          </div>
-          <form
-            className="flex items-center gap-2"
-            onSubmit={(event) => {
-              event.preventDefault();
-              sendMessage();
-            }}
-          >
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={(event) => setInput(event.target.value)}
-              placeholder="Ask about products, warranty..."
-              className="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-base font-medium outline-none transition focus:border-slate-950 focus:bg-white focus:ring-2 focus:ring-slate-950/10"
-            />
-            <button
-              type="submit"
-              aria-label="Send message"
-              disabled={loading || !input.trim()}
-              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-200 shadow-sm"
+          <div className="border-t border-slate-200 bg-white p-3 shrink-0">
+            <div className="mb-2.5 flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+              {(STARTER_MESSAGES[selectedLanguage] || STARTER_MESSAGES.en).map((starter) => (
+                <button
+                  key={starter}
+                  type="button"
+                  onClick={() => sendMessage(starter)}
+                  className="shrink-0 rounded-full border border-slate-200 bg-slate-50/60 px-3 py-1.5 text-[11px] font-medium text-slate-600 transition hover:border-slate-900 hover:bg-slate-900 hover:text-white"
+                >
+                  {starter}
+                </button>
+              ))}
+            </div>
+            <form
+              className="flex items-center gap-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                sendMessage();
+              }}
             >
-              {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
-            </button>
-          </form>
-        </div>
-      </section>
+              <input
+                ref={inputRef}
+                value={input}
+                onChange={(event) => setInput(event.target.value)}
+                placeholder="Ask about products, warranty..."
+                className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-medium outline-none transition focus:border-slate-950 focus:bg-white focus:ring-2 focus:ring-slate-950/10"
+              />
+              <button
+                type="submit"
+                aria-label="Send message"
+                onPointerDown={(e) => e.preventDefault()} 
+                onMouseDown={(e) => e.preventDefault()} 
+                onTouchStart={(e) => e.preventDefault()} 
+                disabled={loading || !input.trim()}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-950 text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-200 shadow-sm"
+              >
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              </button>
+            </form>
+          </div>
+        </section>
+      )}
 
-      {/* Modernized Floating Launcher Button */}
-      <div className="chatbot-showroom">
+      <div className="chatbot-showroom pointer-events-auto">
         <div className={`chatbot-attention ${open ? "chatbot-attention-hidden" : ""}`}>
           <div className="chatbot-attention-icon">
             <Sparkles className="h-4 w-4 text-amber-400 animate-spin" />
@@ -488,7 +489,13 @@ export default function AIAssistantChat() {
           ref={openButtonRef}
           type="button"
           aria-label="Open SNSF Furniture Expert"
-          onClick={() => setOpen((value) => !value)}
+          onClick={() => {
+            setOpen((value) => {
+              const next = !value;
+              if (next) openedByUserRef.current = true;
+              return next;
+            });
+          }}
           className={`chatbot-launcher ${open ? "scale-90 rotate-90" : "scale-100 rotate-0"}`}
         >
           <span className="chatbot-launcher-inner">
@@ -505,28 +512,47 @@ export default function AIAssistantChat() {
       <style jsx>{`
         .chatbot-showroom {
           position: relative;
-          width: 64px;
-          height: 64px;
+          width: 56px;
+          height: 56px;
           display: flex;
           align-items: center;
           justify-content: center;
+          /* Push it up on mobile to avoid bottom nav bars */
+          bottom: env(safe-area-inset-bottom, 20px);
         }
 
+        @media (max-width: 640px) {
+          .chatbot-showroom {
+            position: fixed;
+            right: 20px;
+            bottom: calc(75px + env(safe-area-inset-bottom, 0px)); /* Adjust 75px based on your bottom nav height */
+            z-index: 1200;
+          }
+        }
+
+        /* Desktop: 70% Height-Locked Proportional Width */
         .chatbot-panel-wrapper {
+          right: 24px;
+          bottom: 92px;
+          height: 70vh;
+          width: calc(70vh * 0.65);
+          min-width: 300px;
+          max-width: 420px;
           transform-origin: bottom right;
-          transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1), opacity 350ms ease;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
+          transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), opacity 300ms ease;
+          border-radius: 24px;
         }
 
-        @media (min-width: 768px) {
+        /* Mobile: True Full Screen with dynamic viewport height & safe keyboard handling */
+        @media (max-width: 640px) {
           .chatbot-panel-wrapper {
-            top: auto;
-            left: auto;
-            right: 1.5rem;
-            bottom: 6rem;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100dvh !important;
+            max-width: none !important;
+            max-height: none !important;
+            border-radius: 0 !important;
+            border: none !important;
           }
         }
 
@@ -538,14 +564,14 @@ export default function AIAssistantChat() {
 
         .panel-exit {
           opacity: 0;
-          transform: scale(0.85) translateY(20px);
+          transform: scale(0.85) translateY(15px);
           pointer-events: none;
         }
 
         .chatbot-launcher {
           position: relative;
-          width: 64px;
-          height: 64px;
+          width: 56px;
+          height: 56px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -553,7 +579,7 @@ export default function AIAssistantChat() {
           background: linear-gradient(135deg, #090d16 0%, #1e293b 100%);
           color: white;
           border: 1.5px solid rgba(255, 255, 255, 0.25);
-          box-shadow: 0 16px 36px rgba(15, 23, 42, 0.45), 0 4px 12px rgba(15, 23, 42, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+          box-shadow: 0 14px 30px rgba(15, 23, 42, 0.4), 0 4px 10px rgba(15, 23, 42, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
           cursor: pointer;
           transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 300ms ease;
           animation: showroomFloat 4s ease-in-out infinite;
@@ -563,8 +589,8 @@ export default function AIAssistantChat() {
         .chatbot-launcher-inner {
           position: relative;
           z-index: 3;
-          width: 50px;
-          height: 50px;
+          width: 44px;
+          height: 44px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -597,34 +623,34 @@ export default function AIAssistantChat() {
 
         .chatbot-status-dot {
           position: absolute;
-          top: 3px;
-          right: 3px;
-          width: 11px;
-          height: 11px;
+          top: 2px;
+          right: 2px;
+          width: 10px;
+          height: 10px;
           border-radius: 9999px;
           background: #22c55e;
           border: 2px solid #0f172a;
-          box-shadow: 0 0 8px #22c55e;
+          box-shadow: 0 0 6px #22c55e;
           z-index: 6;
           animation: statusPulse 2s ease-in-out infinite;
         }
 
         .chatbot-attention {
           position: absolute;
-          right: 74px;
+          right: 68px;
           bottom: 6px;
           display: flex;
           align-items: center;
-          gap: 10px;
-          min-width: 260px;
-          padding: 11px 14px;
-          border-radius: 16px;
+          gap: 8px;
+          min-width: 240px;
+          padding: 10px 12px;
+          border-radius: 14px;
           background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(30, 41, 59, 0.96));
           border: 1px solid rgba(255, 255, 255, 0.15);
           color: white;
-          box-shadow: 0 20px 40px rgba(15, 23, 42, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 16px 32px rgba(15, 23, 42, 0.35), 0 4px 10px rgba(0, 0, 0, 0.2);
           opacity: 0;
-          transform: translateX(12px) scale(0.95);
+          transform: translateX(10px) scale(0.95);
           pointer-events: none;
           z-index: 10;
           animation: attentionCard 7s ease-in-out infinite;
@@ -633,7 +659,7 @@ export default function AIAssistantChat() {
 
         .chatbot-attention-hidden {
           opacity: 0 !important;
-          transform: translateX(12px) scale(0.9) !important;
+          transform: translateX(10px) scale(0.9) !important;
           animation: none !important;
           pointer-events: none !important;
         }
@@ -641,10 +667,10 @@ export default function AIAssistantChat() {
         .chatbot-attention::after {
           content: "";
           position: absolute;
-          right: -6px;
-          bottom: 20px;
-          width: 12px;
-          height: 12px;
+          right: -5px;
+          bottom: 18px;
+          width: 10px;
+          height: 10px;
           background: #172033;
           border-top: 1px solid rgba(255, 255, 255, 0.12);
           border-right: 1px solid rgba(255, 255, 255, 0.12);
@@ -652,13 +678,13 @@ export default function AIAssistantChat() {
         }
 
         .chatbot-attention-icon {
-          width: 32px;
-          height: 32px;
+          width: 28px;
+          height: 28px;
           flex-shrink: 0;
           display: flex;
           align-items: center;
           justify-content: center;
-          border-radius: 10px;
+          border-radius: 8px;
           background: rgba(255, 255, 255, 0.08);
           border: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -670,8 +696,8 @@ export default function AIAssistantChat() {
         }
 
         .chatbot-attention-title {
-          font-size: 13px;
-          line-height: 16px;
+          font-size: 12px;
+          line-height: 15px;
           font-weight: 700;
           white-space: nowrap;
           color: #f8fafc;
@@ -679,22 +705,22 @@ export default function AIAssistantChat() {
 
         .chatbot-attention-subtitle {
           margin-top: 1px;
-          font-size: 12px;
-          line-height: 14px;
+          font-size: 11px;
+          line-height: 13px;
           color: #cbd5e1;
           white-space: nowrap;
         }
 
         .chatbot-attention-arrow {
           margin-left: auto;
-          font-size: 16px;
+          font-size: 14px;
           color: #94a3b8;
           animation: arrowNudge 1.4s ease-in-out infinite;
         }
 
         .chatbot-showroom:hover .chatbot-launcher {
-          transform: translateY(-4px) scale(1.08);
-          box-shadow: 0 24px 50px rgba(15, 23, 42, 0.55), 0 6px 16px rgba(15, 23, 42, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+          transform: translateY(-3px) scale(1.06);
+          box-shadow: 0 20px 40px rgba(15, 23, 42, 0.5), 0 6px 14px rgba(15, 23, 42, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
 
         .chatbot-showroom:hover .chatbot-launcher-inner {
@@ -709,7 +735,7 @@ export default function AIAssistantChat() {
 
         @keyframes showroomFloat {
           0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-5px); }
+          50% { transform: translateY(-4px); }
         }
 
         @keyframes chairRock {
@@ -727,7 +753,7 @@ export default function AIAssistantChat() {
 
         @keyframes pulseRing {
           0% { transform: scale(1); opacity: 0.8; }
-          100% { transform: scale(1.5); opacity: 0; }
+          100% { transform: scale(1.4); opacity: 0; }
         }
 
         @keyframes statusPulse {
@@ -736,14 +762,14 @@ export default function AIAssistantChat() {
         }
 
         @keyframes attentionCard {
-          0%, 8% { opacity: 0; transform: translateX(12px) scale(0.95); }
+          0%, 8% { opacity: 0; transform: translateX(10px) scale(0.95); }
           14%, 40% { opacity: 1; transform: translateX(0) scale(1); }
-          46%, 100% { opacity: 0; transform: translateX(12px) scale(0.95); }
+          46%, 100% { opacity: 0; transform: translateX(10px) scale(0.95); }
         }
 
         @keyframes arrowNudge {
           0%, 100% { transform: translateX(0); }
-          50% { transform: translateX(4px); }
+          50% { transform: translateX(3px); }
         }
 
         @media (prefers-reduced-motion: reduce) {
