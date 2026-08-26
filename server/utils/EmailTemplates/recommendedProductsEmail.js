@@ -105,13 +105,6 @@ const recommendedProductsTemplate = (
               >
                 ${p.name}
               </a>
-              ${
-                p.price
-                  ? `<p style="margin:6px 0 0;font-size:14px;color:#374151;">
-                       ₹${p.price.toLocaleString("en-IN")}
-                     </p>`
-                  : ""
-              }
             </td>
           </tr>
         </table>

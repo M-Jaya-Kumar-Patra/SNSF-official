@@ -7,7 +7,7 @@ const wishRouter = Router()
 wishRouter.post('/add',auth, addToWishlist);
 wishRouter.get('/get',auth, getWishlistItemController);
 wishRouter.delete('/delete-wishlist-item',auth, deleteWishlistItemContoller);
-wishRouter.get("/analytics/most-wishlisted", getMostWishlisted);
+wishRouter.get("/analytics/most-wishlisted", auth, getMostWishlisted);
 
 
 export default wishRouter          

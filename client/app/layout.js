@@ -36,7 +36,7 @@ export const metadata = {
   metadataBase: new URL("https://www.snsteelfabrication.com"),
   title: "S N Steel Fabrication",
   description:
-    "S N Steel Fabrication offers durable, modern, and customizable steel furniture for homes and businesses. Premium quality at affordable prices.",
+    "S N Steel Fabrication offers durable, modern, and customizable steel furniture for homes and businesses.",
   openGraph: {
     title: "S N Steel Fabrication",
     description: "Modern & customizable steel furniture.",

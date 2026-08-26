@@ -5,9 +5,6 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const auth = async (req, res, next) => {
   try {
-    console.log("🔐 Cookies:", req.cookies);
-    console.log("🔐 Authorization header:", req.headers.authorization);
-
     let token = null;
 
     if (req.cookies?.accessToken) {

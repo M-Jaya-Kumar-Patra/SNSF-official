@@ -38,7 +38,7 @@ export default function Page() {
   const [open, setOpen] = useState(false);
 
   const loadAllProducts = async () => {
-    const res = await fetchDataFromApi("/api/product/gaps");
+    const res = await fetchDataFromApi("/api/product/admin/gaps");
     if (res.success) {
       setAllProducts([...(res.data || [])].reverse());
     }

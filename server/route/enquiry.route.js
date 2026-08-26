@@ -15,13 +15,13 @@ const enquiryRouter = express.Router();
 enquiryRouter.post("/", createEnquiry);
 
 // ✅ Admin: Get all enquiries
-enquiryRouter.get("/admin", getAllEnquiries);
+enquiryRouter.get("/admin", auth, getAllEnquiries);
 
 // ✅ Get all enquiries of a specific user (client-side)
 enquiryRouter.get("/user", auth, getEnquiriesByUser);
 
 
 // ✅ Delete enquiry by ID
-enquiryRouter.delete("/:id", deleteEnquiry);
+enquiryRouter.delete("/:id", auth, deleteEnquiry);
 
 export default enquiryRouter;

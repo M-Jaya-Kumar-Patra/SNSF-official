@@ -2,10 +2,12 @@
 import express from "express";
 import analytics from "../controllers/analytics.controller.js";
 import { cacheResponse } from "../middlewares/cache.js";
+import auth from "../middlewares/auth.js";
 
 
 import { getLoginActivity } from "../controllers/loginAnalytics.controller.js";
 const analyticsRouter = express.Router();
+analyticsRouter.use(auth);
 analyticsRouter.use(
   cacheResponse("analytics", Number(process.env.ANALYTICS_CACHE_TTL_SECONDS) || 60)
 );

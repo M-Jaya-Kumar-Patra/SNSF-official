@@ -4,6 +4,81 @@ import UserModel from "../models/user.model.js";
 import sendEmailFun from "../config/sendEmail.js";
 import recommendedProductsTemplate from "../utils/EmailTemplates/recommendedProductsEmail.js";
 import { shouldSendRecommendationEmail } from "../utils/shouldSendRecommendationEmail.js";
+import { PUBLIC_PRODUCT_SELECT, sanitizePublicProducts } from "../utils/publicProduct.js";
+import { retrieveRagContext } from "../services/rag.service.js";
+
+function shuffleProducts(products = []) {
+  return products
+    .map((product) => ({ product, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ product }) => product);
+}
+
+function mergeUniqueProducts(...groups) {
+  const seen = new Set();
+  const merged = [];
+
+  for (const products of groups) {
+    for (const product of products || []) {
+      const key = String(product?._id || product?.id || product?.slug || "");
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      merged.push(product);
+    }
+  }
+
+  return merged;
+}
+
+async function getSemanticRecommendations(products, excludedIds, limit) {
+  try {
+    const searchText = products
+      .map((product) =>
+        [
+          product.name,
+          product.brand,
+          product.catName,
+          product.subCat,
+          product.thirdSubCat,
+          product.description,
+          ...Object.values(product.specifications || {}),
+        ]
+          .filter(Boolean)
+          .join(" "),
+      )
+      .join(" ");
+
+    if (!searchText.trim()) return [];
+
+    const chunks = await retrieveRagContext(searchText, {
+      limit: Math.max(limit * 3, 18),
+    });
+
+    const productIds = chunks
+      .filter((chunk) => chunk.sourceType === "product")
+      .map((chunk) => chunk.productId || chunk.metadata?.productId)
+      .filter(Boolean)
+      .filter((id) => !excludedIds.has(String(id)));
+
+    const uniqueIds = [...new Set(productIds)].slice(0, Math.max(limit * 2, limit));
+    if (!uniqueIds.length) return [];
+
+    const foundProducts = await ProductModel.find({ _id: { $in: uniqueIds } })
+      .select(PUBLIC_PRODUCT_SELECT)
+      .lean();
+
+    const byId = new Map(
+      foundProducts.map((product) => [String(product._id), product]),
+    );
+
+    return shuffleProducts(
+      uniqueIds.map((id) => byId.get(String(id))).filter(Boolean),
+    ).slice(0, limit);
+  } catch (error) {
+    console.warn("Semantic recommendations unavailable:", error.message);
+    return [];
+  }
+}
 
 // -----------------------------
 // Get recommended products for a visitor or logged-in user
@@ -71,7 +146,7 @@ export const getRecommendedProducts = async (req, res) => {
     // -----------------------------
     const combinedProducts = await ProductModel.find({
       _id: { $in: combinedProductIds },
-    });
+    }).lean();
 
     // Extract unique categories & brands
     const categories = [
@@ -89,12 +164,26 @@ export const getRecommendedProducts = async (req, res) => {
     // -----------------------------
     // Step 4: Get recommendations based on category/brand
     // -----------------------------
-    let recommendations = [];
+    const excludedIds = new Set(combinedProductIds.map(String));
+    let recommendations = await getSemanticRecommendations(
+      combinedProducts,
+      excludedIds,
+      parseInt(limit),
+    );
+
     if (orConditions.length > 0) {
-      recommendations = await ProductModel.find({
+      const categoryBrandRecommendations = await ProductModel.find({
         _id: { $nin: combinedProductIds }, // exclude already interacted products
         $or: orConditions,
-      }).limit(parseInt(limit));
+      })
+        .select(PUBLIC_PRODUCT_SELECT)
+        .limit(Math.max(parseInt(limit) * 2, parseInt(limit)))
+        .lean();
+
+      recommendations = mergeUniqueProducts(
+        recommendations,
+        shuffleProducts(categoryBrandRecommendations),
+      ).slice(0, parseInt(limit));
     }
 
     // Fallback if empty
@@ -104,7 +193,10 @@ export const getRecommendedProducts = async (req, res) => {
     const uiRecommendations =
       recommendations.length > 0
         ? recommendations
-        : await ProductModel.find().limit(limit);
+        : await ProductModel.aggregate([
+            { $sample: { size: parseInt(limit) } },
+            { $project: { price: 0, oldPrice: 0, discount: 0 } },
+          ]);
 
     const MIN_VIEWS = 3;
     const MIN_WISHLIST_OR_VIEWS = 4;
@@ -114,7 +206,7 @@ export const getRecommendedProducts = async (req, res) => {
     if (totalSignals < MIN_WISHLIST_OR_VIEWS) {
       return res.status(200).json({
         success: true,
-        data: recommendations,
+        data: sanitizePublicProducts(recommendations),
         emailSkipped: "Not enough user activ~ity",
       });
     }
@@ -133,7 +225,7 @@ if ( allowEmail && userId && emailRecommendations.length > 0) {
   );
 
   if (!user) {
-    return res.status(200).json({ success: true, data: recommendations });
+    return res.status(200).json({ success: true, data: sanitizePublicProducts(recommendations) });
   }
 
   // ❌ Same intent + cooldown not passed → skip email
@@ -166,7 +258,7 @@ if ( allowEmail && userId && emailRecommendations.length > 0) {
 
     return res.status(200).json({
       success: true,
-      data: uiRecommendations,
+      data: sanitizePublicProducts(uiRecommendations),
     });
   } catch (error) {
     console.error("Error fetching recommendations:", error);

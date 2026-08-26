@@ -19,6 +19,7 @@ const Suggestions = ({
   subtitle = "More designs from the same style family.",
   eyebrow = "Related picks",
   limit = 12,
+  excludeIds = [],
 }) => {
   const { setLoading, isCheckingToken } = useAuth();
   const scrollRef = useRef(null);
@@ -46,6 +47,11 @@ const Suggestions = ({
           limit: String(limit),
         });
 
+        const cleanExcludeIds = excludeIds.filter(Boolean);
+        if (cleanExcludeIds.length) {
+          query.set("excludeIds", cleanExcludeIds.join(","));
+        }
+
         const res = await fetchDataFromApi(
           `/api/product/suggestions?${query.toString()}`,
           false,
@@ -61,7 +67,16 @@ const Suggestions = ({
     };
 
     loadSuggestions();
-  }, [brand, catId, limit, productId, setLoading, subCatId, thirdSubCatId]);
+  }, [
+    brand,
+    catId,
+    excludeIds,
+    limit,
+    productId,
+    setLoading,
+    subCatId,
+    thirdSubCatId,
+  ]);
 
   useEffect(() => {
     if (!hydrated || isCheckingToken) return;

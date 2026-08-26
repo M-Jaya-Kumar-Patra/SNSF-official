@@ -3,6 +3,12 @@ import { v2 as cloudinary } from "cloudinary";
 import connectDB from "../config/connectDb.js";
 import slugify from "slugify";
 import mongoose from "mongoose";
+import {
+  PUBLIC_PRODUCT_SELECT,
+  sanitizePublicProduct,
+  sanitizePublicProducts,
+} from "../utils/publicProduct.js";
+import { retrieveRagContext } from "../services/rag.service.js";
 
 
 // Cloudinary Config
@@ -19,6 +25,100 @@ function normalizeImages(images) {
   return [];
 }
 
+function mergeUniqueProducts(...groups) {
+  const seen = new Set();
+  const merged = [];
+
+  for (const products of groups) {
+    for (const product of products || []) {
+      const key = String(product?._id || product?.id || product?.slug || "");
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      merged.push(product);
+    }
+  }
+
+  return merged;
+}
+
+async function searchProductsSemantically(query, limit) {
+  try {
+    const chunks = await retrieveRagContext(query, { limit: Math.max(limit, 12) });
+    const productIds = chunks
+      .filter((chunk) => chunk.sourceType === "product")
+      .map((chunk) => chunk.productId || chunk.metadata?.productId)
+      .filter((id) => mongoose.Types.ObjectId.isValid(id));
+
+    if (!productIds.length) return [];
+
+    const uniqueIds = [...new Set(productIds)].slice(0, limit);
+    const products = await ProductModel.find({ _id: { $in: uniqueIds } })
+      .select(PUBLIC_PRODUCT_SELECT)
+      .lean();
+
+    const byId = new Map(products.map((product) => [String(product._id), product]));
+    return uniqueIds.map((id) => byId.get(String(id))).filter(Boolean);
+  } catch (error) {
+    console.warn("Semantic product search unavailable:", error.message);
+    return [];
+  }
+}
+
+function shuffleProducts(products = []) {
+  return products
+    .map((product) => ({ product, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ product }) => product);
+}
+
+async function getSemanticSimilarProducts(productId, limit, excludeSet) {
+  try {
+    const baseProduct = await ProductModel.findById(productId)
+      .select(PUBLIC_PRODUCT_SELECT)
+      .lean();
+
+    if (!baseProduct) return [];
+
+    const searchText = [
+      baseProduct.name,
+      baseProduct.brand,
+      baseProduct.catName,
+      baseProduct.subCat,
+      baseProduct.thirdSubCat,
+      baseProduct.description,
+      ...Object.values(baseProduct.specifications || {}),
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    const chunks = await retrieveRagContext(searchText, {
+      limit: Math.max(limit * 3, 18),
+    });
+
+    const productIds = chunks
+      .filter((chunk) => chunk.sourceType === "product")
+      .map((chunk) => chunk.productId || chunk.metadata?.productId)
+      .filter((id) => mongoose.Types.ObjectId.isValid(id))
+      .filter((id) => !excludeSet.has(String(id)));
+
+    const uniqueIds = [...new Set(productIds)].slice(0, Math.max(limit * 2, limit));
+    if (!uniqueIds.length) return [];
+
+    const products = await ProductModel.find({ _id: { $in: uniqueIds } })
+      .select(PUBLIC_PRODUCT_SELECT)
+      .populate("category")
+      .lean();
+
+    const byId = new Map(products.map((product) => [String(product._id), product]));
+    return shuffleProducts(
+      uniqueIds.map((id) => byId.get(String(id))).filter(Boolean),
+    ).slice(0, limit);
+  } catch (error) {
+    console.warn("Semantic similar products unavailable:", error.message);
+    return [];
+  }
+}
+
 export const getProductBySlug = async (req, res) => {
   await connectDB();
   const { slug } = req.params;
@@ -30,7 +130,7 @@ export const getProductBySlug = async (req, res) => {
     if (!product)
       return res.status(404).json({ success: false, message: "Product not found" });
 
-    res.status(200).json({ success: true, product });
+    res.status(200).json({ success: true, product: sanitizePublicProduct(product) });
   } catch (err) {
     console.error("Error fetching product by slug:", err);
     res.status(500).json({ success: false, message: err.message });
@@ -202,7 +302,7 @@ export async function getAllProducts(request, response) {
         return response.status(200).json({
             error: false,
             success: true,
-            data: products,
+            data: sanitizePublicProducts(products),
             ...(shouldPaginate
                 ? { total, page, totalPages: Math.ceil(total / limit), limit }
                 : {})
@@ -243,7 +343,7 @@ async function handleProductFetch(queryObj, request, response) {
         return response.status(200).json({
             error: false,
             success: true,
-            data: products,
+            data: sanitizePublicProducts(products),
             total: shouldPaginate ? total : products.length,
             ...(shouldPaginate ? { page, totalPages: Math.ceil(total / limit), limit } : {})
         });
@@ -284,48 +384,11 @@ export const getAllProductsByThirdCatName = (req, res) =>
 
 
 export async function getAllProductsByPrice(request, response) {
-    try {
-        const page = Math.max(1, parseInt(request.query.page, 10) || 1);
-        const perPage = Math.min(
-            100,
-            Math.max(1, parseInt(request.query.perPage || request.query.limit, 10) || 20)
-        );
-        const minPrice = Number(request.query.minPrice) || 0;
-        const maxPrice = Number(request.query.maxPrice);
-        const query = {
-            price: { $gte: minPrice },
-        };
-
-        if (Number.isFinite(maxPrice)) query.price.$lte = maxPrice;
-        if (request.query.catId) query.catId = request.query.catId;
-        if (request.query.subCatId) query.subCatId = request.query.subCatId;
-        if (request.query.thirdSubCatId) query.thirdSubCatId = request.query.thirdSubCatId;
-
-        const [products, total] = await Promise.all([
-            ProductModel.find(query)
-                .populate("category")
-                .sort({ price: 1, dateCreated: -1 })
-                .skip((page - 1) * perPage)
-                .limit(perPage)
-                .lean(),
-            ProductModel.countDocuments(query),
-        ]);
-
-        return response.status(200).json({
-            error: false,
-            success: true,
-            products,
-            total,
-            totalPages: Math.ceil(total / perPage),
-            page,
-        });
-    } catch (error) {
-        return response.status(500).json({
-            error: true,
-            success: false,
-            message: error.message || error
-        });
-    }
+    return response.status(403).json({
+        error: true,
+        success: false,
+        message: "Price-based browsing is not available. Please contact SNSF directly for current pricing.",
+    });
 }
 
 export async function getAllProductsByRating(request, response) {
@@ -356,7 +419,7 @@ export async function getAllProductsByRating(request, response) {
         return response.status(200).json({
             error: false,
             success: true,
-            data: products,
+            data: sanitizePublicProducts(products),
             total,
             page,
             totalPages: Math.ceil(total / perPage),
@@ -417,7 +480,7 @@ export async function getAllFeaturedProducts(request, response) {
         return response.status(200).json({
             error: false,
             success: true,
-            data: products
+            data: sanitizePublicProducts(products)
         });
     } catch (error) {
         return response.status(500).json({
@@ -556,7 +619,7 @@ export const getProduct = async (req, res) => {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
 
-    return res.status(200).json({ success: true, product });
+    return res.status(200).json({ success: true, product: sanitizePublicProduct(product) });
   } catch (err) {
     console.error("Error fetching product:", err);
     return res.status(500).json({ success: false, message: err.message });
@@ -718,8 +781,6 @@ export async function filters(request, response) {
         catId = [],
         subCatId = [],
         thirdSubCatId = [],
-        minPrice = 0,
-        maxPrice = Infinity,
         rating,
         page = 1,
         limit = 10 // default limit
@@ -741,10 +802,6 @@ export async function filters(request, response) {
             query.$or = filters;
         }
 
-        query.price = { $gte: parseFloat(minPrice) || 0 };
-        const parsedMaxPrice = parseFloat(maxPrice);
-        if (Number.isFinite(parsedMaxPrice)) query.price.$lte = parsedMaxPrice;
-
         // Optional rating filter
         if (rating !== undefined && rating !== null) {
             query.rating = { $gte: parseFloat(rating) };
@@ -765,7 +822,7 @@ export async function filters(request, response) {
         return response.status(200).json({
             error: false,
             success: true,
-            products,
+            products: sanitizePublicProducts(products),
             total,
             page: parseInt(page),
             totalPages: Math.ceil(total / parsedLimit)
@@ -803,14 +860,22 @@ const sortItems = (products, sortBy, order) => {
 
 export async function sortBy(request, response) {
     try {
-        const { products, sortBy, order } = request.body;
+    const { products, sortBy, order } = request.body;
+
+        if (sortBy === "price") {
+            return response.status(400).json({
+                error: true,
+                success: false,
+                message: "Price sorting is not available on customer-facing APIs.",
+            });
+        }
 
         const sortedItems = sortItems([...products], sortBy, order);
 
         return response.status(200).json({
             error: false,
             success: true,
-            products: sortedItems,
+            products: sanitizePublicProducts(sortedItems),
             totalPages: 0,
             page: 0,
         });
@@ -882,16 +947,17 @@ export async function SearchProductsController(req, res) {
       return res.json({ success: true, products: [] });
     }
 
-    // 🔹 Split query into words
-    let products = [];
+    const semanticProducts = await searchProductsSemantically(query, limit);
+    let textProducts = [];
 
     // 🔹 Build dynamic $and array where each word must match at least one field
     try {
-      products = await ProductModel.find(
+      textProducts = await ProductModel.find(
         { $text: { $search: query } },
         { score: { $meta: "textScore" } }
       )
         .sort({ score: { $meta: "textScore" }, dateCreated: -1 })
+        .select(PUBLIC_PRODUCT_SELECT)
         .limit(limit)
         .lean();
     } catch (searchError) {
@@ -899,7 +965,7 @@ export async function SearchProductsController(req, res) {
     }
 
     // 🔹 Query the database
-    if (!products.length) {
+    if (!textProducts.length) {
       const queryWords = query
         .split(/\s+/)
         .map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
@@ -915,10 +981,16 @@ export async function SearchProductsController(req, res) {
         ],
       }));
 
-      products = await ProductModel.find({ $and: andConditions })
+      textProducts = await ProductModel.find({ $and: andConditions })
+        .select(PUBLIC_PRODUCT_SELECT)
         .limit(limit)
         .lean();
     }
+
+    const products = mergeUniqueProducts(semanticProducts, textProducts).slice(
+      0,
+      limit,
+    );
 
     // 🔥 Log search (non-blocking)
     SearchLog.create({
@@ -931,7 +1003,7 @@ export async function SearchProductsController(req, res) {
       console.error("Failed to log search:", logError.message);
     });
 
-    return res.json({ success: true, products });
+    return res.json({ success: true, products: sanitizePublicProducts(products) });
 
   } catch (err) {
     console.error("Search error:", err);
@@ -952,7 +1024,7 @@ export async function getNewArrivals(req, res) {
         return res.status(200).json({
             error: false,
             success: true,
-            data: products,
+            data: sanitizePublicProducts(products),
             total: products.length,
         });
 
@@ -977,7 +1049,7 @@ export async function getBestSellers(req, res) {
         return res.status(200).json({
             error: false,
             success: true,
-            data: products,
+            data: sanitizePublicProducts(products),
             total: products.length,
         });
     } catch (error) {
@@ -1028,55 +1100,65 @@ export async function getSuggestions(req, res) {
 
     const results = [];
 
-    // 1) Try same sub-category (highest relevance)
-    if (subCatId) {
+    // 1) Semantic similarity from RAG/vector search.
+    if (productId) {
+      const docs = await getSemanticSimilarProducts(
+        productId,
+        desiredLimit,
+        excludeSet,
+      );
+      addUnique(results, docs);
+    }
+
+    // 2) Try same sub-category.
+    if (results.length < desiredLimit && subCatId) {
       const docs = await ProductModel.find({
         subCatId,
         _id: { $nin: Array.from(excludeSet) },
       })
-        .limit(desiredLimit)
+        .limit(Math.max(desiredLimit * 2, desiredLimit))
         .populate("category")
-        .exec();
-      addUnique(results, docs);
+        .lean();
+      addUnique(results, shuffleProducts(docs));
     }
 
-    // 2) Then same third-sub-category
+    // 3) Then same third-sub-category.
     if (results.length < desiredLimit && thirdSubCatId) {
       const docs = await ProductModel.find({
         thirdSubCatId,
         _id: { $nin: Array.from(excludeSet) },
       })
-        .limit(desiredLimit - results.length)
+        .limit(Math.max((desiredLimit - results.length) * 2, desiredLimit))
         .populate("category")
-        .exec();
-      addUnique(results, docs);
+        .lean();
+      addUnique(results, shuffleProducts(docs));
     }
 
-    // 3) Then same category
+    // 4) Then same category.
     if (results.length < desiredLimit && catId) {
       const docs = await ProductModel.find({
         catId,
         _id: { $nin: Array.from(excludeSet) },
       })
-        .limit(desiredLimit - results.length)
+        .limit(Math.max((desiredLimit - results.length) * 2, desiredLimit))
         .populate("category")
-        .exec();
-      addUnique(results, docs);
+        .lean();
+      addUnique(results, shuffleProducts(docs));
     }
 
-    // 4) Then same brand
+    // 5) Then same brand.
     if (results.length < desiredLimit && brand) {
       const docs = await ProductModel.find({
         brand,
         _id: { $nin: Array.from(excludeSet) },
       })
-        .limit(desiredLimit - results.length)
+        .limit(Math.max((desiredLimit - results.length) * 2, desiredLimit))
         .populate("category")
-        .exec();
-      addUnique(results, docs);
+        .lean();
+      addUnique(results, shuffleProducts(docs));
     }
 
-    // 5) Keyword / name similarity (either provided keywords or use product name)
+    // 6) Keyword / name similarity (either provided keywords or use product name).
     if (results.length < desiredLimit) {
       let keywordList = [];
       if (keywords) {
@@ -1111,15 +1193,15 @@ export async function getSuggestions(req, res) {
           $or: orQueries,
           _id: { $nin: Array.from(excludeSet) },
         })
-          .limit(desiredLimit - results.length)
+          .limit(Math.max((desiredLimit - results.length) * 2, desiredLimit))
           .populate("category")
-          .exec();
+          .lean();
 
-        addUnique(results, docs);
+        addUnique(results, shuffleProducts(docs));
       }
     }
 
-    // 6) Final fallback: random sampling (fills remaining slots)
+    // 7) Final fallback: random sampling (fills remaining slots).
     if (results.length < desiredLimit) {
       const remaining = desiredLimit - results.length;
       // Use aggregation $match + $sample
@@ -1135,8 +1217,8 @@ export async function getSuggestions(req, res) {
       // populate category for sampled docs (aggregate returns plain objects)
       const sampledIds = sampled.map((d) => d._id);
       if (sampledIds.length) {
-        const populated = await ProductModel.find({ _id: { $in: sampledIds } }).populate("category").exec();
-        addUnique(results, populated);
+        const populated = await ProductModel.find({ _id: { $in: sampledIds } }).populate("category").lean();
+        addUnique(results, shuffleProducts(populated));
       }
     }
 
@@ -1147,7 +1229,7 @@ export async function getSuggestions(req, res) {
     return res.status(200).json({
       error: false,
       success: true,
-      data: final,
+      data: sanitizePublicProducts(final),
       total: final.length,
     });
   } catch (error) {
@@ -1169,9 +1251,43 @@ export async function getRecentlyViewed(req, res) {
         return res.status(200).json({
             error: false,
             success: true,
-            data: products,
+            data: sanitizePublicProducts(products),
         });
     } catch (error) {
         return res.status(500).json({ error: true, success: false, message: error.message });
+    }
+}
+
+export async function getAllProductsForAdmin(request, response) {
+    try {
+        const page = Math.max(1, parseInt(request.query.page, 10) || 1);
+        const limit = Math.min(
+            100,
+            Math.max(1, parseInt(request.query.limit || request.query.perPage, 10) || 50)
+        );
+        const shouldPaginate = request.query.page || request.query.limit || request.query.perPage;
+
+        const query = ProductModel.find().sort({ dateCreated: -1 });
+        if (shouldPaginate) query.skip((page - 1) * limit).limit(limit);
+
+        const [products, total] = await Promise.all([
+            query.lean(),
+            shouldPaginate ? ProductModel.countDocuments() : undefined,
+        ]);
+
+        return response.status(200).json({
+            error: false,
+            success: true,
+            data: products,
+            ...(shouldPaginate
+                ? { total, page, totalPages: Math.ceil(total / limit), limit }
+                : {})
+        });
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false
+        });
     }
 }

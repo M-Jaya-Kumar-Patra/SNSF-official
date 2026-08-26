@@ -5,7 +5,7 @@ const isDev = process.env.NODE_ENV === "development";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://accounts.google.com https://www.google.com https://www.gstatic.com",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://accounts.google.com https://www.google.com https://www.gstatic.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://res.cloudinary.com https://snsteelfabrication.com https://lh3.googleusercontent.com https://img.youtube.com https://www.google.com https://www.gstatic.com",
   "font-src 'self' data:",
@@ -73,7 +73,7 @@ const nextConfig = withPWA({
   },
 
   experimental: {
-    optimizeCss: true,
+    optimizeCss: !isDev,
   },
 
   async headers() {

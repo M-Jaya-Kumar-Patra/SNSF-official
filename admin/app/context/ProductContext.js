@@ -13,7 +13,7 @@ const PrdProvider = ({ children }) => {
 
   const getProductsData = () => {
     setLoading(true);
-    fetchDataFromApi("/api/product/gaps")
+    fetchDataFromApi("/api/product/admin/gaps")
       .then((response) => {
         if (!response.error) {
           setPrdData(response?.data || []);

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { fetchDataFromApi, postData } from "@/utils/api";
 import { useAuth } from "@/app/context/AuthContext";
@@ -40,6 +40,7 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
     initialProduct?.images?.[0] || null
   );
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [recommendedProductIds, setRecommendedProductIds] = useState([]);
 
   const { addToWishlist, removeFromWishlist, wishlistData } = useWishlist();
   const { userData, isLogin, isCheckingToken } = useAuth();
@@ -48,6 +49,12 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
   const [hideArrows, setHideArrows] = useState(null);
 
   const router = useRouter();
+
+  const handleRecommendedItemsLoaded = useCallback((items) => {
+    setRecommendedProductIds(
+      (items || []).map((item) => item?._id).filter(Boolean),
+    );
+  }, []);
 
   useEffect(() => {
     if (initialProduct?._id) {
@@ -76,6 +83,10 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
     const timer = setTimeout(() => setShowSuggestions(true), 2500);
     return () => clearTimeout(timer);
   }, [prdId]);
+
+  useEffect(() => {
+    setRecommendedProductIds([]);
+  }, [openedProduct?._id]);
 
   useEffect(() => {
     if (!openedProduct?._id) return;
@@ -706,6 +717,7 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
             subCatId={openedProduct?.subCatId}
             thirdSubCatId={openedProduct?.thirdSubCatId}
             brand={openedProduct?.brand}
+            onItemsLoaded={handleRecommendedItemsLoaded}
           />
 
           <Suggestions
@@ -714,6 +726,7 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
             subCatId={openedProduct?.subCatId}
             thirdSubCatId={openedProduct?.thirdSubCatId}
             brand={openedProduct?.brand}
+            excludeIds={recommendedProductIds}
           />
         </div>
       )}

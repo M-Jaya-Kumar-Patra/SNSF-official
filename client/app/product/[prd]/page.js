@@ -180,16 +180,6 @@ export default async function Page({ params }) {
                   "@type": "Brand",
                   name: product.brand || "SNSF",
                 },
-                offers: {
-                  "@type": "Offer",
-                  priceCurrency: "INR",
-                  price: product.price || undefined,
-                  availability:
-                    product.countInStock > 0
-                      ? "https://schema.org/InStock"
-                      : "https://schema.org/OutOfStock",
-                  url: getAbsoluteProductUrl(product, SITE_URL),
-                },
               }),
             }}
           />

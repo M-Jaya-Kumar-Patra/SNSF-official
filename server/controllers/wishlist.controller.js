@@ -161,8 +161,7 @@ export const getMostWishlisted = async (req, res) => {
           _id: "$productId",
           count: { $sum: 1 },
           title: { $first: "$productTitle" },
-          image: { $first: "$image" },
-          price: { $first: "$price" }
+          image: { $first: "$image" }
         }
       },
       { $sort: { count: -1 } },

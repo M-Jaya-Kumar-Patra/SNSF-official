@@ -1,5 +1,6 @@
 import HomeSectionItem from "../models/homeSectionItem.model.js";
 import ProductModel from "../models/product.model.js";
+import { sanitizePublicProduct } from "../utils/publicProduct.js";
 
 // Create
 export const createHomeSectionItem = async (req, res) => {
@@ -80,10 +81,10 @@ export const getHomeSectionItems = async (req, res) => {
     if (productIds.length > 0) {
       const products = await ProductModel.find({
         _id: { $in: productIds }
-      }).select("name images price brand slug");
+      }).select("name images brand slug catName subCat thirdSubCat specifications");
 
       products.forEach(p => {
-        productsById[p._id.toString()] = p;
+        productsById[p._id.toString()] = sanitizePublicProduct(p);
       });
     }
 
@@ -176,7 +177,7 @@ export const searchProducts = async (req, res) => {
 
     const results = await ProductModel.find(filter)
       .limit(20)
-      .select("name images price brand slug");
+      .select("name images brand slug catName subCat thirdSubCat specifications");
 
     return res.status(200).json({
       success: true,

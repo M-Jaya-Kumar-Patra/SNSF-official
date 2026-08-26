@@ -22,6 +22,7 @@ const Recommendations = ({
   thirdSubCatId,
   brand,
   excludeProductId,
+  onItemsLoaded,
 }) => {
   const [recommended, setRecommended] = useState([]);
   const [hydrated, setHydrated] = useState(false);
@@ -85,8 +86,10 @@ const Recommendations = ({
 
         if (nextItems.length === 0) onEmpty?.();
         setRecommended(nextItems);
+        onItemsLoaded?.(nextItems);
       } catch {
         setRecommended([]);
+        onItemsLoaded?.([]);
         onEmpty?.();
       } finally {
         setLoading(false);
@@ -102,6 +105,7 @@ const Recommendations = ({
     hydrated,
     limit,
     onEmpty,
+    onItemsLoaded,
     subCatId,
     thirdSubCatId,
     userData?._id,

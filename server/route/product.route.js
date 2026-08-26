@@ -9,6 +9,7 @@ import {
 import {
   createProduct,
   getAllProducts,
+  getAllProductsForAdmin,
   uploadImages,
   getAllProductsByCatId,
   getAllProductsByCatName,
@@ -52,6 +53,7 @@ productRouter.post("/create", auth, invalidateProductCache, createProduct);
 
 // All products
 productRouter.get("/gaps", productCache, getAllProducts);
+productRouter.get("/admin/gaps", auth, getAllProductsForAdmin);
 
 // Category based
 productRouter.get("/gapsByCatId/:Id", productCache, getAllProductsByCatId);

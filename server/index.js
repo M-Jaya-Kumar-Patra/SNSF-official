@@ -27,6 +27,7 @@ import styleSpaceRouter from './route/styleYourSpace.route.js';
 import posterRouter from './route/poster.route.js';
 import analyticsRouter from './route/analytics.route.js';
 import videoRouter from './route/video.route.js';
+import aiRouter from './route/ai.route.js';
 import pingNest from "pingnest";
 
 
@@ -59,12 +60,14 @@ app.use(
   })
 );
 
-app.use(
-  pingNest({
-    apiKey: "pn_live_6727d68e11435dda761967dc653b29ba8bd472de88a23d3e",
-    service: "snsf-backend",
-  })
-);
+if (process.env.PINGNEST_API_KEY) {
+  app.use(
+    pingNest({
+      apiKey: process.env.PINGNEST_API_KEY,
+      service: "snsf-backend",
+    })
+  );
+}
 
 
 app.use(compression());
@@ -126,6 +129,8 @@ app.use("/api/poster", posterRouter);
 app.use("/api/analytics", analyticsRouter);
 
 app.use("/api/videos", videoRouter);
+
+app.use("/api/ai", aiRouter);
 
 app.use((err, req, res, next) => {
   if (!err) return next();

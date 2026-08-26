@@ -11,6 +11,7 @@ import {
 cacheResponse,
 invalidateCacheOnSuccess,
 } from "../middlewares/cache.js";
+import auth from "../middlewares/auth.js";
 
 
 const sectionRouter = express.Router();
@@ -21,12 +22,12 @@ const invalidateHomeSectionCache = invalidateCacheOnSuccess([
 ]);
 
 
-sectionRouter.post("/", invalidateHomeSectionCache, createHomeSectionItem);//body
-sectionRouter.put("/:id", invalidateHomeSectionCache, updateHomeSectionItem);//param, body
-sectionRouter.delete("/:id", invalidateHomeSectionCache, deleteHomeSectionItem);//param
 sectionRouter.get("/", homeSectionCache, getHomeSectionItems);//query
-sectionRouter.post("/reorder", invalidateHomeSectionCache, reorderHomeSectionItems);//body
-sectionRouter.get("/search", cacheResponse("productSearch", 60), searchProducts);//query4
+sectionRouter.post("/reorder", auth, invalidateHomeSectionCache, reorderHomeSectionItems);//body
+sectionRouter.get("/search", auth, cacheResponse("productSearch", 60), searchProducts);//query4
+sectionRouter.post("/", auth, invalidateHomeSectionCache, createHomeSectionItem);//body
+sectionRouter.put("/:id", auth, invalidateHomeSectionCache, updateHomeSectionItem);//param, body
+sectionRouter.delete("/:id", auth, invalidateHomeSectionCache, deleteHomeSectionItem);//param
 
 
 export default sectionRouter;

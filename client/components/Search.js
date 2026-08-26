@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowUpRight, Loader2, Search as SearchIcon, X } from "lucide-react";
 import { useScreen } from "@/app/context/ScreenWidthContext";
+import { useCat } from "@/app/context/CategoryContext";
 import SearchDropdownPortal from "./SearchDropdownPortal";
 import { searchWithTracking } from "@/utils/searchWithTracking";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
@@ -27,6 +28,7 @@ const Search = ({ onClose, navScrolled = null }) => {
   const router = useRouter();
   const pathname = usePathname();
   const pathName = usePathname();
+  const { catData } = useCat();
 
   const {
     isMd,
@@ -49,6 +51,23 @@ const Search = ({ onClose, navScrolled = null }) => {
   const collapsedWidth = "w-11";
 
   const currentWidth = isSearchExpanded ? expandedWidth : collapsedWidth;
+
+  const findMatchingCategory = (query) => {
+    const normalizedQuery = query.toLowerCase().trim();
+    if (!normalizedQuery || !Array.isArray(catData)) return null;
+
+    const singularQuery = normalizedQuery.replace(/s$/, "");
+    return catData.find((category) => {
+      const name = String(category?.name || "").toLowerCase().trim();
+      const singularName = name.replace(/s$/, "");
+      return (
+        normalizedQuery === name ||
+        singularQuery === singularName ||
+        normalizedQuery.includes(name) ||
+        normalizedQuery.includes(singularName)
+      );
+    });
+  };
 
   const updateDropdownPosition = () => {
     if (!inputWrapperRef.current) return;
@@ -187,11 +206,32 @@ const Search = ({ onClose, navScrolled = null }) => {
     router.push(getProductPath(item));
   };
 
+  const getListingPathFromProduct = (product) => {
+    if (product?.catId) return `/ProductListing?catId=${product.catId}`;
+    if (product?.subCatId) return `/ProductListing?subCatId=${product.subCatId}`;
+    if (product?.thirdSubCatId) {
+      return `/ProductListing?thirdSubCatId=${product.thirdSubCatId}`;
+    }
+    return null;
+  };
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      if (results.length) handleClickResult(results[0]);
-      else setIsDropdownVisible(false);
+      const matchingCategory = findMatchingCategory(searchQuery);
+
+      setSearchQuery("");
+      setResults([]);
+      setIsDropdownVisible(false);
+      setDeskSearch(false);
+
+      if (onClose) onClose();
+
+      if (matchingCategory?._id) {
+        router.push(`/ProductListing?catId=${matchingCategory._id}`);
+      } else if (results.length) {
+        router.push(getListingPathFromProduct(results[0]) || getProductPath(results[0]));
+      }
     }
 
     if (e.key === "Escape") {
@@ -230,13 +270,19 @@ const Search = ({ onClose, navScrolled = null }) => {
       >
         <div
           ref={inputWrapperRef}
-          className={`group flex h-11 w-full items-center gap-2 overflow-hidden rounded-full border bg-white px-3 shadow-sm transition duration-200 ${
+          className={`group flex h-11 w-full items-center overflow-hidden rounded-full border transition duration-200 ${
             isSearchExpanded
-              ? "border-slate-200 shadow-[0_10px_28px_rgba(15,23,42,0.16)] focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-white/60"
-              : "border-white/20 hover:border-white/40 hover:bg-slate-50"
+              ? "gap-2 border-slate-200 bg-white px-3 shadow-[0_10px_28px_rgba(15,23,42,0.16)] focus-within:border-slate-900 focus-within:ring-2 focus-within:ring-white/60"
+              : "justify-center border-transparent bg-transparent p-0 shadow-none"
           }`}
         >
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-800 transition group-focus-within:bg-slate-950 group-focus-within:text-white">
+          <span
+            className={`flex shrink-0 items-center justify-center rounded-full transition ${
+              isSearchExpanded
+                ? "h-8 w-8 bg-slate-950 text-white"
+                : "h-11 w-11 border border-white/20 bg-white text-slate-950 shadow-sm hover:bg-slate-50"
+            }`}
+          >
             {isSearching ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
@@ -268,7 +314,7 @@ const Search = ({ onClose, navScrolled = null }) => {
             spellCheck="false"
           />
 
-          {(deskSearch || searchQuery) && (
+          {isSearchExpanded && (deskSearch || searchQuery) && (
             <button
               type="button"
               aria-label={searchQuery ? "Clear search" : "Close search"}
