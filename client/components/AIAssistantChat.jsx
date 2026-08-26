@@ -30,7 +30,7 @@ const LANGUAGE_OPTIONS = [
 const STARTER_MESSAGES = {
   en: ["What products do you provide?", "Help me choose a steel bed", "What is the warranty policy?"],
   hi: ["आपके पास कौन-कौन से products हैं?", "मुझे steel bed चुनने में मदद करें", "Warranty policy क्या है?"],
-  od: ["ଆପଣଙ୍କ ପାଖରେ କେଉଁ products ଅଛନ୍ତି?", "ମୋତେ steel bed ଚୟନ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ", "Warranty policy କ'ଣ?"],
+  od: ["ଆପଣଙ୍କ ପାଖରେ କେଉଁ products ଅଛି?", "ମୋତେ steel bed ଚୟନ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ", "Warranty policy କ'ଣ?"],
 };
 
 function getLanguageMeta(language = "en") {
