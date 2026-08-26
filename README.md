@@ -1,54 +1,63 @@
 # SNSF - S N Steel Fabrication Business Platform
 
-A full-stack furniture e-commerce and business management platform built for **S N Steel Fabrication**. The repository contains a customer-facing website, an admin dashboard, an Express API, analytics tracking, recommendation jobs, and media/content management tools.
+A full-stack commerce and operations platform for S N Steel Fabrication. The repository includes a customer storefront, an admin dashboard, an Express API, media management, analytics, recommendation workflows, and an AI-powered product assistant.
 
 Live website: [snsteelfabrication.com](https://snsteelfabrication.com)
 
-## Project Overview
+## What’s new
 
-This project is split into three main applications:
+- AI-powered product assistant powered by a safe RAG pipeline with MongoDB vector search and product-safe prompt rules.
+- Recommendation engine with scheduled recommendation emails and background worker jobs.
+- Rich analytics and live user metrics for visits, product engagement, search, wishlist activity, and login trends.
+- Expanded admin capabilities for homepage management, posters, videos, dynamic sections, and content operations.
+- Improved storefront flows for product discovery, wishlist, profile, notifications, and serviceability checks.
 
-- `client` - Next.js customer website for browsing products, account flows, wishlist, enquiries, videos, posters, and home-page content.
-- `admin` - Next.js admin dashboard for managing products, categories, homepage content, videos, posters, users, enquiries, and analytics.
-- `server` - Node.js/Express API with MongoDB models, authentication, upload handling, analytics endpoints, recommendation services, queues, and workers.
+## Project structure
 
-## Features
+This project is split into three main apps:
 
-### Customer Website
+- `client` - Next.js storefront for browsing products, account flows, checkout-related actions, wishlist, enquiries, content pages, and PWA support.
+- `admin` - Next.js admin dashboard for catalog management, homepage content, user and enquiry management, and business analytics.
+- `server` - Express API with MongoDB models, authentication, Cloudinary uploads, analytics endpoints, recommendation jobs, and AI/RAG services.
 
-- Responsive product browsing for desktop and mobile.
-- Category, subcategory, and third-level category product discovery.
-- Product listing, filtering, sorting, search, suggestions, new arrivals, best sellers, and recently viewed products.
-- Product detail pages with image galleries, specifications, related content, and pincode serviceability checks.
-- Authentication flows for signup, login, email verification, OTP resend, forgot password, reset password, and Google sign-in.
-- Account pages for profile, address book, wishlist, enquiries, notifications, and payments.
-- Homepage sections for sliders, curated products, shop by room/category, posters, videos, style-your-space content, and trending content.
-- Visitor, page, search, and product-event tracking for analytics.
-- PWA/service-worker assets and SEO routes including sitemap and robots.txt.
+## Core features
 
-### Admin Dashboard
+### Customer storefront
 
-- Secure admin authentication and account management.
-- Product CRUD with image upload and Cloudinary integration.
-- Category and subcategory management.
-- Homepage manager, home slider manager, poster manager, video manager, and style-your-space manager.
+- Responsive product browsing with categories, subcategories, and third-level category filtering.
+- Search, sort, filters, suggestions, new arrivals, best sellers, recently viewed, and related product discovery.
+- Product detail pages with gallery, specifications, serviceability checks, and contextual content.
+- Authentication flows including signup, login, OTP/email verification, password reset, and Google sign-in.
+- Account pages for profile, addresses, wishlist, notifications, enquiries, and order-related actions.
+- Homepage modules for sliders, curated sections, posters, videos, style-your-space content, and trending content.
+- Visitor and product analytics tracking, page views, searches, and engagement events.
+- PWA support and SEO assets such as sitemap and robots.txt.
+- AI assistant for product guidance with safe, pricing-protected responses.
+
+### Admin dashboard
+
+- Admin authentication and account management.
+- Product CRUD with Cloudinary upload support.
+- Category, subcategory, and nested content management.
+- Homepage manager, home sliders, poster manager, video manager, and style-your-space content management.
 - User and enquiry management.
-- Analytics dashboard with KPIs, active users, live users, login activity, visitor trends, device/browser/country breakdowns, page engagement, product engagement, search insights, and wishlist leaderboard.
-- Promotional email tooling.
+- KPI dashboards with live user metrics, device and country breakdowns, visitor trends, product and page engagement analytics, andwishlist leaderboards.
+- Promotional email tooling and recommendation oversight.
 
-### Backend API
+### Backend and services
 
-- Express API with MongoDB/Mongoose data models.
+- Express API with MongoDB/Mongoose models.
 - JWT and cookie-based authentication for users and admins.
-- Google OAuth support.
-- Cloudinary-backed media upload for products, categories, posters, profile images, and videos.
-- Email services for verification, password reset, welcome, login, promotional, and recommendation emails.
+- Google OAuth and related auth integrations.
+- Cloudinary media uploads for products, categories, posters, profile photos, and videos.
+- Email services for verification, reset, welcome, login, promotional, and recommendation flows.
 - Analytics routes for visitor, session, page, product, search, user, and login metrics.
-- Recommendation service and scheduled recommendation email jobs.
-- Redis-backed cache, rate limiting, and BullMQ workers when Redis is configured.
-- Security and performance middleware including Helmet, CORS, compression, request size limits, and rate limiting.
+- Recommendation service and scheduled jobs for personalized email campaigns.
+- Redis-backed cache, queues, and BullMQ workers when Redis is configured.
+- RAG/AI service for product-safe knowledge ingestion and semantic retrieval.
+- Security and performance middleware including Helmet, CORS, compression, upload limits, and rate limiting.
 
-## Tech Stack
+## Tech stack
 
 | Area | Technologies |
 | --- | --- |
@@ -59,32 +68,32 @@ This project is split into three main applications:
 | Media | Cloudinary, Multer |
 | Email | Resend, Nodemailer |
 | Analytics/jobs | Redis, BullMQ, node-cron |
-| Other integrations | Firebase, Google Maps, Razorpay dependency support |
+| AI/RAG | MongoDB vector search, OpenAI/OpenRouter embeddings, semantic retrieval |
+| Other integrations | Firebase, Google Maps, Razorpay support |
 
-## Folder Structure
+## Repository layout
 
 ```text
 .
-├── admin/        # Admin dashboard built with Next.js
-├── client/       # Customer storefront built with Next.js
-├── server/       # Express API, models, controllers, routes, jobs, workers
-└── README.md
+├── admin/          # Next.js admin dashboard
+├── client/         # Next.js customer storefront
+├── server/         # Express API + workers + RAG services
+├── README.md       # Project overview and setup guide
+├── server/RAG_SETUP.md  # AI assistant setup and vector index configuration
+└── .gitignore
 ```
 
-## Getting Started
+## Prerequisites
 
-### Prerequisites
+- Node.js 18.18+ (20+ recommended)
+- npm
+- MongoDB connection string
+- Cloudinary account for media upload and transformations
+- Google OAuth credentials if you enable social sign-in
+- Redis URL when using queues, recommendations, or cache features
+- API keys for OpenAI/OpenRouter if using the AI assistant/RAG flow
 
-- Node.js 18.18 or newer. Node.js 20+ is recommended.
-- npm.
-- MongoDB database connection string.
-- Cloudinary account for media uploads.
-- Google OAuth credentials if Google login is enabled.
-- Redis URL if you want caching, queues, workers, or distributed rate limiting.
-
-### Install Dependencies
-
-Install dependencies separately because each app has its own `package.json`.
+## Install dependencies
 
 ```bash
 cd server
@@ -97,11 +106,9 @@ cd ../admin
 npm install
 ```
 
-### Environment Variables
+## Environment variables
 
-Create environment files in each app folder. The values below show the main variables used by the codebase.
-
-#### `server/.env`
+### `server/.env`
 
 ```env
 PORT=8000
@@ -127,11 +134,17 @@ cloudinary_Config_API_Secret=your_cloudinary_api_secret
 REDIS_URL=your_redis_url
 QUEUE_ENABLED=true
 RATE_LIMIT_ENABLED=true
+
+EMBEDDING_PROVIDER=openai
+OPENAI_API_KEY=your_openai_api_key
+AI_EMBEDDING_MODEL=text-embedding-3-small
+AI_PROVIDER=openai
+AI_CHAT_MODEL=gpt-4.1-mini
 ```
 
-Optional server settings include `JSON_BODY_LIMIT`, `UPLOAD_TMP_DIR`, `UPLOAD_MAX_FILE_SIZE_MB`, `UPLOAD_MAX_FILES`, `UPLOAD_ALLOWED_MIME_TYPES`, `VIDEO_UPLOAD_TMP_DIR`, `VIDEO_UPLOAD_MAX_FILE_SIZE_MB`, `RECOMMENDATION_CRON`, cache TTL values, and `SERVICEABLE_PINS_1`, `SERVICEABLE_PINS_2`, `SERVICEABLE_PINS_3`.
+Additional server settings may include `JSON_BODY_LIMIT`, `UPLOAD_*`, `VIDEO_UPLOAD_*`, `RECOMMENDATION_CRON`, `RAG_VECTOR_DRIVER`, `MONGODB_VECTOR_INDEX`, and related cache or rate limit variables.
 
-#### `client/.env.local`
+### `client/.env.local`
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
@@ -142,7 +155,7 @@ GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 MONGODB_URI=your_mongodb_connection_string
 ```
 
-#### `admin/.env.local`
+### `admin/.env.local`
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
@@ -152,7 +165,7 @@ MONGODB_URI=your_mongodb_connection_string
 MONGODB_URL=your_mongodb_connection_string
 ```
 
-### Run Locally
+## Run locally
 
 Start the API server:
 
@@ -177,56 +190,58 @@ npm run dev -- -p 3001
 
 Local URLs:
 
-- Customer website: [http://localhost:3000](http://localhost:3000)
-- Admin dashboard: [http://localhost:3001](http://localhost:3001)
-- API server: [http://localhost:8000](http://localhost:8000)
+- Customer storefront: http://localhost:3000
+- Admin dashboard: http://localhost:3001
+- API server: http://localhost:8000
 
-## Useful Scripts
+## Useful scripts
 
 | Location | Script | Purpose |
 | --- | --- | --- |
-| `client` | `npm run dev` | Run the customer website in development mode |
-| `client` | `npm run build` | Build the customer website |
-| `client` | `npm run start` | Start the built customer website |
-| `admin` | `npm run dev` | Run the admin dashboard in development mode |
+| `client` | `npm run dev` | Run the storefront |
+| `client` | `npm run build` | Build the storefront |
+| `client` | `npm run start` | Start the production storefront |
+| `admin` | `npm run dev` | Run the admin dashboard |
 | `admin` | `npm run build` | Build the admin dashboard |
-| `admin` | `npm run start` | Start the built admin dashboard on port 3001 |
+| `admin` | `npm run start` | Start the production admin app |
 | `server` | `npm run dev` | Run the API with nodemon |
 | `server` | `npm run start` | Run the API with Node |
-| `server` | `npm run worker` | Run BullMQ background workers |
-| `server` | `npm run cron:recommendations` | Run the recommendation cron process |
-| `server` | `npm run recommendations:once` | Execute recommendation emails once |
-| `server` | `npm run db:indexes` | Create configured MongoDB indexes |
+| `server` | `npm run worker` | Start BullMQ workers |
+| `server` | `npm run cron:recommendations` | Run recommendation jobs |
+| `server` | `npm run recommendations:once` | Trigger one-off recommendation processing |
+| `server` | `npm run db:indexes` | Create MongoDB indexes |
+| `server` | `npm run rag:ingest` | Ingest site knowledge for the AI assistant |
 
-## API Modules
+## Main API modules
 
-The server mounts these main route groups:
+The server mounts the following route groups:
 
-| Route prefix | Purpose |
-| --- | --- |
-| `/api/user` | User auth, profile, addresses, password flows, login analytics |
-| `/api/admin` | Admin auth, profile, stats, promotional email |
-| `/api/category` | Category and nested category management |
-| `/api/product` | Products, uploads, filters, search, best sellers, new arrivals, recently viewed |
-| `/api/wishlist` | Wishlist operations |
-| `/api/notice` | Notifications |
-| `/api/enquiries` | Customer enquiries |
-| `/api/visitor` | Visitor tracking |
-| `/api/analytics` | Dashboard analytics and live user metrics |
-| `/api/recommendations` | Product recommendation endpoints |
-| `/api/productEvent` | Product engagement tracking |
-| `/api/homeSlider` | Homepage slider content |
-| `/api/home-sections` | Dynamic homepage sections |
-| `/api/style-your-space` | Style-your-space content |
-| `/api/poster` | Poster content |
-| `/api/videos` | Video upload and listing |
+- `/api/user` - user auth, profile, addresses, password flows, notifications, and login analytics
+- `/api/admin` - admin auth, profile, stats, promotional email, and dashboard tools
+- `/api/category` - category and nested category management
+- `/api/product` - products, uploads, filters, search, best sellers, new arrivals, and similar catalog endpoints
+- `/api/wishlist` - wishlist actions
+- `/api/notice` - notification management
+- `/api/enquiries` - customer enquiries
+- `/api/visitor` - visitor tracking
+- `/api/analytics` - dashboard analytics and live user metrics
+- `/api/recommendations` - recommendation endpoints and queue jobs
+- `/api/productEvent` - product engagement tracking
+- `/api/home-sections` - homepage sections
+- `/api/style-your-space` - style-your-space content
+- `/api/poster` - poster content
+- `/api/videos` - video upload and listing
+- `/api/ai` - RAG-powered assistant endpoints
 
-## Deployment Notes
+## AI assistant notes
 
-- The customer and admin apps are Next.js applications and can be deployed independently.
-- The API server requires environment variables for MongoDB, token secrets, CORS origins, and any enabled integrations.
-- Redis is optional for basic API development, but required for background workers and Redis-backed queues/cache/rate limiting.
-- Keep `.env` and `.env.local` files out of version control.
+The storefront AI assistant is designed to answer questions from curated SNSF knowledge without exposing pricing or sensitive product data. Price queries are redirected to direct contact channels. See `server/RAG_SETUP.md` for setup instructions, vector index configuration, and ingestion commands.
+
+## Deployment notes
+
+- Customer and admin apps can be deployed independently as Next.js projects.
+- The API server requires database, media, auth, and optional AI/Redis configuration.
+- Keep `.env` and `.env.local` file contents out of source control.
 
 ## Author
 
@@ -234,4 +249,3 @@ The server mounts these main route groups:
 B.Tech IT | Full-Stack Developer  
 GitHub: [M-Jaya-Kumar-Patra](https://github.com/M-Jaya-Kumar-Patra)  
 Email: jayapatra2004@gmail.com
-

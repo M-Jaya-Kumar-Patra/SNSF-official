@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# SNSF Admin Dashboard
 
-## Getting Started
+This is the admin console for S N Steel Fabrication. It is built with Next.js and helps the operations team manage products, categories, media, homepage content, customer enquiries, and business analytics.
 
-First, run the development server:
+## Main features
+
+- Product catalog and inventory management
+- Category, subcategory, and nested structure updates
+- Homepage sliders, posters, videos, and dynamic content sections
+- User and enquiry management
+- KPI dashboards with analytics and live activity tracking
+- Promotional email workflows and content scheduling
+- Support for media upload and business-content operations
+
+## Run locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev -- -p 3001
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3001 to access the admin dashboard.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Required environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env.local` file in this folder:
 
-## Learn More
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_CLIENT_URL=http://localhost:3000
+GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+MONGODB_URI=your_mongodb_connection_string
+MONGODB_URL=your_mongodb_connection_string
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Project notes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- The admin app connects to the API server in the root `server` folder.
+- It is intended to run alongside the customer site and backend API in the same monorepo.
+- For platform-wide setup and AI features, see the root README and the server-side RAG setup guide.
