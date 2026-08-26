@@ -89,6 +89,8 @@ export default function AIAssistantChat() {
   const [loading, setLoading] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [messages, setMessages] = useState(() => [getWelcomeMessage("en")]);
+  const [panelHeight, setPanelHeight] = useState("100vh");
+  
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
   const panelRef = useRef(null);
@@ -107,17 +109,19 @@ export default function AIAssistantChat() {
     }
 
     const updateViewportHeight = () => {
-      const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      document.documentElement.style.setProperty("--snsf-viewport-height", `${viewportHeight}px`);
+      const vHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      setPanelHeight(`${vHeight}px`);
     };
 
     updateViewportHeight();
     const viewport = window.visualViewport;
     viewport?.addEventListener("resize", updateViewportHeight);
+    viewport?.addEventListener("scroll", updateViewportHeight);
     window.addEventListener("resize", updateViewportHeight);
 
     return () => {
       viewport?.removeEventListener("resize", updateViewportHeight);
+      viewport?.removeEventListener("scroll", updateViewportHeight);
       window.removeEventListener("resize", updateViewportHeight);
     };
   }, []);
@@ -129,36 +133,6 @@ export default function AIAssistantChat() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-
-    const disableBackgroundScroll = () => {
-      const scrollY = window.scrollY || window.pageYOffset;
-      document.documentElement.style.setProperty('--snsf-scroll-top', String(scrollY));
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.left = '0';
-      document.body.style.right = '0';
-      document.body.style.overflow = 'hidden';
-
-      const onTouchMove = (e) => {
-        if (!panelRef.current) return;
-        if (!panelRef.current.contains(e.target)) {
-          e.preventDefault();
-        }
-      };
-
-      document.addEventListener('touchmove', onTouchMove, { passive: false });
-
-      return () => {
-        document.removeEventListener('touchmove', onTouchMove, { passive: false });
-        const top = parseInt(document.body.style.top || '0') * -1;
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.left = '';
-        document.body.style.right = '';
-        document.body.style.overflow = '';
-        window.scrollTo(0, top || 0);
-      };
-    };
 
     const onPop = (e) => {
       if (ignorePopRef.current) {
@@ -181,14 +155,11 @@ export default function AIAssistantChat() {
         }
       } catch (err) {}
 
-      const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
-      const cleanupScroll = isMobile ? disableBackgroundScroll() : undefined;
-
       window.addEventListener('popstate', onPop);
 
       const onOutsidePointer = (e) => {
         try {
-          const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+          const isMobile = window.matchMedia('(max-width: 767px)').matches;
           if (isMobile) return;
           const target = e.target;
           if (!panelRef.current) return;
@@ -203,7 +174,6 @@ export default function AIAssistantChat() {
       return () => {
         document.removeEventListener('pointerdown', onOutsidePointer);
         window.removeEventListener('popstate', onPop);
-        if (typeof cleanupScroll === 'function') cleanupScroll();
         try {
           if (history.state && history.state.snsfAssistant) {
             ignorePopRef.current = true;
@@ -326,11 +296,12 @@ export default function AIAssistantChat() {
       {/* Animated Chat Window Container */}
       <section 
         ref={panelRef} 
-        className={`chatbot-panel-wrapper fixed inset-0 z-[1301] flex h-[var(--snsf-viewport-height,100vh)] w-full flex-col overflow-hidden border border-slate-200 bg-white text-slate-950 shadow-2xl shadow-slate-950/25 md:inset-y-auto md:bottom-24 md:right-6 md:left-auto md:h-[680px] md:w-[420px] md:rounded-3xl ${
+        style={{ height: open ? panelHeight : undefined }}
+        className={`chatbot-panel-wrapper fixed inset-0 z-[1301] flex w-full flex-col overflow-hidden border border-slate-200 bg-white text-slate-950 shadow-2xl shadow-slate-950/25 md:inset-y-auto md:bottom-24 md:right-6 md:left-auto md:h-[680px] md:w-[420px] md:rounded-3xl ${
           open ? "panel-enter" : "panel-exit"
         }`}
       >
-        <header className="flex items-center justify-between border-b border-slate-200 bg-slate-950 px-4 py-3.5 text-white">
+        <header className="flex items-center justify-between border-b border-slate-200 bg-slate-950 px-4 py-3.5 text-white shrink-0">
           <div className="flex min-w-0 items-center gap-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-700 text-white shadow-inner border border-white/10">
               <Bot className="h-5 w-5 text-indigo-400 animate-pulse" />
@@ -367,7 +338,7 @@ export default function AIAssistantChat() {
           </div>
         </header>
 
-        <div className="assistant-scroll flex-1 overflow-y-auto bg-slate-50/70 p-4">
+        <div className="assistant-scroll flex-1 overflow-y-auto bg-slate-50/70 p-4 min-h-0">
           <div className="space-y-4">
             {messages.map((message, index) => (
               <div
@@ -458,7 +429,7 @@ export default function AIAssistantChat() {
           </div>
         </div>
 
-        <div className="border-t border-slate-200 bg-white p-3.5">
+        <div className="border-t border-slate-200 bg-white p-3.5 shrink-0">
           <div className="mb-2.5 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {(STARTER_MESSAGES[selectedLanguage] || STARTER_MESSAGES.en).map((starter) => (
               <button
@@ -482,9 +453,6 @@ export default function AIAssistantChat() {
               ref={inputRef}
               value={input}
               onChange={(event) => setInput(event.target.value)}
-              onFocus={() => {
-                if (typeof window === "undefined") return;
-              }}
               placeholder="Ask about products, warranty..."
               className="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-base font-medium outline-none transition focus:border-slate-950 focus:bg-white focus:ring-2 focus:ring-slate-950/10"
             />
@@ -502,7 +470,6 @@ export default function AIAssistantChat() {
 
       {/* Modernized Floating Launcher Button */}
       <div className="chatbot-showroom">
-        {/* Attention message badge (Hidden automatically when bot window is open) */}
         <div className={`chatbot-attention ${open ? "chatbot-attention-hidden" : ""}`}>
           <div className="chatbot-attention-icon">
             <Sparkles className="h-4 w-4 text-amber-400 animate-spin" />
@@ -514,11 +481,9 @@ export default function AIAssistantChat() {
           <span className="chatbot-attention-arrow">→</span>
         </div>
 
-        {/* Ambient Pulsing Rings */}
         <span className={`chatbot-ring chatbot-ring-1 ${open ? "opacity-0" : ""}`} />
         <span className={`chatbot-ring chatbot-ring-2 ${open ? "opacity-0" : ""}`} />
 
-        {/* Main Launcher Button */}
         <button
           ref={openButtonRef}
           type="button"
@@ -533,8 +498,6 @@ export default function AIAssistantChat() {
               <Armchair className="h-7 w-7 text-white animate-bounce" strokeWidth={1.8} />
             )}
           </span>
-
-          {/* Active status pulse dot */}
           <span className="chatbot-status-dot" />
         </button>
       </div>
@@ -549,10 +512,22 @@ export default function AIAssistantChat() {
           justify-content: center;
         }
 
-        /* Panel opening/closing smooth animation wrapper */
         .chatbot-panel-wrapper {
           transform-origin: bottom right;
-          transition: all 350ms cubic-bezier(0.16, 1, 0.3, 1);
+          transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1), opacity 350ms ease;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+        }
+
+        @media (min-width: 768px) {
+          .chatbot-panel-wrapper {
+            top: auto;
+            left: auto;
+            right: 1.5rem;
+            bottom: 6rem;
+          }
         }
 
         .panel-enter {
