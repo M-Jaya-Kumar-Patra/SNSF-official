@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Bot, Loader2, MessageCircle, Phone, Send, X } from "lucide-react";
+import { Bot, Languages, Loader2, MessageCircle, Phone, Send, Volume2, X } from "lucide-react";
 import WhatsappIcon from "@/components/WhatsappIcon";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 import { getProductPath } from "@/utils/productUrl";
@@ -21,11 +21,36 @@ const CONTACT_ACTIONS = [
   },
 ];
 
-const STARTER_MESSAGES = [
-  "What products do you provide?",
-  "Help me choose a steel bed",
-  "What is the warranty policy?",
+const LANGUAGE_OPTIONS = [
+  { value: "en", label: "English", nativeLabel: "English", speech: "en-US" },
+  { value: "hi", label: "हिंदी", nativeLabel: "Hindi", speech: "hi-IN" },
+  { value: "od", label: "ଓଡ଼ିଆ", nativeLabel: "Odia", speech: "hi-IN" },
 ];
+
+const STARTER_MESSAGES = {
+  en: ["What products do you provide?", "Help me choose a steel bed", "What is the warranty policy?"],
+  hi: ["आपके पास कौन-कौन से products हैं?", "मुझे steel bed चुनने में मदद करें", "Warranty policy क्या है?"],
+  od: ["ଆପଣଙ୍କ ପାଖରେ କେଉଁ products ଅଛନ୍ତି?", "ମୋତେ steel bed ଚୟନ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ", "Warranty policy କ'ଣ?"],
+};
+
+function getLanguageMeta(language = "en") {
+  return LANGUAGE_OPTIONS.find((option) => option.value === language) || LANGUAGE_OPTIONS[0];
+}
+
+function getWelcomeMessage(language = "en") {
+  const copy = {
+    en: "Hi, I can help with SNSF products, materials, warranty, customization, and contact details. For prices, I will connect you with the shop directly.",
+    hi: "Namaste, main SNSF products, materials, warranty, customization aur contact details mein madad kar sakta hoon. Prices ke liye main aapko shop se direct connect kar dunga.",
+    od: "ନମସ୍କାର, ମୁଁ SNSF products, materials, warranty, customization ଏବଂ contact details ରେ ସାହାଯ୍ୟ କରିପାରିବି। Price ପାଇଁ ମୁଁ ଆପଣଙ୍କୁ shop ସହିତ direct connect କରିବି।",
+  };
+
+  return {
+    role: "assistant",
+    content: copy[language] || copy.en,
+    actions: CONTACT_ACTIONS,
+    products: [],
+  };
+}
 
 function ActionIcon({ type }) {
   if (type === "whatsapp") return <WhatsappIcon className="h-4 w-4" />;
@@ -51,24 +76,64 @@ export default function AIAssistantChat() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      role: "assistant",
-      content:
-        "Hi, I can help with SNSF products, materials, warranty, customization, and contact details. For prices, I will connect you with the shop directly.",
-      actions: CONTACT_ACTIONS,
-      products: [],
-    },
-  ]);
+  const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const [messages, setMessages] = useState(() => [getWelcomeMessage("en")]);
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
 
   const apiUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL || "", []);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const savedLanguage = window.localStorage.getItem("snsf-assistant-language");
+    if (savedLanguage && LANGUAGE_OPTIONS.some((option) => option.value === savedLanguage)) {
+      setSelectedLanguage(savedLanguage);
+      setMessages([getWelcomeMessage(savedLanguage)]);
+    }
+  }, []);
+
+  useEffect(() => {
     if (!open) return;
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, loading, open]);
+
+  const handleLanguageChange = (event) => {
+    const nextLanguage = event.target.value;
+    setSelectedLanguage(nextLanguage);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("snsf-assistant-language", nextLanguage);
+    }
+
+    setMessages((current) => {
+      if (current.length === 1 && current[0].role === "assistant") {
+        return [getWelcomeMessage(nextLanguage)];
+      }
+      return current;
+    });
+  };
+
+  const speakMessage = (text, language = selectedLanguage) => {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    const languageMeta = getLanguageMeta(language);
+    const preferredVoice =
+      window.speechSynthesis
+        .getVoices()
+        .find((voice) => voice.lang.toLowerCase().startsWith(languageMeta.speech.toLowerCase().slice(0, 2))) ||
+      window.speechSynthesis
+        .getVoices()
+        .find((voice) => voice.lang.toLowerCase().startsWith("en")) ||
+      null;
+
+    utterance.lang = languageMeta.speech;
+    if (preferredVoice) utterance.voice = preferredVoice;
+    utterance.rate = 1;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    window.speechSynthesis.speak(utterance);
+  };
 
   const sendMessage = async (text = input) => {
     const message = text.trim();
@@ -87,18 +152,24 @@ export default function AIAssistantChat() {
       const response = await fetch(`${apiUrl}/api/ai/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, recentProducts }),
+        body: JSON.stringify({ message, recentProducts, language: selectedLanguage }),
       });
       const data = await response.json();
+
+      const assistantContent = cleanAssistantText(
+        data?.answer ||
+          (selectedLanguage === "hi"
+            ? "Abhi mujhe answer mil nahi raha. Aap SNSF se direct contact kar sakte hain."
+            : selectedLanguage === "od"
+              ? "ବର୍ତ୍ତମାନ ମୁଁ ଉତ୍ତର ପାଇପାରିବି ନାହିଁ। ଆପଣ SNSF ସହିତ direct contact କରିପାରିବେ।"
+              : "I could not answer that right now. Please contact SNSF directly."),
+      );
 
       setMessages((current) => [
         ...current,
         {
           role: "assistant",
-          content: cleanAssistantText(
-            data?.answer ||
-              "I could not answer that right now. Please contact SNSF directly.",
-          ),
+          content: assistantContent,
           actions: data?.actions?.length ? data.actions : CONTACT_ACTIONS,
           products: data?.products || [],
         },
@@ -109,7 +180,11 @@ export default function AIAssistantChat() {
         {
           role: "assistant",
           content:
-            "Assistant is temporarily unavailable. You can still contact SNSF directly.",
+            selectedLanguage === "hi"
+              ? "Assistant अस्थायी रूप से उपलब्ध नहीं है। आप SNSF से direct contact कर सकते हैं."
+              : selectedLanguage === "od"
+                ? "Assistant କ୍ଷଣିକ ସମୟରେ ଉପଲବ୍ଧ ନାହିଁ। ଆପଣ SNSF ସହିତ direct contact କରିପାରିବେ।"
+                : "Assistant is temporarily unavailable. You can still contact SNSF directly.",
           actions: CONTACT_ACTIONS,
           products: [],
         },
@@ -134,14 +209,31 @@ export default function AIAssistantChat() {
                 <p className="truncate text-xs text-slate-300">Products and support</p>
               </div>
             </div>
-            <button
-              type="button"
-              aria-label="Close assistant"
-              onClick={() => setOpen(false)}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-slate-300 transition hover:bg-white/10 hover:text-white"
-            >
-              <X className="h-5 w-5" />
-            </button>
+            <div className="flex items-center gap-2">
+              <label className="flex items-center gap-1 rounded-full border border-slate-700 bg-slate-900 px-2 py-1.5 text-[10px] font-semibold text-slate-200">
+                <Languages className="h-3.5 w-3.5" />
+                <select
+                  aria-label="Choose assistant language"
+                  value={selectedLanguage}
+                  onChange={handleLanguageChange}
+                  className="appearance-none bg-transparent pr-4 text-[10px] font-semibold text-slate-100 outline-none"
+                >
+                  {LANGUAGE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value} className="bg-slate-900 text-slate-100">
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                type="button"
+                aria-label="Close assistant"
+                onClick={() => setOpen(false)}
+                className="flex h-9 w-9 items-center justify-center rounded-full text-slate-300 transition hover:bg-white/10 hover:text-white"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
           </header>
 
           <div className="assistant-scroll flex-1 overflow-y-auto bg-slate-50 p-3">
@@ -158,7 +250,19 @@ export default function AIAssistantChat() {
                         : "border border-slate-200 bg-white text-slate-700"
                     }`}
                   >
-                    <p className="whitespace-pre-line">{message.content}</p>
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="whitespace-pre-line">{message.content}</p>
+                      {message.role === "assistant" && (
+                        <button
+                          type="button"
+                          aria-label="Listen to assistant answer"
+                          onClick={() => speakMessage(message.content, selectedLanguage)}
+                          className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-600 transition hover:border-slate-400 hover:text-slate-950"
+                        >
+                          <Volume2 className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </div>
 
                     {message.products?.length > 0 && (
                       <div className="mt-3 space-y-2">
@@ -224,7 +328,7 @@ export default function AIAssistantChat() {
 
           <div className="border-t border-slate-200 bg-white p-3">
             <div className="mb-2 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-              {STARTER_MESSAGES.map((starter) => (
+              {(STARTER_MESSAGES[selectedLanguage] || STARTER_MESSAGES.en).map((starter) => (
                 <button
                   key={starter}
                   type="button"

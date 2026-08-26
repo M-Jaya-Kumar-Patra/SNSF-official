@@ -61,6 +61,17 @@ const LANGUAGE_LABELS = {
   od: "Odia",
 };
 
+function normalizeLanguage(value) {
+  const language = String(value || "").trim().toLowerCase();
+  if (!language) return null;
+
+  if (["en", "english"].includes(language)) return "en";
+  if (["hi", "hindi", "hinglish"].includes(language)) return "hi";
+  if (["od", "odia", "oriya", "or"].includes(language)) return "od";
+
+  return null;
+}
+
 function detectLanguage(message) {
   if (/[\u0B00-\u0B7F]/.test(message)) return "od";
   if (/[\u0900-\u097F]/.test(message)) return "hi";
@@ -383,7 +394,7 @@ async function callOpenAiLlm({ message, contextDocuments, products, language }) 
 export async function chatWithAssistant(req, res) {
   try {
     const message = cleanMessage(req.body?.message);
-    const language = detectLanguage(message);
+    const language = normalizeLanguage(req.body?.language) || detectLanguage(message);
     const recentProducts = cleanRecentProducts(req.body?.recentProducts);
     if (!message) {
       return res.status(400).json({
