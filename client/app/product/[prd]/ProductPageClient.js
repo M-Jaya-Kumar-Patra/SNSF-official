@@ -567,7 +567,7 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
         </div>
 
         {/* Right: Product Details */}
-        <div className="details px-4 py-5 text-slate-950 sm:p-7 lg:py-8">
+        <div className="details min-w-0 px-4 py-5 text-slate-950 sm:p-7 lg:py-8">
           <div className="mb-4 flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-700">
               <BadgeCheck className="h-4 w-4" />
@@ -580,7 +580,7 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
             )}
           </div>
 
-          <h1 className="max-w-[620px] text-[28px] font-semibold leading-tight text-slate-950 sm:text-[38px]">
+          <h1 className="w-full max-w-[620px] break-words text-[28px] font-semibold leading-tight text-slate-950 sm:text-[38px]">
             {openedProduct?.name}
           </h1>
 
