@@ -7,14 +7,8 @@ import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Checkbox from '@mui/material/Checkbox';
 import TablePagination from '@mui/material/TablePagination';
-import Modal from '@mui/material/Modal';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import CloseIcon from '@mui/icons-material/Close';
-import { fetchDataFromApi, postData } from '@/utils/api';
+import { useRouter } from 'next/navigation';
+import { fetchDataFromApi } from '@/utils/api';
 import { IoMdClose } from "react-icons/io";
 import { formatToIST } from '@/utils/dateFormater';
 
@@ -22,33 +16,11 @@ import { formatToIST } from '@/utils/dateFormater';
 
 
 const Admins = () => {
+  const router = useRouter();
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [showPromoMail, setShowPromoMail] = useState(false);
-
-const [promoSubject, setPromoSubject] = useState("");
-const [promoContent, setPromoContent] = useState("");
-const [isHtml, setIsHtml] = useState(false);
-
-const sendPromotionalMail = async () => {
-  if (!promoSubject || !promoContent) {
-    alert("Subject and content required");
-    return;
-  }
-
-  await postData("/api/admin/send-promotional-email", {
-      to: selectedUser.email,
-      name: selectedUser.name,
-      subject: promoSubject,
-      content: promoContent,
-      isHtml,
-    },
-  );
-
-  setShowPromoMail(false);
-};
 
 
 
@@ -61,14 +33,6 @@ const sendPromotionalMail = async () => {
       }
     });
   }, []);
-
-  useEffect(() => {
-  if (showPromoMail) {
-    setPromoSubject("");
-    setPromoContent("");
-    setIsHtml(false);
-  }
-}, [showPromoMail]);
 
   const handleChangePage = (_, newPage) => setPage(newPage);
   const handleChangeRowsPerPage = (e) => {
@@ -99,17 +63,6 @@ const Info = ({ label, value }) => (
     </span>
   </div>
 );
-
-
-const Field = ({ label, children }) => (
-  <div>
-    <label className="block text-sm font-semibold text-slate-700 mb-1">
-      {label}
-    </label>
-    {children}
-  </div>
-);
-
 
 
   return (
@@ -253,7 +206,7 @@ const Field = ({ label, children }) => (
       {/* ================= BODY ================= */}
       <div className="h-[calc(100%-80px)] overflow-y-auto px-6 py-6 space-y-8">
 <button
-  onClick={() => setShowPromoMail(true)}
+  onClick={() => router.push(`/PromotionalEmails?userId=${encodeURIComponent(selectedUser._id)}`)}
   className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow"
 >
   Send Promotional Email
@@ -337,108 +290,7 @@ const Field = ({ label, children }) => (
 )}
 
 
-{showPromoMail && (
-  <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60">
-    <div className="w-[95%] md:w-[700px] bg-white rounded-xl shadow-2xl overflow-hidden text-slate-900"  onClick={(e) => e.stopPropagation()} >
 
-      {/* ================= HEADER ================= */}
-      <div className="flex justify-between items-center px-6 py-4 border-b bg-slate-50">
-        <h2 className="text-lg font-bold text-slate-900">
-          Send Promotional Email
-        </h2>
-        <IoMdClose
-          className="text-2xl cursor-pointer text-slate-800 hover:text-red-600"
-          onClick={() => setShowPromoMail(false)}
-        />
-      </div>
-
-      {/* ================= BODY ================= */}
-      <div className="p-6 space-y-4">
-
-        {/* To */}
-        <Field label="To">
-          <input
-            value={selectedUser.email}
-            disabled
-            className="input text-slate-900 bg-slate-100 cursor-not-allowed"
-          />
-        </Field>
-
-        {/* Name */}
-        <Field label="User Name">
-          <input
-            value={selectedUser.name}
-            disabled
-            className="input text-slate-900 bg-slate-100 cursor-not-allowed"
-          />
-        </Field>
-
-        {/* Subject */}
-       <Field label="Subject">
-  <input
-    value={promoSubject}
-    placeholder="Enter email subject"
-    className="input text-slate-900 placeholder:text-slate-400"
-    onChange={(e) => setPromoSubject(e.target.value)}
-  />
-</Field>
-
-
-        {/* Type */}
-        <div className="flex gap-6 text-sm font-medium text-slate-800">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              checked={!isHtml}
-              onChange={() => setIsHtml(false)}
-              className="accent-indigo-600"
-            />
-            Plain Text
-          </label>
-
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              checked={isHtml}
-              onChange={() => setIsHtml(true)}
-              className="accent-indigo-600"
-            />
-            HTML
-          </label>
-        </div>
-
-        {/* Content */}
-        <Field label="Email Content">
-  <textarea
-    rows={6}
-    value={promoContent}
-    placeholder={isHtml ? "<p>Your HTML here</p>" : "Write your message"}
-    className="input text-slate-900 placeholder:text-slate-400 resize-none"
-    onChange={(e) => setPromoContent(e.target.value)}
-  />
-</Field>
-
-      </div>
-
-      {/* ================= FOOTER ================= */}
-      <div className="flex justify-end gap-3 px-6 py-4 border-t bg-slate-50">
-        <button
-          onClick={() => setShowPromoMail(false)}
-          className="px-4 py-2 text-sm font-medium text-slate-700 border rounded-lg hover:bg-slate-100"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={sendPromotionalMail}
-          className="px-4 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow"
-        >
-          Send Email
-        </button>
-      </div>
-
-    </div>
-  </div>
-)}
 
 
 

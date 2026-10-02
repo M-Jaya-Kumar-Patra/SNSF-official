@@ -1,89 +1,16 @@
-const passwordResetSuccessEmail = (
-  name = "Valued Customer"
-) => `
-<div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e5e7eb;font-family:Arial,Helvetica,sans-serif;">
+import renderEmailLayout, { emailButton, emailPanel, escapeHtml } from "./emailLayout.js";
 
-  <!-- Header -->
-  <div style="background:#0f172a;padding:28px 24px;text-align:center;">
-    <img
-      src="https://snsteelfabrication.com/images/logo.png"
-      alt="SNSF"
-      style="height:56px;margin-bottom:14px;"
-    />
-    <h1 style="margin:0;font-size:22px;font-weight:600;color:#ffffff;">
-      Password Updated Successfully
-    </h1>
-    <p style="margin:6px 0 0;font-size:14px;color:#cbd5f5;">
-      Your account security has been updated
-    </p>
-  </div>
-
-  <!-- Body -->
-  <div style="padding:32px 28px;color:#1f2937;">
-
-    <p style="font-size:16px;margin:0 0 14px;">
-      Hello <strong>${name}</strong>,
-    </p>
-
-    <p style="font-size:15px;line-height:1.7;margin:0 0 20px;color:#374151;">
-      This is a confirmation that the password for your
-      <strong>S N Steel Fabrication</strong> account has been
-      successfully changed.
-    </p>
-
-    <!-- Info Box -->
-    <div style="background:#f8fafc;border:1px solid #e5e7eb;border-radius:10px;padding:18px 20px;margin-bottom:22px;">
-      <p style="margin:0;font-size:14px;line-height:1.6;color:#374151;">
-        If you made this change, no further action is required.
-        Your account remains secure.
-      </p>
-    </div>
-
-    <p style="font-size:14px;line-height:1.6;color:#6b7280;margin:0 0 24px;">
-      If you do not recognize this activity, please contact our support team immediately
-      or log in to review your account details.
-    </p>
-
-    <!-- CTA -->
-    <div style="text-align:center;">
-      <a
-        href="https://snsteelfabrication.com/login"
-        target="_blank"
-        style="
-          display:inline-block;
-          background:#0f172a;
-          color:#ffffff;
-          text-decoration:none;
-          padding:12px 28px;
-          border-radius:8px;
-          font-size:14px;
-          font-weight:600;
-          letter-spacing:0.3px;
-        "
-      >
-        Log In to Your Account
-      </a>
-    </div>
-
-  </div>
-
-  <!-- Footer -->
-  <div style="background:#f9fafb;padding:22px 24px;text-align:center;font-size:12px;color:#6b7280;">
-    <p style="margin:0 0 6px;">
-      S N Steel Fabrication — Crafted Furniture for Modern Living
-    </p>
-    <p style="margin:0;">
-      New Burupada, Near Hanuman Temple, Via-Hinjilicut, Ganjam, Odisha – 761146
-    </p>
-    <p style="margin:6px 0 0;">
-      📞 +91 9776501230 | ✉️ support@snsteelfabrication.com
-    </p>
-    <p style="margin-top:14px;font-size:11px;color:#9ca3af;">
-      This is an automated security confirmation email.
-    </p>
-  </div>
-
-</div>
-`;
+const passwordResetSuccessEmail = (name = "Valued Customer") =>
+  renderEmailLayout({
+    title: "Password updated successfully",
+    preheader: "Your account security has been updated.",
+    content: `
+      <p style="margin:0 0 16px;">Hello <strong>${escapeHtml(name)}</strong>,</p>
+      <p style="margin:0;">The password for your S N Steel Fabrication account has been changed successfully.</p>
+      ${emailPanel("If you made this change, no further action is needed. Your account is ready to use.")}
+      <p style="margin:0;color:#526b7a;font-size:14px;">If you do not recognize this activity, please contact our support team immediately and review your account.</p>
+      ${emailButton("Log in to your account", "https://snsteelfabrication.com/login")}`,
+    footerNote: "This is an automated security confirmation email.",
+  });
 
 export default passwordResetSuccessEmail;

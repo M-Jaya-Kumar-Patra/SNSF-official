@@ -8,6 +8,7 @@ import Inventory2Icon from "@mui/icons-material/Inventory2";
 import CategoryIcon from "@mui/icons-material/Category";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 import SlideshowIcon from "@mui/icons-material/Slideshow";
 import ViewQuiltIcon from "@mui/icons-material/ViewQuilt";
 import ChairIcon from "@mui/icons-material/Chair";
@@ -25,6 +26,7 @@ const navItems = [
   { label: "Categories", path: "/Categories", icon: CategoryIcon },
   { label: "Subcategories", path: "/Subcategories", icon: AccountTreeIcon },
   { label: "Users", path: "/Users", icon: PeopleAltIcon },
+  { label: "Promotional Emails", path: "/PromotionalEmails", icon: MarkEmailReadIcon },
   { label: "Home Slider", path: "/HomeSlider", icon: SlideshowIcon },
   { label: "Homepage Manager", path: "/HomepageManager", icon: ViewQuiltIcon },
   { label: "Style Your Space", path: "/StyleYourSpace", icon: ChairIcon },

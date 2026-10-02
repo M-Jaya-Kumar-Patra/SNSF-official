@@ -9,7 +9,7 @@ This is the admin console for S N Steel Fabrication. It is built with Next.js an
 - Homepage sliders, posters, videos, and dynamic content sections
 - User and enquiry management
 - KPI dashboards with analytics and live activity tracking
-- Promotional email workflows and content scheduling
+- Promotional email composer for selected users or all users, with custom HTML, image upload, preview, and a localhost-only test inbox
 - Support for media upload and business-content operations
 
 ## Run locally

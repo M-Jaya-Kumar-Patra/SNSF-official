@@ -194,6 +194,12 @@ Local URLs:
 - Admin dashboard: http://localhost:3001
 - API server: http://localhost:8000
 
+### Promotional emails
+
+Open **Promotional emails** in the admin sidebar to write HTML or plain text, upload or insert public HTTPS images, preview the body, and choose selected users or all users. The branded header and footer are added to every message. Only an active, verified admin account can load recipients, upload campaign images, or send a campaign.
+
+For safety, campaigns reach real users only when the API runs with `NODE_ENV=production` **and** the request Origin is exactly `https://admin.snsteelfabrication.com`. Every other origin sends a single preview to `jayapatra2004@gmail.com`, regardless of the selected audience. Other outbound emails from a nonproduction API are also redirected to this test inbox. The API sends production campaigns in batches and reports how many messages the mail provider accepted; this is not a delivery confirmation.
+
 ## Useful scripts
 
 | Location | Script | Purpose |

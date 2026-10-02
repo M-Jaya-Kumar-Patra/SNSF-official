@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import AdminModel from "../models/admin.model.js";
+import UserModel from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import sendEmailFun from "../config/sendEmail.js";
@@ -8,6 +9,9 @@ import generatedAccessToken from '../utils/generatedAccessToken.js';
 import generatedRefreshToken from '../utils/generatedRefreshToken.js';
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
+import { canSendPromotionalEmailToUsers } from "../utils/promotionalEmailPolicy.js";
+import { uniqueCampaignUsers } from "../utils/promotionalEmailPolicy.js";
+import { deliverPromotionalCampaign } from "../services/promotionalCampaign.service.js";
 
 cloudinary.config({
     cloud_name: process.env.cloudinary_Config_Cloud_Name,
@@ -211,8 +215,6 @@ export async function loginController(request, response) {
         console.log(admin?.body?.name)
         response.cookie("accessToken", accessToken, cookieOptions);
         response.cookie("refreshToken", refreshToken, cookieOptions);
-        console.log(accessToken, refreshToken)
-
         return response.json({
             message: "Login successfully",
             error: false,
@@ -901,24 +903,93 @@ export async function resendOTP(request, response){
 
 
 
-import promotionalTemplate from "../utils/EmailTemplates/prommotionalEmail.js";
+export async function promotionalRecipients(req, res) {
+  try {
+    const users = await UserModel.find({ email: { $exists: true, $ne: "" } })
+      .select("_id name email")
+      .lean();
+    return res.status(200).json({
+      success: true,
+      users: uniqueCampaignUsers(users),
+      testMode: !canSendPromotionalEmailToUsers(req.get("origin")),
+    });
+  } catch (error) {
+    console.error("Promotional recipients lookup failed:", error);
+    return res.status(500).json({ success: false, message: "Unable to load recipients." });
+  }
+}
 
 export async function promotionalEmail(req, res) {
   try {
-    const { to, name, subject, content, isHtml } = req.body;
+    const { audience, userIds, subject, content, isHtml } = req.body || {};
+    if (
+      !["all", "selected"].includes(audience) ||
+      typeof subject !== "string" ||
+      !subject.trim() ||
+      subject.length > 200 ||
+      /[\r\n]/.test(subject) ||
+      typeof content !== "string" ||
+      !content.trim() ||
+      content.length > 750_000 ||
+      typeof isHtml !== "boolean"
+    ) {
+      return res.status(400).json({ success: false, message: "Provide a valid audience, subject, content, and format." });
+    }
 
-    const html = promotionalTemplate(name, subject, content, isHtml);
+    const testMode = !canSendPromotionalEmailToUsers(req.get("origin"));
+    if (
+      !testMode && audience === "selected" &&
+      (!Array.isArray(userIds) || !userIds.length || userIds.length > 5000 ||
+        userIds.some((id) => typeof id !== "string" || !mongoose.isValidObjectId(id)))
+    ) {
+      return res.status(400).json({ success: false, message: "Select at least one valid user." });
+    }
 
-    await sendEmailFun(
-      to,
-      subject,
-      isHtml ? "" : content,
-      html
-    );
+    let users = [];
+    if (!testMode) {
+      const query = audience === "all"
+        ? { email: { $exists: true, $ne: "" } }
+        : { _id: { $in: [...new Set(userIds)] } };
+      users = await UserModel.find(query).select("name email").lean();
+      if (!users.length) {
+        return res.status(404).json({ success: false, message: "No users with email addresses were found." });
+      }
+    }
 
-    res.status(200).json({ success: true });
+    const result = await deliverPromotionalCampaign({
+      users,
+      subject: subject.trim(),
+      content,
+      isHtml,
+      testMode,
+    });
+    return res.status(result.success ? 200 : 502).json({
+      ...result,
+      message: result.message || (result.testMode
+        ? (result.success ? "Preview sent to the test inbox." : "The preview email was not accepted by the provider.")
+        : `${result.sentCount} of ${result.recipientCount} emails accepted by the provider.`),
+    });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    console.error("Promotional email failed:", err);
+    return res.status(500).json({ success: false, message: "Unable to send this campaign." });
+  }
+}
+
+export async function promotionalImage(req, res) {
+  try {
+    if (!req.file || !["image/jpeg", "image/png", "image/webp", "image/gif"].includes(req.file.mimetype)) {
+      return res.status(400).json({ success: false, message: "Upload a JPG, PNG, WebP, or GIF image." });
+    }
+
+    const uploaded = await cloudinary.uploader.upload(req.file.path, {
+      folder: "snsf/promotional-email",
+      resource_type: "image",
+      transformation: [{ width: 1400, crop: "limit", quality: "auto" }],
+    });
+    return res.status(200).json({ success: true, url: uploaded.secure_url });
+  } catch (error) {
+    console.error("Promotional image upload failed:", error);
+    return res.status(500).json({ success: false, message: "Unable to upload the image." });
   }
 }
 
