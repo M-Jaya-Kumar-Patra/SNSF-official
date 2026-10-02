@@ -175,11 +175,25 @@ function cleanMessage(value) {
   return String(value || "").replace(/\s+/g, " ").trim().slice(0, 1000);
 }
 
-function cleanRecentProducts(value) {
+async function cleanRecentProducts(value) {
   if (!Array.isArray(value)) return [];
-  return sanitizePublicProducts(value)
-    .filter((product) => product?._id || product?.id || product?.slug)
-    .slice(0, 6);
+  const ids = [...new Set(value.slice(0, 6)
+    .map((product) => String(product?._id || product?.id || ""))
+    .filter((id) => /^[a-f\d]{24}$/i.test(id)))];
+  if (!ids.length) return [];
+  const products = await ProductModel.find({ _id: { $in: ids } })
+    .select("-price -oldPrice -discount")
+    .lean();
+  const byId = new Map(products.map((product) => [String(product._id), product]));
+  return sanitizePublicProducts(ids.map((id) => byId.get(id)).filter(Boolean));
+}
+
+function cleanConversation(value) {
+  if (!Array.isArray(value)) return [];
+  return value.slice(-6).filter((entry) =>
+    entry && ["user", "assistant"].includes(entry.role) && typeof entry.content === "string"
+  ).map((entry) => ({ role: entry.role, content: cleanMessage(entry.content).slice(0, 500) }))
+    .filter((entry) => entry.content);
 }
 
 async function parseProviderError(response, label) {
@@ -289,18 +303,19 @@ function buildFallbackAnswer(message, products, language = "en") {
   return localizedText(language, "fallback");
 }
 
-async function callLlm({ message, contextDocuments, products, language }) {
+async function callLlm({ message, contextDocuments, products, language, conversation }) {
   const provider = (process.env.AI_PROVIDER || "openai").toLowerCase();
   if (provider === "openrouter") {
-    return callOpenRouterLlm({ message, contextDocuments, products, language });
+    return callOpenRouterLlm({ message, contextDocuments, products, language, conversation });
   }
 
-  return callOpenAiLlm({ message, contextDocuments, products, language });
+  return callOpenAiLlm({ message, contextDocuments, products, language, conversation });
 }
 
-function buildUserPrompt({ message, contextDocuments, products, language }) {
+function buildUserPrompt({ message, contextDocuments, products, language, conversation }) {
   return [
     `Customer question: ${message}`,
+    conversation.length ? `Recent conversation (for reference only; verify facts against safe SNSF context):\n${conversation.map((entry) => `${entry.role}: ${entry.content}`).join("\n")}` : "",
     `Reply language: ${LANGUAGE_LABELS[language] || LANGUAGE_LABELS.en}. Use the same language style as the customer. Keep product names, brand names, phone numbers, and addresses unchanged.`,
     "Safe SNSF context:",
     ...contextDocuments.map((doc) => `${doc.title}\n${doc.text}`),
@@ -314,7 +329,7 @@ function buildUserPrompt({ message, contextDocuments, products, language }) {
     .join("\n\n");
 }
 
-async function callOpenRouterLlm({ message, contextDocuments, products, language }) {
+async function callOpenRouterLlm({ message, contextDocuments, products, language, conversation }) {
   if (!process.env.OPENROUTER_API_KEY) return null;
 
   const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -337,7 +352,7 @@ async function callOpenRouterLlm({ message, contextDocuments, products, language
         },
         {
           role: "user",
-          content: buildUserPrompt({ message, contextDocuments, products, language }),
+          content: buildUserPrompt({ message, contextDocuments, products, language, conversation }),
         },
       ],
       temperature: 0.2,
@@ -355,7 +370,7 @@ async function callOpenRouterLlm({ message, contextDocuments, products, language
   return data?.choices?.[0]?.message?.content || null;
 }
 
-async function callOpenAiLlm({ message, contextDocuments, products, language }) {
+async function callOpenAiLlm({ message, contextDocuments, products, language, conversation }) {
   if (!process.env.OPENAI_API_KEY) return null;
 
   const response = await fetch("https://api.openai.com/v1/responses", {
@@ -373,7 +388,7 @@ async function callOpenAiLlm({ message, contextDocuments, products, language }) 
         },
         {
           role: "user",
-          content: buildUserPrompt({ message, contextDocuments, products, language }),
+          content: buildUserPrompt({ message, contextDocuments, products, language, conversation }),
         },
       ],
       temperature: 0.2,
@@ -395,7 +410,7 @@ export async function chatWithAssistant(req, res) {
   try {
     const message = cleanMessage(req.body?.message);
     const language = normalizeLanguage(req.body?.language) || detectLanguage(message);
-    const recentProducts = cleanRecentProducts(req.body?.recentProducts);
+    const conversation = cleanConversation(req.body?.conversation);
     if (!message) {
       return res.status(400).json({
         success: false,
@@ -415,6 +430,7 @@ export async function chatWithAssistant(req, res) {
       return res.status(200).json(ownerResponse(language));
     }
 
+    const recentProducts = await cleanRecentProducts(req.body?.recentProducts);
     if (LINK_INTENT.test(message) && recentProducts.length) {
       return res.status(200).json({
         success: true,
@@ -437,16 +453,17 @@ export async function chatWithAssistant(req, res) {
     const products = shouldReturnProducts ? await retrieveProducts(message) : [];
     const ragDocuments = await retrieveRagContext(message, { limit: 6 });
     const productDocuments = products.map(buildRagProductDocument).filter(Boolean);
-    const contextDocuments = [...ragDocuments, ...STATIC_KNOWLEDGE, ...productDocuments]
+    const recentProductDocuments = recentProducts.map(buildRagProductDocument).filter(Boolean);
+    const contextDocuments = [...STATIC_KNOWLEDGE, ...productDocuments, ...recentProductDocuments, ...ragDocuments]
       .filter((doc, index, all) => {
         const key = `${doc.sourceType}:${doc.sourceId || doc.id || doc.title}`;
         return all.findIndex((item) => `${item.sourceType}:${item.sourceId || item.id || item.title}` === key) === index;
       })
-      .slice(0, 8);
+      .slice(0, 12);
 
     let answer = null;
     try {
-      answer = await callLlm({ message, contextDocuments, products, language });
+      answer = await callLlm({ message, contextDocuments, products, language, conversation });
     } catch (error) {
       const reason =
         error.code === "insufficient_quota"

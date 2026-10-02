@@ -174,6 +174,7 @@ const ProductListing = () => {
                     <button
                       type="button"
                       aria-label={`View ${product?.name || "product"}`}
+                      data-product-path={getProductPath(product)}
                       className="relative block aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-100"
                       onClick={() => router.push(getProductPath(product))}
                     >

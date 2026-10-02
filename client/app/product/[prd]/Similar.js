@@ -145,6 +145,7 @@ const Similar = (props) => {
                 .map((prd, index) => (
                   <div
                     key={prd._id || index}
+                    data-product-path={getProductPath(prd)}
                     className="min-w-[256px] max-w-[256px] p-2 bg-white shadow-md flex flex-col items-center justify-start gap-3 transition-transform duration-300 group hover:scale-105 cursor-pointer"
                     onClick={() => router.push(getProductPath(prd))}
                   >

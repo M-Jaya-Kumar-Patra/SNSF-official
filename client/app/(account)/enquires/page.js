@@ -95,6 +95,7 @@ const Account = () => {
                     .map((enq) => (
                       <div
                         key={enq._id}
+                        data-product-path={`/product/${enq.prdId}`}
                         onClick={() => router.push(`/product/${enq.prdId}`)}
                         className="cursor-pointer rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg"
                       >

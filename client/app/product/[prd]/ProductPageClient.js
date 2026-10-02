@@ -6,6 +6,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
 import Image from "next/image";
+import Link from "next/link";
 import { useWishlist } from "@/app/context/WishlistContext";
 import ProductSpecs from "@/components/ProductSpecs";
 import { RxCross2 } from "react-icons/rx";
@@ -24,6 +25,7 @@ import {
 } from "lucide-react";
 import { getCloudinaryImageUrl } from "@/utils/cloudinary";
 import { getProductPath } from "@/utils/productUrl";
+import AIDesignPromo from "@/components/AIDesignPromo";
 
 const Suggestions = dynamic(() => import("@/components/Suggestions"), {
   ssr: false,
@@ -583,6 +585,13 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
           <h1 className="w-full max-w-[620px] break-words text-[28px] font-semibold leading-tight text-slate-950 sm:text-[38px]">
             {openedProduct?.name}
           </h1>
+
+          {openedProduct?._id && (
+            <AIDesignPromo
+              productId={openedProduct._id}
+              compact
+            />
+          )}
 
           <p className="mt-3 text-[15px] font-medium text-slate-500 sm:text-[16px]">
             {openedProduct?.brand

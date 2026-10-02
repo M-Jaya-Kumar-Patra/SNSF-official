@@ -232,10 +232,15 @@ The server mounts the following route groups:
 - `/api/poster` - poster content
 - `/api/videos` - video upload and listing
 - `/api/ai` - RAG-powered assistant endpoints
+- `/api/designs` - customer AI design previews, saved specifications, material library, and design enquiries
 
 ## AI assistant notes
 
 The storefront AI assistant is designed to answer questions from curated SNSF knowledge without exposing pricing or sensitive product data. Price queries are redirected to direct contact channels. See `server/RAG_SETUP.md` for setup instructions, vector index configuration, and ingestion commands.
+
+## AI design studio
+
+The storefront includes `/design-studio`. Customers can customize a catalogue product or describe a new furniture idea, choose admin-published materials and dimensions, generate a concept preview, save the specification, and open a WhatsApp enquiry. Admins manage options in `CustomizationLibrary` and follow up from `DesignEnquiries`. Keep `DESIGN_STUDIO_ENABLED=false` until the selected image provider (OpenAI or Cloudflare Workers AI), Cloudinary storage, material library, and internal review process are ready. See `server/DESIGN_STUDIO_SETUP.md`.
 
 ## Deployment notes
 

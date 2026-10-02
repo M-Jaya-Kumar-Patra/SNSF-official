@@ -193,6 +193,7 @@ const ProductListingContent = () => {
                       <button
                         type="button"
                         aria-label={`View ${prd?.name || "product"}`}
+                        data-product-path={getProductPath(prd)}
                         className="relative block aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-100"
                         onClick={() => {
                             const path = getProductPath(prd);

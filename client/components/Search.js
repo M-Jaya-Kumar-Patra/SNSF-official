@@ -196,6 +196,11 @@ const Search = ({ onClose, navScrolled = null }) => {
   const handleClickResult = (item) => {
     justNavigatedRef.current = true;
 
+    const productPath = getProductPath(item);
+    window.dispatchEvent(
+      new CustomEvent("snsf:productClick", { detail: { path: productPath } }),
+    );
+
     setSearchQuery("");
     setResults([]);
     setIsDropdownVisible(false);
@@ -203,7 +208,7 @@ const Search = ({ onClose, navScrolled = null }) => {
 
     if (onClose) onClose();
 
-    router.push(getProductPath(item));
+    router.push(productPath);
   };
 
   const getListingPathFromProduct = (product) => {
@@ -230,7 +235,16 @@ const Search = ({ onClose, navScrolled = null }) => {
       if (matchingCategory?._id) {
         router.push(`/ProductListing?catId=${matchingCategory._id}`);
       } else if (results.length) {
-        router.push(getListingPathFromProduct(results[0]) || getProductPath(results[0]));
+        const destination =
+          getListingPathFromProduct(results[0]) || getProductPath(results[0]);
+        if (destination.startsWith("/product/")) {
+          window.dispatchEvent(
+            new CustomEvent("snsf:productClick", {
+              detail: { path: destination },
+            }),
+          );
+        }
+        router.push(destination);
       }
     }
 
@@ -353,6 +367,7 @@ const Search = ({ onClose, navScrolled = null }) => {
                       <li key={item._id}>
                         <button
                           type="button"
+                          data-product-path={getProductPath(item)}
                           onMouseDown={(e) => {
                             e.preventDefault();
                             e.stopPropagation();

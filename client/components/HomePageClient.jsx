@@ -9,6 +9,7 @@ import Slider from "@/components/Slider";
 import { fetchDataFromApi, postData } from "@/utils/api";
 import { getDeviceId } from "@/utils/deviceId";
 import { useScreen } from "@/app/context/ScreenWidthContext";
+import AIDesignPromo from "@/components/AIDesignPromo";
 
 const PosterGrid = dynamic(() => import("@/components/PosterGrid"), {
   ssr: false,
@@ -115,6 +116,10 @@ export default function HomePageClient({
 
       <section className="flex justify-center max-w-[1600px] mx-auto md:hidden min-h-[170px] sm:min-h-[260px] mt-3 mb-4 sm:mt-4 md:mt-6 px-2 sm:px-4 md:px-6">
         <Shopbycat />
+      </section>
+
+      <section className="mx-auto mt-3 w-full max-w-[1600px] px-2 sm:mt-5 sm:px-4 md:mt-7 md:px-6">
+        <AIDesignPromo />
       </section>
 
       <section className="flex justify-center min-h-[430px] sm:min-h-[560px] lg:min-h-[620px] max-w-[1600px] mx-auto mt-2 sm:mt-4 md:mt-6 px-2 sm:px-4 md:px-6">

@@ -55,6 +55,7 @@ const HotDeal = () => {
               .map((prd, idx) => (
                 <div
                   key={idx}
+                  data-product-path={getProductPath(prd?.product)}
                   onClick={() =>
                     router.push(getProductPath(prd?.product))
                   }

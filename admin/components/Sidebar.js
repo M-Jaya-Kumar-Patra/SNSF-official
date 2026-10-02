@@ -20,6 +20,8 @@ import LogoutBTN from "./LogoutBTN";
 const navItems = [
   { label: "Dashboard", path: "/", icon: DashboardIcon },
   { label: "Products", path: "/Products", icon: Inventory2Icon },
+  { label: "Material Library", path: "/CustomizationLibrary", icon: ChairIcon },
+  { label: "Design Enquiries", path: "/DesignEnquiries", icon: ImageIcon },
   { label: "Categories", path: "/Categories", icon: CategoryIcon },
   { label: "Subcategories", path: "/Subcategories", icon: AccountTreeIcon },
   { label: "Users", path: "/Users", icon: PeopleAltIcon },

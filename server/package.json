@@ -11,7 +11,8 @@
     "cron:recommendations": "node workers/recommendationCron.js",
     "recommendations:once": "node --input-type=module -e \"process.env.RUN_RECOMMENDATION_ONCE='true'; await import('./workers/recommendationCron.js')\"",
     "db:indexes": "node scripts/createIndexes.js",
-    "rag:ingest": "node scripts/ingestRag.js"
+    "rag:ingest": "node scripts/ingestRag.js",
+    "test:design": "node --test tests/designStudio.test.js"
   },
   "keywords": [],
   "author": "",

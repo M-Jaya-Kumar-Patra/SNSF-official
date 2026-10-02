@@ -19,6 +19,7 @@ import { postData } from "@/utils/api";
 import { useAlert } from "../context/AlertContext";
 import { useAuth } from "../context/AuthContext";
 import { getOrCreateVisitorId } from "@/lib/tracking";
+import { loginDestination } from "@/utils/loginDestination";
 
 export default function Login() {
   const [formFields, setFormFields] = useState({ email: "", password: "" });
@@ -34,7 +35,7 @@ export default function Login() {
   useEffect(() => {
     if (isLogin) {
       setIsCheckingToken(false);
-      router.push("/profile");
+      router.push(loginDestination());
     } else {
       setCheckingAuth(false);
     }
@@ -106,7 +107,7 @@ export default function Login() {
         localStorage.setItem("refreshToken", response.data.refreshToken);
         localStorage.setItem("email", response.data.email);
         alert.alertBox({ type: "success", msg: "Logged in successfully" });
-        router.push("/profile");
+        router.push(loginDestination());
       } else {
         if (!response?.popup) {
           alert.alertBox({ type: "error", msg: response?.message || "Login failed" });

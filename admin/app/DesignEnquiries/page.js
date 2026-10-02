@@ -1,0 +1,28 @@
+"use client";
+import { useEffect, useState } from "react";
+import { designAdminApi } from "@/utils/designApi";
+
+function Enquiry({ design, onSaved }) {
+  const [status, setStatus] = useState(design.enquiry.status);
+  const [note, setNote] = useState(design.adminNote);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [saved, setSaved] = useState(false);
+  const save = async (event) => { event.preventDefault(); setBusy(true); setError(""); setSaved(false); try { await designAdminApi(`/enquiries/${design.id}`, { method: "PUT", body: { status, adminNote: note } }); setSaved(true); onSaved(); } catch (err) { setError(err.message); } finally { setBusy(false); } };
+  return <article className="grid gap-5 rounded-2xl border border-slate-200 bg-white p-5 text-slate-900 lg:grid-cols-[240px_minmax(0,1fr)]">
+    <div>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={design.imageUrl} alt={`Customer concept ${design.id.slice(-8)}`} loading="lazy" className="aspect-square w-full rounded-xl bg-slate-50 object-contain" /><a href={design.imageUrl} target="_blank" rel="noopener noreferrer" className="mt-2 block text-sm font-semibold text-indigo-700 underline">Open concept image</a><p className="mt-3 text-xs leading-5 text-slate-500">{design.notice}</p></div>
+    <div className="min-w-0"><div className="flex flex-wrap justify-between gap-2"><h2 className="text-lg font-semibold">{design.enquiry.name} · {design.id.slice(-8).toUpperCase()}</h2><time className="text-xs text-slate-500">{new Date(design.enquiry.submittedAt).toLocaleString()}</time></div><a href={`tel:${design.enquiry.phone}`} className="mt-2 inline-block text-sm font-semibold text-indigo-700">{design.enquiry.phone}</a><p className="mt-3 whitespace-pre-line break-words text-sm">{design.enquiry.note}</p>
+      <details className="mt-4"><summary className="cursor-pointer text-sm font-semibold">View full requested specifications</summary><ul className="mt-3 space-y-2 break-words text-sm text-slate-600">{design.specifications.map((line, index) => <li key={index}>{line}</li>)}</ul></details>
+      <form onSubmit={save} className="mt-5 grid gap-3 sm:grid-cols-[160px_minmax(0,1fr)]"><label className="text-sm font-medium">Status<select value={status} onChange={(event) => { setStatus(event.target.value); setSaved(false); }} className="mt-1 w-full rounded-lg border border-slate-300 bg-white p-3 text-sm">{["new", "contacted", "quoted", "closed"].map((value) => <option key={value}>{value}</option>)}</select></label><label className="text-sm font-medium">Internal note<textarea rows={2} maxLength={2000} value={note} onChange={(event) => { setNote(event.target.value); setSaved(false); }} className="mt-1 w-full rounded-lg border border-slate-300 p-3 text-sm" placeholder="Feasibility, verified dimensions, quote reference, next action…" /></label><div className="sm:col-span-2"><button disabled={busy} className="rounded-xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-50">{busy ? "Saving…" : "Save follow-up"}</button>{saved && <span role="status" className="ml-3 text-sm text-emerald-700">Saved</span>}{error && <p role="alert" className="mt-2 text-sm text-red-700">{error}</p>}</div></form>
+    </div>
+  </article>;
+}
+export default function DesignEnquiries() {
+  const [data, setData] = useState(null); const [error, setError] = useState(""); const [page, setPage] = useState(1); const [filter, setFilter] = useState(""); const [version, setVersion] = useState(0); const [loading, setLoading] = useState(false);
+  useEffect(() => { let stopped = false; setLoading(true); setError(""); designAdminApi(`/enquiries?page=${page}&status=${filter}`).then((result) => { if (!stopped) setData(result); }).catch((err) => { if (!stopped) setError(err.message); }).finally(() => { if (!stopped) setLoading(false); }); return () => { stopped = true; }; }, [page, filter, version]);
+  return <div className="mx-auto max-w-7xl space-y-6 p-4 sm:p-8"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-widest text-indigo-500">Design studio</p><h1 className="mt-2 text-3xl font-semibold">Design enquiries</h1><p className="mt-2 text-sm opacity-75">Saved customer concepts and requested specifications. Confirm feasibility before quoting.</p></div><label className="text-sm">Filter status<select value={filter} onChange={(event) => { setFilter(event.target.value); setPage(1); }} className="ml-2 rounded-xl border bg-white p-3 text-slate-900"><option value="">All</option>{["new", "contacted", "quoted", "closed"].map((value) => <option key={value}>{value}</option>)}</select></label></div>
+    {error && <p role="alert" className="rounded-xl bg-red-50 p-4 text-red-800">{error} <button onClick={() => setVersion((value) => value + 1)} className="underline">Retry</button></p>}
+    {loading ? <p role="status">Loading enquiries…</p> : data?.designs.length ? data.designs.map((design) => <Enquiry key={`${design.id}-${design.enquiry.status}`} design={design} onSaved={() => { if (filter) setVersion((value) => value + 1); }} />) : !error && <p className="rounded-xl border border-dashed border-slate-300 p-8 text-sm">No enquiries in this view yet.</p>}
+    {(page > 1 || data?.hasMore) && <div className="flex justify-between"><button disabled={loading || page === 1} onClick={() => setPage((value) => value - 1)} className="rounded-xl border px-4 py-2 disabled:opacity-40">Previous</button><span>Page {page}</span><button disabled={loading || !data?.hasMore} onClick={() => setPage((value) => value + 1)} className="rounded-xl border px-4 py-2 disabled:opacity-40">Next</button></div>}
+  </div>;
+}

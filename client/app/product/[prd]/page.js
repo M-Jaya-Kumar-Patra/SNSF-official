@@ -4,6 +4,20 @@ import ProductPageClient from "./ProductPageClient";
 import { getAbsoluteProductUrl } from "@/utils/productUrl";
 
 const SITE_URL = "https://www.snsteelfabrication.com";
+const PRODUCT_REVALIDATE_SECONDS = 60;
+
+async function getProduct(prd) {
+  if (!prd || !process.env.NEXT_PUBLIC_API_URL) return null;
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/product/${prd}`,
+    { next: { revalidate: PRODUCT_REVALIDATE_SECONDS } },
+  );
+
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data?.product || null;
+}
 
 export async function generateMetadata({ params }) {
   const { prd } = params;
@@ -15,20 +29,7 @@ export async function generateMetadata({ params }) {
     };
   }
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/product/${prd}`,
-    { cache: "no-store" }
-  );
-
-  if (!res.ok) {
-    return {
-      title: "Product Not Found – SNSF",
-      description: "Sorry, this product is not available.",
-    };
-  }
-
-  const data = await res.json();
-  const product = data?.product;
+  const product = await getProduct(prd);
 
   if (!product) {
     return {
@@ -153,15 +154,7 @@ export async function generateMetadata({ params }) {
 export default async function Page({ params }) {
   const prd = params?.prd; // ❌ remove await
 
-  // Fetch product from backend
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/product/${prd}`,
-    {
-      cache: "no-store",
-    }
-  );
-  const data = await res.json();
-  const product = data?.product || null;
+  const product = await getProduct(prd);
 
   return (
     <>

@@ -75,6 +75,7 @@ const Trending = () => {
       .map((prd, idx) => (
         <div
           key={idx}
+          data-product-path={getProductPath(prd?.product)}
           onClick={() => router.push(getProductPath(prd?.product))}
           className="
             w-[220px] shrink-0

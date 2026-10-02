@@ -33,6 +33,7 @@ export default function ProductGrid({
               type="button"
               key={id}
               data-product-id={id}
+              data-product-path={getProductPath(product)}
               aria-label={`Open ${title}`}
               onClick={() => {
                   const path = getProductPath(product);

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Armchair,
   Bot,
@@ -35,7 +36,7 @@ const CONTACT_ACTIONS = [
 const LANGUAGE_OPTIONS = [
   { value: "en", label: "English", nativeLabel: "English", speech: "en-US" },
   { value: "hi", label: "हिंदी", nativeLabel: "Hindi", speech: "hi-IN" },
-  { value: "od", label: "ଓଡ଼ିଆ", nativeLabel: "Odia", speech: "hi-IN" },
+  { value: "od", label: "ଓଡ଼ିଆ", nativeLabel: "Odia", speech: "or-IN" },
 ];
 
 const STARTER_MESSAGES = {
@@ -90,15 +91,22 @@ export default function AIAssistantChat() {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [messages, setMessages] = useState(() => [getWelcomeMessage("en")]);
   const [hydrated, setHydrated] = useState(false);
+  const [openingProduct, setOpeningProduct] = useState(null);
 
   const inputRef = useRef(null);
   const messagesEndRef = useRef(null);
   const panelRef = useRef(null);
   const openButtonRef = useRef(null);
-  const ignorePopRef = useRef(false);
-  const openedByUserRef = useRef(false);
 
   const apiUrl = useMemo(() => process.env.NEXT_PUBLIC_API_URL || "", []);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (openingProduct && pathname === openingProduct.path) {
+      setOpeningProduct(null);
+      setOpen(false);
+    }
+  }, [pathname, openingProduct]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -129,33 +137,7 @@ export default function AIAssistantChat() {
   }, [messages, loading, open]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const onPop = (e) => {
-      if (ignorePopRef.current) {
-        ignorePopRef.current = false;
-        return;
-      }
-
-      if (open) {
-        setOpen(false);
-        try {
-          history.pushState(null, '');
-        } catch (err) {}
-      }
-    };
-
     if (open) {
-      try {
-        if (openedByUserRef.current) {
-          if (!history.state || !history.state.snsfAssistant) {
-            history.pushState({ snsfAssistant: true }, '');
-          }
-        }
-      } catch (err) {}
-
-      window.addEventListener('popstate', onPop);
-
       const onOutsidePointer = (e) => {
         try {
           const isMobile = window.matchMedia('(max-width: 767px)').matches;
@@ -168,17 +150,19 @@ export default function AIAssistantChat() {
         } catch (err) {}
       };
 
+      const onEscape = (event) => {
+        if (event.key === "Escape") {
+          setOpen(false);
+          openButtonRef.current?.focus();
+        }
+      };
+
       document.addEventListener('pointerdown', onOutsidePointer);
+      document.addEventListener('keydown', onEscape);
 
       return () => {
         document.removeEventListener('pointerdown', onOutsidePointer);
-        window.removeEventListener('popstate', onPop);
-        try {
-          if (openedByUserRef.current && history.state && history.state.snsfAssistant) {
-            ignorePopRef.current = true;
-            history.back();
-          }
-        } catch (err) {}
+        document.removeEventListener('keydown', onEscape);
       };
     }
 
@@ -217,9 +201,9 @@ export default function AIAssistantChat() {
       window.speechSynthesis
         .getVoices()
         .find((voice) => voice.lang.toLowerCase().startsWith(languageMeta.speech.toLowerCase().slice(0, 2))) ||
-      window.speechSynthesis
+      (language === "od" ? null : window.speechSynthesis
         .getVoices()
-        .find((voice) => voice.lang.toLowerCase().startsWith("en")) ||
+        .find((voice) => voice.lang.toLowerCase().startsWith("en"))) ||
       null;
 
     utterance.lang = languageMeta.speech;
@@ -238,18 +222,29 @@ export default function AIAssistantChat() {
         .reverse()
         .find((item) => item.role === "assistant" && item.products?.length)
         ?.products?.slice(0, 6) || [];
+    const conversation = messages.slice(-6).map(({ role, content }) => ({ role, content }));
 
     setInput("");
     setLoading(true);
     setMessages((current) => [...current, { role: "user", content: message }]);
 
     try {
-      const response = await fetch(`${apiUrl}/api/ai/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, recentProducts, language: selectedLanguage }),
-      });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 20000);
+      let response;
+      try {
+        response = await fetch(`${apiUrl}/api/ai/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message, recentProducts, conversation, language: selectedLanguage }),
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timeout);
+      }
+      if (!response.ok) throw new Error(`Assistant request failed: ${response.status}`);
       const data = await response.json();
+      if (!data?.success) throw new Error("Assistant returned an unsuccessful response");
 
       const assistantContent = cleanAssistantText(
         data?.answer ||
@@ -295,10 +290,26 @@ export default function AIAssistantChat() {
       {hydrated && (
         <section 
           ref={panelRef} 
+          aria-label="SNSF chat assistant"
+          aria-hidden={!open}
+          inert={!open}
           className={`chatbot-panel-wrapper fixed z-[1301] flex flex-col overflow-hidden border border-slate-200 bg-white text-slate-950 shadow-2xl shadow-slate-950/25 pointer-events-auto ${
             open ? "panel-enter" : "panel-exit"
           }`}
         >
+          {openingProduct && (
+            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-white/95 px-6 text-center backdrop-blur-sm" role="status" aria-live="polite">
+              <Loader2 className="h-8 w-8 animate-spin text-slate-900" aria-hidden="true" />
+              <p className="text-sm font-bold text-slate-950">Opening {openingProduct.name}…</p>
+              <p className="text-xs text-slate-500">Your product details are loading.</p>
+              <a href={openingProduct.path} className="mt-2 text-xs font-semibold text-indigo-700 underline underline-offset-2">
+                Open page directly
+              </a>
+              <button type="button" onClick={() => setOpeningProduct(null)} className="text-xs text-slate-500 underline underline-offset-2">
+                Cancel
+              </button>
+            </div>
+          )}
           <header className="flex items-center justify-between border-b border-slate-200 bg-slate-950 px-4 py-3 text-white shrink-0">
             <div className="flex min-w-0 items-center gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-slate-800 to-slate-700 text-white shadow-inner border border-white/10">
@@ -328,7 +339,7 @@ export default function AIAssistantChat() {
               <button
                 type="button"
                 aria-label="Close assistant"
-                onClick={() => setOpen(false)}
+                onClick={() => { setOpen(false); openButtonRef.current?.focus(); }}
                 className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-white/10 hover:text-white"
               >
                 <X className="h-5 w-5" />
@@ -337,7 +348,7 @@ export default function AIAssistantChat() {
           </header>
 
           <div className="assistant-scroll flex-1 overflow-y-auto bg-slate-50/70 p-4 min-h-0">
-            <div className="space-y-3">
+            <div className="space-y-3" role="log" aria-live="polite" aria-relevant="additions" aria-label="Chat messages">
               {messages.map((message, index) => (
                 <div
                   key={`${message.role}-${index}`}
@@ -370,7 +381,11 @@ export default function AIAssistantChat() {
                           <Link
                             key={product._id}
                             href={getProductPath(product)}
-                            onClick={() => setOpen(false)}
+                            prefetch
+                            onClick={(event) => {
+                              if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                              setOpeningProduct({ name: product.name || "product", path: getProductPath(product) });
+                            }}
                             className="flex items-center gap-2.5 rounded-xl border border-slate-200/80 bg-white p-2 text-slate-900 transition hover:border-slate-400 hover:shadow-md"
                           >
                             <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-slate-100 bg-slate-50">
@@ -428,6 +443,7 @@ export default function AIAssistantChat() {
           </div>
 
           <div className="border-t border-slate-200 bg-white p-3 shrink-0">
+            <Link href="/design-studio" onClick={() => setOpen(false)} className="mb-3 flex items-center justify-between rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-800"><span className="flex items-center gap-2"><Sparkles className="h-4 w-4" />Design your own furniture</span><span aria-hidden="true">→</span></Link>
             <div className="mb-2.5 flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
               {(STARTER_MESSAGES[selectedLanguage] || STARTER_MESSAGES.en).map((starter) => (
                 <button
@@ -488,11 +504,11 @@ export default function AIAssistantChat() {
         <button
           ref={openButtonRef}
           type="button"
-          aria-label="Open SNSF Furniture Expert"
+          aria-label={open ? "Close SNSF Furniture Expert" : "Open SNSF Furniture Expert"}
+          aria-expanded={open}
           onClick={() => {
             setOpen((value) => {
               const next = !value;
-              if (next) openedByUserRef.current = true;
               return next;
             });
           }}

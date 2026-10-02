@@ -83,6 +83,7 @@ export default function RecentlyViewed({ onEmpty }) {
                 type="button"
                 aria-label={`Open ${prd?.name || "recently viewed product"}`}
                 key={prd._id}
+                data-product-path={getProductPath(prd)}
                 onClick={() => router.push(getProductPath(prd))}
                 className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg"
               >

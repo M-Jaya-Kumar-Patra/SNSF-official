@@ -28,6 +28,9 @@ import posterRouter from './route/poster.route.js';
 import analyticsRouter from './route/analytics.route.js';
 import videoRouter from './route/video.route.js';
 import aiRouter from './route/ai.route.js';
+import designRouter from './route/design.route.js';
+import { startDesignWorker } from './services/designGeneration.service.js';
+import { ProductDesign, DesignMaterial, DesignQuota } from './models/design.model.js';
 import pingNest from "pingnest";
 
 
@@ -131,6 +134,7 @@ app.use("/api/analytics", analyticsRouter);
 app.use("/api/videos", videoRouter);
 
 app.use("/api/ai", aiRouter);
+app.use("/api/designs", designRouter);
 
 app.use((err, req, res, next) => {
   if (!err) return next();
@@ -158,7 +162,9 @@ app.use((err, req, res, next) => {
 });
 
 
-connectDB().then(() => {
+connectDB().then(async () => {
+  await Promise.all([ProductDesign.init(), DesignMaterial.init(), DesignQuota.init()]);
+  startDesignWorker();
   const port = process.env.PORT || 8000;
   app.listen(port, () => {
     console.log(`✅ Server is running on port ${port}`);

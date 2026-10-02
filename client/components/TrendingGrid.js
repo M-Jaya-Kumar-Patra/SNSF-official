@@ -47,6 +47,7 @@ export default function TrendingGrid({ products = [], loading = false }) {
                   type="button"
                   aria-label={`Open ${product.title || "trending product"}`}
                   key={product.id}
+                  data-product-path={getProductPath(product)}
                   onClick={() => router.push(getProductPath(product))}
                   className={`group cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg ${
                     isFeatured

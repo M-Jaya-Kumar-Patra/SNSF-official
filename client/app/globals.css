@@ -5,6 +5,18 @@
 /* Import Righteous strictly for special headers if needed */
 @import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
 
+@keyframes product-progress {
+  0% {
+    transform: translateX(-120%);
+  }
+  50% {
+    transform: translateX(220%);
+  }
+  100% {
+    transform: translateX(420%);
+  }
+}
+
 
 html {
   height: auto;

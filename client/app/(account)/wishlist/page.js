@@ -54,6 +54,7 @@ const Account = () => {
                   {/* Product Image */}
                   <div
                     className="relative h-[110px] w-[130px] shrink-0 cursor-pointer overflow-hidden rounded-2xl bg-slate-100"
+                    data-product-path={`/product/${item?.productId}`}
                     onClick={() => router.push(`/product/${item?.productId}`)}
                   >
                     <Image
@@ -70,6 +71,7 @@ const Account = () => {
                   <div className="flex-1 flex flex-col justify-between">
                     <div
                       className="cursor-pointer"
+                      data-product-path={`/product/${item?.productId}`}
                       onClick={() => router.push(`/product/${item?.productId}`)}
                     >
                       <h3 className="text-lg font-bold text-slate-950">

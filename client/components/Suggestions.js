@@ -155,6 +155,7 @@ const Suggestions = ({
             ? data.map((prd) => (
                 <article
                   key={prd?._id}
+                  data-product-path={getProductPath(prd)}
                   className="group cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-slate-300 hover:shadow-md"
                   onClick={() => router.push(getProductPath(prd))}
                 >

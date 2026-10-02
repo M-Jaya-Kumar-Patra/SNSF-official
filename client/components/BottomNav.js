@@ -302,6 +302,7 @@ const BottomNav = () => {
                       <li key={item._id}>
                         <button
                           type="button"
+                          data-product-path={getProductPath(item)}
                           onClick={() => goTo(getProductPath(item))}
                           className="flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 text-left shadow-sm transition active:scale-[0.99]"
                         >

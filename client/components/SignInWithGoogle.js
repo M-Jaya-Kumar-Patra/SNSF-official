@@ -4,6 +4,7 @@ import axios from "axios";
 import { useAuth } from "@/app/context/AuthContext";
 import { useAlert } from "@/app/context/AlertContext";
 import { useRouter } from "next/navigation";
+import { loginDestination } from "@/utils/loginDestination";
 
 const SignInWithGoogle = () => {
   const router = useRouter();
@@ -29,7 +30,7 @@ const SignInWithGoogle = () => {
                   msg: "Logged in successfully",
                 });
 
-                router.push("/profile");
+                router.push(loginDestination());
 
                 const { accessToken, refreshToken, user } = res.data;
                 login(user, accessToken);

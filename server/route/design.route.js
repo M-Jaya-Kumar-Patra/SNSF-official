@@ -1,0 +1,30 @@
+import { Router } from "express";
+import multer from "multer";
+import auth from "../middlewares/auth.js";
+import { designAccount } from "../middlewares/designAuth.js";
+import * as controller from "../controllers/design.controller.js";
+
+const router = Router();
+router.use((req, res, next) => { res.set("Cache-Control", "no-store"); next(); });
+router.get("/config", controller.studioConfig);
+router.get("/products", controller.studioProducts);
+router.get("/shared/:token", controller.sharedDesign);
+const admin = [auth, designAccount(true)];
+router.get("/admin/materials", ...admin, controller.listMaterials);
+router.post("/admin/materials", ...admin, controller.saveMaterial);
+router.put("/admin/materials/:id", ...admin, controller.saveMaterial);
+const imageUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024, files: 1 }, fileFilter: (req, file, cb) => cb(["image/jpeg", "image/png", "image/webp"].includes(file.mimetype) ? null : new Error("Unsupported file type. Choose JPEG, PNG or WebP."), true) });
+router.post("/admin/materials/:id/image", ...admin, imageUpload.single("image"), controller.materialImage);
+router.get("/admin/enquiries", ...admin, controller.adminEnquiries);
+router.put("/admin/enquiries/:id", ...admin, controller.updateEnquiry);
+router.use(auth, designAccount());
+router.get("/", controller.listDesigns);
+router.post("/", controller.createDesign);
+router.get("/:id", controller.getDesign);
+router.get("/:id/image", controller.downloadDesign);
+router.post("/:id/enquiry", controller.saveDesignEnquiry);
+router.use((error, req, res, next) => {
+  if (error.code === 11000) return res.status(409).json({ success: false, message: "That material code already exists. Choose a unique code." });
+  next(error);
+});
+export default router;

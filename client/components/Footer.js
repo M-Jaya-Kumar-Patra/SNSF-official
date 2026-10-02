@@ -45,6 +45,7 @@ const Footer = () => {
           <div>
             <h2 className="font-semibold text-lg mb-4">Support</h2>
             <ul className="space-y-2 text-sm text-gray-300">
+              <li><Link href="/design-studio" className="hover:text-white">AI Design Studio</Link></li>
               <li>
                 <Link href="/profile" className="hover:text-white">
                   My Account

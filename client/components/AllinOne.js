@@ -48,6 +48,7 @@ const AllinOne = () => {
                 className="group bg-white border p-1 sm:p-2 shadow-sm hover:shadow-md transition-all duration-200"
               >
                 <div
+                  data-product-path={getProductPath(prd)}
                   onClick={() => router.push(getProductPath(prd))}
                   className="cursor-pointer"
                 >

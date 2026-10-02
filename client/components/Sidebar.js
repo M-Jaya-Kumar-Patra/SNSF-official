@@ -67,6 +67,7 @@ const ProductListing = () => {
               {productsData?.map((prd) => (
                 <div key={prd?._id} className="relative group w-full">
                   <div
+                    data-product-path={getProductPath(prd)}
                     onClick={() => router.push(getProductPath(prd))}
                     className="w-full min-h-[260px] shadow-md flex flex-col items-center justify-between p-3 bg-white hover:shadow-xl transition duration-300"
                   >
