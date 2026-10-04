@@ -159,7 +159,7 @@ export default function Signup() {
         <button
           type="submit"
           disabled={isLoading}
-          className="flex h-11 w-full items-center justify-center rounded-xl bg-slate-950 text-sm font-bold text-white shadow-lg shadow-slate-900/20 transition hover:bg-blue-700 disabled:opacity-60"
+          className="flex h-11 w-full items-center justify-center rounded-xl bg-slate-950 text-sm font-bold text-white shadow-lg shadow-slate-900/20 transition-colors duration-200 hover:bg-blue-700 active:bg-blue-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isLoading ? <CircularProgress size={20} sx={{ color: "white" }} /> : "Create Account"}
         </button>

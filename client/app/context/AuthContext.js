@@ -20,6 +20,24 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [isCheckingToken, setIsCheckingToken] = useState(true);
 
+  const refreshAccessToken = useCallback(async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/refresh-token`, {
+        method: "POST",
+        credentials: "include",
+        headers: refreshToken ? { Authorization: `Bearer ${refreshToken}` } : {},
+      });
+      const result = await response.json();
+      if (!response.ok || result.error || !result.data?.accessToken) return null;
+      localStorage.setItem("accessToken", result.data.accessToken);
+      return result.data.accessToken;
+    } catch (error) {
+      console.error("Access token refresh failed:", error);
+      return null;
+    }
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/logout`, {
@@ -39,9 +57,13 @@ export const AuthProvider = ({ children }) => {
     router.push("/login");
   }, [router]);
 
-  const fetchUserDetails = useCallback(async () => {
+  const fetchUserDetails = useCallback(async (allowRefresh = true) => {
     try {
-      const response = await fetchDataFromApi("/api/user/user-details");
+      let response = await fetchDataFromApi("/api/user/user-details");
+      if (response.error && allowRefresh) {
+        const token = await refreshAccessToken();
+        if (token) response = await fetchDataFromApi("/api/user/user-details");
+      }
       if (!response.error) {
         setUserData(response.data);
         setIsLogin(true);
@@ -56,7 +78,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [logout]);
+  }, [logout, refreshAccessToken]);
   const login = useCallback(
     async (data, token) => {
       if (!data || !token) return;
@@ -83,23 +105,37 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
+    const restoreSession = async () => {
     try {
       const decoded = jwtDecode(token);
       const currentTime = Date.now() / 1000;
 
       if (decoded.exp < currentTime) {
-        logout();
+        const refreshed = await refreshAccessToken();
+        if (refreshed) await fetchUserDetails(false);
+        else await logout();
         setIsCheckingToken(false);
       } else {
         const timeLeft = (decoded.exp - currentTime) * 1000;
-        setTimeout(() => logout(), timeLeft);
+        const refreshTimer = setTimeout(async () => {
+          const refreshed = await refreshAccessToken();
+          if (refreshed) await fetchUserDetails(false);
+          else await logout();
+        }, Math.max(0, timeLeft - 60_000));
         fetchUserDetails().finally(() => setIsCheckingToken(false));
+        return () => clearTimeout(refreshTimer);
       }
     } catch (err) {
-      logout();
+      const refreshed = await refreshAccessToken();
+      if (refreshed) await fetchUserDetails(false);
+      else await logout();
       setIsCheckingToken(false);
     }
-  }, [fetchUserDetails, logout]);
+    };
+    let cleanup;
+    restoreSession().then((result) => { cleanup = result; });
+    return () => cleanup?.();
+  }, [fetchUserDetails, logout, refreshAccessToken]);
 
   useEffect(() => {
     if (userData?._id || userData?.id) {
