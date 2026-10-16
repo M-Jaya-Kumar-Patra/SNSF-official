@@ -1,5 +1,6 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import dynamic from "next/dynamic";
 import { fetchDataFromApi, postData } from "@/utils/api";
 import { useAuth } from "@/app/context/AuthContext";
@@ -317,9 +318,9 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
           </div>
 
           {/* Fullscreen Modal for Mobile Large View */}
-          {showLarge && (
+          {showLarge && typeof document !== "undefined" && createPortal(
             <div
-              className="flex lg:hidden fixed inset-0 bg-slate-100  z-[999]  flex-col items-center justify-center px-4"
+              className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-slate-100 px-4 sm:hidden"
               style={{ touchAction: "pinch-zoom", overflow: "auto" }}
             >
               <div className="w-full flex justify-end">
@@ -376,7 +377,8 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
                   </button>
                 )}
               </div>
-            </div>
+            </div>,
+            document.body,
           )}
 
           {/* Desktop Thumbnail + Main Image */}
@@ -507,8 +509,8 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
           </div>
 
           {/* Fullscreen Modal for Large Image View */}
-          {showLarge && (
-            <div className="hidden sm:flex fixed  inset-0 bg-slate-100  z-[999]  flex-col items-center justify-center px-4">
+          {showLarge && typeof document !== "undefined" && createPortal(
+            <div className="fixed inset-0 z-[9999] hidden flex-col items-center justify-center bg-slate-100 px-4 sm:flex">
               <div className="w-full flex justify-end">
                 <button
                   type="button"
@@ -564,7 +566,8 @@ const ProductPageClient = ({ initialProduct = null, prdId }) => {
                   </button>
                 )}
               </div>
-            </div>
+            </div>,
+            document.body,
           )}
         </div>
 
